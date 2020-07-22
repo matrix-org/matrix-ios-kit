@@ -2,9 +2,9 @@
 // Login Screen
 "login_create_account" = "アカウント作成:";
 "login_server_url_placeholder" = "URL (例 https://matrix.org)";
-"login_home_server_title" = "接続先サーバ:";
+"login_home_server_title" = "接続先サーバURL:";
 "login_home_server_info" = "あなたの接続先サーバは、あなたの全ての会話とアカウント情報を保存します";
-"login_identity_server_title" = "認証サーバ:";
+"login_identity_server_title" = "認証サーバURL:";
 "login_password_placeholder" = "パスワード";
 "login_email_placeholder" = "メールアドレス";
 // Action
@@ -105,7 +105,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ ルームメンバー全員に招待した時点からの部屋履歴を表示されます。";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ ルームメンバー全員に参加した時点からの部屋履歴を表示されます。";
 "notice_crypto_unable_to_decrypt" = "** 復号化できません: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "送信者の端末からこのメッセージのキーが送信されていません。";
+"notice_crypto_error_unknown_inbound_session_id" = "送信者のセッションからこのメッセージのキーが送信されていません。";
 "notice_sticker" = "ステッカー";
 "notice_in_reply_to" = "に返信";
 // room display name
@@ -119,9 +119,9 @@
 "settings_enter_validation_token_for" = "%@の検証トークンを入力:";
 "notification_settings_room_rule_title" = "部屋: '%@'";
 // Devices
-"device_details_title" = "端末情報\n";
+"device_details_title" = "セッション情報\n";
 "device_details_name" = "名前\n";
-"device_details_identifier" = "端末ID\n";
+"device_details_identifier" = "ID\n";
 "device_details_last_seen" = "ラストシーン\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
 "device_details_rename_prompt_message" = "端末名:";
@@ -138,10 +138,10 @@
 "room_event_encryption_info_event_decryption_error" = "復号化エラー\n";
 "room_event_encryption_info_event_unencrypted" = "暗号化されていない";
 "room_event_encryption_info_event_none" = "なし";
-"room_event_encryption_info_device" = "\n送信者端末情報\n";
-"room_event_encryption_info_device_unknown" = "未知の端末\n";
+"room_event_encryption_info_device" = "\n送信者セッション情報\n";
+"room_event_encryption_info_device_unknown" = "未知のセッション\n";
 "room_event_encryption_info_device_name" = "名前\n";
-"room_event_encryption_info_device_id" = "端末ID\n";
+"room_event_encryption_info_device_id" = "ID\n";
 "room_event_encryption_info_device_verification" = "検証\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 fingerprint\n";
 "room_event_encryption_info_device_verified" = "検証済み";
@@ -151,8 +151,8 @@
 "room_event_encryption_info_unverify" = "未検証";
 "room_event_encryption_info_block" = "ブラックリスト";
 "room_event_encryption_info_unblock" = "ブラックでないリスト";
-"room_event_encryption_verify_title" = "端末検証\n\n";
-"room_event_encryption_verify_message" = "この端末が信頼できることを確認するには、他の方法（個人や電話など）で所有者に連絡し、端末のユーザー設定で表示される鍵が以下のキーと一致するかどうかを尋ねます。\n\n端末名: %@\n端末ID: %@\n端末key: %@\n\n一致する場合は、下の確認ボタンを押します。 それ以外の人がこのデバイスを傍受している場合は、代わりにブラックリストボタンを押してください。\n\n将来この検証プロセスはより洗練されたものになるでしょう。";
+"room_event_encryption_verify_title" = "セッション検証\n\n";
+"room_event_encryption_verify_message" = "このセッションが信頼できることを確認するには、他の方法（個人や電話など）で所有者に連絡し、セッションのユーザー設定で表示される鍵が以下のキーと一致するかどうかを尋ねます。\n\nセッション名: %@\nセッションID: %@\nセッションkey: %@\n\n一致する場合は、下の確認ボタンを押します。 それ以外の人がこのセッションを傍受している場合は、代わりにブラックリストボタンを押してください。\n\n将来この検証プロセスはより洗練されたものになるでしょう。";
 "room_event_encryption_verify_ok" = "検証";
 // Account
 "account_save_changes" = "変更を保存";
@@ -381,3 +381,29 @@
 "device_details_rename_prompt_title" = "セッション名";
 "account_error_push_not_allowed" = "通知は許可されていません";
 "notice_room_third_party_revoked_invite" = "%@ は %@ の部屋への招待を取り消しました";
+// Notice Events with "You"
+"notice_room_invite_by_you" = "%@を招待しました";
+"notice_room_invite_you" = "%@があなたを招待しました";
+"notice_room_join_by_you" = "参加しました";
+"notice_room_leave_by_you" = "退室しました";
+"notice_room_kick_by_you" = "%@をキックしました";
+"notice_room_unban_by_you" = "%@をBANしました";
+"notice_room_ban_by_you" = "%@をBANしました";
+"notice_avatar_url_changed_by_you" = "アバターを変更しました";
+"notice_display_name_set_by_you" = "表示名を%@に変更しました";
+"notice_display_name_changed_from_by_you" = "表示名を%@から%@に変更しました";
+"notice_display_name_removed_by_you" = "表示名を削除しました";
+"notice_topic_changed_by_you" = "トピックを変更しました: %@";
+"notice_room_name_changed_by_you" = "部屋の名前を変更しました: %@";
+"notice_placed_voice_call_by_you" = "音声通話を開始しました";
+"notice_placed_video_call_by_you" = "ビデオ通話を開始しました";
+"notice_answered_video_call_by_you" = "電話に出ました";
+"notice_ended_video_call_by_you" = "通話を終了しました";
+"notice_conference_call_request_by_you" = "VoIP会議をリクエストしました";
+"notice_room_name_removed_by_you" = "部屋名を削除しました";
+"notice_room_topic_removed_by_you" = "トピックを削除しました";
+"notice_profile_change_redacted_by_you" = "プロフィール %@を更新しました";
+"notice_room_created_by_you" = "部屋を作成しました";
+"notice_encryption_enabled_ok_by_you" = "あなたはエンドツーエンド暗号化をオンにしました。";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "あなたはエンドツーエンド暗号化をオンにしました (不明なアルゴリズム %2$@)。";
+"notice_redaction_by_you" = "イベントを編集しました (id: %@)";
