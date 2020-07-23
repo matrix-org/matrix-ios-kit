@@ -379,8 +379,8 @@
 "ssl_unexpected_existing_expl" = "Il certificato è diverso da quello di cui il tuo telefono si fidava. Questo è un COMPORTAMENTO ANOMALO. Si consiglia di NON ACCETTARE questo nuovo certificato.";
 "ssl_expected_existing_expl" = "Il certificato è cambiato da uno precedentemente accettato a uno che non è fidato. Il server potrebbe averlo rinnovato. Contatta l'amministratore del server per verificarne l'impronta.";
 "ssl_only_accept" = "Accetta il certificato SOLAMENTE se l'amministratore del server ha pubblicato un'impronta che corrisponde a quella qui sopra.";
-"notice_encryption_enabled_ok" = "%@ ha attivato la cifratura end-to-end.";
-"notice_encryption_enabled_unknown_algorithm" = "%1$@ ha attivato la cifratura end-to-end (algoritmo %2$@ non riconosciuto).";
+"notice_encryption_enabled_ok" = "%@ ha attivato la crittografia end-to-end.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ ha attivato la crittografia end-to-end (algoritmo %2$@ non riconosciuto).";
 // Notice Events with "You"
 "notice_room_invite_by_you" = "Hai invitato %@";
 "notice_room_invite_you" = "%@ ti ha invitato";

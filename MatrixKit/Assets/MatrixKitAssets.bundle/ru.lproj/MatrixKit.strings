@@ -381,3 +381,21 @@
 "device_details_rename_prompt_title" = "Имя Сессии";
 "notice_encryption_enabled_ok" = "%@ включил сквозное шифрование.";
 "notice_encryption_enabled_unknown_algorithm" = "%1$@ включил сквозное шифрование (нераспознанный алгоритм %2$@).";
+// Notice Events with "You"
+"notice_room_invite_by_you" = "Вы пригласили %@";
+"notice_room_invite_you" = "%@ пригласил Вас";
+"notice_room_third_party_invite_by_you" = "Вы отправили приглашение %@ вступить в комнату";
+"notice_room_third_party_registered_invite_by_you" = "Вы приняли приглашение для @%";
+"notice_room_third_party_revoked_invite_by_you" = "Вы отозвали приглашение для %@ вступить в комнату";
+"notice_room_join_by_you" = "Вы вошли";
+"notice_room_leave_by_you" = "Вы вышли";
+"notice_room_reject_by_you" = "Вы отклонили приглашение";
+"notice_room_kick_by_you" = "Вы исключили %@";
+"notice_room_unban_by_you" = "Вы разбанили %@";
+"notice_room_ban_by_you" = "Вы забанили %@";
+"notice_avatar_url_changed_by_you" = "Вы сменили свой аватар";
+"notice_display_name_set_by_you" = "Вы установили своё отображаемое имя как %@";
+"notice_display_name_changed_from_by_you" = "Вы сменили своё отображаемое имя с %@ на %@";
+"notice_display_name_removed_by_you" = "Вы удалили своё отображаемое имя";
+"notice_topic_changed_by_you" = "Вы сменили тему на: %@";
+"notice_room_name_changed_by_you" = "Вы сменили имя и комнаты на: %@";
