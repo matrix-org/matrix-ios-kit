@@ -32,6 +32,8 @@
 		328AC48C1AA760520044A6FB /* MXKRoomOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC48B1AA760520044A6FB /* MXKRoomOutgoingBubbleTableViewCell.m */; };
 		328AC48F1AA86E110044A6FB /* MXKDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC48E1AA86E110044A6FB /* MXKDataSource.m */; };
 		328AC4931AA8B05C0044A6FB /* MXKCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4921AA8B05C0044A6FB /* MXKCellData.m */; };
+		328E410324CB135100DC4490 /* MatrixKitVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 328E410224CB135100DC4490 /* MatrixKitVersion.m */; };
+		328E410424CB135100DC4490 /* MatrixKitVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 328E410224CB135100DC4490 /* MatrixKitVersion.m */; };
 		329CF77B1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 329CF77A1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m */; };
 		32B046722101EB5E002A24A1 /* MXRoom+Sync.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B046712101EB5E002A24A1 /* MXRoom+Sync.m */; };
 		32BA86B721538B35008F277E /* MXKRoomNameStringLocalizations.m in Sources */ = {isa = PBXBuildFile; fileRef = 32BA86B621538B35008F277E /* MXKRoomNameStringLocalizations.m */; };
@@ -313,6 +315,7 @@
 		328AC4901AA8AF5B0044A6FB /* MXKCellRendering.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKCellRendering.h; sourceTree = "<group>"; };
 		328AC4911AA8B05C0044A6FB /* MXKCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKCellData.h; sourceTree = "<group>"; };
 		328AC4921AA8B05C0044A6FB /* MXKCellData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKCellData.m; sourceTree = "<group>"; };
+		328E410224CB135100DC4490 /* MatrixKitVersion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MatrixKitVersion.m; sourceTree = "<group>"; };
 		329CF7791AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomIOSBubbleTableViewCell.h; sourceTree = "<group>"; };
 		329CF77A1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSBubbleTableViewCell.m; sourceTree = "<group>"; };
 		32B046702101EB5E002A24A1 /* MXRoom+Sync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXRoom+Sync.h"; sourceTree = "<group>"; };
@@ -767,6 +770,7 @@
 				3219CBBD1AA6FB1C0027D7E2 /* Views */,
 				B125D0FE22D5D32500570CA4 /* MatrixKit-Bridging-Header.h */,
 				3219CBC11AA6FB6B0027D7E2 /* MatrixKit.h */,
+				328E410224CB135100DC4490 /* MatrixKitVersion.m */,
 			);
 			path = MatrixKit;
 			sourceTree = "<group>";
@@ -1826,6 +1830,7 @@
 			files = (
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
+				328E410424CB135100DC4490 /* MatrixKitVersion.m in Sources */,
 				B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */,
 				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
 				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
@@ -1868,6 +1873,7 @@
 				F0EA4CB41ADD6E98007197D2 /* MXKAppSettings.m in Sources */,
 				F01C7DFA1AFB6BF900FC2F59 /* MXKCallViewController.m in Sources */,
 				F04356321B2EF6FD0096FA02 /* MXKRoomMemberDetailsViewController.m in Sources */,
+				328E410324CB135100DC4490 /* MatrixKitVersion.m in Sources */,
 				F095E5101B25899F009606CE /* MXKEmail.m in Sources */,
 				321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */,
 				B164380C210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m in Sources */,
