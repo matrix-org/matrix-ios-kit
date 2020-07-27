@@ -563,51 +563,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             [localPreviewActivityView startAnimating];
             
             // Try to show a special view for incoming view
-            if (call.isIncoming && !self.incomingCallView)
-            {
-                UIView *incomingCallView = [self createIncomingCallView];
-                if (incomingCallView)
-                {
-                    self.incomingCallView = incomingCallView;
-                    [self.view addSubview:incomingCallView];
-                    
-                    incomingCallView.translatesAutoresizingMaskIntoConstraints = NO;
-                    
-                    [NSLayoutConstraint activateConstraints:@[
-                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
-                                                                                           attribute:NSLayoutAttributeTop
-                                                                                           relatedBy:NSLayoutRelationEqual
-                                                                                              toItem:self.view
-                                                                                           attribute:NSLayoutAttributeTop
-                                                                                          multiplier:1.0
-                                                                                            constant:0.0],
-                                                              
-                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
-                                                                                           attribute:NSLayoutAttributeLeading
-                                                                                           relatedBy:NSLayoutRelationEqual
-                                                                                              toItem:self.view
-                                                                                           attribute:NSLayoutAttributeLeading
-                                                                                          multiplier:1.0
-                                                                                            constant:0.0],
-                                                              
-                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
-                                                                                           attribute:NSLayoutAttributeBottom
-                                                                                           relatedBy:NSLayoutRelationEqual
-                                                                                              toItem:self.view
-                                                                                           attribute:NSLayoutAttributeBottom
-                                                                                          multiplier:1.0
-                                                                                            constant:0.0],
-                                                              
-                                                              [NSLayoutConstraint constraintWithItem:incomingCallView
-                                                                                           attribute:NSLayoutAttributeTrailing
-                                                                                           relatedBy:NSLayoutRelationEqual
-                                                                                              toItem:self.view
-                                                                                           attribute:NSLayoutAttributeTrailing
-                                                                                          multiplier:1.0
-                                                                                            constant:0.0]
-                                                              ]];
-                }
-            }
+            [self configureIncomingCallViewIfRequiredWith:call];
             
             break;
         case MXCallStateCreateOffer:
@@ -627,6 +583,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         case MXCallStateRinging:
             self.isRinging = YES;
+            speakerButton.selected = call.audioToSpeaker;
             if (call.isVideoCall)
             {
                 callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_video_call"];
@@ -639,6 +596,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             endCallButton.hidden = YES;
             rejectCallButton.hidden = NO;
             answerCallButton.hidden = NO;
+            
+            // Try to show a special view for incoming view
+            [self configureIncomingCallViewIfRequiredWith:call];
+            
             break;
         case MXCallStateConnecting:
             self.isRinging = NO;
@@ -869,6 +830,25 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 }
 
 #pragma mark - UI methods
+
+- (void)configureIncomingCallViewIfRequiredWith:(MXCall *)call
+{
+    if (call.isIncoming && !self.incomingCallView)
+    {
+        UIView *incomingCallView = [self createIncomingCallView];
+        if (incomingCallView)
+        {
+            self.incomingCallView = incomingCallView;
+            [self.view addSubview:incomingCallView];
+            
+            incomingCallView.translatesAutoresizingMaskIntoConstraints = NO;
+            [incomingCallView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:0].active = YES;
+            [incomingCallView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:0].active = YES;
+            [incomingCallView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:0].active = YES;
+            [incomingCallView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:0].active = YES;
+        }
+    }
+}
 
 - (void)updateLocalPreviewLayout
 {

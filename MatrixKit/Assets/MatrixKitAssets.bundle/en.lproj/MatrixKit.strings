@@ -352,6 +352,43 @@
 "notice_conference_call_started" = "VoIP conference started";
 "notice_conference_call_finished" = "VoIP conference finished";
 
+// Notice Events with "You"
+"notice_room_invite_by_you" = "You invited %@";
+"notice_room_invite_you" = "%@ invited you";
+"notice_room_third_party_invite_by_you" = "You sent an invitation to %@ to join the room";
+"notice_room_third_party_registered_invite_by_you" = "You accepted the invitation for %@";
+"notice_room_third_party_revoked_invite_by_you" = "You revoked the invitation for %@ to join the room";
+"notice_room_join_by_you" = "You joined";
+"notice_room_leave_by_you" = "You left";
+"notice_room_reject_by_you" = "You rejected the invitation";
+"notice_room_kick_by_you" = "You kicked %@";
+"notice_room_unban_by_you" = "You unbanned %@";
+"notice_room_ban_by_you" = "You banned %@";
+"notice_room_withdraw_by_you" = "You withdrew %@'s invitation";
+"notice_avatar_url_changed_by_you" = "You changed your avatar";
+"notice_display_name_set_by_you" = "You set your display name to %@";
+"notice_display_name_changed_from_by_you" = "You changed your display name from %@ to %@";
+"notice_display_name_removed_by_you" = "You removed your display name";
+"notice_topic_changed_by_you" = "You changed the topic to: %@";
+"notice_room_name_changed_by_you" = "You changed the room name to: %@";
+"notice_placed_voice_call_by_you" = "You placed a voice call";
+"notice_placed_video_call_by_you" = "You placed a video call";
+"notice_answered_video_call_by_you" = "You answered the call";
+"notice_ended_video_call_by_you" = "You ended the call";
+"notice_conference_call_request_by_you" = "You requested a VoIP conference";
+"notice_room_name_removed_by_you" = "You removed the room name";
+"notice_room_topic_removed_by_you" = "You removed the topic";
+"notice_event_redacted_by_you" = " by you";
+"notice_profile_change_redacted_by_you" = "You updated your profile %@";
+"notice_room_created_by_you" = "You created the room";
+"notice_encryption_enabled_ok_by_you" = "You turned on end-to-end encryption.";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "You turned on end-to-end encryption (unrecognised algorithm %@).";
+"notice_redaction_by_you" = "You redacted an event (id: %@)";
+"notice_room_history_visible_to_anyone_by_you" = "You made future room history visible to anyone.";
+"notice_room_history_visible_to_members_by_you" = "You made future room history visible to all room members.";
+"notice_room_history_visible_to_members_from_invited_point_by_you" = "You made future room history visible to all room members, from the point they are invited.";
+"notice_room_history_visible_to_members_from_joined_point_by_you" = "You made future room history visible to all room members, from the point they joined.";
+
 // Room Screen 
 
 // general errors 

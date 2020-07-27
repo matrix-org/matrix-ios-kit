@@ -304,6 +304,8 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         return nil;
     }
     
+    BOOL isEventSenderMyUser = [event.sender isEqualToString:mxSession.myUserId];
+    
     // Check first whether the event has been redacted
     NSString *redactedInfo = nil;
     BOOL isRedacted = (event.redactedBecause != nil);
@@ -323,7 +325,12 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             NSString *redactedReason = (event.redactedBecause[@"content"])[@"reason"];
             if (redactedReason.length)
             {
-                if (redactedBy.length)
+                if ([redactorId isEqualToString:mxSession.myUserId])
+                {
+                    NSString *formatString = [NSString stringWithFormat:@"%@%@", [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by_you"], [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"]];
+                    redactedBy = [NSString stringWithFormat:formatString, redactedReason];
+                }
+                else if (redactedBy.length)
                 {
                     NSString *formatString = [NSString stringWithFormat:@"%@%@", [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by"], [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"]];
                     redactedBy = [NSString stringWithFormat:formatString, redactedBy, redactedReason];
@@ -332,6 +339,10 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     redactedBy = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"], redactedReason];
                 }
+            }
+            else if ([redactorId isEqualToString:mxSession.myUserId])
+            {
+                redactedBy = [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by_you"];
             }
             else if (redactedBy.length)
             {
@@ -369,11 +380,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             
             if (roomName.length)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed"], senderDisplayName, roomName];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_by_you"], roomName];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed"], senderDisplayName, roomName];
+                }
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you"];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
+                }
             }
             break;
         }
@@ -394,11 +419,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             
             if (roomTopic.length)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_topic_changed"], senderDisplayName, roomTopic];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_topic_changed_by_you"], roomTopic];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_topic_changed"], senderDisplayName, roomTopic];
+                }
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_topic_removed"], senderDisplayName];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_topic_removed_by_you"];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_topic_removed"], senderDisplayName];
+                }
             }
             
             break;
@@ -418,7 +457,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         // Here the event is ignored (no display)
                         return nil;
                     }
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_profile_change_redacted"], senderDisplayName, redactedInfo];
+                    if (isEventSenderMyUser)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_profile_change_redacted_by_you"], redactedInfo];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_profile_change_redacted"], senderDisplayName, redactedInfo];
+                    }
                 }
                 else
                 {
@@ -440,15 +486,36 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if (!prevDisplayname)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.sender, displayname];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set_by_you"], displayname];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.sender, displayname];
+                            }
                         }
                         else if (!displayname)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.sender];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_display_name_removed_by_you"];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.sender];
+                            }
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.sender, prevDisplayname, displayname];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from_by_you"], prevDisplayname, displayname];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.sender, prevDisplayname, displayname];
+                            }
                         }
                     }
                     
@@ -474,7 +541,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_avatar_url_changed"], senderDisplayName];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_avatar_url_changed_by_you"];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_avatar_url_changed"], senderDisplayName];
+                            }
                         }
                     }
                 }
@@ -499,23 +573,48 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if (event.content[@"third_party_invite"])
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], targetDisplayName, event.content[@"third_party_invite"][@"display_name"]];
+                        if ([event.stateKey isEqualToString:mxSession.myUserId])
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite_by_you"], event.content[@"third_party_invite"][@"display_name"]];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], targetDisplayName, event.content[@"third_party_invite"][@"display_name"]];
+                        }
                     }
                     else
                     {
                         if ([MXCallManager isConferenceUser:event.stateKey])
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_conference_call_request"], senderDisplayName];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_request_by_you"];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_conference_call_request"], senderDisplayName];
+                            }
                         }
                         else
                         {
                             // The targeted member display name (if any) is available in content
-                            if (contentDisplayname.length)
+                            if (isEventSenderMyUser)
                             {
-                                targetDisplayName = contentDisplayname;
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite_by_you"], targetDisplayName];
                             }
-                            
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                            else if ([targetDisplayName isEqualToString:mxSession.myUserId])
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite_you"], senderDisplayName];
+                            }
+                            else
+                            {
+                                if (contentDisplayname.length)
+                                {
+                                    targetDisplayName = contentDisplayname;
+                                }
+                                
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                            }
                         }
                     }
                 }
@@ -528,12 +627,19 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     else
                     {
                         // The targeted member display name (if any) is available in content
-                        if (contentDisplayname.length)
+                        if (isEventSenderMyUser)
                         {
-                            targetDisplayName = contentDisplayname;
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_by_you"];
                         }
-
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], targetDisplayName];
+                        else
+                        {
+                            if (contentDisplayname.length)
+                            {
+                                targetDisplayName = contentDisplayname;
+                            }
+                            
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], targetDisplayName];
+                        }
                     }
                 }
                 else if ([membership isEqualToString:@"leave"])
@@ -560,11 +666,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (prevMembership && [prevMembership isEqualToString:@"invite"])
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reject"], targetDisplayName];
+                                if (isEventSenderMyUser)
+                                {
+                                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_reject_by_you"];
+                                }
+                                else
+                                {
+                                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reject"], targetDisplayName];
+                                }
                             }
                             else
                             {
-                               displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], targetDisplayName];
+                                if (isEventSenderMyUser)
+                                {
+                                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_leave_by_you"];
+                                }
+                                else
+                                {
+                                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], targetDisplayName];
+                                }
                             }
                         }
                     }
@@ -572,7 +692,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if ([prevMembership isEqualToString:@"invite"])
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_withdraw"], senderDisplayName, targetDisplayName];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_withdraw_by_you"], targetDisplayName];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_withdraw"], senderDisplayName, targetDisplayName];
+                            }
                             if (event.content[@"reason"])
                             {
                                 displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
@@ -581,7 +708,16 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         }
                         else if ([prevMembership isEqualToString:@"join"])
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick"], senderDisplayName, targetDisplayName];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick_by_you"], targetDisplayName];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick"], senderDisplayName, targetDisplayName];
+                            }
+                            
+                            //  add reason if exists
                             if (event.content[@"reason"])
                             {
                                 displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
@@ -589,7 +725,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         }
                         else if ([prevMembership isEqualToString:@"ban"])
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_unban"], senderDisplayName, targetDisplayName];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_unban_by_you"], targetDisplayName];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_unban"], senderDisplayName, targetDisplayName];
+                            }
                         }
                     }
                 }
@@ -601,7 +744,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         targetDisplayName = prevContentDisplayname;
                     }
                     
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban"], senderDisplayName, targetDisplayName];
+                    if (isEventSenderMyUser)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban_by_you"], targetDisplayName];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban"], senderDisplayName, targetDisplayName];
+                    }
                     if (event.content[@"reason"])
                     {
                         displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
@@ -628,7 +778,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             
             if (creatorId)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                if ([creatorId isEqualToString:mxSession.myUserId])
+                {
+                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you"];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                }
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -808,11 +965,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             
             if ([algorithm isEqualToString:kMXCryptoMegolmAlgorithm])
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_ok"], senderDisplayName];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_ok_by_you"];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_ok"], senderDisplayName];
+                }
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_unknown_algorithm"], senderDisplayName, algorithm];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_unknown_algorithm_by_you"], algorithm];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_unknown_algorithm"], senderDisplayName, algorithm];
+                }
             }
             
             break;
@@ -830,28 +1001,49 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 
                 if (historyVisibility)
                 {
-                    NSString *formattedString;
-                    
                     if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable])
                     {
-                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"];
+                        if (isEventSenderMyUser)
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone_by_you"];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"], senderDisplayName];
+                        }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityShared])
                     {
-                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members"];
+                        if (isEventSenderMyUser)
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_by_you"];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members"], senderDisplayName];
+                        }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityInvited])
                     {
-                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"];
+                        if (isEventSenderMyUser)
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you"];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"], senderDisplayName];
+                        }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityJoined])
                     {
-                        formattedString = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point"];
-                    }
-                    
-                    if (formattedString)
-                    {
-                        displayText = [NSString stringWithFormat:formattedString, senderDisplayName];
+                        if (isEventSenderMyUser)
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_by_you"];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point"], senderDisplayName];
+                        }
                     }
                 }
             }
@@ -1020,7 +1212,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         case MXEventTypeRoomRedaction:
         {
             NSString *eventId = event.redacts;
-            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_redaction"], senderDisplayName, eventId];
+            if (isEventSenderMyUser)
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_redaction_by_you"], eventId];
+            }
+            else
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_redaction"], senderDisplayName, eventId];
+            }
             break;
         }
         case MXEventTypeRoomThirdPartyInvite:
@@ -1029,13 +1228,27 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             MXJSONModelSetString(displayname, event.content[@"display_name"]);
             if (displayname)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you"], displayname];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+                }
             }
             else
             {
                 // Consider the invite has been revoked
                 MXJSONModelSetString(displayname, event.prevContent[@"display_name"]);
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you"], displayname];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                }
             }
             break;
         }
@@ -1045,22 +1258,50 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 
             if (callInviteEventContent.isVideoCall)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_video_call"], senderDisplayName];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_placed_video_call_by_you"];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_video_call"], senderDisplayName];
+                }
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call"], senderDisplayName];
+                if (isEventSenderMyUser)
+                {
+                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call_by_you"];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call"], senderDisplayName];
+                }
             }
             break;
         }
         case MXEventTypeCallAnswer:
         {
-            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_answered_video_call"], senderDisplayName];
+            if (isEventSenderMyUser)
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_answered_video_call_by_you"];
+            }
+            else
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_answered_video_call"], senderDisplayName];
+            }
             break;
         }
         case MXEventTypeCallHangup:
         {
-            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_ended_video_call"], senderDisplayName];
+            if (isEventSenderMyUser)
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_ended_video_call_by_you"];
+            }
+            else
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_ended_video_call"], senderDisplayName];
+            }
             break;
         }
         case MXEventTypeSticker:
