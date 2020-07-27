@@ -2,9 +2,9 @@
 // Login Screen
 "login_create_account" = "Criar uma conta:";
 "login_server_url_placeholder" = "URL (por ex: https://matrix.org)";
-"login_home_server_title" = "Servidor Base (Home Server):";
-"login_home_server_info" = "Seu servidor base armazena todas as suas conversas e dados de conta";
-"login_identity_server_title" = "Servidor de identidade:";
+"login_home_server_title" = "URL do servidor local:";
+"login_home_server_info" = "Seu servidor local armazena todas as suas conversas e dados da conta";
+"login_identity_server_title" = "URL do servidor de identidade:";
 "login_identity_server_info" = "O Matrix fornece servidores de identidade para permitir a sua relação com emails etc. para usuárias/os Matrix. Hoje existe somente o https://matrix.org.";
 "login_user_id_placeholder" = "ID Matrix (por ex: @bob:matrix.org ou bob)";
 "login_password_placeholder" = "Senha";
@@ -14,9 +14,9 @@
 "login_email_placeholder" = "Endereço de email";
 "login_prompt_email_token" = "Por favor informe o token de validação enviado por email:";
 "login_error_title" = "Erro de login";
-"login_error_no_login_flow" = "Falha ao receber informações de autenticação deste Servidor de Base (Home Server)";
+"login_error_no_login_flow" = "Falha ao receber informações de autenticação deste Servidor Local";
 "view" = "Ver";
-"login_error_do_not_support_login_flows" = "Atualmente nós não suportamos nenhum processo de login definido por este Servidor de Base (Home Server)";
+"login_error_do_not_support_login_flows" = "Atualmente, não suportamos nenhum dos processos de login definidos por este Servidor Local";
 "back" = "Voltar";
 "continue" = "Continuar";
 "leave" = "Sair";
@@ -41,7 +41,7 @@
 "dismiss" = "Dispensar";
 "sign_up" = "Logar";
 "submit" = "Enviar";
-"submit_code" = "Código de submissão";
+"submit_code" = "Enviar código";
 "set_default_power_level" = "Resetar nível de permissão";
 "set_moderator" = "Definir Moderador";
 "set_admin" = "Definir Administrador";
@@ -72,14 +72,14 @@
 "register_error_title" = "Falha no Registro";
 "login_tablet_device" = "Tablet";
 "login_error_resource_limit_exceeded_title" = "Limite de recursos excedido";
-"login_error_resource_limit_exceeded_message_default" = "Este homeserver ultrapassou um dos seus limites de recursos.";
-"login_error_resource_limit_exceeded_message_monthly_active_user" = "Este homeserver atingiu seu limite de usuário ativo mensal.";
+"login_error_resource_limit_exceeded_message_default" = "Este servidor local ultrapassou um dos seus limites de recursos.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Este servidor local atingiu seu limite mensal de usuários ativos.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nEntre em contato com o administrador do serviço para continuar usando este serviço.";
 "login_error_resource_limit_exceeded_contact_button" = "Entrar em contato com o Administrador";
 // Events formatter
 "notice_avatar_changed_too" = "(avatar foi alterado também)";
 "notice_room_name_removed" = "%@ removeu o nome da sala";
-"notice_room_topic_removed" = "%@ removeu o tópico";
+"notice_room_topic_removed" = "%@ removeu a descrição";
 "notice_event_redacted_by" = " por %@";
 "notice_event_redacted_reason" = " [motivo: %@]";
 "login_mobile_device" = "Móvel";
@@ -93,7 +93,7 @@
 "notice_room_aliases" = "Os aliases da sala são: %@";
 "notice_room_related_groups" = "Os grupos associados a esta sala são: %@";
 "notice_encrypted_message" = "Mensagem Criptografada";
-"set_power_level" = "Nível de permissão";
+"set_power_level" = "Definir Nível de Permissão";
 "power_level" = "Nível de Permissão";
 "notice_encryption_enabled" = "%@ ativou a criptografia de ponta a ponta (algorithm %@)";
 "notice_image_attachment" = "anexo de imagem";
@@ -113,7 +113,7 @@
 "notice_room_history_visible_to_members_from_invited_point" = "%@ tornou o futuro histórico da sala visível para todos os membros, desde o ponto em que foram convidados.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ tornou o futuro histórico da sala visível para todos os membros, desde o ponto em que eles entraram.";
 "notice_crypto_unable_to_decrypt" = "** Não é possível descriptografar: %@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "O dispositivo do remetente não nos enviou as chaves para esta mensagem.";
+"notice_crypto_error_unknown_inbound_session_id" = "A sessão do remetente não nos enviou as chaves para esta mensagem.";
 "notice_sticker" = "sticker";
 "notice_in_reply_to" = "Em resposta a";
 // room display name
@@ -127,12 +127,12 @@
 "settings_enter_validation_token_for" = "Digite o token de validação para %@:";
 "notification_settings_room_rule_title" = "Sala: '%@'";
 // Devices
-"device_details_title" = "Informação do dispositivo\n";
-"device_details_name" = "Nome\n";
-"device_details_identifier" = "ID do dispositivo\n";
+"device_details_title" = "Informação da sessão↵\n";
+"device_details_name" = "Nome público↵\n";
+"device_details_identifier" = "ID↵\n";
 "device_details_last_seen" = "Visto pela última vez\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "Nome do dispositivo:";
+"device_details_rename_prompt_message" = "O nome público de uma sessão é visível para as pessoas com quem você se comunica";
 "device_details_delete_prompt_title" = "Autenticação";
 "device_details_delete_prompt_message" = "Esta operação requer autenticação adicional.\nPara continuar, digite sua senha.";
 // Encryption information
@@ -143,10 +143,10 @@
 "room_event_encryption_info_event_session_id" = "ID da sessão\n";
 "room_event_encryption_info_event_unencrypted" = "não criptografado";
 "room_event_encryption_info_event_none" = "nenhum";
-"room_event_encryption_info_device" = "\nInformações do dispositivo remetente\n";
-"room_event_encryption_info_device_unknown" = "dispositivo desconhecido\n";
-"room_event_encryption_info_device_name" = "Nome\n";
-"room_event_encryption_info_device_id" = "ID do dispositivo\n";
+"room_event_encryption_info_device" = "\n↵\nInformação da sessão do remetente↵\n";
+"room_event_encryption_info_device_unknown" = "sessão desconhecida↵\n";
+"room_event_encryption_info_device_name" = "Nome público↵\n";
+"room_event_encryption_info_device_id" = "ID↵\n";
 "room_event_encryption_info_device_verification" = "Verificação\n";
 "room_event_encryption_info_event_decryption_error" = "Erro de descriptografia\n";
 "room_event_encryption_info_device_verified" = "Verificado";
@@ -156,8 +156,8 @@
 "room_event_encryption_info_unverify" = "Retirar verificação";
 "room_event_encryption_info_block" = "Lista negra";
 "room_event_encryption_info_unblock" = "Retirar da lista negra";
-"room_event_encryption_verify_title" = "Verificar dispositivo\n\n";
-"room_event_encryption_verify_message" = "Para verificar se esse dispositivo é confiável, entre em contato com o proprietário usando outros meios (por exemplo, pessoalmente ou por telefone) e pergunte se a chave que ele vê nas configurações do usuário deste dispositivo corresponde à chave abaixo:\n\nNome do dispositivo: %@\nID de dispositivo: %@\nChave do dispositivo:% @\n\nSe corresponder, pressione o botão de verificação abaixo. Se isso não acontecer, alguém está interceptando este dispositivo e você provavelmente deseja pressionar o botão da lista negra.\n\nNo futuro, este processo de verificação será mais sofisticado.";
+"room_event_encryption_verify_title" = "Verificar sessão↵\n↵\n\n";
+"room_event_encryption_verify_message" = "Para verificar se essa sessão é confiável, entre em contato com o proprietário usando outros meios (por exemplo, pessoalmente ou com uma ligação telefônica) e pergunte se a chave que ele vê nas Configurações do Usuário dele para esta sessão corresponde à seguinte chave:↵\n↵\n→Nome da sessão: %@↵\n→ID da sessão: %@↵\n→Chave da sessão: %@↵\n↵\nSe corresponder, pressione o botão de verificação abaixo. Caso contrário, outra pessoa está interceptando esta sessão e você provavelmente deseja pressionar o botão para bloquear.↵\n↵\nNo futuro, esse processo de verificação será mais sofisticado.";
 "room_event_encryption_verify_ok" = "Verificar";
 // Account
 "account_save_changes" = "Salvar modificações";
@@ -189,7 +189,7 @@
 "room_error_join_failed_title" = "Não foi possível entrar na sala";
 "room_error_join_failed_empty_room" = "Atualmente, não é possível entrar novamente em uma sala vazia.";
 "room_error_name_edition_not_authorized" = "Você não está autorizado a editar este nome de sala";
-"room_error_topic_edition_not_authorized" = "Você não está autorizado a editar este tópico da sala";
+"room_error_topic_edition_not_authorized" = "Você não está autorizado a editar a descrição desta sala";
 "room_error_cannot_load_timeline" = "Falha ao carregar a linha do tempo";
 "room_error_timeline_event_not_found_title" = "Falha ao carregar a posição da linha do tempo";
 "room_error_timeline_event_not_found" = "O aplicativo estava tentando carregar um ponto específico na linha do tempo desta sala, mas não conseguiu encontrá-lo";
@@ -201,7 +201,7 @@
 "message_reply_to_sender_sent_a_video" = "enviou um vídeo.";
 "room_creation_alias_placeholder" = "(por exemplo, #foo:example.org)";
 "room_creation_alias_placeholder_with_homeserver" = "(por exemplo, #foo%@)";
-"room_creation_participants_placeholder" = "(por exemplo, @bob:homeserver1; @john:homeserver2...)";
+"room_creation_participants_placeholder" = "(por exemplo, @bob:servidorlocal1; @john:servidorlocal2...)";
 "message_reply_to_sender_sent_an_audio_file" = "enviou um arquivo de áudio.";
 "message_reply_to_sender_sent_a_file" = "enviou um arquivo.";
 "message_reply_to_message_to_reply_to_prefix" = "Em resposta a";
@@ -258,14 +258,14 @@
 "private" = "Privado";
 "public" = "Público";
 "network_error_not_reachable" = "Por favor, verifique sua conectividade de rede";
-"user_id_placeholder" = "ex: @bob:homeserver";
-"ssl_homeserver_url" = "URL do Home Server: %@";
+"user_id_placeholder" = "ex: @bob:servidorlocal";
+"ssl_homeserver_url" = "URL do servidor local: %@";
 // Permissions
 "camera_access_not_granted_for_call" = "As chamadas de vídeo requerem acesso à câmera, mas %@ não tem permissão para usá-la";
 "microphone_access_not_granted_for_call" = "As chamadas exigem acesso ao microfone, mas o %@ não tem permissão para usá-lo";
 "local_contacts_access_not_granted" = "A descoberta de usuários de contatos locais requer acesso a seus contatos, mas %@ não tem permissão para usá-los";
 "local_contacts_access_discovery_warning_title" = "Descoberta de usuários";
-"local_contacts_access_discovery_warning" = "%@ deseja enviar e-mails e números de telefone de seus Contatos para descobrir usuários";
+"local_contacts_access_discovery_warning" = "Para descobrir contatos que já usam a tecnologia Matrix, %@ pode enviar endereços de e-mail e números de celular do seu catálogo de endereços para o seu servidor de identidade escolhido para usar a tecnologia Matrix. Se for suportado, os dados pessoais serão criptografados antes do envio - consulte a política de privacidade do seu servidor de identidade para obter mais detalhes.";
 // Country picker
 "country_picker_title" = "Escolha um país";
 // Language picker
@@ -286,7 +286,7 @@
 "notice_display_name_set" = "%@ definiu seu nome de exibição como %@";
 "notice_display_name_changed_from" = "%@ alterou o nome de exibição deles de %@ para %@";
 "notice_display_name_removed" = "%@ removeu o nome de exibição deles";
-"notice_topic_changed" = "%@ alterou o tópico para: %@";
+"notice_topic_changed" = "%@ alterou a descrição para: %@";
 "notice_room_name_changed" = "%@ alterou o nome da sala para: %@";
 "notice_placed_voice_call" = "%@ fez uma chamada de voz";
 "notice_placed_video_call" = "% @ fez uma chamada de vídeo";
@@ -330,7 +330,7 @@
 // Notification settings screen 
 "notification_settings_disable_all" = "Desabilitar todas as notificações";
 "notification_settings_enable_notifications" = "Habilitar as notificações";
-"notification_settings_enable_notifications_warning" = "Todas as notificações estão atualmente desativadas para todos os dispositivos.";
+"notification_settings_enable_notifications_warning" = "Todas as notificações estão atualmente desativadas para todos os aparelhos.";
 "notification_settings_global_info" = "As configurações de notificação são salvas na sua conta de usuário e são compartilhadas entre todos os clientes que as suportam (incluindo as notificações da área de trabalho).\n\nRegras são aplicadas em ordem; a primeira regra que corresponde define o resultado da mensagem.\nPortanto, as notificações por palavra são mais importantes do que as notificações por sala, que são mais importantes do que as notificações por remetente.\nPara várias regras do mesmo tipo, a primeira na lista que corresponde tem prioridade.";
 "notification_settings_per_word_notifications" = "Notificações por palavra";
 "notification_settings_per_word_info" = "As palavras correspondem independente de maiúsculas ou minúsculas e podem incluir um caractere curinga *. Assim:\nfoo corresponde à cadeia de caracteres delimitada por delimitadores de palavras (por exemplo, pontuação e espaço em branco ou início/fim da linha).\nfoo* corresponde a qualquer palavra que começa foo.\n*foo* corresponde a qualquer palavra que inclua as 3 letras foo.";
@@ -354,7 +354,7 @@
 "notification_settings_by_default" = "Por padrão...";
 "notification_settings_notify_all_other" = "Notificar para todas as outras mensagens/salas";
 // gcm section 
-"settings_config_home_server" = "Home server: %@";
+"settings_config_home_server" = "Servidor local: %@";
 "settings_config_identity_server" = "Servidor de Identidade: %@";
 "settings_config_user_id" = "ID do usuário: %@";
 // call string
@@ -376,3 +376,44 @@
 "ssl_unexpected_existing_expl" = "Você tinha um certificado confiável para seu telefone, mas ele mudou. Isto é ALTAMENTE INCOMUM. É recomendável que você NÃO ACEITE este novo certificado.";
 "ssl_expected_existing_expl" = "O certificado foi alterado de um anteriormente confiável para um que não é confiável. O servidor pode ter renovado seu certificado. Entre em contato com o administrador do servidor para obter a impressão digital esperada.";
 "ssl_only_accept" = "APENAS aceite o certificado se o administrador do servidor tiver publicado uma impressão digital que corresponda à acima.";
+"notice_encryption_enabled_ok" = "%@ ativou a criptografia de ponta a ponta.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ ativou a criptografia de ponta a ponta (algoritmo não reconhecido %2$@).";
+"device_details_rename_prompt_title" = "Nome da sessão";
+"account_error_push_not_allowed" = "Notificações não são permitidas";
+"notice_room_third_party_revoked_invite" = "%@ revogou o convite para %@ entrar na sala";
+// Notice Events with "You"
+"notice_room_invite_by_you" = "Você convidou %@";
+"notice_room_invite_you" = "%@ convidou você";
+"notice_room_third_party_invite_by_you" = "Você enviou um convite para %@ entrar na sala";
+"notice_room_third_party_registered_invite_by_you" = "Você aceitou o convite para %@";
+"notice_room_third_party_revoked_invite_by_you" = "Você revogou o convite para %@ entrar na sala";
+"notice_room_join_by_you" = "Você entrou";
+"notice_room_leave_by_you" = "Você saiu";
+"notice_room_reject_by_you" = "Você rejeitou o convite";
+"notice_room_kick_by_you" = "Você removeu %@";
+"notice_room_unban_by_you" = "Você removeu o banimento em %@";
+"notice_room_ban_by_you" = "Você baniu %@";
+"notice_room_withdraw_by_you" = "Você retirou o convite de %@";
+"notice_avatar_url_changed_by_you" = "Você alterou a sua foto de perfil";
+"notice_display_name_set_by_you" = "Você definiu seu nome de exibição para %@";
+"notice_display_name_changed_from_by_you" = "Você definiu seu nome de exibição de %@ para %@";
+"notice_display_name_removed_by_you" = "Você removeu seu nome de exibição";
+"notice_topic_changed_by_you" = "Você alterou a descrição para: %@";
+"notice_room_name_changed_by_you" = "Você alterou o nome da sala para: %@";
+"notice_placed_voice_call_by_you" = "Você fez uma chamada de voz";
+"notice_placed_video_call_by_you" = "Você fez uma chamada de vídeo";
+"notice_answered_video_call_by_you" = "Você atendeu a chamada";
+"notice_ended_video_call_by_you" = "Você encerrou a ligação";
+"notice_conference_call_request_by_you" = "Você solicitou uma chamada de vídeo";
+"notice_room_name_removed_by_you" = "Você removeu o nome da sala";
+"notice_room_topic_removed_by_you" = "Você removeu a descrição";
+"notice_event_redacted_by_you" = " ·por você";
+"notice_profile_change_redacted_by_you" = "Você atualizou seu perfil %@";
+"notice_room_created_by_you" = "Você criou a sala";
+"notice_encryption_enabled_ok_by_you" = "Você ativou a criptografia de ponta a ponta.";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "Você ativou a criptografia de ponta a ponta (algoritmo não reconhecido %@).";
+"notice_redaction_by_you" = "Você editou um evento (id: %@)";
+"notice_room_history_visible_to_anyone_by_you" = "Você tornou o histórico da sala visível para qualquer pessoa no futuro.";
+"notice_room_history_visible_to_members_by_you" = "Você tornou o histórico da sala visível para todos os membros da sala no futuro.";
+"notice_room_history_visible_to_members_from_invited_point_by_you" = "Você tornou o histórico da sala visível a todos os membros da sala no futuro, a partir do momento em que são convidados.";
+"notice_room_history_visible_to_members_from_joined_point_by_you" = "Você tornou o histórico da sala visível a todos os membros no futuro, a partir do momento em que ingressaram.";
