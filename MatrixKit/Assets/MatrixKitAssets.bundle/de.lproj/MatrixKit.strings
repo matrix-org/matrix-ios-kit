@@ -397,3 +397,5 @@
 "notice_display_name_removed_by_you" = "Du hast deinen Anzeigenamen entfernt";
 "notice_topic_changed_by_you" = "Du hast Das Thema geändert: %@";
 "notice_room_name_changed_by_you" = "Du hast den Raumnamen geändert: %@";
+// Notice Events with "You"
+"notice_room_invite_by_you" = "Du hast %@ eingeladen";
