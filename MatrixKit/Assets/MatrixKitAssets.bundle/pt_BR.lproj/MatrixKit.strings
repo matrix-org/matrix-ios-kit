@@ -5,14 +5,14 @@
 "login_home_server_title" = "URL do servidor local:";
 "login_home_server_info" = "Seu servidor local armazena todas as suas conversas e dados da conta";
 "login_identity_server_title" = "URL do servidor de identidade:";
-"login_identity_server_info" = "O Matrix fornece servidores de identidade para permitir a sua relação com emails etc. para usuárias/os Matrix. Hoje existe somente o https://matrix.org.";
+"login_identity_server_info" = "O Matrix fornece servidores de identidade para permitir a sua relação com e-mails etc. para usuárias/os Matrix. Hoje existe somente o https://matrix.org.";
 "login_user_id_placeholder" = "ID Matrix (por ex: @bob:matrix.org ou bob)";
 "login_password_placeholder" = "Senha";
 "login_optional_field" = "opcional";
 "login_display_name_placeholder" = "Nome público (p.ex: Roberto Silva)";
 "login_email_info" = "Fornecer um endereço de e-mail  permite que outras/os usuárias/os possam encontrar você com mais facilidade, e dá a você uma forma de redefinir sua senha no futuro.";
-"login_email_placeholder" = "Endereço de email";
-"login_prompt_email_token" = "Por favor informe o token de validação enviado por email:";
+"login_email_placeholder" = "Endereço de e-mail";
+"login_prompt_email_token" = "Por favor, informe o token de validação enviado por e-mail:";
 "login_error_title" = "Erro de login";
 "login_error_no_login_flow" = "Falha ao receber informações de autenticação deste Servidor Local";
 "view" = "Ver";
@@ -46,8 +46,8 @@
 "set_moderator" = "Definir Moderador";
 "set_admin" = "Definir Administrador";
 "start_chat" = "Iniciar Bate Papo";
-"start_voice_call" = "Iniciar Chamada de Voz";
-"start_video_call" = "Iniciar Chamada de Vídeo";
+"start_voice_call" = "Iniciar chamada de voz";
+"start_video_call" = "Iniciar chamada de vídeo";
 "mention" = "Menção";
 "select_account" = "Selecione uma conta";
 "attach_media" = "Anexar Mídia da Biblioteca";
@@ -59,13 +59,13 @@
 "cancel_upload" = "Cancelar Envio (Upload)";
 "cancel_download" = "Cancelar Download";
 "show_details" = "Mostrar Detalhes";
-"answer_call" = "Responder Chamada";
-"reject_call" = "Rejeitar Chamada";
-"end_call" = "Encerrar Chamada";
+"answer_call" = "Aceitar chamada";
+"reject_call" = "Recusar chamada";
+"end_call" = "Encerrar chamada";
 "ignore" = "Ignorar";
 "unignore" = "Deixar de ignorar";
 "login_error_forgot_password_is_not_supported" = "Esqueci a senha não é suportado atualmente";
-"login_error_login_email_not_yet" = "O link de email que ainda não foi clicado";
+"login_error_login_email_not_yet" = "O link de e-mail que ainda não foi clicado";
 "login_use_fallback" = "Use a página de fallback";
 "login_leave_fallback" = "Cancelar";
 "login_invalid_param" = "Parâmetro inválido";
@@ -77,7 +77,7 @@
 "login_error_resource_limit_exceeded_message_contact" = "\n\nEntre em contato com o administrador do serviço para continuar usando este serviço.";
 "login_error_resource_limit_exceeded_contact_button" = "Entrar em contato com o Administrador";
 // Events formatter
-"notice_avatar_changed_too" = "(avatar foi alterado também)";
+"notice_avatar_changed_too" = "(a foto de perfil foi alterada também)";
 "notice_room_name_removed" = "%@ removeu o nome da sala";
 "notice_room_topic_removed" = "%@ removeu a descrição";
 "notice_event_redacted_by" = " por %@";
@@ -123,7 +123,7 @@
 // Settings
 "settings" = "Configurações";
 "settings_enable_inapp_notifications" = "Ativar notificações no aplicativo";
-"settings_enable_push_notifications" = "Ativar notificações por push";
+"settings_enable_push_notifications" = "Ativar notificações pop-up";
 "settings_enter_validation_token_for" = "Digite o token de validação para %@:";
 "notification_settings_room_rule_title" = "Sala: '%@'";
 // Devices
@@ -157,12 +157,12 @@
 "room_event_encryption_info_block" = "Lista negra";
 "room_event_encryption_info_unblock" = "Retirar da lista negra";
 "room_event_encryption_verify_title" = "Verificar sessão↵\n↵\n\n";
-"room_event_encryption_verify_message" = "Para verificar se essa sessão é confiável, entre em contato com o proprietário usando outros meios (por exemplo, pessoalmente ou com uma ligação telefônica) e pergunte se a chave que ele vê nas Configurações do Usuário dele para esta sessão corresponde à seguinte chave:↵\n↵\n→Nome da sessão: %@↵\n→ID da sessão: %@↵\n→Chave da sessão: %@↵\n↵\nSe corresponder, pressione o botão de verificação abaixo. Caso contrário, outra pessoa está interceptando esta sessão e você provavelmente deseja pressionar o botão para bloquear.↵\n↵\nNo futuro, esse processo de verificação será mais sofisticado.";
+"room_event_encryption_verify_message" = "Para verificar se essa sessão é confiável, entre em contato com o proprietário usando outros meios (por exemplo, pessoalmente ou com uma chamada de voz) e pergunte se a chave que ele vê nas Configurações do Usuário dele para esta sessão corresponde à seguinte chave:↵\n↵\n→Nome da sessão: %@↵\n→ID da sessão: %@↵\n→Chave da sessão: %@↵\n↵\nSe corresponder, pressione o botão de verificação abaixo. Caso contrário, outra pessoa está interceptando esta sessão e você provavelmente deseja pressionar o botão para bloquear.↵\n↵\nNo futuro, esse processo de verificação será mais sofisticado.";
 "room_event_encryption_verify_ok" = "Verificar";
 // Account
 "account_save_changes" = "Salvar modificações";
-"account_link_email" = "Vincular Email";
-"account_linked_emails" = "Emails vinculados";
+"account_link_email" = "Vincular E-mail";
+"account_linked_emails" = "E-mails vinculados";
 "account_email_validation_title" = "Verificação pendente";
 "account_email_validation_message" = "Por favor, verifique seu e-mail e clique no link que ele contém. Feito isso, clique em continuar.";
 "account_email_validation_error" = "Não é possível verificar o endereço de e-mail. Por favor, verifique seu e-mail e clique no link que ele contém. Feito isso, clique em continuar";
@@ -194,8 +194,8 @@
 "room_error_timeline_event_not_found_title" = "Falha ao carregar a posição da linha do tempo";
 "room_error_timeline_event_not_found" = "O aplicativo estava tentando carregar um ponto específico na linha do tempo desta sala, mas não conseguiu encontrá-lo";
 "room_left" = "Você saiu da sala";
-"room_no_power_to_create_conference_call" = "Você precisa de permissão para convidar para iniciar uma conferência nesta sala";
-"room_no_conference_call_in_encrypted_rooms" = "Não há suporte para chamadas em conferência em salas criptografadas";
+"room_no_power_to_create_conference_call" = "Você precisa de permissão para convidar, para iniciar uma chamada em grupo nesta sala";
+"room_no_conference_call_in_encrypted_rooms" = "Não há suporte para chamadas em grupo em salas criptografadas";
 // Reply to message
 "message_reply_to_sender_sent_an_image" = "enviou uma imagem.";
 "message_reply_to_sender_sent_a_video" = "enviou um vídeo.";
@@ -277,12 +277,12 @@
 "notice_room_join" = "%@ entrou";
 "notice_room_leave" = "%@ saiu";
 "notice_room_reject" = "%@ recusou o convite";
-"notice_room_kick" = "%@ chutado %@";
-"notice_room_unban" = "%@ desbanido %@";
-"notice_room_ban" = "%@ banido %@";
+"notice_room_kick" = "%@ removeu %@";
+"notice_room_unban" = "%@ desbloqueou %@";
+"notice_room_ban" = "%@ bloqueou %@";
 "notice_room_withdraw" = "%@ retirou o convite de %@";
 "notice_room_reason" = ". Motivo: %@";
-"notice_avatar_url_changed" = "%@ mudou o avatar deles";
+"notice_avatar_url_changed" = "%@ alterou a foto de perfil";
 "notice_display_name_set" = "%@ definiu seu nome de exibição como %@";
 "notice_display_name_changed_from" = "%@ alterou o nome de exibição deles de %@ para %@";
 "notice_display_name_removed" = "%@ removeu o nome de exibição deles";
@@ -291,10 +291,10 @@
 "notice_placed_voice_call" = "%@ fez uma chamada de voz";
 "notice_placed_video_call" = "% @ fez uma chamada de vídeo";
 "notice_answered_video_call" = "%@ atendeu a chamada";
-"notice_ended_video_call" = "%@ terminou a chamada";
-"notice_conference_call_request" = "%@ solicitou uma conferência de VoIP";
-"notice_conference_call_started" = "Conferência de VoIP iniciada";
-"notice_conference_call_finished" = "Conferência VoIP terminada";
+"notice_ended_video_call" = "%@ encerrou a chamada";
+"notice_conference_call_request" = "%@ solicitou uma chamada em grupo";
+"notice_conference_call_started" = "Chamada em grupo iniciada";
+"notice_conference_call_finished" = "Chamada em grupo encerrada";
 // button names 
 "ok" = "OK";
 "send" = "Enviar";
@@ -310,12 +310,12 @@
 "create_account" = "Criar conta";
 "membership_invite" = "Convidado";
 "membership_leave" = "Saiu";
-"membership_ban" = "Banido";
+"membership_ban" = "Bloqueado";
 "num_members_one" = "%@ usuário";
 "num_members_other" = "%@ usuários";
-"kick" = "Chutar";
-"ban" = "Banir";
-"unban" = "Desbanir";
+"kick" = "Remover";
+"ban" = "Bloquear";
+"unban" = "Desbloquear";
 "message_unsaved_changes" = "Existem alterações não salvas. Ao sair elas serão descartadas.";
 // Login Screen 
 "login_error_already_logged_in" = "já logado";
@@ -328,10 +328,10 @@
 "settings_title_config" = "Configuração";
 "settings_title_notifications" = "Notificações";
 // Notification settings screen 
-"notification_settings_disable_all" = "Desabilitar todas as notificações";
-"notification_settings_enable_notifications" = "Habilitar as notificações";
+"notification_settings_disable_all" = "Desativar todas as notificações";
+"notification_settings_enable_notifications" = "Ativar notificações";
 "notification_settings_enable_notifications_warning" = "Todas as notificações estão atualmente desativadas para todos os aparelhos.";
-"notification_settings_global_info" = "As configurações de notificação são salvas na sua conta de usuário e são compartilhadas entre todos os clientes que as suportam (incluindo as notificações da área de trabalho).\n\nRegras são aplicadas em ordem; a primeira regra que corresponde define o resultado da mensagem.\nPortanto, as notificações por palavra são mais importantes do que as notificações por sala, que são mais importantes do que as notificações por remetente.\nPara várias regras do mesmo tipo, a primeira na lista que corresponde tem prioridade.";
+"notification_settings_global_info" = "As configurações de notificação são salvas na sua conta de usuário e são compartilhadas entre todos os clientes que as suportam (incluindo as notificações na área de trabalho).\n\nRegras são aplicadas em ordem; a primeira regra que corresponde define o resultado da mensagem.\nPortanto, as notificações por palavra são mais importantes do que as notificações por sala, que são mais importantes do que as notificações por remetente.\nPara várias regras do mesmo tipo, a primeira na lista que corresponde tem prioridade.";
 "notification_settings_per_word_notifications" = "Notificações por palavra";
 "notification_settings_per_word_info" = "As palavras correspondem independente de maiúsculas ou minúsculas e podem incluir um caractere curinga *. Assim:\nfoo corresponde à cadeia de caracteres delimitada por delimitadores de palavras (por exemplo, pontuação e espaço em branco ou início/fim da linha).\nfoo* corresponde a qualquer palavra que começa foo.\n*foo* corresponde a qualquer palavra que inclua as 3 letras foo.";
 "notification_settings_always_notify" = "Sempre notifique";
@@ -344,13 +344,13 @@
 "notification_settings_sender_hint" = "@user:domain.com";
 "notification_settings_select_room" = "Selecione uma sala";
 "notification_settings_other_alerts" = "Outras alertas";
-"notification_settings_contain_my_user_name" = "Notifique-me com som sobre mensagens que contenham meu nome de usuário";
-"notification_settings_contain_my_display_name" = "Notifique-me com som sobre mensagens que contenham meu nome de exibição";
-"notification_settings_just_sent_to_me" = "Notifique-me com som sobre mensagens enviadas apenas para mim";
+"notification_settings_contain_my_user_name" = "Notifique-me com som nas mensagens que contenham meu nome de usuário";
+"notification_settings_contain_my_display_name" = "Notifique-me com som nas mensagens que contenham meu nome de exibição";
+"notification_settings_just_sent_to_me" = "Notifique-me com som nas mensagens enviadas apenas para mim";
 "notification_settings_invite_to_a_new_room" = "Notifique-me quando eu for convidado para uma nova sala";
 "notification_settings_people_join_leave_rooms" = "Avisar-me quando as pessoas entrarem ou saírem de salas";
 "notification_settings_receive_a_call" = "Notifique-me quando eu receber uma chamada";
-"notification_settings_suppress_from_bots" = "Suprimir notificações de bots";
+"notification_settings_suppress_from_bots" = "Desativar notificações de bots";
 "notification_settings_by_default" = "Por padrão...";
 "notification_settings_notify_all_other" = "Notificar para todas as outras mensagens/salas";
 // gcm section 
@@ -359,8 +359,8 @@
 "settings_config_user_id" = "ID do usuário: %@";
 // call string
 "call_waiting" = "Aguardando...";
-"call_connecting" = "Conectando chamada ...";
-"call_ended" = "Chamada finalizada";
+"call_connecting" = "Conectando-se na chamada...";
+"call_ended" = "Chamada encerrada";
 "call_ring" = "Chamando...";
 "incoming_video_call" = "Recebendo chamada de vídeo";
 "incoming_voice_call" = "Recebendo chamada de voz";
@@ -391,8 +391,8 @@
 "notice_room_leave_by_you" = "Você saiu";
 "notice_room_reject_by_you" = "Você rejeitou o convite";
 "notice_room_kick_by_you" = "Você removeu %@";
-"notice_room_unban_by_you" = "Você removeu o banimento em %@";
-"notice_room_ban_by_you" = "Você baniu %@";
+"notice_room_unban_by_you" = "Você desbloqueou %@";
+"notice_room_ban_by_you" = "Você bloqueou %@";
 "notice_room_withdraw_by_you" = "Você retirou o convite de %@";
 "notice_avatar_url_changed_by_you" = "Você alterou a sua foto de perfil";
 "notice_display_name_set_by_you" = "Você definiu seu nome de exibição para %@";
@@ -404,7 +404,7 @@
 "notice_placed_video_call_by_you" = "Você fez uma chamada de vídeo";
 "notice_answered_video_call_by_you" = "Você atendeu a chamada";
 "notice_ended_video_call_by_you" = "Você encerrou a ligação";
-"notice_conference_call_request_by_you" = "Você solicitou uma chamada de vídeo";
+"notice_conference_call_request_by_you" = "Você solicitou uma chamada em grupo";
 "notice_room_name_removed_by_you" = "Você removeu o nome da sala";
 "notice_room_topic_removed_by_you" = "Você removeu a descrição";
 "notice_event_redacted_by_you" = " ·por você";
