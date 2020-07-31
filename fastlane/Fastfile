@@ -1,0 +1,17 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build the demo app for simulator"
+  lane :build_sample_app do
+    cocoapods # pod install
+
+    gym(
+      workspace: "MatrixKit.xcworkspace",
+      scheme: "MatrixKitSample",
+      skip_package_ipa: true,
+      skip_archive: true,
+      derived_data_path: "./DerivedData",
+      destination: "generic/platform=iOS Simulator",
+    )
+  end
+end
