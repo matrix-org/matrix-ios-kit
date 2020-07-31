@@ -14,4 +14,34 @@ platform :ios do
       destination: "generic/platform=iOS Simulator",
     )
   end
+
+  desc "Modify the MatrixKit.podspec locally to point to the latest 'release/*/release' branch of 'MatrixSDK' if such one exists, or to develop otherwise"
+  lane :point_podspec_to_pending_releases do
+    edit_podspec(branch_pattern: "release/*/release")
+  end
+
+  desc "Modify the MatrixKit.podspec locally to point to the same branch of 'MatrixSDK' as the current one if such one exists, or to develop otherwise"
+  lane :point_podspec_to_same_feature do
+    edit_podspec(branch_pattern: git_branch)
+  end
+
+  desc "Modify the Podfile of the sample app locally to point to the latest 'release/*/release' brnach of 'MatrixSDK' if such one exists, or to develop otherwise"
+  lane :point_sample_app_to_pending_releases do
+    edit_podfile(branch_pattern: "release/*/release")
+  end
+
+  desc "Modify the Podfile of the sample app locally to point to the same branch of 'MatrixSDK' as the current one if such one exists, or to develop otherwise"
+  lane :point_sample_app_to_same_feature do
+    edit_podfile(branch_pattern: git_branch)
+  end
+
+  ##############################
+
+  private_lane :edit_podspec do |options|
+    UI.message("This is supposed to edit the podspec to point MatrixSDK to #{options[:branch_pattern]}, but that is not implemented yet")
+  end
+
+  private_lane :edit_podfile do |options|
+    UI.message("This is supposed to edit the Podfile to point MatrixSDK to #{options[:branch_pattern]}, but that is not implemented yet")
+  end
 end
