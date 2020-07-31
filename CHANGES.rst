@@ -1,10 +1,11 @@
-Changes to be released in next version
+Changes in 0.12.10 (2020-07-31)
 =================================================
 
 Features:
  * 
 
 Improvements:
+ * Upgrade MatrixSDK version ([v0.16.9](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.9)).
  * 
 
 Bugfix:
