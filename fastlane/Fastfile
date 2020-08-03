@@ -42,18 +42,20 @@ platform :ios do
 
     sdk_slug = "matrix-org/matrix-ios-sdk"
     sdk_branch = find_branch(sdk_slug, options[:branch_pattern]) || 'develop'
-    ref = sdk_branch.gsub(/[^a-zA-Z0-9]/, '_')
+    
+    local_podspec_dir = '../local-podspecs/' # current dir is 'fastlane/' hence the '../'
+    FileUtils.mkdir_p(local_podspec_dir)
 
     UI.message("✏️ Making a local copy of MatrixSDK.podspec from the \`#{sdk_branch}\` branch...")
     sdk_podspec_content = Net::HTTP.get(URI("https://raw.githubusercontent.com/#{sdk_slug}/#{sdk_branch}/MatrixSDK.podspec"))
-    File.write("../MatrixSDK-#{ref}.podspec", sdk_podspec_content) # current dir is 'fastlane/' hence the '../'
+    File.write("#{local_podspec_dir}/MatrixSDK.podspec", sdk_podspec_content)
 
     UI.message "✏️ Editing local MatrixKit podspec to remove version constaint on 'MatrixSDK*' dependencies..."
     kit_podspec_content = File.read('../MatrixKit.podspec') # current dir is 'fastlane/' hence the '../'
     kit_podspec_content.gsub!(%r{(\.dependency\s+(['"])MatrixSDK(\/[^'"]+)?\2).*$}, '\1')
-    File.write("../MatrixKit-#{ref}.podspec", kit_podspec_content) # current dir is 'fastlane/' hence the '../'
+    File.write("#{local_podspec_dir}/MatrixKit.podspec", kit_podspec_content)
 
-    UI.message "➡️ You can now lint 'MatrixKit-#{ref}.podspec' using '--external-podspecs=MatrixSDK-#{ref}.podspec'"
+    UI.message "➡️ You can now lint '#{local_podspec_dir}/MatrixKit.podspec' using '--external-podspecs=#{local_podspec_dir}/*.podspec'"
   end
 
   private_lane :edit_podfile do |options|
@@ -62,7 +64,6 @@ platform :ios do
 
     UI.message("✏️ Editing the Podfile to point MatrixSDK to #{sdk_branch}...")
     podfile_content = File.read('../Podfile')
-    # pod 'MatrixSDK', :git => 'https://github.com/matrix-org/matrix-ios-sdk.git', :branch => 'develop'
     podfile_content.gsub!(/(pod\s+(['"])MatrixSDK\2).*$/, "\\1, :git => 'https://github.com/#{sdk_slug}.git', :branch => '#{sdk_branch}'")
     File.write('../Podfile', podfile_content)
   end
