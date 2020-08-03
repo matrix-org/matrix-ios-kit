@@ -25,7 +25,7 @@ platform :ios do
     edit_podspec(branch_pattern: git_branch)
   end
 
-  desc "Modify the Podfile of the sample app locally to point to the latest 'release/*/release' brnach of 'MatrixSDK' if such one exists, or to develop otherwise"
+  desc "Modify the Podfile of the sample app locally to point to the latest 'release/*/release' branch of 'MatrixSDK' if such one exists, or to develop otherwise"
   lane :point_sample_app_to_pending_releases do
     edit_podfile(branch_pattern: "release/*/release")
   end
