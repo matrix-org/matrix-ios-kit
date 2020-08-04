@@ -27,3 +27,10 @@ Pods/
 # Do not track our workspace since it is created by CocoaPods
 *.xcworkspace
 
+# Fastlane
+fastlane/report.xml
+fastlane/Reports
+fastlane/README.md
+
+# Used for temporary files by our `point_*_to_*` fastlane lanes
+local-podspecs/
