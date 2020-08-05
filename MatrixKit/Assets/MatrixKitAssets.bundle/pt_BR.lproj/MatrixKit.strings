@@ -1,16 +1,16 @@
 "matrix" = "Matrix";
 // Login Screen
 "login_create_account" = "Criar uma conta:";
-"login_server_url_placeholder" = "URL (por ex: https://matrix.org)";
-"login_home_server_title" = "URL do servidor local:";
+"login_server_url_placeholder" = "Endereço (por exemplo: https://matrix.org)";
+"login_home_server_title" = "Endereço do servidor local:";
 "login_home_server_info" = "Seu servidor local armazena todas as suas conversas e dados da conta";
-"login_identity_server_title" = "URL do servidor de identidade:";
-"login_identity_server_info" = "O Matrix fornece servidores de identidade para permitir a sua relação com e-mails etc. para usuárias/os Matrix. Hoje existe somente o https://matrix.org.";
+"login_identity_server_title" = "Endereço do servidor de identidade:";
+"login_identity_server_info" = "A Matrix fornece servidores de identidade para permitir a você determinar quais endereços de e-mail, etc. pertencem a quais IDs de usuários Matrix. No momento, existe apenas https://matrix.org.";
 "login_user_id_placeholder" = "ID Matrix (por ex: @bob:matrix.org ou bob)";
 "login_password_placeholder" = "Senha";
 "login_optional_field" = "opcional";
 "login_display_name_placeholder" = "Nome e sobrenome (por exemplo: Roberto Silva)";
-"login_email_info" = "Fornecer um endereço de e-mail  permite que outras/os usuárias/os possam encontrar você com mais facilidade, e dá a você uma forma de redefinir sua senha no futuro.";
+"login_email_info" = "Fornecer um endereço de e-mail  permite que outros usuários possam encontrar você com mais facilidade, e dá a você uma forma de redefinir sua senha no futuro.";
 "login_email_placeholder" = "Endereço de e-mail";
 "login_prompt_email_token" = "Por favor, informe o token de validação enviado por e-mail:";
 "login_error_title" = "Erro de login";
@@ -27,7 +27,7 @@
 "login_error_registration_is_not_supported" = "Cadastro não é suportado atualmente";
 "login_error_forbidden" = "Nome de usuário e senha inválidos";
 "login_error_unknown_token" = "O Token de acesso especificado nao por reconhecido";
-"login_error_bad_json" = "JSON estruturado incorretamente";
+"login_error_bad_json" = "JSON mal formatado";
 "login_error_not_json" = "Não contem um JSON válido";
 "login_error_limit_exceeded" = "Muitas solicitações foram enviadas";
 "login_error_user_in_use" = "Este nome de usuário já está em uso";
@@ -38,14 +38,14 @@
 "abort" = "Abortar";
 "close" = "Fechar";
 "discard" = "Descartar";
-"dismiss" = "Dispensar";
+"dismiss" = "Descartar";
 "sign_up" = "Logar";
 "submit" = "Enviar";
 "submit_code" = "Enviar código";
 "set_default_power_level" = "Resetar nível de permissão";
 "set_moderator" = "Definir Moderador";
 "set_admin" = "Definir Administrador";
-"start_chat" = "Iniciar Bate Papo";
+"start_chat" = "Iniciar conversa";
 "start_voice_call" = "Iniciar chamada de voz";
 "start_video_call" = "Iniciar chamada de vídeo";
 "mention" = "Menção";
@@ -56,7 +56,7 @@
 "reset_to_default" = "Restaurar padrão";
 "resend_message" = "Reenviar a mensagem";
 "select_all" = "Selecionar tudo";
-"cancel_upload" = "Cancelar Envio (Upload)";
+"cancel_upload" = "Cancelar o envio";
 "cancel_download" = "Cancelar Download";
 "show_details" = "Mostrar Detalhes";
 "answer_call" = "Aceitar chamada";
@@ -161,7 +161,7 @@
 "room_event_encryption_verify_ok" = "Verificar";
 // Account
 "account_save_changes" = "Salvar alterações";
-"account_link_email" = "Vincular E-mail";
+"account_link_email" = "Vincular e-mail";
 "account_linked_emails" = "E-mails vinculados";
 "account_email_validation_title" = "Verificação pendente";
 "account_email_validation_message" = "Por favor, verifique seu e-mail e clique no link que ele contém. Feito isso, clique em continuar.";
@@ -215,7 +215,7 @@
 "attachment_medium" = "Médio: %@";
 "attachment_large" = "Grande: %@";
 "attachment_cancel_download" = "Cancelar o download?";
-"attachment_cancel_upload" = "Cancelar o upload?";
+"attachment_cancel_upload" = "Cancelar o envio?";
 "attachment_multiselection_size_prompt" = "Você quer enviar imagens como:";
 "attachment_multiselection_original" = "Tamanho real";
 "attachment_e2e_keys_file_prompt" = "Este arquivo contém chaves de criptografia exportadas de um cliente Matrix.\nDeseja visualizar o conteúdo do arquivo ou importar as chaves nele contidas?";
@@ -227,7 +227,7 @@
 "group_invite_section" = "Convites";
 "group_section" = "Grupos";
 // Search
-"search_no_results" = "Sem resultados";
+"search_no_results" = "Nenhum resultado";
 "search_searching" = "Busca em andamento...";
 // Time
 "format_time_s" = "s";
@@ -259,7 +259,7 @@
 "public" = "Público";
 "network_error_not_reachable" = "Por favor, verifique sua conectividade de rede";
 "user_id_placeholder" = "ex: @bob:servidorlocal";
-"ssl_homeserver_url" = "URL do servidor local: %@";
+"ssl_homeserver_url" = "Endereço do servidor local: %@";
 // Permissions
 "camera_access_not_granted_for_call" = "As chamadas de vídeo requerem acesso à câmera, mas %@ não tem permissão para usá-la";
 "microphone_access_not_granted_for_call" = "As chamadas exigem acesso ao microfone, mas o %@ não tem permissão para usá-lo";
@@ -319,7 +319,7 @@
 "message_unsaved_changes" = "Existem alterações não salvas. Ao sair, elas serão descartadas.";
 // Login Screen 
 "login_error_already_logged_in" = "já logado";
-"login_error_must_start_http" = "O URL deve começar com http[s]://";
+"login_error_must_start_http" = "O endereço precisa começar com http[s]://";
 // room details dialog screen
 "room_details_title" = "Detalhes da sala";
 // contacts list screen 
@@ -359,7 +359,7 @@
 "settings_config_user_id" = "ID do usuário: %@";
 // call string
 "call_waiting" = "Aguardando...";
-"call_connecting" = "Conectando-se na chamada...";
+"call_connecting" = "Iniciando chamada...";
 "call_ended" = "Chamada encerrada";
 "call_ring" = "Chamando...";
 "incoming_video_call" = "Recebendo chamada de vídeo";
@@ -395,7 +395,7 @@
 "notice_room_ban_by_you" = "Você bloqueou %@";
 "notice_room_withdraw_by_you" = "Você retirou o convite de %@";
 "notice_avatar_url_changed_by_you" = "Você alterou a sua foto de perfil";
-"notice_display_name_set_by_you" = "Você definiu o seu nome e sobrenome para %@";
+"notice_display_name_set_by_you" = "Você definiu o seu nome e sobrenome como %@";
 "notice_display_name_changed_from_by_you" = "Você alterou o seu nome e sobrenome de %@ para %@";
 "notice_display_name_removed_by_you" = "Você removeu o seu nome e sobrenome";
 "notice_topic_changed_by_you" = "Você alterou a descrição para: %@";
@@ -403,7 +403,7 @@
 "notice_placed_voice_call_by_you" = "Você fez uma chamada de voz";
 "notice_placed_video_call_by_you" = "Você fez uma chamada de vídeo";
 "notice_answered_video_call_by_you" = "Você aceitou a chamada";
-"notice_ended_video_call_by_you" = "Você encerrou a ligação";
+"notice_ended_video_call_by_you" = "Você encerrou a chamada";
 "notice_conference_call_request_by_you" = "Você solicitou uma chamada em grupo";
 "notice_room_name_removed_by_you" = "Você removeu o nome da sala";
 "notice_room_topic_removed_by_you" = "Você removeu a descrição";
