@@ -5,7 +5,7 @@ Features:
  * 
 
 Improvements:
- * 
+ * Enhance auth fallback webview logs. 
 
 Bugfix:
  * 
