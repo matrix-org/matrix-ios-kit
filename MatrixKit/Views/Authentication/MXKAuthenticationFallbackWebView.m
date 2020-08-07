@@ -149,6 +149,7 @@ sendObjectMessage({  \
                 // Sanity check
                 if (loginResponse.homeserver.length && loginResponse.userId.length && loginResponse.accessToken.length)
                 {
+                    NSLog(@"[MXKAuthenticationFallbackWebView] Call success block");
                     // And inform the client
                     onSuccess(loginResponse);
                 }
@@ -164,6 +165,7 @@ sendObjectMessage({  \
                 // Sanity check
                 if (loginResponse.homeserver.length && loginResponse.userId.length && loginResponse.accessToken.length)
                 {
+                    NSLog(@"[MXKAuthenticationFallbackWebView] Call success block");
                     // And inform the client
                     onSuccess(loginResponse);
                 }
