@@ -1,3 +1,31 @@
+Changes in 0.12.11 (2020-08-07)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.10](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.10)).
+ * Enhance auth fallback webview logs. 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.10 (2020-08-05)
 =================================================
 
