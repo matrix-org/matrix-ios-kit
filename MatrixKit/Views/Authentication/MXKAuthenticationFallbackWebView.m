@@ -110,10 +110,15 @@ sendObjectMessage({  \
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
+    NSLog(@"[MXKAuthenticationFallbackWebView] decidePolicyForNavigationAction");
+    
     NSString *urlString = navigationAction.request.URL.absoluteString;
     
     if ([urlString hasPrefix:@"js:"])
     {
+        //  do not log urlString, it may have an access token
+        NSLog(@"[MXKAuthenticationFallbackWebView] URL has js: prefix");
+        
         // Listen only to scheme of the JS-WKWebView bridge
         NSString *jsonString = [[[urlString componentsSeparatedByString:@"js:"] lastObject]  stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
         NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
@@ -122,7 +127,11 @@ sendObjectMessage({  \
         NSDictionary *parameters = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers
                                                                      error:&error];
         
-        if (!error)
+        if (error)
+        {
+            NSLog(@"[MXKAuthenticationFallbackWebView] Error when parsing json: %@", error);
+        }
+        else
         {
             if ([@"onRegistered" isEqualToString:parameters[@"action"]])
             {
@@ -134,6 +143,8 @@ sendObjectMessage({  \
                 loginResponse.homeserver = parameters[@"homeServer"];
                 loginResponse.userId = parameters[@"userId"];
                 loginResponse.accessToken = parameters[@"accessToken"];
+                
+                NSLog(@"[MXKAuthenticationFallbackWebView] Registered on homeserver: %@", loginResponse.homeserver);
 
                 // Sanity check
                 if (loginResponse.homeserver.length && loginResponse.userId.length && loginResponse.accessToken.length)
@@ -148,6 +159,8 @@ sendObjectMessage({  \
                 MXLoginResponse *loginResponse;
                 MXJSONModelSetMXJSONModel(loginResponse, MXLoginResponse, parameters[@"response"]);
 
+                NSLog(@"[MXKAuthenticationFallbackWebView] Logged in on homeserver: %@", loginResponse.homeserver);
+                
                 // Sanity check
                 if (loginResponse.homeserver.length && loginResponse.userId.length && loginResponse.accessToken.length)
                 {
@@ -156,6 +169,7 @@ sendObjectMessage({  \
                 }
             }
         }
+        
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
     }
