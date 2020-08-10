@@ -48,7 +48,7 @@
 "start_chat" = "Iniciar conversa";
 "start_voice_call" = "Iniciar chamada de voz";
 "start_video_call" = "Iniciar chamada de vídeo";
-"mention" = "Menção";
+"mention" = "Mencionar";
 "select_account" = "Selecione uma conta";
 "attach_media" = "Anexar mídia da galeria";
 "capture_media" = "Adicionar Foto/Vídeo";
@@ -62,8 +62,8 @@
 "answer_call" = "Aceitar chamada";
 "reject_call" = "Recusar chamada";
 "end_call" = "Encerrar chamada";
-"ignore" = "Silenciar e esconder mensagens";
-"unignore" = "Reativar notificações e mostrar mensagens";
+"ignore" = "Bloquear";
+"unignore" = "Desbloquear";
 "login_error_forgot_password_is_not_supported" = "Esqueci a senha não é suportado atualmente";
 "login_error_login_email_not_yet" = "O link de e-mail que ainda não foi clicado";
 "login_use_fallback" = "Use a página de fallback";
@@ -91,7 +91,7 @@
 "notice_room_power_level_acting_requirement" = "Os níveis mínimos de permissão que um usuário deve ter antes de agir são:";
 "notice_room_power_level_event_requirement" = "Os níveis mínimos de permissão relacionados aos eventos são:";
 "notice_room_aliases" = "Os aliases da sala são: %@";
-"notice_room_related_groups" = "Os grupos associados a esta sala são: %@";
+"notice_room_related_groups" = "As comunidades associados a esta sala são: %@";
 "notice_encrypted_message" = "Mensagem Criptografada";
 "set_power_level" = "Definir Nível de Permissão";
 "power_level" = "Nível de Permissão";
@@ -136,13 +136,13 @@
 "device_details_delete_prompt_title" = "Autenticação";
 "device_details_delete_prompt_message" = "Esta operação requer autenticação adicional.\nPara continuar, digite sua senha.";
 // Encryption information
-"room_event_encryption_info_title" = "Informações da criptografia de ponta a ponta\n\n";
+"room_event_encryption_info_title" = "Informações da criptografia de ponta a ponta↵\n↵\n\n";
 "room_event_encryption_info_event" = "Informação do evento\n";
 "room_event_encryption_info_event_user_id" = "ID do usuário\n";
 "room_event_encryption_info_event_algorithm" = "Algoritmo\n";
 "room_event_encryption_info_event_session_id" = "ID da sessão\n";
 "room_event_encryption_info_event_unencrypted" = "não criptografado";
-"room_event_encryption_info_event_none" = "nenhum";
+"room_event_encryption_info_event_none" = "nenhuma";
 "room_event_encryption_info_device" = "\n↵\nInformação da sessão do remetente↵\n";
 "room_event_encryption_info_device_unknown" = "sessão desconhecida↵\n";
 "room_event_encryption_info_device_name" = "Nome público↵\n";
@@ -181,7 +181,7 @@
 "account_error_msisdn_wrong_description" = "Este não parece ser um número de telefone válido";
 // Room creation
 "room_creation_name_title" = "Nome da sala:";
-"room_creation_name_placeholder" = "(por exemplo, grupoAlmoco)";
+"room_creation_name_placeholder" = "(por exemplo: grupoAlmoço)";
 "room_creation_alias_title" = "Alias da sala:";
 "room_creation_participants_title" = "Participantes:";
 // Room
@@ -225,7 +225,7 @@
 "contact_local_contacts" = "Contatos locais";
 // Groups
 "group_invite_section" = "Convites";
-"group_section" = "Grupos";
+"group_section" = "Comunidades";
 // Search
 "search_no_results" = "Nenhum resultado";
 "search_searching" = "Busca em andamento...";
@@ -278,8 +278,8 @@
 "notice_room_leave" = "%@ saiu";
 "notice_room_reject" = "%@ recusou o convite";
 "notice_room_kick" = "%@ removeu %@";
-"notice_room_unban" = "%@ desbloqueou %@";
-"notice_room_ban" = "%@ bloqueou %@";
+"notice_room_unban" = "%@ removeu o banimento de %@";
+"notice_room_ban" = "%@ baniu %@";
 "notice_room_withdraw" = "%@ retirou o convite de %@";
 "notice_room_reason" = ". Motivo: %@";
 "notice_avatar_url_changed" = "%@ alterou a foto de perfil";
@@ -310,12 +310,12 @@
 "create_account" = "Criar conta";
 "membership_invite" = "Convidado";
 "membership_leave" = "Saiu";
-"membership_ban" = "Bloqueado";
+"membership_ban" = "Banido";
 "num_members_one" = "%@ usuário";
 "num_members_other" = "%@ usuários";
-"kick" = "Remover";
-"ban" = "Bloquear";
-"unban" = "Desbloquear";
+"kick" = "Remover da sala";
+"ban" = "Banir da sala";
+"unban" = "Remover banimento";
 "message_unsaved_changes" = "Existem alterações não salvas. Ao sair, elas serão descartadas.";
 // Login Screen 
 "login_error_already_logged_in" = "já logado";
@@ -368,7 +368,7 @@
 // unrecognized SSL certificate
 "ssl_trust" = "Confiança";
 "ssl_logout_account" = "Sair";
-"ssl_remain_offline" = "Reativar notificações e mostrar mensagens";
+"ssl_remain_offline" = "Bloquear";
 "ssl_fingerprint_hash" = "Impressão digital (%@):";
 "ssl_could_not_verify" = "Não foi possível verificar a identidade do servidor remoto.";
 "ssl_cert_not_trust" = "Isso pode significar que alguém está interceptando seu tráfego maliciosamente ou que seu telefone não confia no certificado fornecido pelo servidor remoto.";
@@ -391,8 +391,8 @@
 "notice_room_leave_by_you" = "Você saiu";
 "notice_room_reject_by_you" = "Você recusou o convite";
 "notice_room_kick_by_you" = "Você removeu %@";
-"notice_room_unban_by_you" = "Você desbloqueou %@";
-"notice_room_ban_by_you" = "Você bloqueou %@";
+"notice_room_unban_by_you" = "Você removeu o banimento de %@";
+"notice_room_ban_by_you" = "Você baniu %@";
 "notice_room_withdraw_by_you" = "Você retirou o convite de %@";
 "notice_avatar_url_changed_by_you" = "Você alterou a sua foto de perfil";
 "notice_display_name_set_by_you" = "Você definiu o seu nome e sobrenome como %@";
