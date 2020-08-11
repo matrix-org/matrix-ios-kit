@@ -197,7 +197,7 @@
 "room_event_encryption_info_title" = "Läbiva krüptimise teave\n\n";
 "room_event_encryption_info_event" = "Sündmuse teave\n";
 "room_event_encryption_info_event_user_id" = "Kasutajatunnus\n";
-"room_event_encryption_info_event_fingerprint_key" = "Väidetav Ed25519 allkirja sõrmejälg\n";
+"room_event_encryption_info_event_fingerprint_key" = "Väidetav Ed25519 allkirja sõrmejälje võti\n";
 "room_event_encryption_info_event_algorithm" = "Algoritm\n";
 "room_event_encryption_info_event_session_id" = "Sessiooni tunnus\n";
 "room_event_encryption_info_event_decryption_error" = "Dekrüptimise viga\n";
@@ -208,7 +208,7 @@
 "room_event_encryption_info_device_name" = "Avalik nimi\n";
 "room_event_encryption_info_device_id" = "Tunnus\n";
 "room_event_encryption_info_device_verification" = "Verifikatsioon\n";
-"room_event_encryption_info_device_fingerprint" = "Ed25519 allkiri\n";
+"room_event_encryption_info_device_fingerprint" = "Ed25519 sõrmejälg\n";
 "room_event_encryption_info_device_verified" = "Verifitseeritud";
 "room_event_encryption_info_device_not_verified" = "EI OLE verifitseeritud";
 "room_event_encryption_info_unverify" = "Eemalda verifitseerimine";
