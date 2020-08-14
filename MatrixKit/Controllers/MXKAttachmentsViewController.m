@@ -1190,31 +1190,34 @@
         
         currentAlert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction * action) {
-                                                    
-                                                    typeof(self) self = weakSelf;
-                                                    self->currentAlert = nil;
-                                                    
-                                                    [self startActivityIndicator];
-                                                    
-                                                    [attachment save:^{
-                                                        
-                                                        typeof(self) self = weakSelf;
-                                                        [self stopActivityIndicator];
-                                                        
-                                                    } failure:^(NSError *error) {
-                                                        
-                                                        typeof(self) self = weakSelf;
-                                                        [self stopActivityIndicator];
-                                                        
-                                                        // Notify MatrixKit user
-                                                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                        
-                                                    }];
-                                                    
-                                                }]];
+        if ([MXKAppSettings standardAppSettings].messageDetailsAllowSaving)
+        {
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                
+                typeof(self) self = weakSelf;
+                self->currentAlert = nil;
+                
+                [self startActivityIndicator];
+                
+                [attachment save:^{
+                    
+                    typeof(self) self = weakSelf;
+                    [self stopActivityIndicator];
+                    
+                } failure:^(NSError *error) {
+                    
+                    typeof(self) self = weakSelf;
+                    [self stopActivityIndicator];
+                    
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                }];
+                
+            }]];
+        }
         
         [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
                                                   style:UIAlertActionStyleDefault
@@ -1242,45 +1245,48 @@
                                                     
                                                 }]];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * action) {
-                                                           
-                                                           MXWeakify(self);
-                                                           
-                                                           self->currentAlert = nil;
-                                                           
-                                                           [self startActivityIndicator];
-                                                           
-                                                           [attachment prepareShare:^(NSURL *fileURL) {
-                                                               
-                                                               MXStrongifyAndReturnIfNil(self);
-                                                               
-                                                               [self stopActivityIndicator];
-                                                               
-                                                               self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-                                                               [self->documentInteractionController setDelegate:self];
-                                                               self->currentSharedAttachment = attachment;
-                                                               
-                                                               if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
-                                                               {
-                                                                   self->documentInteractionController = nil;
-                                                                   [attachment onShareEnded];
-                                                                   self->currentSharedAttachment = nil;
-                                                               }
-                                                               
-                                                           } failure:^(NSError *error) {
-                                                               
-                                                               MXStrongifyAndReturnIfNil(self);
-                                                               
-                                                               [self stopActivityIndicator];
-                                                               
-                                                               // Notify MatrixKit user
-                                                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                               
-                                                           }];
-                                                           
-                                                       }]];
+        if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
+        {
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                
+                MXWeakify(self);
+                
+                self->currentAlert = nil;
+                
+                [self startActivityIndicator];
+                
+                [attachment prepareShare:^(NSURL *fileURL) {
+                    
+                    MXStrongifyAndReturnIfNil(self);
+                    
+                    [self stopActivityIndicator];
+                    
+                    self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                    [self->documentInteractionController setDelegate:self];
+                    self->currentSharedAttachment = attachment;
+                    
+                    if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                    {
+                        self->documentInteractionController = nil;
+                        [attachment onShareEnded];
+                        self->currentSharedAttachment = nil;
+                    }
+                    
+                } failure:^(NSError *error) {
+                    
+                    MXStrongifyAndReturnIfNil(self);
+                    
+                    [self stopActivityIndicator];
+                    
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                }];
+                
+            }]];
+        }
         
         if ([MXMediaManager existingDownloaderWithIdentifier:attachment.downloadId])
         {
@@ -1302,7 +1308,7 @@
         }
         
         [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                         style:UIAlertActionStyleDefault
+                                                         style:UIAlertActionStyleCancel
                                                        handler:^(UIAlertAction * action) {
                                                            
                                                            typeof(self) self = weakSelf;
