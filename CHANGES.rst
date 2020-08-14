@@ -6,6 +6,7 @@ Features:
 
 Improvements:
  * Introduce allowLocalContactsAccess on MXKContactManager. 
+ * Introduce messageDetailsAllowSaving & messageDetailsAllowSharing on MXKAppSettings.
 
 Bugfix:
  * 
