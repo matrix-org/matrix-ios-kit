@@ -162,6 +162,9 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                     kMXEventTypeStringKeyVerificationCancel,
                                                                     kMXEventTypeStringKeyVerificationDone
                                                                    ]];
+        
+        _messageDetailsAllowSharing = YES;
+        _messageDetailsAllowSaving = YES;
     }
     return self;
 }

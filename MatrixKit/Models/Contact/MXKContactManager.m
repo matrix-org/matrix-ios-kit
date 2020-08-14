@@ -109,6 +109,7 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
         [[MXKAppSettings standardAppSettings]  addObserver:self forKeyPath:@"phonebookCountryCode" options:0 context:nil];
 
         [self registerAccountDataDidChangeIdentityServerNotification];
+        self.allowLocalContactsAccess = YES;
     }
     
     return self;
@@ -492,6 +493,12 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 - (void)refreshLocalContacts
 {
     NSLog(@"[MXKContactManager] refreshLocalContacts : Started");
+    
+    if (!self.allowLocalContactsAccess)
+    {
+        NSLog(@"[MXKContactManager] refreshLocalContacts : Finished because local contacts access not allowed.");
+        return;
+    }
     
     NSDate *startDate = [NSDate date];
     
@@ -1449,6 +1456,12 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 - (void)handleAccountDataDidChangeIdentityServerNotification:(NSNotification*)notification
 {
     NSLog(@"[MXKContactManager] handleAccountDataDidChangeIdentityServerNotification");
+    
+    if (!self.allowLocalContactsAccess)
+    {
+        NSLog(@"[MXKContactManager] handleAccountDataDidChangeIdentityServerNotification. Does nothing because local contacts access not allowed.");
+        return;
+    }
 
     // Use the identity server of the up
     MXSession *mxSession = notification.object;
@@ -1482,6 +1495,12 @@ NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContac
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+    if (!self.allowLocalContactsAccess)
+    {
+        NSLog(@"[MXKContactManager] Ignoring KVO changes, because local contacts access not allowed.");
+        return;
+    }
+    
     if ([@"syncLocalContacts" isEqualToString:keyPath])
     {
         dispatch_async(dispatch_get_main_queue(), ^{

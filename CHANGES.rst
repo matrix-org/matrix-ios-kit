@@ -1,3 +1,31 @@
+Changes in 0.12.13 (2020-08-14)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Introduce allowLocalContactsAccess on MXKContactManager. 
+ * Introduce messageDetailsAllowSaving & messageDetailsAllowSharing on MXKAppSettings.
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.12 (2020-08-13)
 =================================================
 

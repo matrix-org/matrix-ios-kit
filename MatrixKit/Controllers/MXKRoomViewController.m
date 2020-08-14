@@ -2859,29 +2859,32 @@
                                                                    }
                                                                }]];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
-                                                                   
-                                                                   typeof(self) self = weakSelf;
-                                                                   self->currentAlert = nil;
-                                                                   
-                                                                   // Cancel event highlighting
-                                                                   [roomBubbleTableViewCell highlightTextMessageForEvent:nil];
-                                                                   
-                                                                   NSArray *activityItems = [NSArray arrayWithObjects:selectedComponent.textMessage, nil];
-                                                                   
-                                                                   UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-                                                                   if (activityViewController)
-                                                                   {
-                                                                       activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-                                                                       activityViewController.popoverPresentationController.sourceView = roomBubbleTableViewCell;
-                                                                       activityViewController.popoverPresentationController.sourceRect = roomBubbleTableViewCell.bounds;
-                                                                       
-                                                                       [self presentViewController:activityViewController animated:YES completion:nil];
-                                                                   }
-                                                                   
-                                                               }]];
+                if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
+                {
+                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                        
+                        typeof(self) self = weakSelf;
+                        self->currentAlert = nil;
+                        
+                        // Cancel event highlighting
+                        [roomBubbleTableViewCell highlightTextMessageForEvent:nil];
+                        
+                        NSArray *activityItems = [NSArray arrayWithObjects:selectedComponent.textMessage, nil];
+                        
+                        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+                        if (activityViewController)
+                        {
+                            activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                            activityViewController.popoverPresentationController.sourceView = roomBubbleTableViewCell;
+                            activityViewController.popoverPresentationController.sourceRect = roomBubbleTableViewCell.bounds;
+                            
+                            [self presentViewController:activityViewController animated:YES completion:nil];
+                        }
+                        
+                    }]];
+                }
                 
                 if (components.count > 1)
                 {
@@ -2901,34 +2904,37 @@
             {
                 if (attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeVideo)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * action) {
-                                                                       
-                                                                       typeof(self) self = weakSelf;
-                                                                       self->currentAlert = nil;
-                                                                       
-                                                                       [self startActivityIndicator];
-                                                                       
-                                                                       [attachment save:^{
-                                                                           
-                                                                           typeof(self) self = weakSelf;
-                                                                           [self stopActivityIndicator];
-                                                                           
-                                                                       } failure:^(NSError *error) {
-                                                                           
-                                                                           typeof(self) self = weakSelf;
-                                                                           [self stopActivityIndicator];
-                                                                           
-                                                                           // Notify MatrixKit user
-                                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                                           
-                                                                       }];
-                                                                       
-                                                                       // Start animation in case of download during attachment preparing
-                                                                       [roomBubbleTableViewCell startProgressUI];
-                                                                       
-                                                                   }]];
+                    if ([MXKAppSettings standardAppSettings].messageDetailsAllowSaving)
+                    {
+                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+                                                                         style:UIAlertActionStyleDefault
+                                                                       handler:^(UIAlertAction * action) {
+                            
+                            typeof(self) self = weakSelf;
+                            self->currentAlert = nil;
+                            
+                            [self startActivityIndicator];
+                            
+                            [attachment save:^{
+                                
+                                typeof(self) self = weakSelf;
+                                [self stopActivityIndicator];
+                                
+                            } failure:^(NSError *error) {
+                                
+                                typeof(self) self = weakSelf;
+                                [self stopActivityIndicator];
+                                
+                                // Notify MatrixKit user
+                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                
+                            }];
+                            
+                            // Start animation in case of download during attachment preparing
+                            [roomBubbleTableViewCell startProgressUI];
+                            
+                        }]];
+                    }
                 }
                 
                 if (attachment.type != MXKAttachmentTypeSticker)
@@ -2962,38 +2968,41 @@
                                                                        
                                                                    }]];
                     
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * action) {
-                                                                       
-                                                                       typeof(self) self = weakSelf;
-                                                                       self->currentAlert = nil;
-                                                                       
-                                                                       [attachment prepareShare:^(NSURL *fileURL) {
-                                                                           
-                                                                           typeof(self) self = weakSelf;
-                                                                           self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-                                                                           [self->documentInteractionController setDelegate:self];
-                                                                           self->currentSharedAttachment = attachment;
-                                                                           
-                                                                           if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
-                                                                           {
-                                                                               self->documentInteractionController = nil;
-                                                                               [attachment onShareEnded];
-                                                                               self->currentSharedAttachment = nil;
-                                                                           }
-                                                                           
-                                                                       } failure:^(NSError *error) {
-                                                                           
-                                                                           // Notify MatrixKit user
-                                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                                           
-                                                                       }];
-                                                                       
-                                                                       // Start animation in case of download during attachment preparing
-                                                                       [roomBubbleTableViewCell startProgressUI];
-                                                                       
-                                                                   }]];
+                    if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
+                    {
+                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+                                                                         style:UIAlertActionStyleDefault
+                                                                       handler:^(UIAlertAction * action) {
+                            
+                            typeof(self) self = weakSelf;
+                            self->currentAlert = nil;
+                            
+                            [attachment prepareShare:^(NSURL *fileURL) {
+                                
+                                typeof(self) self = weakSelf;
+                                self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                                [self->documentInteractionController setDelegate:self];
+                                self->currentSharedAttachment = attachment;
+                                
+                                if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                                {
+                                    self->documentInteractionController = nil;
+                                    [attachment onShareEnded];
+                                    self->currentSharedAttachment = nil;
+                                }
+                                
+                            } failure:^(NSError *error) {
+                                
+                                // Notify MatrixKit user
+                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                
+                            }];
+                            
+                            // Start animation in case of download during attachment preparing
+                            [roomBubbleTableViewCell startProgressUI];
+                            
+                        }]];
+                    }
                 }
                 
                 // Check status of the selected event
@@ -3083,7 +3092,7 @@
             }
             
             [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                             style:UIAlertActionStyleDefault
+                                                             style:UIAlertActionStyleCancel
                                                            handler:^(UIAlertAction * action) {
                                                                
                                                                typeof(self) self = weakSelf;
@@ -3126,6 +3135,11 @@
 
 - (void)selectAllTextMessageInCell:(id<MXKCellRendering>)cell
 {
+    if (![MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
+    {
+        return;
+    }
+    
     if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
     {
         MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
