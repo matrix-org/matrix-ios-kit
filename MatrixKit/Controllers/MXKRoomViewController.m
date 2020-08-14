@@ -2904,34 +2904,37 @@
             {
                 if (attachment.type == MXKAttachmentTypeImage || attachment.type == MXKAttachmentTypeVideo)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * action) {
-                                                                       
-                                                                       typeof(self) self = weakSelf;
-                                                                       self->currentAlert = nil;
-                                                                       
-                                                                       [self startActivityIndicator];
-                                                                       
-                                                                       [attachment save:^{
-                                                                           
-                                                                           typeof(self) self = weakSelf;
-                                                                           [self stopActivityIndicator];
-                                                                           
-                                                                       } failure:^(NSError *error) {
-                                                                           
-                                                                           typeof(self) self = weakSelf;
-                                                                           [self stopActivityIndicator];
-                                                                           
-                                                                           // Notify MatrixKit user
-                                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                                           
-                                                                       }];
-                                                                       
-                                                                       // Start animation in case of download during attachment preparing
-                                                                       [roomBubbleTableViewCell startProgressUI];
-                                                                       
-                                                                   }]];
+                    if ([MXKAppSettings standardAppSettings].messageDetailsAllowSaving)
+                    {
+                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+                                                                         style:UIAlertActionStyleDefault
+                                                                       handler:^(UIAlertAction * action) {
+                            
+                            typeof(self) self = weakSelf;
+                            self->currentAlert = nil;
+                            
+                            [self startActivityIndicator];
+                            
+                            [attachment save:^{
+                                
+                                typeof(self) self = weakSelf;
+                                [self stopActivityIndicator];
+                                
+                            } failure:^(NSError *error) {
+                                
+                                typeof(self) self = weakSelf;
+                                [self stopActivityIndicator];
+                                
+                                // Notify MatrixKit user
+                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                                
+                            }];
+                            
+                            // Start animation in case of download during attachment preparing
+                            [roomBubbleTableViewCell startProgressUI];
+                            
+                        }]];
+                    }
                 }
                 
                 if (attachment.type != MXKAttachmentTypeSticker)

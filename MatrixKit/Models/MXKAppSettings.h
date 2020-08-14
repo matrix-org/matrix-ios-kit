@@ -123,6 +123,9 @@
 /// Flag to allow sharing a message or not.
 @property (nonatomic) BOOL messageDetailsAllowSharing;
 
+/// Flag to allow saving a message or not.
+@property (nonatomic) BOOL messageDetailsAllowSaving;
+
 #pragma mark - Contacts
 
 /**
