@@ -120,6 +120,8 @@
  */
 @property (nonatomic) BOOL showLeftMembersInRoomMemberList;
 
+/// Flag to allow sharing a message or not.
+@property (nonatomic) BOOL messageDetailsAllowSharing;
 
 #pragma mark - Contacts
 
