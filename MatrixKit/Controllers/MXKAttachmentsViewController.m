@@ -1308,7 +1308,7 @@
         }
         
         [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                         style:UIAlertActionStyleDefault
+                                                         style:UIAlertActionStyleCancel
                                                        handler:^(UIAlertAction * action) {
                                                            
                                                            typeof(self) self = weakSelf;
