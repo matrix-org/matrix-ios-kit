@@ -5,7 +5,7 @@ Features:
  * 
 
 Improvements:
- * 
+ * Introduce allowLocalContactsAccess on MXKContactManager. 
 
 Bugfix:
  * 
