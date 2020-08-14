@@ -142,6 +142,9 @@ typedef void(^MXKContactManagerDiscoverUsersBoundTo3PIDs)(NSArray<NSArray<NSStri
  */
 @property (nonatomic, readonly, nonnull) NSArray *directMatrixContacts;
 
+/// Flag to allow local contacts access or not. Default value is YES.
+@property (nonatomic, assign) BOOL allowLocalContactsAccess;
+
 /**
  Add/remove matrix session. The matrix contact list is automatically updated (see kMXKContactManagerDidUpdateMatrixContactsNotification event).
  */
