@@ -31,7 +31,7 @@
 "login_error_not_json" = "Não contem um JSON válido";
 "login_error_limit_exceeded" = "Muitas solicitações foram enviadas";
 "login_error_user_in_use" = "Este nome de usuário já está em uso";
-"login_desktop_device" = "Desktop";
+"login_desktop_device" = "Computador";
 // Action
 "no" = "Não";
 "yes" = "Sim";
@@ -188,8 +188,8 @@
 "room_please_select" = "Por favor. selecione uma sala";
 "room_error_join_failed_title" = "Não foi possível entrar na sala";
 "room_error_join_failed_empty_room" = "Atualmente, não é possível entrar novamente em uma sala vazia.";
-"room_error_name_edition_not_authorized" = "Você não está autorizado a editar o nome desta sala";
-"room_error_topic_edition_not_authorized" = "Você não está autorizado a editar a descrição desta sala";
+"room_error_name_edition_not_authorized" = "Você não tem permissão para editar o nome desta sala";
+"room_error_topic_edition_not_authorized" = "Você não tem permissão para editar a descrição desta sala";
 "room_error_cannot_load_timeline" = "Falha ao carregar a linha do tempo";
 "room_error_timeline_event_not_found_title" = "Falha ao carregar a posição da linha do tempo";
 "room_error_timeline_event_not_found" = "O aplicativo estava tentando carregar um ponto específico na linha do tempo desta sala, mas não conseguiu encontrá-lo";
