@@ -147,26 +147,26 @@
 "room_event_encryption_info_device_unknown" = "sessão desconhecida↵\n";
 "room_event_encryption_info_device_name" = "Nome público↵\n";
 "room_event_encryption_info_device_id" = "ID↵\n";
-"room_event_encryption_info_device_verification" = "Verificação\n";
+"room_event_encryption_info_device_verification" = "Confirmação\n";
 "room_event_encryption_info_event_decryption_error" = "Erro de descriptografia\n";
-"room_event_encryption_info_device_verified" = "Verificado";
-"room_event_encryption_info_device_not_verified" = "Não verificado";
+"room_event_encryption_info_device_verified" = "Confirmado";
+"room_event_encryption_info_device_not_verified" = "Não confirmado";
 "room_event_encryption_info_device_blocked" = "Na lista negra";
-"room_event_encryption_info_verify" = "Verificar...";
-"room_event_encryption_info_unverify" = "Retirar verificação";
+"room_event_encryption_info_verify" = "Confirmar...";
+"room_event_encryption_info_unverify" = "Retirar confirmação";
 "room_event_encryption_info_block" = "Lista negra";
 "room_event_encryption_info_unblock" = "Retirar da lista negra";
-"room_event_encryption_verify_title" = "Verificar sessão↵\n↵\n\n";
-"room_event_encryption_verify_message" = "Para verificar se essa sessão é confiável, comunique-se com seu contato por outros meios (por exemplo: pessoalmente ou com uma chamada de voz) e pergunte se a chave que é vista nas Configurações do Usuário para esta sessão corresponde à seguinte chave:↵\n↵\n→Nome da sessão: %@↵\n→ID da sessão: %@↵\n→Chave da sessão: %@↵\n↵\nSe corresponder, pressione o botão de verificação abaixo. Caso contrário, outra pessoa está interceptando esta sessão e você provavelmente deseja pressionar o botão para bloquear.↵\n↵\nNo futuro, esse processo de verificação será mais sofisticado.";
-"room_event_encryption_verify_ok" = "Verificar";
+"room_event_encryption_verify_title" = "Confirmar sessão\n\n";
+"room_event_encryption_verify_message" = "Para confirmar essa sessão, comunique-se com seu contato por outros meios (por exemplo: pessoalmente ou com uma chamada de voz) e pergunte se a chave que é vista nas Configurações do Usuário para esta sessão corresponde à seguinte chave:↵\n↵\n→Nome da sessão: %@↵\n→ID da sessão: %@↵\n→Chave da sessão: %@↵\n↵\nSe corresponder, pressione o botão de confirmar abaixo. Caso contrário, outra pessoa está interceptando esta sessão e você provavelmente deseja pressionar o botão para bloquear.↵\n↵\nNo futuro, esse processo de confirmação será mais sofisticado.";
+"room_event_encryption_verify_ok" = "Confirmar";
 // Account
 "account_save_changes" = "Salvar alterações";
 "account_link_email" = "Vincular e-mail";
 "account_linked_emails" = "E-mails vinculados";
-"account_email_validation_title" = "Verificação pendente";
+"account_email_validation_title" = "Confirmação pendente";
 "account_email_validation_message" = "Por favor, verifique seu e-mail e clique no link que ele contém. Feito isso, clique em continuar.";
-"account_email_validation_error" = "Não foi possível verificar o endereço de e-mail. Por favor, verifique seu e-mail e clique no link que ele contém. Feito isso, clique em continuar";
-"account_msisdn_validation_title" = "Verificação pendente";
+"account_email_validation_error" = "Não foi possível confirmar o endereço de e-mail. Por favor, verifique seu e-mail e clique no link que ele contém. Feito isso, clique em continuar";
+"account_msisdn_validation_title" = "Confirmação pendente";
 "account_msisdn_validation_message" = "Enviamos um SMS com um código de ativação. Por favor insira este código abaixo.";
 "account_msisdn_validation_error" = "Não foi possível confirmar o número de telefone.";
 "room_event_encryption_info_event_identity_key" = "Chave de identidade Curve25519\n";
@@ -257,7 +257,7 @@
 "default" = "padrão";
 "private" = "Privado";
 "public" = "Público";
-"network_error_not_reachable" = "Por favor, verifique sua conectividade de rede";
+"network_error_not_reachable" = "Por favor, verifique sua conexão de rede";
 "user_id_placeholder" = "ex: @bob:servidorlocal";
 "ssl_homeserver_url" = "Endereço do servidor local: %@";
 // Permissions
@@ -372,7 +372,7 @@
 "ssl_fingerprint_hash" = "Impressão digital (%@):";
 "ssl_could_not_verify" = "Não foi possível verificar a identidade do servidor remoto.";
 "ssl_cert_not_trust" = "Isso pode significar que alguém está interceptando seu tráfego maliciosamente ou que seu telefone não confia no certificado fornecido pelo servidor remoto.";
-"ssl_cert_new_account_expl" = "Se o administrador do servidor disse que isso é esperado, verifique se a impressão digital abaixo corresponde à impressão digital fornecida por eles.";
+"ssl_cert_new_account_expl" = "Se o administrador do servidor disse que isso era esperado, verifique se a impressão digital abaixo é a mesma que a impressão digital que ele forneceu a você.";
 "ssl_unexpected_existing_expl" = "Você tinha um certificado confiável para o seu telefone, mas ele mudou. Isso é ALTAMENTE INCOMUM. É recomendável que você NÃO ACEITE este novo certificado.";
 "ssl_expected_existing_expl" = "O certificado foi alterado de um anteriormente confiável para um que não é confiável. O servidor pode ter renovado seu certificado. Entre em contato com o administrador do servidor para obter a impressão digital esperada.";
 "ssl_only_accept" = "APENAS aceite o certificado se o administrador do servidor tiver publicado uma impressão digital que corresponda à acima.";
