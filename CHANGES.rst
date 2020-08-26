@@ -1,3 +1,31 @@
+Changes in 0.12.15 (2020-08-25)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.13](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.13)).
+ * 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.14 (2020-08-19)
 =================================================
 
