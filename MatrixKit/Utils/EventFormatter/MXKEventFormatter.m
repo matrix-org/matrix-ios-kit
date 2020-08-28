@@ -20,10 +20,15 @@
 
 @import MatrixSDK;
 @import DTCoreText;
-@import cmark;
 
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
+
+#if __has_include(<MatrixKit/MatrixKit-Swift.h>)
+    #import <MatrixKit/MatrixKit-Swift.h>
+#elif __has_include("MatrixKitSample-Swift.h")
+    #import "MatrixKitSample-Swift.h"
+#endif
 
 #import "MXKTools.h"
 #import "MXRoom+Sync.h"
@@ -1868,9 +1873,8 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 
 - (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
 {
-    const char *cstr = [markdownString cStringUsingEncoding: NSUTF8StringEncoding];
-    const char *htmlCString = cmark_markdown_to_html(cstr, strlen(cstr), CMARK_OPT_HARDBREAKS);
-    NSString *htmlString = [[NSString alloc] initWithCString:htmlCString encoding:NSUTF8StringEncoding];
+    MarkdownParser *hardBreaksParser = [[MarkdownParserHardBreaks alloc] initWithMarkdown:markdownString];
+    NSString *htmlString = [hardBreaksParser toHTML];
 
     // Strip off the trailing newline, if it exists.
     if ([htmlString hasSuffix:@"\n"])

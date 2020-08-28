@@ -24,7 +24,7 @@ abstract_target 'MatrixKitSamplePods' do
     pod 'HPGrowingTextView', '~> 1.1'
     pod 'JSQMessagesViewController', '~> 7.2.0'
     pod 'DTCoreText', '~> 1.6.21'
-    pod 'cmark', '~> 0.24.1', :inhibit_warnings => true
+    pod 'Down', '~> 0.9.3'
 
         
     target "MatrixKitSample" do
