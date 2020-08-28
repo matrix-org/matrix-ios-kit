@@ -26,8 +26,8 @@
 
 #if __has_include(<MatrixKit/MatrixKit-Swift.h>)
     #import <MatrixKit/MatrixKit-Swift.h>
-#elif __has_include("MatrixKitSample-Swift.h")
-    #import "MatrixKitSample-Swift.h"
+#elif __has_include("MatrixKit-Swift.h")
+    #import "MatrixKit-Swift.h"
 #endif
 
 #import "MXKTools.h"
