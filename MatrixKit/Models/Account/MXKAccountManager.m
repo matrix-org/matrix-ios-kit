@@ -402,6 +402,10 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
                 }
             }
         }
+        else
+        {
+            NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: Same token. Nothing to do.");
+        }
     }
 }
 
@@ -541,6 +545,10 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
                     NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: hasPusherForPushKitNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
                 }
             }
+        }
+        else
+        {
+            NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Same token. Nothing to do.");
         }
     }
 }
