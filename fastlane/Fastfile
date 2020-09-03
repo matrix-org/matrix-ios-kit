@@ -35,6 +35,20 @@ platform :ios do
     edit_podfile(branch_pattern: git_branch)
   end
 
+  desc "Send code to SonarCloud for analysis"
+  lane :sonarcloud do |options|
+    sonar(
+      project_key: "matrix.ios.kit",
+      project_name: "Matrix iOS Kit",
+      branch_name: ENV["BUILDKITE_BRANCH"],
+      sonar_organization: "new_vector_ltd_organization",
+      sonar_url: "https://sonarcloud.io",
+      sonar_login: ENV["SONAR_LOGIN"],
+      sources_path: File.expand_path("../MatrixKit"),
+      sonar_runner_args: "-Dsonar.cfamily.build-wrapper-output=build_wrapper_output -Dsonar.cfamily.threads=4 -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=sonar_cfamily_cache"
+    )
+  end
+
   ##############################
 
   private_lane :edit_podspec do |options|

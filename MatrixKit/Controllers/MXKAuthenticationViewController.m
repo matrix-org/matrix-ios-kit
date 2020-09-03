@@ -173,10 +173,6 @@
     [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
 }
 
-- (void)dealloc
-{
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

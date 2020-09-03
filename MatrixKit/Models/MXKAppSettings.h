@@ -120,6 +120,11 @@
  */
 @property (nonatomic) BOOL showLeftMembersInRoomMemberList;
 
+/// Flag to allow sharing a message or not. Default value is YES.
+@property (nonatomic) BOOL messageDetailsAllowSharing;
+
+/// Flag to allow saving a message or not. Default value is YES.
+@property (nonatomic) BOOL messageDetailsAllowSaving;
 
 #pragma mark - Contacts
 

@@ -1,3 +1,199 @@
+Changes in 0.12.17 (2020-09-03)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.15](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.15)).
+ * 
+
+Bugfix:
+ * PushKit: Delete any pending PushKit pusher (vector-im/riot-ios/issues/3577).
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.16 (2020-08-28)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.14](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.14)).
+ * 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.15 (2020-08-25)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.13](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.13)).
+ * 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.14 (2020-08-19)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.12](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.12)).
+ * 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.13 (2020-08-14)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Introduce allowLocalContactsAccess on MXKContactManager. 
+ * Introduce messageDetailsAllowSaving & messageDetailsAllowSharing on MXKAppSettings.
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.12 (2020-08-13)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.11](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.11)).
+ * 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.11 (2020-08-07)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.10](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.10)).
+ * Enhance auth fallback webview logs. 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.10 (2020-08-05)
 =================================================
 
