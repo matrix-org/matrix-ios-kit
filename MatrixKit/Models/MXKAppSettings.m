@@ -169,10 +169,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     return self;
 }
 
-- (void)dealloc
-{
-}
-
 - (void)reset
 {
     if (self == [MXKAppSettings standardAppSettings])

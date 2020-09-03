@@ -8,7 +8,7 @@ Improvements:
  * 
 
 Bugfix:
- * 
+ * PushKit: Delete any pending PushKit pusher (vector-im/riot-ios/issues/3577).
 
 API Change:
  * 
