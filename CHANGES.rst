@@ -1,3 +1,31 @@
+Changes in 0.12.17 (2020-09-03)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.15](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.15)).
+ * 
+
+Bugfix:
+ * PushKit: Delete any pending PushKit pusher (vector-im/riot-ios/issues/3577).
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.16 (2020-08-28)
 =================================================
 
