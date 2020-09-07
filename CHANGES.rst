@@ -8,7 +8,7 @@ Improvements:
  * 
 
 Bugfix:
- * 
+ * MXKAccount: Fix crash on logout.
 
 API Change:
  * 

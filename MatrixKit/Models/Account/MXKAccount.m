@@ -537,7 +537,10 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else
     {
         NSLog(@"[MXKAccount][Push] enablePushKitNotifications: PushKit is already disabled for %@", self.mxCredentials.userId);
-        success();
+        if (success)
+        {
+            success();
+        }
     }
 }
 
