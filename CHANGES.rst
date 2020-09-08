@@ -1,3 +1,30 @@
+Changes in 0.12.18 (2020-09-08)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * 
+
+Bugfix:
+ * MXKAccount: Fix crash on logout.
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.17 (2020-09-03)
 =================================================
 
