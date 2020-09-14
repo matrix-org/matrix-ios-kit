@@ -105,7 +105,7 @@
 "notice_event_redacted_by" = " by %@";
 "notice_event_redacted_reason" = " [reason: %@]";
 "notice_profile_change_redacted" = "%@ updated their profile %@";
-"notice_room_created" = "%@ created the room";
+"notice_room_created" = "%@ created and configured the room.";
 "notice_room_join_rule" = "The join rule is: %@";
 "notice_room_power_level_intro" = "The power level of room members are:";
 "notice_room_power_level_acting_requirement" = "The minimum power levels that a user must have before acting are:";
@@ -380,7 +380,7 @@
 "notice_room_topic_removed_by_you" = "You removed the topic";
 "notice_event_redacted_by_you" = " by you";
 "notice_profile_change_redacted_by_you" = "You updated your profile %@";
-"notice_room_created_by_you" = "You created the room";
+"notice_room_created_by_you" = "You created and configured the room.";
 "notice_encryption_enabled_ok_by_you" = "You turned on end-to-end encryption.";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "You turned on end-to-end encryption (unrecognised algorithm %@).";
 "notice_redaction_by_you" = "You redacted an event (id: %@)";
