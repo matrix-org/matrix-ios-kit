@@ -120,6 +120,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         enableCallKit = YES;
         
         eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
+                                                                  kMXEventTypeStringRoomCreate,
                                                                   kMXEventTypeStringRoomName,
                                                                   kMXEventTypeStringRoomTopic,
                                                                   kMXEventTypeStringRoomMember,
@@ -128,6 +129,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                   kMXEventTypeStringRoomHistoryVisibility,
                                                                   kMXEventTypeStringRoomMessage,
                                                                   kMXEventTypeStringRoomThirdPartyInvite,
+                                                                  kMXEventTypeStringRoomGuestAccess,
+                                                                  kMXEventTypeStringRoomJoinRules,
                                                                   kMXEventTypeStringCallInvite,
                                                                   kMXEventTypeStringCallAnswer,
                                                                   kMXEventTypeStringCallHangup,
