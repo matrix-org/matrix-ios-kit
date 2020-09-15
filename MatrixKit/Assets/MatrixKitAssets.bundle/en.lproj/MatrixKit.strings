@@ -106,7 +106,13 @@
 "notice_event_redacted_reason" = " [reason: %@]";
 "notice_profile_change_redacted" = "%@ updated their profile %@";
 "notice_room_created" = "· %@ created and configured the room.";
+//  Old
 "notice_room_join_rule" = "The join rule is: %@";
+//  New
+"notice_room_join_rule_invite" = "%@ made the room invite only.";
+"notice_room_join_rule_invite_by_you" = "You made the room invite only.";
+"notice_room_join_rule_public" = "%@ made the room public.";
+"notice_room_join_rule_public_by_you" = "You made the room public.";
 "notice_room_power_level_intro" = "The power level of room members are:";
 "notice_room_power_level_acting_requirement" = "The minimum power levels that a user must have before acting are:";
 "notice_room_power_level_event_requirement" = "The minimum power levels related to events are:";
@@ -342,8 +348,8 @@
 "notice_display_name_set" = "%@ set their display name to %@";
 "notice_display_name_changed_from" = "%@ changed their display name from %@ to %@";
 "notice_display_name_removed" = "%@ removed their display name";
-"notice_topic_changed" = "%@ changed the topic to: %@";
-"notice_room_name_changed" = "%@ changed the room name to: %@";
+"notice_topic_changed" = "%@ changed the topic to \"%@\".";
+"notice_room_name_changed" = "%@ changed the room name to %@.";
 "notice_placed_voice_call" = "%@ placed a voice call";
 "notice_placed_video_call" = "%@ placed a video call";
 "notice_answered_video_call" = "%@ answered the call";
@@ -369,8 +375,8 @@
 "notice_display_name_set_by_you" = "You set your display name to %@";
 "notice_display_name_changed_from_by_you" = "You changed your display name from %@ to %@";
 "notice_display_name_removed_by_you" = "You removed your display name";
-"notice_topic_changed_by_you" = "You changed the topic to: %@";
-"notice_room_name_changed_by_you" = "You changed the room name to: %@";
+"notice_topic_changed_by_you" = "You changed the topic to \"%@\".";
+"notice_room_name_changed_by_you" = "You changed the room name to %@.";
 "notice_placed_voice_call_by_you" = "You placed a voice call";
 "notice_placed_video_call_by_you" = "You placed a video call";
 "notice_answered_video_call_by_you" = "You answered the call";
