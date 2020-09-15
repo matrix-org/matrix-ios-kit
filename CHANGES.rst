@@ -1,3 +1,30 @@
+Changes in 0.12.19 (2020-09-15)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAppSettings: Change some events to be visible (vector-im/element-ios/issues/3629). 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+
+
 Changes in 0.12.18 (2020-09-08)
 =================================================
 
