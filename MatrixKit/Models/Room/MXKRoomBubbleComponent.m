@@ -63,10 +63,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-}
-
 - (void)updateWithEvent:(MXEvent*)event roomState:(MXRoomState*)roomState session:(MXSession*)session
 {
     // Report the new event

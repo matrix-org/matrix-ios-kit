@@ -534,6 +534,14 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             }
         }];
     }
+    else
+    {
+        NSLog(@"[MXKAccount][Push] enablePushKitNotifications: PushKit is already disabled for %@", self.mxCredentials.userId);
+        if (success)
+        {
+            success();
+        }
+    }
 }
 
 - (void)setEnableInAppNotifications:(BOOL)enableInAppNotifications
@@ -1159,11 +1167,23 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                            NSLog(@"[MXKAccount][Push] ;: Error: %@", error);
                        }];
     }
-    else if (_hasPusherForPushNotifications && mxSession)
+    else if (_hasPusherForPushNotifications)
     {
-        // Turn off pusher if user denied remote notification.
-        NSLog(@"[MXKAccount][Push] refreshAPNSPusher: Disable APNS pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
-        [self enableAPNSPusher:NO success:nil failure:nil];
+        if ([MXKAccountManager sharedManager].apnsDeviceToken)
+        {
+            if (mxSession)
+            {
+                // Turn off pusher if user denied remote notification.
+                NSLog(@"[MXKAccount][Push] refreshAPNSPusher: Disable APNS pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
+                [self enableAPNSPusher:NO success:nil failure:nil];
+            }
+        }
+        else
+        {
+            NSLog(@"[MXKAccount][Push] refreshAPNSPusher: APNS pusher for %@ account is already disabled. Reset _hasPusherForPushNotifications", self.mxCredentials.userId);
+            _hasPusherForPushNotifications = NO;
+            [[MXKAccountManager sharedManager] saveAccounts];
+        }
     }
 }
 
@@ -1253,15 +1273,23 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                               NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Error: %@", error);
                           }];
     }
-    else if (_hasPusherForPushKitNotifications && mxSession)
+    else if (_hasPusherForPushKitNotifications)
     {
-        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Do nothing. User denied notifications (account: %@)", self.mxCredentials.userId);
-        
-        // XXX: The following code has been commented to avoid automatic deactivation of push notifications
-        
-        // Turn off pusher if user denied remote notification.
-        //NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
-        //[self enablePushKitPusher:NO success:nil failure:nil];
+        if ([MXKAccountManager sharedManager].pushDeviceToken)
+        {
+            if (mxSession)
+            {
+                // Turn off pusher if user denied remote notification.
+                NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
+                [self enablePushKitPusher:NO success:nil failure:nil];
+            }
+        }
+        else
+        {
+            NSLog(@"[MXKAccount][Push] refreshPushKitPusher: PushKit pusher for %@ account is already disabled. Reset _hasPusherForPushKitNotifications", self.mxCredentials.userId);
+            _hasPusherForPushKitNotifications = NO;
+            [[MXKAccountManager sharedManager] saveAccounts];
+        }
     }
 }
 

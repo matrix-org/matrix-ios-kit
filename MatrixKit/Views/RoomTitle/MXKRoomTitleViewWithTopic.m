@@ -58,10 +58,6 @@
     self.hiddenTopic = YES;
 }
 
-- (void)dealloc
-{
-}
-
 - (void)refreshDisplay
 {
     [super refreshDisplay];

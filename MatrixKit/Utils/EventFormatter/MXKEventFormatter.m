@@ -801,7 +801,36 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             
             if (joinRule)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule"], joinRule];
+                if ([event.sender isEqualToString:mxSession.myUserId])
+                {
+                    if ([joinRule isEqualToString:kMXRoomJoinRulePublic])
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public_by_you"];
+                    }
+                    else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_by_you"];
+                    }
+                }
+                else
+                {
+                    NSString *displayName = roomState ? [roomState.members memberName:event.sender] : event.sender;
+                    if ([joinRule isEqualToString:kMXRoomJoinRulePublic])
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public"], displayName];
+                    }
+                    else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite"], displayName];
+                    }
+                }
+                
+                if (!displayText)
+                {
+                    //  use old string for non-handled cases: "knock" and "private"
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule"], joinRule];
+                }
+                
                 // Append redacted info if any
                 if (redactedInfo)
                 {
