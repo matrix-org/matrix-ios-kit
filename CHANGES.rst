@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKAppSettings: Change some events to be visible (vector-im/element-ios/issues/3629). 
 
 🐛 Bugfix
  * 
