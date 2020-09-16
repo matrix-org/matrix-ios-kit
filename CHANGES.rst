@@ -1,3 +1,30 @@
+Changes in 0.12.20 (2020-09-16)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * 
+
+Bugfix:
+ * 
+
+API Change:
+ * Disable PushKit pushers by default, see `-[MXKAppSettings allowPushKitPushers]`.
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.19 (2020-09-15)
 =================================================
 
