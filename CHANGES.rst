@@ -1,4 +1,4 @@
-Changes to be released in next version
+Changes in 0.12.20 (2020-09-16)
 =================================================
 
 Features:
