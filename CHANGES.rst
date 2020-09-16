@@ -1,3 +1,30 @@
+Changes to be released in next version
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * 
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
 Changes in 0.12.20 (2020-09-16)
 =================================================
 
