@@ -1262,7 +1262,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     NSLog(@"[MXKAccount][Push] refreshPushKitPusher");
 
     // Check the conditions required to run the pusher
-    if (self.isPushKitNotificationActive)
+    if (![MXKAppSettings standardAppSettings].allowPushKitPushers)
+    {
+        // Turn off pusher if PushKit pushers are not allowed
+        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (pushers are not allowed)", self.mxCredentials.userId);
+        [self enablePushKitPusher:NO success:nil failure:nil];
+    }
+    else if (self.isPushKitNotificationActive)
     {
         NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Refresh PushKit pusher for %@ account", self.mxCredentials.userId);
         
