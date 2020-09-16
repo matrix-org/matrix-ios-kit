@@ -179,6 +179,11 @@
  */
 @property (nonatomic) UIColor *presenceColorForOfflineUser;
 
+#pragma mark - Push
+
+/// Flag to allow PushKit pushers or not. Default value is `NO`.
+@property (nonatomic, assign) BOOL allowPushKitPushers;
+
 #pragma mark - Calls
 
 /**

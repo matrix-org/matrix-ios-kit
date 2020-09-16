@@ -117,6 +117,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
         
+        _allowPushKitPushers = NO;
         enableCallKit = YES;
         
         eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
