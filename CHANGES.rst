@@ -11,7 +11,7 @@ Bugfix:
  * 
 
 API Change:
- * 
+ * Disable PushKit pushers by default, see `-[MXKAppSettings allowPushKitPushers]`.
 
 Translations:
  * 
