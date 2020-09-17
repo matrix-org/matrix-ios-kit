@@ -97,7 +97,7 @@
 @property (nonatomic) NSString *httpsLinkScheme;
 
 /**
- Indicate to hide un-decryptable events before joining the room.
+ Indicate to hide un-decryptable events before joining the room. Default is `YES`.
  */
 @property (nonatomic) BOOL hidePreJoinedUndecryptableEvents;
 
