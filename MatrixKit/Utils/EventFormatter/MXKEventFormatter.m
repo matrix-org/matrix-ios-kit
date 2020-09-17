@@ -947,6 +947,12 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     NSString *errorDescription;
 
                     if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
+                        && [MXKAppSettings standardAppSettings].hideUndecryptableEvents)
+                    {
+                        //  Hide this event, it cannot be decrypted
+                        displayText = nil;
+                    }
+                    else if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
                         && event.decryptionError.code == MXDecryptingErrorUnknownInboundSessionIdCode)
                     {
                         // Make the unknown inbound session id error description more user friendly

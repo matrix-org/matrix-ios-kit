@@ -5,7 +5,7 @@ Features:
  * 
 
 Improvements:
- * 
+ * MXKAppSettings: Introduce `hideUndecryptableEvents`. Disabled by default.
 
 Bugfix:
  * 
