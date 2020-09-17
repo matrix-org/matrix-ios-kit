@@ -12,6 +12,7 @@ Bugfix:
 
 API Change:
  * Hide prejoined undecryptable events by default. See -[MXKAppSettings hidePreJoinedUndecryptableEvents].
+ * Hide all undecryptable events by default. See -[MXKAppSettings hideUndecryptableEvents].
 
 Translations:
  * 

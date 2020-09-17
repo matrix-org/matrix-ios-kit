@@ -2332,6 +2332,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
     }
     
+    if ([MXKAppSettings standardAppSettings].hideUndecryptableEvents
+        && event.eventType == MXEventTypeRoomEncrypted
+        && [event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain])
+    {
+        //  this is an undecryptable event, do not process
+        return;
+    }
+    
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
     
     // Count queued events when the server sync is in progress
