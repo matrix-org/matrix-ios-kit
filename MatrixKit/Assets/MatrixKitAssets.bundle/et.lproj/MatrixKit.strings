@@ -158,7 +158,7 @@
 "notice_event_redacted_by" = " %@ poolt";
 "notice_event_redacted_reason" = " [põhjus: %@]";
 "notice_profile_change_redacted" = "%@ uuendas oma profiili %@";
-"notice_room_created" = "Kasutaja %@ lõi jututoa";
+"notice_room_created" = "Kasutaja %@ lõi ja seadistas jututoa.";
 "notice_room_join_rule" = "Liitumise tingimused on: %@";
 "notice_room_power_level_intro" = "Jututoa liikmete õigused on:";
 "notice_room_power_level_acting_requirement" = "Minimaalselt vajalikud õigused enne neid tegevusi on:";
@@ -286,8 +286,8 @@
 "notice_display_name_set" = "%@ määras oma kuvatavaks nimeks %@";
 "notice_display_name_changed_from" = "%@ muutis senise kuvatava nime %@ uueks nimeks %@";
 "notice_display_name_removed" = "%@ eemaldas oma kuvatava nime";
-"notice_topic_changed" = "%@ muutis uueks teemaks %@";
-"notice_room_name_changed" = "%@ muutis jututoa uueks nimeks %@";
+"notice_topic_changed" = "%@ muutis uueks teemaks „%@“.";
+"notice_room_name_changed" = "%@ muutis jututoa uueks nimeks %@.";
 "notice_placed_voice_call" = "%@ alustas häälkõnet";
 "notice_placed_video_call" = "%@ alustas videokõnet";
 "notice_answered_video_call" = "%@ vastas kõnele";
@@ -312,8 +312,8 @@
 "notice_display_name_set_by_you" = "Sina määrasid oma kuvatavaks nimeks %@";
 "notice_display_name_changed_from_by_you" = "Sina muutsid senise kuvatava nime %@ uueks nimeks %@";
 "notice_display_name_removed_by_you" = "Sa eemaldasid oma kuvatava nime";
-"notice_topic_changed_by_you" = "Sa muutsid uueks teemaks %@";
-"notice_room_name_changed_by_you" = "Sa muutsid jututoa uueks nimeks %@";
+"notice_topic_changed_by_you" = "Sa muutsid uueks teemaks „%@“.";
+"notice_room_name_changed_by_you" = "Sa muutsid jututoa uueks nimeks %@.";
 "notice_placed_voice_call_by_you" = "Sa alustasid häälkõnet";
 "notice_placed_video_call_by_you" = "Sa alustasid videokõnet";
 "notice_answered_video_call_by_you" = "Sa vastasid kõnele";
@@ -323,7 +323,7 @@
 "notice_room_topic_removed_by_you" = "Sa eemaldasid teema";
 "notice_event_redacted_by_you" = " sinu poolt";
 "notice_profile_change_redacted_by_you" = "Sa uuendasid oma profiili %@";
-"notice_room_created_by_you" = "Sa lõid jututoa";
+"notice_room_created_by_you" = "Sa lõid ja seadistasid jututoa.";
 "notice_encryption_enabled_ok_by_you" = "Sa lülitasid sisse läbiva krüptimise.";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "Sa lülitasid sisse läbiva krüptimise (kasutusel on tundmatu algoritm %@).";
 "notice_redaction_by_you" = "Sa muutsid sündmust: (id: %@)";
@@ -416,3 +416,8 @@
 "ssl_unexpected_existing_expl" = "Võrreldes selle sertifikaadiga, mida sinu nutiseade seni usaldas, on praegune sertifikaat muutunud. See on VÄGA EBATAVALINE. Me soovitame, et ÄRA NÕUSTU selle uue sertifikaadiga.";
 "ssl_expected_existing_expl" = "Senise usaldusväärse sertifikaadi asemel kasutab server nüüd mitteusaldusväärset sertifikaati. See võib tähendada et haldaja on seda serveris muutnud. Et võrrelda viimase kehtiva sertifikaadi sõrmejälge, palun võta haldajaga ühendust.";
 "ssl_only_accept" = "NÕUSTU sertifikaadiga vaid siis, kui serveri haldaja antud sõrmejälg klapib sellega, mida sa hetkel siin näed.";
+//  New
+"notice_room_join_rule_invite" = "%@ määras, et jututuppa pääseb vaid kutsega.";
+"notice_room_join_rule_invite_by_you" = "Sina määrasid, et jututuppa pääseb vaid kutsega.";
+"notice_room_join_rule_public" = "%@ muutis jututoa avalikuks.";
+"notice_room_join_rule_public_by_you" = "Sa muutsid jututoa avalikuks.";
