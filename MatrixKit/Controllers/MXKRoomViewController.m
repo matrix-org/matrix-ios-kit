@@ -1004,7 +1004,14 @@
     
     if (!reason.length)
     {
-        reason = [NSBundle mxk_localizedStringForKey:@"room_left"];
+        if (self.roomDataSource.room.isDirect)
+        {
+            reason = [NSBundle mxk_localizedStringForKey:@"dm_room_left"];
+        }
+        else
+        {
+            reason = [NSBundle mxk_localizedStringForKey:@"room_left"];
+        }
     }
     
     
