@@ -111,7 +111,9 @@
 "notice_room_join_rule" = "The join rule is: %@";
 //  New
 "notice_room_join_rule_invite" = "%@ made the room invite only.";
+"dm_notice_room_join_rule_invite" = "%@ made this invite only.";
 "notice_room_join_rule_invite_by_you" = "You made the room invite only.";
+"dm_notice_room_join_rule_invite_by_you" = "You made this invite only.";
 "notice_room_join_rule_public" = "%@ made the room public.";
 "notice_room_join_rule_public_by_you" = "You made the room public.";
 "notice_room_power_level_intro" = "The power level of room members are:";

@@ -824,7 +824,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     }
                     else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
                     {
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_by_you"];
+                        if (isRoomDirect)
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"dm_notice_room_join_rule_invite_by_you"];
+                        }
+                        else
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_by_you"];
+                        }
                     }
                 }
                 else
@@ -836,7 +843,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     }
                     else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite"], displayName];
+                        if (isRoomDirect)
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_join_rule_invite"], displayName];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite"], displayName];
+                        }
                     }
                 }
                 
