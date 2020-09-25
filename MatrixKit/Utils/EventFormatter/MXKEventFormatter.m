@@ -980,7 +980,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             MXJSONModelSetArray(aliases, event.content[@"aliases"]);
             if (aliases)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases"], aliases];
+                if (isRoomDirect)
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_aliases"], aliases];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases"], aliases];
+                }
                 // Append redacted info if any
                 if (redactedInfo)
                 {
