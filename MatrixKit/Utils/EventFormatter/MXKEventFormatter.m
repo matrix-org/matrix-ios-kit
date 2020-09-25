@@ -856,7 +856,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         }
         case MXEventTypeRoomPowerLevels:
         {
-            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro"];
+            if (isRoomDirect)
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"dm_notice_room_power_level_intro"];
+            }
+            else
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro"];
+            }
             NSDictionary *users;
             MXJSONModelSetDictionary(users, event.content[@"users"]);
             
