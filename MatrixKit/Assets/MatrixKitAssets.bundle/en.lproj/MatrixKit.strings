@@ -138,6 +138,7 @@
 "notice_room_history_visible_to_anyone" = "%@ made future room history visible to anyone.";
 "notice_room_history_visible_to_members" = "%@ made future room history visible to all room members.";
 "notice_room_history_visible_to_members_from_invited_point" = "%@ made future room history visible to all room members, from the point they are invited.";
+"dm_notice_room_history_visible_to_members_from_invited_point" = "%@ made future messages visible to everyone, from when they get invited.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ made future room history visible to all room members, from the point they joined.";
 "notice_crypto_unable_to_decrypt" = "** Unable to decrypt: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "The sender's session has not sent us the keys for this message.";
@@ -400,6 +401,7 @@
 "notice_room_history_visible_to_anyone_by_you" = "You made future room history visible to anyone.";
 "notice_room_history_visible_to_members_by_you" = "You made future room history visible to all room members.";
 "notice_room_history_visible_to_members_from_invited_point_by_you" = "You made future room history visible to all room members, from the point they are invited.";
+"dm_notice_room_history_visible_to_members_from_invited_point_by_you" = "You made future messages visible to everyone, from when they get invited.";
 "notice_room_history_visible_to_members_from_joined_point_by_you" = "You made future room history visible to all room members, from the point they joined.";
 
 // Room Screen 

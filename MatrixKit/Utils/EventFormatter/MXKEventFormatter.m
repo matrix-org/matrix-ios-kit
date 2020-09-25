@@ -1087,11 +1087,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if (isEventSenderMyUser)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you"];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"dm_notice_room_history_visible_to_members_from_invited_point_by_you"];
+                            }
+                            else
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you"];
+                            }
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"], senderDisplayName];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_history_visible_to_members_from_invited_point"], senderDisplayName];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"], senderDisplayName];
+                            }
                         }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityJoined])
