@@ -84,7 +84,7 @@
 "notice_event_redacted_by" = " da %@";
 "notice_event_redacted_reason" = " [motivo: %@]";
 "notice_profile_change_redacted" = "%@ ha aggiornato il suo profilo %@";
-"notice_room_created" = "%@ ha creato il canale";
+"notice_room_created" = "%@ ha creato e configurato la stanza.";
 "notice_room_power_level_intro" = "Il livello di accesso dei partecipanti è:";
 "notice_room_power_level_acting_requirement" = "Il livello minimo di accesso per partecipare è:";
 "notice_room_power_level_event_requirement" = "Il livello minimo di accesso per visualizzare eventi è:";
@@ -286,8 +286,8 @@
 "notice_display_name_set" = "%@ ha impostato il suo nome in %@";
 "notice_display_name_changed_from" = "%@ ha cambiato il suo nome da %@ a %@";
 "notice_display_name_removed" = "%@ ha rimosso il suo nome";
-"notice_topic_changed" = "%@ ha cambiato l'argomento in: %@";
-"notice_room_name_changed" = "%@ ha cambiato il nome del canale in: %@";
+"notice_topic_changed" = "%@ ha cambiato l'argomento in \"%@\".";
+"notice_room_name_changed" = "%@ ha cambiato il nome della stanza in %@.";
 "notice_placed_voice_call" = "%@ ha effettuato una telefonata";
 "notice_placed_video_call" = "%@ ha iniziato una videochiamata";
 "notice_answered_video_call" = "%@ ha risposto alla chiamata";
@@ -398,8 +398,8 @@
 "notice_display_name_set_by_you" = "Hai impostato il tuo nome visualizzato a %@";
 "notice_display_name_changed_from_by_you" = "Hai cambiato il tuo nome visualizzato da %@ a %@";
 "notice_display_name_removed_by_you" = "Hai rimosso il tuo nome visualizzato";
-"notice_topic_changed_by_you" = "Hai cambiato l'argomento a: %@";
-"notice_room_name_changed_by_you" = "Hai cambiato il nome della stanza a: %@";
+"notice_topic_changed_by_you" = "Hai cambiato l'argomento in \"%@\".";
+"notice_room_name_changed_by_you" = "Hai cambiato il nome della stanza in %@.";
 "notice_placed_voice_call_by_you" = "Hai iniziato una telefonata";
 "notice_placed_video_call_by_you" = "Hai iniziato una videochiamata";
 "notice_answered_video_call_by_you" = "Hai risposto alla chiamata";
@@ -409,7 +409,7 @@
 "notice_room_topic_removed_by_you" = "Hai rimosso l'argomento";
 "notice_event_redacted_by_you" = " da te";
 "notice_profile_change_redacted_by_you" = "Hai aggiornato il tuo profilo %@";
-"notice_room_created_by_you" = "Hai creato la stanza";
+"notice_room_created_by_you" = "Hai creato e configurato la stanza.";
 "notice_encryption_enabled_ok_by_you" = "Hai attivato la crittografia end-to-end.";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "Hai attivato la crittografia end-to-end (algoritmo %@ sconosciuto).";
 "notice_redaction_by_you" = "Hai corretto un evento (id: %@)";
@@ -417,3 +417,8 @@
 "notice_room_history_visible_to_members_by_you" = "Hai reso visibile a tutti i membri della stanza la cronologia futura della stanza.";
 "notice_room_history_visible_to_members_from_invited_point_by_you" = "Hai reso visibile a tutti i membri della stanza la cronologia futura della stanza, dal momento del loro invito.";
 "notice_room_history_visible_to_members_from_joined_point_by_you" = "Hai reso visibile a tutti i membri della stanza la cronologia futura della stanza, dal momento della loro entrata.";
+//  New
+"notice_room_join_rule_invite" = "%@ ha reso la stanza solo su invito.";
+"notice_room_join_rule_invite_by_you" = "Hai reso la stanza solo su invito.";
+"notice_room_join_rule_public" = "%@ ha reso la stanza pubblica.";
+"notice_room_join_rule_public_by_you" = "Hai reso la stanza pubblica.";
