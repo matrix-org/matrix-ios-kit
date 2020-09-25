@@ -115,7 +115,9 @@
 "notice_room_join_rule_invite_by_you" = "You made the room invite only.";
 "dm_notice_room_join_rule_invite_by_you" = "You made this invite only.";
 "notice_room_join_rule_public" = "%@ made the room public.";
+"dm_notice_room_join_rule_public" = "%@ made this public.";
 "notice_room_join_rule_public_by_you" = "You made the room public.";
+"dm_notice_room_join_rule_public_by_you" = "You made this public.";
 "notice_room_power_level_intro" = "The power level of room members are:";
 "dm_notice_room_power_level_intro" = "The power level of members are:";
 "notice_room_power_level_acting_requirement" = "The minimum power levels that a user must have before acting are:";
