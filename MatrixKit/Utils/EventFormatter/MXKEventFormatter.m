@@ -1307,11 +1307,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 MXJSONModelSetString(displayname, event.prevContent[@"display_name"]);
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you"], displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_third_party_revoked_invite_by_you"], displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you"], displayname];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                    }
                 }
             }
             break;
