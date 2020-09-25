@@ -100,6 +100,7 @@
 // Events formatter
 "notice_avatar_changed_too" = "(avatar was changed too)";
 "notice_room_name_removed" = "%@ removed the room name";
+"dm_notice_room_name_removed" = "%@ removed the name";
 "notice_room_topic_removed" = "%@ removed the topic";
 "notice_event_redacted" = "<redacted%@>";
 "notice_event_redacted_by" = " by %@";
@@ -398,6 +399,7 @@
 "notice_ended_video_call_by_you" = "You ended the call";
 "notice_conference_call_request_by_you" = "You requested a VoIP conference";
 "notice_room_name_removed_by_you" = "You removed the room name";
+"dm_notice_room_name_removed_by_you" = "You removed the name";
 "notice_room_topic_removed_by_you" = "You removed the topic";
 "notice_event_redacted_by_you" = " by you";
 "notice_profile_change_redacted_by_you" = "You updated your profile %@";

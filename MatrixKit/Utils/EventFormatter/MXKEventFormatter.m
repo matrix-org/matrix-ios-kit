@@ -408,11 +408,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you"];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"dm_notice_room_name_removed_by_you"];
+                    }
+                    else
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you"];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_name_removed"], senderDisplayName];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
+                    }
                 }
             }
             break;
