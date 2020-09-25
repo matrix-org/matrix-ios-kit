@@ -1060,13 +1060,16 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable])
                     {
-                        if (isEventSenderMyUser)
+                        if (!isRoomDirect)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone_by_you"];
-                        }
-                        else
-                        {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"], senderDisplayName];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone_by_you"];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"], senderDisplayName];
+                            }
                         }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityShared])
