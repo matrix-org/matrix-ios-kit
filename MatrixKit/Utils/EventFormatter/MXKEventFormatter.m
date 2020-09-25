@@ -356,7 +356,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     // Prepare returned description
     NSString *displayText = nil;
     NSAttributedString *attributedDisplayText = nil;
-    MXRoom *room = [mxSession roomWithRoomId:event.roomId];
+    BOOL isRoomDirect = [mxSession roomWithRoomId:event.roomId].isDirect;
 
     // Prepare the display name of the sender
     NSString *senderDisplayName;
@@ -781,7 +781,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if ([creatorId isEqualToString:mxSession.myUserId])
                 {
-                    if (room.isDirect)
+                    if (isRoomDirect)
                     {
                         displayText = [NSBundle mxk_localizedStringForKey:@"dm_notice_room_created_by_you"];
                     }
@@ -792,7 +792,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 }
                 else
                 {
-                    if (room.isDirect)
+                    if (isRoomDirect)
                     {
                         displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
                     }
@@ -1280,11 +1280,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you"], displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_third_party_invite_by_you"], displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you"], displayname];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_third_party_invite"], senderDisplayName, displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+                    }
                 }
             }
             else

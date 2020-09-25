@@ -335,6 +335,7 @@
 
 "notice_room_invite" = "%@ invited %@";
 "notice_room_third_party_invite" = "%@ sent an invitation to %@ to join the room";
+"dm_notice_room_third_party_invite" = "%@ invited %@";
 "notice_room_third_party_registered_invite" = "%@ accepted the invitation for %@";
 "notice_room_third_party_revoked_invite" = "%@ revoked the invitation for %@ to join the room";
 "notice_room_join" = "%@ joined";
@@ -363,6 +364,7 @@
 "notice_room_invite_by_you" = "You invited %@";
 "notice_room_invite_you" = "%@ invited you";
 "notice_room_third_party_invite_by_you" = "You sent an invitation to %@ to join the room";
+"dm_notice_room_third_party_invite_by_you" = "You invited %@";
 "notice_room_third_party_registered_invite_by_you" = "You accepted the invitation for %@";
 "notice_room_third_party_revoked_invite_by_you" = "You revoked the invitation for %@ to join the room";
 "notice_room_join_by_you" = "You joined";
