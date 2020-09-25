@@ -356,6 +356,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     // Prepare returned description
     NSString *displayText = nil;
     NSAttributedString *attributedDisplayText = nil;
+    MXRoom *room = [mxSession roomWithRoomId:event.roomId];
 
     // Prepare the display name of the sender
     NSString *senderDisplayName;
@@ -780,11 +781,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if ([creatorId isEqualToString:mxSession.myUserId])
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you"];
+                    if (room.isDirect)
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"dm_notice_room_created_by_you"];
+                    }
+                    else
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you"];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                    if (room.isDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"dm_notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                    }
                 }
                 // Append redacted info if any
                 if (redactedInfo)
