@@ -137,6 +137,7 @@
 "notice_error_unknown_event_type" = "Unknown event type";
 "notice_room_history_visible_to_anyone" = "%@ made future room history visible to anyone.";
 "notice_room_history_visible_to_members" = "%@ made future room history visible to all room members.";
+"dm_notice_room_history_visible_to_members" = "%@ made future messages visible to all room members.";
 "notice_room_history_visible_to_members_from_invited_point" = "%@ made future room history visible to all room members, from the point they are invited.";
 "dm_notice_room_history_visible_to_members_from_invited_point" = "%@ made future messages visible to everyone, from when they get invited.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ made future room history visible to all room members, from the point they joined.";
@@ -401,6 +402,7 @@
 "notice_redaction_by_you" = "You redacted an event (id: %@)";
 "notice_room_history_visible_to_anyone_by_you" = "You made future room history visible to anyone.";
 "notice_room_history_visible_to_members_by_you" = "You made future room history visible to all room members.";
+"dm_notice_room_history_visible_to_members_by_you" = "You made future messages visible to all room members.";
 "notice_room_history_visible_to_members_from_invited_point_by_you" = "You made future room history visible to all room members, from the point they are invited.";
 "dm_notice_room_history_visible_to_members_from_invited_point_by_you" = "You made future messages visible to everyone, from when they get invited.";
 "notice_room_history_visible_to_members_from_joined_point_by_you" = "You made future room history visible to all room members, from the point they joined.";
