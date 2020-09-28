@@ -6,6 +6,7 @@ Features:
 
 Improvements:
  * MXKAppSettings: Introduce `hideUndecryptableEvents`. Disabled by default.
+ * Room: Differentiate wordings for DMs.
 
 Bugfix:
  * 
