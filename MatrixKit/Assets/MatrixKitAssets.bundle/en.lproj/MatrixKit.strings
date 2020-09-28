@@ -100,31 +100,31 @@
 // Events formatter
 "notice_avatar_changed_too" = "(avatar was changed too)";
 "notice_room_name_removed" = "%@ removed the room name";
-"dm_notice_room_name_removed" = "%@ removed the name";
+"notice_room_name_removed_for_dm" = "%@ removed the name";
 "notice_room_topic_removed" = "%@ removed the topic";
 "notice_event_redacted" = "<redacted%@>";
 "notice_event_redacted_by" = " by %@";
 "notice_event_redacted_reason" = " [reason: %@]";
 "notice_profile_change_redacted" = "%@ updated their profile %@";
 "notice_room_created" = "%@ created and configured the room.";
-"dm_notice_room_created" = "%@ joined.";
+"notice_room_created_for_dm" = "%@ joined.";
 //  Old
 "notice_room_join_rule" = "The join rule is: %@";
 //  New
 "notice_room_join_rule_invite" = "%@ made the room invite only.";
-"dm_notice_room_join_rule_invite" = "%@ made this invite only.";
+"notice_room_join_rule_invite_for_dm" = "%@ made this invite only.";
 "notice_room_join_rule_invite_by_you" = "You made the room invite only.";
-"dm_notice_room_join_rule_invite_by_you" = "You made this invite only.";
+"notice_room_join_rule_invite_by_you_for_dm" = "You made this invite only.";
 "notice_room_join_rule_public" = "%@ made the room public.";
-"dm_notice_room_join_rule_public" = "%@ made this public.";
+"notice_room_join_rule_public_for_dm" = "%@ made this public.";
 "notice_room_join_rule_public_by_you" = "You made the room public.";
-"dm_notice_room_join_rule_public_by_you" = "You made this public.";
+"notice_room_join_rule_public_by_you_for_dm" = "You made this public.";
 "notice_room_power_level_intro" = "The power level of room members are:";
-"dm_notice_room_power_level_intro" = "The power level of members are:";
+"notice_room_power_level_intro_for_dm" = "The power level of members are:";
 "notice_room_power_level_acting_requirement" = "The minimum power levels that a user must have before acting are:";
 "notice_room_power_level_event_requirement" = "The minimum power levels related to events are:";
 "notice_room_aliases" = "The room aliases are: %@";
-"dm_notice_room_aliases" = "The aliases are: %@";
+"notice_room_aliases_for_dm" = "The aliases are: %@";
 "notice_room_related_groups" = "The groups associated with this room are: %@";
 "notice_encrypted_message" = "Encrypted message";
 "notice_encryption_enabled_ok" = "%@ turned on end-to-end encryption.";
@@ -143,11 +143,11 @@
 "notice_error_unknown_event_type" = "Unknown event type";
 "notice_room_history_visible_to_anyone" = "%@ made future room history visible to anyone.";
 "notice_room_history_visible_to_members" = "%@ made future room history visible to all room members.";
-"dm_notice_room_history_visible_to_members" = "%@ made future messages visible to all room members.";
+"notice_room_history_visible_to_members_for_dm" = "%@ made future messages visible to all room members.";
 "notice_room_history_visible_to_members_from_invited_point" = "%@ made future room history visible to all room members, from the point they are invited.";
-"dm_notice_room_history_visible_to_members_from_invited_point" = "%@ made future messages visible to everyone, from when they get invited.";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ made future messages visible to everyone, from when they get invited.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ made future room history visible to all room members, from the point they joined.";
-"dm_notice_room_history_visible_to_members_from_joined_point" = "%@ made future messages visible to everyone, from when they joined.";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ made future messages visible to everyone, from when they joined.";
 "notice_crypto_unable_to_decrypt" = "** Unable to decrypt: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "The sender's session has not sent us the keys for this message.";
 "notice_sticker" = "sticker";
@@ -246,7 +246,7 @@
 "room_error_timeline_event_not_found_title" = "Failed to load timeline position";
 "room_error_timeline_event_not_found" = "The application was trying to load a specific point in this room's timeline but was unable to find it";
 "room_left" = "You left the room";
-"dm_room_left" = "You left";
+"room_left_for_dm" = "You left";
 "room_no_power_to_create_conference_call" = "You need permission to invite to start a conference in this room";
 "room_no_conference_call_in_encrypted_rooms" = "Conference calls are not supported in encrypted rooms";
 
@@ -346,10 +346,10 @@
 
 "notice_room_invite" = "%@ invited %@";
 "notice_room_third_party_invite" = "%@ sent an invitation to %@ to join the room";
-"dm_notice_room_third_party_invite" = "%@ invited %@";
+"notice_room_third_party_invite_for_dm" = "%@ invited %@";
 "notice_room_third_party_registered_invite" = "%@ accepted the invitation for %@";
 "notice_room_third_party_revoked_invite" = "%@ revoked the invitation for %@ to join the room";
-"dm_notice_room_third_party_revoked_invite" = "%@ revoked %@'s invitation";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ revoked %@'s invitation";
 "notice_room_join" = "%@ joined";
 "notice_room_leave" = "%@ left";
 "notice_room_reject" = "%@ rejected the invitation";
@@ -364,7 +364,7 @@
 "notice_display_name_removed" = "%@ removed their display name";
 "notice_topic_changed" = "%@ changed the topic to \"%@\".";
 "notice_room_name_changed" = "%@ changed the room name to %@.";
-"dm_notice_room_name_changed" = "%@ changed the name to %@.";
+"notice_room_name_changed_for_dm" = "%@ changed the name to %@.";
 "notice_placed_voice_call" = "%@ placed a voice call";
 "notice_placed_video_call" = "%@ placed a video call";
 "notice_answered_video_call" = "%@ answered the call";
@@ -377,10 +377,10 @@
 "notice_room_invite_by_you" = "You invited %@";
 "notice_room_invite_you" = "%@ invited you";
 "notice_room_third_party_invite_by_you" = "You sent an invitation to %@ to join the room";
-"dm_notice_room_third_party_invite_by_you" = "You invited %@";
+"notice_room_third_party_invite_by_you_for_dm" = "You invited %@";
 "notice_room_third_party_registered_invite_by_you" = "You accepted the invitation for %@";
 "notice_room_third_party_revoked_invite_by_you" = "You revoked the invitation for %@ to join the room";
-"dm_notice_room_third_party_revoked_invite_by_you" = "You revoked %@'s invitation";
+"notice_room_third_party_revoked_invite_by_you_for_dm" = "You revoked %@'s invitation";
 "notice_room_join_by_you" = "You joined";
 "notice_room_leave_by_you" = "You left";
 "notice_room_reject_by_you" = "You rejected the invitation";
@@ -394,29 +394,29 @@
 "notice_display_name_removed_by_you" = "You removed your display name";
 "notice_topic_changed_by_you" = "You changed the topic to \"%@\".";
 "notice_room_name_changed_by_you" = "You changed the room name to %@.";
-"dm_notice_room_name_changed_by_you" = "You changed the name to %@.";
+"notice_room_name_changed_by_you_for_dm" = "You changed the name to %@.";
 "notice_placed_voice_call_by_you" = "You placed a voice call";
 "notice_placed_video_call_by_you" = "You placed a video call";
 "notice_answered_video_call_by_you" = "You answered the call";
 "notice_ended_video_call_by_you" = "You ended the call";
 "notice_conference_call_request_by_you" = "You requested a VoIP conference";
 "notice_room_name_removed_by_you" = "You removed the room name";
-"dm_notice_room_name_removed_by_you" = "You removed the name";
+"notice_room_name_removed_by_you_for_dm" = "You removed the name";
 "notice_room_topic_removed_by_you" = "You removed the topic";
 "notice_event_redacted_by_you" = " by you";
 "notice_profile_change_redacted_by_you" = "You updated your profile %@";
 "notice_room_created_by_you" = "You created and configured the room.";
-"dm_notice_room_created_by_you" = "You joined.";
+"notice_room_created_by_you_for_dm" = "You joined.";
 "notice_encryption_enabled_ok_by_you" = "You turned on end-to-end encryption.";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "You turned on end-to-end encryption (unrecognised algorithm %@).";
 "notice_redaction_by_you" = "You redacted an event (id: %@)";
 "notice_room_history_visible_to_anyone_by_you" = "You made future room history visible to anyone.";
 "notice_room_history_visible_to_members_by_you" = "You made future room history visible to all room members.";
-"dm_notice_room_history_visible_to_members_by_you" = "You made future messages visible to all room members.";
+"notice_room_history_visible_to_members_by_you_for_dm" = "You made future messages visible to all room members.";
 "notice_room_history_visible_to_members_from_invited_point_by_you" = "You made future room history visible to all room members, from the point they are invited.";
-"dm_notice_room_history_visible_to_members_from_invited_point_by_you" = "You made future messages visible to everyone, from when they get invited.";
+"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "You made future messages visible to everyone, from when they get invited.";
 "notice_room_history_visible_to_members_from_joined_point_by_you" = "You made future room history visible to all room members, from the point they joined.";
-"dm_notice_room_history_visible_to_members_from_joined_point_by_you" = "You made future messages visible to everyone, from when they joined.";
+"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "You made future messages visible to everyone, from when they joined.";
 
 // Room Screen 
 
