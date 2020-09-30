@@ -1,10 +1,11 @@
-Changes to be released in next version
+Changes in 0.12.21 (2020-09-30)
 =================================================
 
 Features:
  * 
 
 Improvements:
+ * Upgrade MatrixSDK version ([v0.16.16](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.16)).
  * MXKAppSettings: Introduce `hideUndecryptableEvents`. Disabled by default.
  * Room: Differentiate wordings for DMs.
 
