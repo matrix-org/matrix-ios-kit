@@ -65,7 +65,7 @@
 "notice_event_redacted_by" = " nga %@";
 "notice_event_redacted_reason" = " [arsye: %@]";
 "notice_profile_change_redacted" = "%@ përditësoi profilin e vet %@";
-"notice_room_created" = "%@ krijoi dhomën";
+"notice_room_created" = "%@ krijoi dhe formësoi dhomën.";
 "notice_room_join_rule" = "Rregulli për pjesëmarrje është: %@";
 "notice_room_power_level_intro" = "Shkallët e pushtetit të anëtarëve të dhomës janë:";
 "notice_room_aliases" = "Aliaset e dhomës janë: %@";
@@ -217,8 +217,8 @@
 "notice_display_name_set" = "%@ caktoi emrin e vet të ekranit si %@";
 "notice_display_name_changed_from" = "%@ ndryshoi emrin e vet të ekranit nga %@ në %@";
 "notice_display_name_removed" = "%@ hoqi emrin e vet të ekranit";
-"notice_topic_changed" = "%@ ka ndryshuar temën në: %@";
-"notice_room_name_changed" = "%@ ndryshoi emrin e dhomës në: %@";
+"notice_topic_changed" = "%@ ndryshoi temën në \"%@\".";
+"notice_room_name_changed" = "%@ ndryshoi emrin e dhomës në %@.";
 "notice_placed_voice_call" = "%@ bëri një thirrje zanore";
 "notice_placed_video_call" = "%@ bëri një thirrje video";
 "notice_answered_video_call" = "%@ iu përgjigj thirrjes";
@@ -398,8 +398,8 @@
 "notice_display_name_set_by_you" = "Caktuat si emrin tuaj në ekran %@";
 "notice_display_name_changed_from_by_you" = "Ndryshuat emrin tuaj në ekran nga %@ në %@";
 "notice_display_name_removed_by_you" = "Hoqët emrin tuaj në ekran";
-"notice_topic_changed_by_you" = "E ndryshuat temën në: %@";
-"notice_room_name_changed_by_you" = "E ndryshuat emrin e dhomës në: %@";
+"notice_topic_changed_by_you" = "E ndryshuat temën në \"%@\".";
+"notice_room_name_changed_by_you" = "E ndryshuat emrin e dhomës në \"%@\".";
 "notice_placed_voice_call_by_you" = "Bëtë një thirrje zanore";
 "notice_placed_video_call_by_you" = "Bëtë një thirrje video";
 "notice_answered_video_call_by_you" = "Iu përgjigjët thirrjes";
@@ -409,7 +409,7 @@
 "notice_room_topic_removed_by_you" = "Hoqët temën";
 "notice_event_redacted_by_you" = " nga ju";
 "notice_profile_change_redacted_by_you" = "Përditësuat profilin tuaj %@";
-"notice_room_created_by_you" = "Krijuat dhomën";
+"notice_room_created_by_you" = "Krijuat dhe formësuat dhomën.";
 "notice_encryption_enabled_ok_by_you" = "Aktivizuat fshehtëzimin skaj-më-skaj.";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "Aktivizuat fshehtëzim skaj-më-skaj (algoritëm %@ i papranuar).";
 "notice_redaction_by_you" = "Redaktuat një akt (id: %@)";
@@ -417,3 +417,8 @@
 "notice_room_history_visible_to_members_by_you" = "E bëtë historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës.";
 "notice_room_history_visible_to_members_from_invited_point_by_you" = "E bëtë historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës, nga çasti që janë ftuar.";
 "notice_room_history_visible_to_members_from_joined_point_by_you" = "E bëtë historikun e ardhshëm të dhomës të dukshëm për krejt anëtarët e dhomës, që nga çasti që bëhen pjesë e dhomës.";
+//  New
+"notice_room_join_rule_invite" = "%@ e bëri dhomën vetëm me ftesa.";
+"notice_room_join_rule_invite_by_you" = "E bëtë dhomën vetëm me ftesa.";
+"notice_room_join_rule_public" = "%@ e bëri dhomën publike.";
+"notice_room_join_rule_public_by_you" = "E bëtë dhomën publike.";

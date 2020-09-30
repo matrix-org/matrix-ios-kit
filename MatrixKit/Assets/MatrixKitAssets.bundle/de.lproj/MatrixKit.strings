@@ -72,7 +72,7 @@
 "notice_event_redacted_by" = " durch %@";
 "notice_event_redacted_reason" = " [Grund: %@]";
 "notice_profile_change_redacted" = "%@ aktualisierte sein Profil %@";
-"notice_room_created" = "%@ erstellte den Raum";
+"notice_room_created" = "%@ hat den Raum erstellt und konfiguriert.";
 "notice_room_join_rule" = "Die Beitrittsregel ist: %@";
 "notice_room_power_level_intro" = "Die Berechtigungsstufe der Teilnehmer ist:";
 "notice_room_power_level_acting_requirement" = "Die minimale Berechtigungsstufe die ein Benutzer zum Handeln benötigt:";
@@ -254,8 +254,8 @@
 "notice_display_name_set" = "%@ setzte den Anzeigenamen auf %@";
 "notice_display_name_changed_from" = "%@ änderte den Anzeigenamen von %@ auf %@";
 "notice_display_name_removed" = "%@ hat den Anzeigenamen entfernt";
-"notice_topic_changed" = "%@ wechselte das Thema zu: %@";
-"notice_room_name_changed" = "%@ änderte den Raum-Namen zu: %@";
+"notice_topic_changed" = "%@ wechselte das Thema zu %@.";
+"notice_room_name_changed" = "%@ änderte den Raum-Namen zu %@.";
 "notice_placed_voice_call" = "%@ tätigte einen Sprach-Anruf";
 "notice_placed_video_call" = "%@ tätigte einen Video-Anruf";
 "notice_answered_video_call" = "%@ hat den Anruf angenommen";
@@ -357,12 +357,12 @@
 "login_mobile_device" = "Mobilgerät";
 "login_tablet_device" = "Tablet";
 "login_desktop_device" = "Desktop";
-"notice_room_related_groups" = "Die Gruppen, die mit diesem Raum verknüpft sind: %@";
+
 // Groups
 "group_invite_section" = "Einladungen";
 "group_section" = "Gruppen";
 "notice_sticker" = "Sticker";
-"notice_in_reply_to" = "Als Antwort auf";
+
 "error_common_message" = "Ein Fehler trat auf. Bitte später erneut probieren.";
 // Reply to message
 "message_reply_to_sender_sent_an_image" = "sandte ein Bild.";
@@ -377,10 +377,17 @@
 "login_error_resource_limit_exceeded_contact_button" = "Kontaktiere Administrator";
 "e2e_passphrase_create" = "Passphrase erzeugen";
 "account_error_push_not_allowed" = "Benachrichtigungen nicht erlaubt";
-"notice_room_third_party_revoked_invite" = "%@ hat die Einladung für %@, dem Raum beizutreten, zurückgezogen";
 "device_details_rename_prompt_title" = "Sitzungsname";
 "notice_encryption_enabled_ok" = "%@ hat die Ende-zu-Ende-Verschlüsselung aktiviert.";
 "notice_encryption_enabled_unknown_algorithm" = "%1$@ hat die Ende-zu-Ende-Verschlüsselung aktiviert (unbekannter Algorithmus %2$@).";
+
+// Notice Events with "You"
+"notice_in_reply_to" = "Als Antwort auf";
+"notice_room_third_party_revoked_invite" = "%@ hat die Einladung für %@, dem Raum beizutreten, zurückgezogen";
+"notice_room_related_groups" = "Die Gruppen, die mit diesem Raum verknüpft sind: %@";
+
+// Notice Events with "You"
+"notice_room_invite_by_you" = "Du hast %@ eingeladen";
 "notice_room_invite_you" = "%@ hat Dich eingeladen";
 "notice_room_third_party_invite_by_you" = "Du hast an %@ eine Einladung gesendet dem Raum beizutreten";
 "notice_room_third_party_registered_invite_by_you" = "Du hast die Einladung für %@ angenommen";
@@ -391,12 +398,13 @@
 "notice_room_kick_by_you" = "Du hast %@ gekickt";
 "notice_room_unban_by_you" = "Du hast %@ entbannt";
 "notice_room_ban_by_you" = "Du hast %@ gebannt";
+"notice_room_withdraw_by_you" = "Sie haben die Einladung von %@ zurückgezogen";
 "notice_avatar_url_changed_by_you" = "Du hast dein Profilbild geändert";
 "notice_display_name_set_by_you" = "Du hast deinen Anzeigenamen auf %@ geändert";
 "notice_display_name_changed_from_by_you" = "Du hast deinen Anzeigenamen von %@ zu %@ geändert";
 "notice_display_name_removed_by_you" = "Du hast deinen Anzeigenamen entfernt";
-"notice_topic_changed_by_you" = "Du hast Das Thema geändert: %@";
-"notice_room_name_changed_by_you" = "Du hast den Raumnamen geändert: %@";
+"notice_topic_changed_by_you" = "Du hast Das Thema zu %@ geändert.";
+"notice_room_name_changed_by_you" = "Du hast den Raumnamen zu %@ geändert.";
 // Notice Events with "You"
 "notice_room_invite_by_you" = "Du hast %@ eingeladen";
 "notice_room_withdraw_by_you" = "Du hast die Einladung von %@ zurückgenommen";
@@ -409,7 +417,7 @@
 "notice_room_topic_removed_by_you" = "Du hast das Raumthema entfernt";
 "notice_event_redacted_by_you" = " von dir";
 "notice_profile_change_redacted_by_you" = "Du hast dein Profil %@ aktualisiert";
-"notice_room_created_by_you" = "Du hast den Raum erstellt";
+"notice_room_created_by_you" = "Du hast den Raum erstellt und konfiguriert.";
 "notice_encryption_enabled_ok_by_you" = "Du hast Ende-zu-Ende-Verschlüsselung aktiviert.";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "Du hast Ende-zu-Ende-Verschlüsselung aktiviert (unbekannter Algorithmus %@).";
 "notice_redaction_by_you" = "Du hast ein Ereignis geschwärzt (ID: %@)";
@@ -417,3 +425,8 @@
 "notice_room_history_visible_to_members_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Mitglieder des Raums sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_invited_point_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Raum-Mitglieder ab deren Teilnahme  sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Raum-Mitglieder ab deren Teilnahme  sichtbar gemacht.";
+//  New
+"notice_room_join_rule_invite" = "%@ hat den Raum auf \"nur-einladen\" gestellt.";
+"notice_room_join_rule_invite_by_you" = "Du hast den Raumbeitritt auf Einladungen beschränkt.";
+"notice_room_join_rule_public" = "%@ hat den Raum öffentlich gemacht.";
+"notice_room_join_rule_public_by_you" = "Du hast den Raum öffentlich gemacht.";

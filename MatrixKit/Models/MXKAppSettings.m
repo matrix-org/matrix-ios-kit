@@ -108,6 +108,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         {
             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"sortRoomMembersUsingLastSeenTime"];
         }
+        _hidePreJoinedUndecryptableEvents = NO;
+        _hideUndecryptableEvents = NO;
         sortRoomMembersUsingLastSeenTime = YES;
         
         presenceColorForOnlineUser = [UIColor greenColor];
