@@ -74,7 +74,7 @@
 "notice_profile_change_redacted" = "%@ aktualisierte sein Profil %@";
 "notice_room_created" = "%@ hat den Raum erstellt und konfiguriert.";
 "notice_room_join_rule" = "Die Beitrittsregel ist: %@";
-"notice_room_power_level_intro" = "Die Berechtigungsstufe der Teilnehmer ist:";
+"notice_room_power_level_intro" = "Das Berechtigungslevel der Teilnehmer ist:";
 "notice_room_power_level_acting_requirement" = "Die minimale Berechtigungsstufe die ein Benutzer zum Handeln benötigt:";
 "notice_room_power_level_event_requirement" = "Die minimalen Berechtigungsstufen bezogen auf Ereignisse:";
 "notice_room_aliases" = "Die Raumnamen-Aliase sind: %@";
@@ -357,12 +357,10 @@
 "login_mobile_device" = "Mobilgerät";
 "login_tablet_device" = "Tablet";
 "login_desktop_device" = "Desktop";
-
 // Groups
 "group_invite_section" = "Einladungen";
 "group_section" = "Gruppen";
 "notice_sticker" = "Sticker";
-
 "error_common_message" = "Ein Fehler trat auf. Bitte später erneut probieren.";
 // Reply to message
 "message_reply_to_sender_sent_an_image" = "sandte ein Bild.";
@@ -380,12 +378,10 @@
 "device_details_rename_prompt_title" = "Sitzungsname";
 "notice_encryption_enabled_ok" = "%@ hat die Ende-zu-Ende-Verschlüsselung aktiviert.";
 "notice_encryption_enabled_unknown_algorithm" = "%1$@ hat die Ende-zu-Ende-Verschlüsselung aktiviert (unbekannter Algorithmus %2$@).";
-
 // Notice Events with "You"
 "notice_in_reply_to" = "Als Antwort auf";
 "notice_room_third_party_revoked_invite" = "%@ hat die Einladung für %@, dem Raum beizutreten, zurückgezogen";
 "notice_room_related_groups" = "Die Gruppen, die mit diesem Raum verknüpft sind: %@";
-
 // Notice Events with "You"
 "notice_room_invite_by_you" = "Du hast %@ eingeladen";
 "notice_room_invite_you" = "%@ hat Dich eingeladen";
@@ -430,3 +426,10 @@
 "notice_room_join_rule_invite_by_you" = "Du hast den Raumbeitritt auf Einladungen beschränkt.";
 "notice_room_join_rule_public" = "%@ hat den Raum öffentlich gemacht.";
 "notice_room_join_rule_public_by_you" = "Du hast den Raum öffentlich gemacht.";
+"notice_room_name_removed_for_dm" = "%@ hat den Namen entfernt";
+"notice_room_created_for_dm" = "%@ ist beigetreten.";
+"notice_room_join_rule_invite_for_dm" = "%@ hat dies auf Einladungen beschränkt.";
+"notice_room_join_rule_invite_by_you_for_dm" = "Du hast dies auf Einladungen beschränkt.";
+"notice_room_power_level_intro_for_dm" = "Das Berechtigungslevel der Mitglieder ist:";
+"notice_room_aliases_for_dm" = "Die Aliase sind: %@";
+"notice_room_history_visible_to_members_for_dm" = "%@ hat zukünftige Nachrichten für alle Raum-Teilnehmer sichtbar gemacht.";
