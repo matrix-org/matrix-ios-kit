@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKAuthenticationViewController: Do not present fallback when there is one unsupported login flow among supported ones (/vector-im/element-ios/issues/3711).
 
 🐛 Bugfix
  * 
