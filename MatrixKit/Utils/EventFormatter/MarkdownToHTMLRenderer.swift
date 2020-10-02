@@ -38,11 +38,7 @@ public class MarkdownToHTMLRenderer: NSObject {
 extension MarkdownToHTMLRenderer: MarkdownToHTMLRendererProtocol {
     
     public func renderToHTML(markdown: String) -> String? {
-        do {
-            return try Down(markdownString: markdown).toHTML(options)
-        } catch {
-            return nil
-        }
+        return try? Down(markdownString: markdown).toHTML(options)
     }
     
 }
