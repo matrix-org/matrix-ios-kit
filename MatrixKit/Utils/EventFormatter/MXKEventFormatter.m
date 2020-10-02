@@ -115,6 +115,8 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         defaultRoomSummaryUpdater.roomNameStringLocalizations = [MXKRoomNameStringLocalizations new];
 
         linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
+        
+        _markdownToHTMLRenderer = [MarkdownToHTMLRendererHardBreaks new];
     }
     return self;
 }
@@ -2066,8 +2068,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 
 - (NSString *)htmlStringFromMarkdownString:(NSString *)markdownString
 {
-    MarkdownParser *hardBreaksParser = [[MarkdownParserHardBreaks alloc] initWithMarkdown:markdownString];
-    NSString *htmlString = [hardBreaksParser toHTML];
+    NSString *htmlString = [_markdownToHTMLRenderer renderToHTMLWithMarkdown:markdownString];
 
     // Strip off the trailing newline, if it exists.
     if ([htmlString hasSuffix:@"\n"])

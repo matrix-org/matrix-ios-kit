@@ -20,19 +20,21 @@ import Foundation
 import Down
 import libcmark
 
+@objc public protocol MarkdownToHTMLRendererProtocol: NSObjectProtocol {
+    func renderToHTML(markdown: String) -> String?
+}
+
 @objcMembers
-public class MarkdownParser: NSObject {
+public class MarkdownToHTMLRenderer: NSObject {
     
-    private let markdown: String
-    fileprivate var options: DownOptions
+    fileprivate var options: DownOptions = []
     
-    public init(withMarkdown markdown: String) {
-        self.markdown = markdown
-        self.options = .default
-        super.init()
-    }
+    //  Do not expose an initializer, because `DownOptions` is not ObjC compatible.
+}
+
+extension MarkdownToHTMLRenderer: MarkdownToHTMLRendererProtocol {
     
-    public func toHTML() -> String? {
+    public func renderToHTML(markdown: String) -> String? {
         do {
             return try Down(markdownString: markdown).toHTML(options)
         } catch {
@@ -43,11 +45,11 @@ public class MarkdownParser: NSObject {
 }
 
 @objcMembers
-public final class MarkdownParserHardBreaks: MarkdownParser {
+public class MarkdownToHTMLRendererHardBreaks: MarkdownToHTMLRenderer {
     
-    public override init(withMarkdown markdown: String) {
-        super.init(withMarkdown: markdown)
-        self.options = .hardBreaks
+    override init() {
+        super.init()
+        options = .hardBreaks
     }
     
 }
