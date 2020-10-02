@@ -97,9 +97,14 @@
 @property (nonatomic) NSString *httpsLinkScheme;
 
 /**
- Indicate to hide un-decryptable events before joining the room.
+ Indicate to hide un-decryptable events before joining the room. Default is `NO`.
  */
 @property (nonatomic) BOOL hidePreJoinedUndecryptableEvents;
+
+/**
+ Indicate to hide un-decryptable events in the room. Default is `NO`.
+ */
+@property (nonatomic) BOOL hideUndecryptableEvents;
 
 #pragma mark - Room members
 
@@ -178,6 +183,11 @@
  The default color is `[UIColor redColor]`.
  */
 @property (nonatomic) UIColor *presenceColorForOfflineUser;
+
+#pragma mark - Push
+
+/// Flag to allow PushKit pushers or not. Default value is `NO`.
+@property (nonatomic, assign) BOOL allowPushKitPushers;
 
 #pragma mark - Calls
 

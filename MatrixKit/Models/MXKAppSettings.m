@@ -108,6 +108,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         {
             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"sortRoomMembersUsingLastSeenTime"];
         }
+        _hidePreJoinedUndecryptableEvents = NO;
+        _hideUndecryptableEvents = NO;
         sortRoomMembersUsingLastSeenTime = YES;
         
         presenceColorForOnlineUser = [UIColor greenColor];
@@ -117,9 +119,11 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
         
+        _allowPushKitPushers = NO;
         enableCallKit = YES;
         
         eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
+                                                                  kMXEventTypeStringRoomCreate,
                                                                   kMXEventTypeStringRoomName,
                                                                   kMXEventTypeStringRoomTopic,
                                                                   kMXEventTypeStringRoomMember,
@@ -128,6 +132,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                   kMXEventTypeStringRoomHistoryVisibility,
                                                                   kMXEventTypeStringRoomMessage,
                                                                   kMXEventTypeStringRoomThirdPartyInvite,
+                                                                  kMXEventTypeStringRoomGuestAccess,
+                                                                  kMXEventTypeStringRoomJoinRules,
                                                                   kMXEventTypeStringCallInvite,
                                                                   kMXEventTypeStringCallAnswer,
                                                                   kMXEventTypeStringCallHangup,
@@ -167,10 +173,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         _messageDetailsAllowSaving = YES;
     }
     return self;
-}
-
-- (void)dealloc
-{
 }
 
 - (void)reset

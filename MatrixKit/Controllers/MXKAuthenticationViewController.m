@@ -173,10 +173,6 @@
     [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
 }
 
-- (void)dealloc
-{
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -722,14 +718,18 @@
             NSLog(@"[MXKAuthenticationVC] Received authentication settings are not supported");
             authInputsView = nil;
         }
-        // Check whether all listed flows in this authentication session are supported
-        // We suggest using the fallback page (if any), when at least one flow is not supported.
-        else if ((authInputsView.authSession.flows.count != authSession.flows.count)
-                 && authenticationFallback.length
-                 && !_softLogoutCredentials)
+        else if (!_softLogoutCredentials)
         {
-            NSLog(@"[MXKAuthenticationVC] Suggest using fallback page");
-            authInputsView = nil;
+            // If all listed flows in this authentication session are not supported we suggest using the fallback page.
+            if (authenticationFallback.length && authInputsView.authSession.flows.count == 0)
+            {
+                NSLog(@"[MXKAuthenticationVC] No supported flow, suggest using fallback page");
+                authInputsView = nil;
+            }
+            else if (authInputsView.authSession.flows.count != authSession.flows.count)
+            {
+                NSLog(@"[MXKAuthenticationVC] The authentication session contains at least one unsupported flow");
+            }
         }
     }
     

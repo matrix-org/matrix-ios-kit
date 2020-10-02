@@ -1,6 +1,86 @@
 Changes to be released in next version
 =================================================
 
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Changes in 0.12.22 (2020-10-02)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAuthenticationViewController: Do not present fallback when there is one unsupported login flow among supported ones (/vector-im/element-ios/issues/3711).
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+
+
+Changes in 0.12.21 (2020-09-30)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.16](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.16)).
+ * MXKAppSettings: Introduce `hideUndecryptableEvents`. Disabled by default.
+ * Room: Differentiate wordings for DMs.
+
+Bugfix:
+ * 
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.20 (2020-09-16)
+=================================================
+
 Features:
  * 
 
@@ -9,6 +89,88 @@ Improvements:
 
 Bugfix:
  * 
+
+API Change:
+ * Disable PushKit pushers by default, see `-[MXKAppSettings allowPushKitPushers]`.
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.19 (2020-09-15)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAppSettings: Change some events to be visible (vector-im/element-ios/issues/3629). 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+
+
+Changes in 0.12.18 (2020-09-08)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * 
+
+Bugfix:
+ * MXKAccount: Fix crash on logout.
+
+API Change:
+ * 
+
+Translations:
+ * 
+
+Others:
+ * 
+
+Build:
+ * 
+
+Test:
+ * 
+
+Changes in 0.12.17 (2020-09-03)
+=================================================
+
+Features:
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.15](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.15)).
+ * 
+
+Bugfix:
+ * PushKit: Delete any pending PushKit pusher (vector-im/riot-ios/issues/3577).
 
 API Change:
  * 

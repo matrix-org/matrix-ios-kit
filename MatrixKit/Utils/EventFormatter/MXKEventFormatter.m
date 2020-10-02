@@ -361,6 +361,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     // Prepare returned description
     NSString *displayText = nil;
     NSAttributedString *attributedDisplayText = nil;
+    BOOL isRoomDirect = [mxSession roomWithRoomId:event.roomId].isDirect;
 
     // Prepare the display name of the sender
     NSString *senderDisplayName;
@@ -387,22 +388,50 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_by_you"], roomName];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_by_you_for_dm"], roomName];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_by_you"], roomName];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed"], senderDisplayName, roomName];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_for_dm"], senderDisplayName, roomName];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed"], senderDisplayName, roomName];
+                    }
                 }
             }
             else
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you"];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you_for_dm"];
+                    }
+                    else
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you"];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_for_dm"], senderDisplayName];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
+                    }
                 }
             }
             break;
@@ -785,11 +814,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if ([creatorId isEqualToString:mxSession.myUserId])
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you"];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you_for_dm"];
+                    }
+                    else
+                    {
+                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you"];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created_for_dm"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                    }
                 }
                 // Append redacted info if any
                 if (redactedInfo)
@@ -806,7 +849,64 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             
             if (joinRule)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule"], joinRule];
+                if ([event.sender isEqualToString:mxSession.myUserId])
+                {
+                    if ([joinRule isEqualToString:kMXRoomJoinRulePublic])
+                    {
+                        if (isRoomDirect)
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public_by_you_for_dm"];
+                        }
+                        else
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public_by_you"];
+                        }
+                    }
+                    else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
+                    {
+                        if (isRoomDirect)
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_by_you_for_dm"];
+                        }
+                        else
+                        {
+                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_by_you"];
+                        }
+                    }
+                }
+                else
+                {
+                    NSString *displayName = roomState ? [roomState.members memberName:event.sender] : event.sender;
+                    if ([joinRule isEqualToString:kMXRoomJoinRulePublic])
+                    {
+                        if (isRoomDirect)
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public_for_dm"], displayName];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public"], displayName];
+                        }
+                    }
+                    else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
+                    {
+                        if (isRoomDirect)
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_for_dm"], displayName];
+                        }
+                        else
+                        {
+                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite"], displayName];
+                        }
+                    }
+                }
+                
+                if (!displayText)
+                {
+                    //  use old string for non-handled cases: "knock" and "private"
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule"], joinRule];
+                }
+                
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -817,7 +917,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         }
         case MXEventTypeRoomPowerLevels:
         {
-            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro"];
+            if (isRoomDirect)
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro_for_dm"];
+            }
+            else
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro"];
+            }
             NSDictionary *users;
             MXJSONModelSetDictionary(users, event.content[@"users"]);
             
@@ -878,7 +985,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             MXJSONModelSetArray(aliases, event.content[@"aliases"]);
             if (aliases)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases"], aliases];
+                if (isRoomDirect)
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases_for_dm"], aliases];
+                }
+                else
+                {
+                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases"], aliases];
+                }
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -923,6 +1037,12 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     NSString *errorDescription;
 
                     if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
+                        && [MXKAppSettings standardAppSettings].hideUndecryptableEvents)
+                    {
+                        //  Hide this event, it cannot be decrypted
+                        displayText = nil;
+                    }
+                    else if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
                         && event.decryptionError.code == MXDecryptingErrorUnknownInboundSessionIdCode)
                     {
                         // Make the unknown inbound session id error description more user friendly
@@ -1008,46 +1128,91 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityWorldReadable])
                     {
-                        if (isEventSenderMyUser)
+                        if (!isRoomDirect)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone_by_you"];
-                        }
-                        else
-                        {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"], senderDisplayName];
+                            if (isEventSenderMyUser)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone_by_you"];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"], senderDisplayName];
+                            }
                         }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityShared])
                     {
                         if (isEventSenderMyUser)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_by_you"];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_by_you_for_dm"];
+                            }
+                            else
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_by_you"];
+                            }
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members"], senderDisplayName];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_for_dm"], senderDisplayName];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members"], senderDisplayName];
+                            }
                         }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityInvited])
                     {
                         if (isEventSenderMyUser)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you"];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm"];
+                            }
+                            else
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you"];
+                            }
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"], senderDisplayName];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_for_dm"], senderDisplayName];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"], senderDisplayName];
+                            }
                         }
                     }
                     else if ([historyVisibility isEqualToString:kMXRoomHistoryVisibilityJoined])
                     {
                         if (isEventSenderMyUser)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_by_you"];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm"];
+                            }
+                            else
+                            {
+                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_by_you"];
+                            }
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point"], senderDisplayName];
+                            if (isRoomDirect)
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_for_dm"], senderDisplayName];
+                            }
+                            else
+                            {
+                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point"], senderDisplayName];
+                            }
                         }
                     }
                 }
@@ -1235,11 +1400,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you"], displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you_for_dm"], displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you"], displayname];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_for_dm"], senderDisplayName, displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+                    }
                 }
             }
             else
@@ -1248,11 +1427,25 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 MXJSONModelSetString(displayname, event.prevContent[@"display_name"]);
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you"], displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you_for_dm"], displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you"], displayname];
+                    }
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                    if (isRoomDirect)
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_for_dm"], senderDisplayName, displayname];
+                    }
+                    else
+                    {
+                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                    }
                 }
             }
             break;
