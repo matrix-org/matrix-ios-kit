@@ -1,3 +1,30 @@
+Changes in 0.12.22 (2020-10-02)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAuthenticationViewController: Do not present fallback when there is one unsupported login flow among supported ones (/vector-im/element-ios/issues/3711).
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+
+
 Changes in 0.12.21 (2020-09-30)
 =================================================
 
