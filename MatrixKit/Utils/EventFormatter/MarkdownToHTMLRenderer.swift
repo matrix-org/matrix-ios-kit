@@ -29,7 +29,10 @@ public class MarkdownToHTMLRenderer: NSObject {
     
     fileprivate var options: DownOptions = []
     
-    //  Do not expose an initializer, because `DownOptions` is not ObjC compatible.
+    //  Do not expose an initializer with options, because `DownOptions` is not ObjC compatible.
+    public override init() {
+        super.init()
+    }
 }
 
 extension MarkdownToHTMLRenderer: MarkdownToHTMLRendererProtocol {
@@ -47,7 +50,7 @@ extension MarkdownToHTMLRenderer: MarkdownToHTMLRendererProtocol {
 @objcMembers
 public class MarkdownToHTMLRendererHardBreaks: MarkdownToHTMLRenderer {
     
-    override init() {
+    public override init() {
         super.init()
         options = .hardBreaks
     }
