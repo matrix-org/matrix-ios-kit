@@ -143,9 +143,9 @@
 @property (nonatomic, weak) id mxSessionWillLeaveRoomNotificationObserver;
 
 /**
- Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
+ Observe UIApplicationDidBecomeActiveNotification to refresh bubbles when app leaves the background state.
  */
-@property (nonatomic, weak) id uiApplicationWillEnterForegroundNotificationObserver;
+@property (nonatomic, weak) id uiApplicationDidBecomeActiveNotificationObserver;
 
 /**
  Observe UIMenuControllerDidHideMenuNotification to cancel text selection
@@ -269,9 +269,9 @@
     // Finalize table view configuration
     [self configureBubblesTableView];
     
-    // Observe UIApplicationWillEnterForegroundNotification to refresh bubbles when app leaves the background state.
+    // Observe UIApplicationDidBecomeActiveNotification to refresh bubbles when app leaves the background state.
     MXWeakify(self);
-    _uiApplicationWillEnterForegroundNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+    _uiApplicationDidBecomeActiveNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
         
         MXStrongifyAndReturnIfNil(self);
         if (self->roomDataSource.state == MXKDataSourceStateReady && [self->roomDataSource tableView:self->_bubblesTableView numberOfRowsInSection:0])
@@ -378,9 +378,9 @@
         [[NSNotificationCenter defaultCenter] removeObserver:_mxSessionWillLeaveRoomNotificationObserver];
     }
     
-    if (_uiApplicationWillEnterForegroundNotificationObserver)
+    if (_uiApplicationDidBecomeActiveNotificationObserver)
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:_uiApplicationWillEnterForegroundNotificationObserver];
+        [[NSNotificationCenter defaultCenter] removeObserver:_uiApplicationDidBecomeActiveNotificationObserver];
     }
     
     if (_uiMenuControllerDidHideMenuNotificationObserver)
