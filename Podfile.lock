@@ -14,7 +14,7 @@ PODS:
   - AFNetworking/Serialization (4.0.1)
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
-  - cmark (0.24.1)
+  - Down (0.9.3)
   - DTCoreText (1.6.23):
     - DTCoreText/Core (= 1.6.23)
     - DTFoundation/Core (~> 1.7.5)
@@ -57,7 +57,7 @@ PODS:
   - Realm/Headers (4.4.1)
 
 DEPENDENCIES:
-  - cmark (~> 0.24.1)
+  - Down (~> 0.9.3)
   - DTCoreText (~> 1.6.21)
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
@@ -67,7 +67,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AFNetworking
-    - cmark
+    - Down
     - DTCoreText
     - DTFoundation
     - GZIP
@@ -82,7 +82,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
-  cmark: 1d9ad0375e3b9fa281732e992467903606015520
+  Down: 4553b984236807e384fa0ef7c7e360ef9f7c425d
   DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
   DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   GZIP: af5c90ef903776a7e9afe6ebebd794a84a2929d4
@@ -95,6 +95,6 @@ SPEC CHECKSUMS:
   OLMKit: 4ee0159d63feeb86d836fdcfefe418e163511639
   Realm: 4eb04d7487bd43c0581256f40b424eafb711deff
 
-PODFILE CHECKSUM: b1cf1c8fe0c2973d14d76e366761793056cda992
+PODFILE CHECKSUM: 152624df14f7e35280535540e7dab285207f02b9
 
 COCOAPODS: 1.9.3

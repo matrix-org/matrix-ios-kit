@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
   s.dependency 'DTCoreText', '~> 1.6.23'
-  s.dependency 'cmark', '~> 0.24.1'
+  s.dependency 'Down', '~> 0.9.3'
 
   s.default_subspec = 'Core'
 

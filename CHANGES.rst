@@ -179,7 +179,7 @@ Translations:
  * 
 
 Others:
- * 
+ * MXKEventFormatter: Replace cmark with Down (vector-im/element/issues/3569). 
 
 Build:
  * 

@@ -21,6 +21,7 @@
 
 #import "MXKAppSettings.h"
 
+@protocol MarkdownToHTMLRendererProtocol;
 /**
  Formatting result codes.
  */
@@ -117,6 +118,8 @@ typedef enum : NSUInteger {
  Default is nil. All messages types are displayed.
  */
 @property (nonatomic) NSArray<NSString*> *eventTypesFilterForMessages;
+
+@property (nonatomic, strong) id<MarkdownToHTMLRendererProtocol> markdownToHTMLRenderer;
 
 /**
  Checks whether the event is related to an attachment and if it is supported.

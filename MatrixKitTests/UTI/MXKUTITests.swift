@@ -16,7 +16,7 @@
 
 import XCTest
 
-@testable import MatrixKitSample
+@testable import MatrixKit
 
 import MobileCoreServices
 
