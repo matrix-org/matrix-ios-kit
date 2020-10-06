@@ -78,7 +78,7 @@
 "notice_event_redacted_by" = " %@ által";
 "notice_event_redacted_reason" = " [indok: %@]";
 "notice_profile_change_redacted" = "%@ frissítette az adatait %@";
-"notice_room_created" = "%@ szobát készített";
+"notice_room_created" = "%@ szobát készített és beállította.";
 "notice_room_join_rule" = "A csatlakozási szabály: %@";
 "notice_room_power_level_intro" = "A szoba tagjainak a hozzáférési szintje:";
 "notice_room_power_level_acting_requirement" = "Mielőtt a felhasználó ezt tehetné legalább az alábbi hozzáférési szinttel kell rendelkeznie:";
@@ -106,7 +106,7 @@
 "notice_crypto_unable_to_decrypt" = "** Nem sikerül visszafejteni: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "A küldő munkamenete nem küldte el a kulcsot ehhez az üzenethez.";
 "notice_sticker" = "Matrica";
-"notice_in_reply_to" = "Válaszolva erre:";
+"notice_in_reply_to" = "Válaszolva erre";
 // Settings
 "settings" = "Beállítások";
 "settings_enable_inapp_notifications" = "Alkalmazáson belüli értesítések engedélyezése";
@@ -191,7 +191,7 @@
 "message_reply_to_sender_sent_a_video" = "videó elküldve.";
 "message_reply_to_sender_sent_an_audio_file" = "hangfájl elküldve.";
 "message_reply_to_sender_sent_a_file" = "fájl elküldve.";
-"message_reply_to_message_to_reply_to_prefix" = "Válaszolva erre:";
+"message_reply_to_message_to_reply_to_prefix" = "Válaszolva erre";
 // Room members
 "room_member_ignore_prompt" = "Biztos, hogy eltakarod ennek a felhasználónak az összes üzenetét?";
 "room_member_power_level_prompt" = "Valószínűleg nem fogod tudni visszavonni ezt a műveletet, mivel ugyanarra a szintre emeled a felhasználót mint amin te magad vagy.\nBiztos vagy benne?";
@@ -273,8 +273,8 @@
 "notice_display_name_set" = "%@ a becenevét %@ névre állította be";
 "notice_display_name_changed_from" = "%@ megváltoztatta a becenevét %@ névről %@ névre";
 "notice_display_name_removed" = "%@ törölte a becenevét";
-"notice_topic_changed" = "%@ megváltoztatta a témát erre: %@";
-"notice_room_name_changed" = "%@ megváltoztatta a szoba nevét erre: %@";
+"notice_topic_changed" = "%@ megváltoztatta a témát erre: „%@”.";
+"notice_room_name_changed" = "%@ megváltoztatta a szoba nevét erre: %@.";
 "notice_placed_voice_call" = "%@ hanghívást kezdeményezett";
 "notice_placed_video_call" = "%@ videóhívást kezdeményezett";
 "notice_answered_video_call" = "%@ fogadta a hívást";
@@ -398,8 +398,8 @@
 "notice_display_name_set_by_you" = "A megjelenő nevedet megváltoztattad erre: %@";
 "notice_display_name_changed_from_by_you" = "A megjelenő nevedet megváltoztattad erről: %@ erre: %@";
 "notice_display_name_removed_by_you" = "A megjelenő nevedet törölted";
-"notice_topic_changed_by_you" = "A témát megváltoztattad erre: %@";
-"notice_room_name_changed_by_you" = "A szoba nevét megváltoztattad erre: %@";
+"notice_topic_changed_by_you" = "A témát megváltoztattad erre: „%@”.";
+"notice_room_name_changed_by_you" = "A szoba nevét megváltoztattad erre: %@.";
 "notice_placed_voice_call_by_you" = "Hanghívást kezdeményeztél";
 "notice_placed_video_call_by_you" = "Videóhívást kezdeményeztél";
 "notice_answered_video_call_by_you" = "Fogadtad a hívást";
@@ -409,7 +409,7 @@
 "notice_room_topic_removed_by_you" = "A szoba témáját törölted";
 "notice_event_redacted_by_you" = " nálad";
 "notice_profile_change_redacted_by_you" = "A profilodat megváltoztattad: %@";
-"notice_room_created_by_you" = "Létrehoztad a szobát";
+"notice_room_created_by_you" = "A szobát létrehoztad és beállítottad.";
 "notice_encryption_enabled_ok_by_you" = "A végpontok közötti titkosítást bekapcsoltad.";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "A végpontok közötti titkosítást bekapcsoltad (az algoritmus ismeretlen: %@).";
 "notice_redaction_by_you" = "Kitakartál egy eseményt (azon.: %@)";
@@ -417,3 +417,31 @@
 "notice_room_history_visible_to_members_by_you" = "Láthatóvá tetted a szoba jövőbeni üzeneteit a szobában tartózkodók számára.";
 "notice_room_history_visible_to_members_from_invited_point_by_you" = "A szoba jövőbeni üzeneteit a szobában lévő felhasználók számára a meghívásuk pillanatától láthatóvá tetted.";
 "notice_room_history_visible_to_members_from_joined_point_by_you" = "A szoba jövőbeni üzeneteit a szobában lévő felhasználók számára a szobába való belépésük pillanatától láthatóvá tetted.";
+"notice_room_name_removed_for_dm" = "%@ törölte a nevet";
+"notice_room_created_for_dm" = "%@ csatlakozott.";
+//  New
+"notice_room_join_rule_invite" = "%@meghívásossá tette a szobát.";
+"notice_room_join_rule_invite_for_dm" = "%@meghívásossá tette.";
+"notice_room_join_rule_invite_by_you" = "A szobát meghívásossá tetted.";
+"notice_room_join_rule_invite_by_you_for_dm" = "Meghívásossá tetted.";
+"notice_room_join_rule_public" = "%@ nyilvánossá tette a szobát.";
+"notice_room_join_rule_public_for_dm" = "%@ nyilvánossá tette.";
+"notice_room_join_rule_public_by_you" = "A szobát nyilvánossá tetted.";
+"notice_room_join_rule_public_by_you_for_dm" = "Ezt nyilvánossá tetted.";
+"notice_room_power_level_intro_for_dm" = "A tagok a hozzáférési szintje:";
+"notice_room_aliases_for_dm" = "A becenevek: %@";
+"notice_room_history_visible_to_members_for_dm" = "%@ a jövőbeni üzeneteket láthatóvá tette a szobában lévő minden felhasználó számára.";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ a jövőbeni üzeneteket láthatóvá tette mindenki számára a meghívásuk pillanatától.";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ a jövőbeni üzeneteket láthatóvá tette mindenki számára a belépésük pillanatától.";
+"room_left_for_dm" = "Távoztál";
+"notice_room_third_party_invite_for_dm" = "%@ meghívta %@ felhasználót";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ visszavonta az ő meghívóját: %@";
+"notice_room_name_changed_for_dm" = "%@ megváltoztatta a nevet erre: %@.";
+"notice_room_third_party_invite_by_you_for_dm" = "Meghívtad őt: %@";
+"notice_room_third_party_revoked_invite_by_you_for_dm" = "Visszavontad az ő meghívóját: %@";
+"notice_room_name_changed_by_you_for_dm" = "Megváltoztattad a nevet erre: %@.";
+"notice_room_name_removed_by_you_for_dm" = "A nevet törölted";
+"notice_room_created_by_you_for_dm" = "Beléptél.";
+"notice_room_history_visible_to_members_by_you_for_dm" = "A jövőbeni üzeneteket láthatóvá tetted a szobában lévő minden felhasználó számára.";
+"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "A jövőbeni üzeneteket láthatóvá tetted mindenki számára a meghívásuk pillanatától.";
+"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "A jövőbeni üzeneteket láthatóvá tetted mindenki számára a belépésük pillanatától.";
