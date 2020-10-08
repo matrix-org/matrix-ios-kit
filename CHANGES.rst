@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * Room: Refresh UI when the app is fully active (vector-im/element-ios/issues/3672).
 
 ⚠️ API Changes
  * 
