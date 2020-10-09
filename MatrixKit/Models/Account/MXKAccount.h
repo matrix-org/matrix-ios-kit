@@ -322,7 +322,7 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  @param success A block object called when the operation succeeds.
  @param failure A block object called when the operation fails.
  */
-- (void)backgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure;
+- (void)backgroundSync:(unsigned int)timeout success:(MXOnBackgroundSyncDone)success failure:(MXOnBackgroundSyncFail)failure;
 
 /**
  Resume the current matrix session.

@@ -1762,11 +1762,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             }
         }
         
-        [self onBackgroundSyncDone:[NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]];
+        [self onBackgroundSyncDone:nil error:[NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]];
     }
 }
 
-- (void)onBackgroundSyncDone:(NSError*)error
+- (void)onBackgroundSyncDone:(MXSyncResponse *)syncResponse error:(NSError*)error
 {
     if (backgroundSyncTimer)
     {
@@ -1779,9 +1779,9 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         backgroundSyncfails(error);
     }
     
-    if (backgroundSyncDone && !error)
+    if (backgroundSyncDone && syncResponse)
     {
-        backgroundSyncDone();
+        backgroundSyncDone(syncResponse);
     }
     
     backgroundSyncDone = nil;
@@ -1800,7 +1800,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     [self cancelBackgroundSync];
 }
 
-- (void)backgroundSync:(unsigned int)timeout success:(void (^)(void))success failure:(void (^)(NSError *))failure
+- (void)backgroundSync:(unsigned int)timeout success:(MXOnBackgroundSyncDone)success failure:(MXOnBackgroundSyncFail)failure
 {
     // Check whether a background mode handler has been set.
     id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
@@ -1837,19 +1837,13 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             
             [[NSRunLoop mainRunLoop] addTimer:backgroundSyncTimer forMode:NSDefaultRunLoopMode];
             
-            [mxSession backgroundSync:timeout success:^{
+            [mxSession backgroundSync:timeout success:^(MXSyncResponse *syncResponse) {
                 NSLog(@"[MXKAccount] the background Sync succeeds");
-                [self onBackgroundSyncDone:nil];
-                
-            }
-                              failure:^(NSError* error) {
-                                  
-                                  NSLog(@"[MXKAccount] the background Sync fails");
-                                  [self onBackgroundSyncDone:error];
-                                  
-                              }
-             
-             ];
+                [self onBackgroundSyncDone:syncResponse error:nil];
+            } failure:^(NSError *error) {
+                NSLog(@"[MXKAccount] the background Sync fails");
+                [self onBackgroundSyncDone:nil error:error];
+            }];
         }
         else
         {
