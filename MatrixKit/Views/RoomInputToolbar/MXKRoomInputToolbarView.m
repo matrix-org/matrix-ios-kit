@@ -17,7 +17,6 @@
  */
 
 #import "MXKRoomInputToolbarView.h"
-#import "MXKAppSettings.h"
 #import "MXKSwiftHeader.h"
 
 @import MatrixSDK.MXMediaManager;
