@@ -171,6 +171,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         
         _messageDetailsAllowSharing = YES;
         _messageDetailsAllowSaving = YES;
+        
+        _pasteboard = [UIPasteboard generalPasteboard];
     }
     return self;
 }

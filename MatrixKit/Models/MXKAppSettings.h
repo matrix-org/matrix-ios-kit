@@ -225,4 +225,9 @@
  */
 - (void)reset;
 
+#pragma mark - Pastebord
+
+/// Pasteboard to use on copy operations. Defaults to `UIPasteboard.generalPasteboard`.
+@property (nonatomic, strong) UIPasteboard *pasteboard;
+
 @end
