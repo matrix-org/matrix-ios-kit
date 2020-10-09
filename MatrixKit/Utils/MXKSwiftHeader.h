@@ -13,7 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
+/* 
+ Never import this file in header files (.h) only in implementation files (.m).
+ If you want to reference a Swift class from the project please use forward declaration in the header file and then import this header in your implementation file.
+*/
 #ifndef MXKSwiftHeader_h
 #define MXKSwiftHeader_h
 
