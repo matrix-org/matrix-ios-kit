@@ -18,6 +18,7 @@
 
 #import "MXKRoomInputToolbarView.h"
 #import "MXKAppSettings.h"
+#import "MXKSwiftHeader.h"
 
 @import MatrixSDK.MXMediaManager;
 @import MediaPlayer;
@@ -1147,7 +1148,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
 - (void)paste:(id)sender
 {
-    UIPasteboard *pasteboard = MXKAppSettings.standardAppSettings.pasteboard;
+    UIPasteboard *pasteboard = MXKPasteboardManager.shared.pasteboard;
     if (pasteboard.numberOfItems)
     {
         [self dismissValidationViews];
@@ -1334,7 +1335,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     if (action == @selector(paste:))
     {
         // Check whether some data listed in general pasteboard can be paste
-        UIPasteboard *pasteboard = MXKAppSettings.standardAppSettings.pasteboard;
+        UIPasteboard *pasteboard = MXKPasteboardManager.shared.pasteboard;
         if (pasteboard.numberOfItems)
         {
             for (NSDictionary* dict in pasteboard.items)
