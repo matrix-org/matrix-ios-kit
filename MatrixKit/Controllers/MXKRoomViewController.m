@@ -2858,7 +2858,7 @@
                                                                    
                                                                    if (textMessage)
                                                                    {
-                                                                       [[UIPasteboard generalPasteboard] setString:textMessage];
+                                                                       MXKAppSettings.standardAppSettings.pasteboard.string = textMessage;
                                                                    }
                                                                    else
                                                                    {
@@ -3181,7 +3181,7 @@
 {
     if (selectedText)
     {
-        [[UIPasteboard generalPasteboard] setString:selectedText];
+        MXKAppSettings.standardAppSettings.pasteboard.string = selectedText;
     }
     else
     {

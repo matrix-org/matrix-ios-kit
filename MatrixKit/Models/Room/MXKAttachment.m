@@ -16,6 +16,7 @@
  */
 
 #import "MXKAttachment.h"
+#import "MXKAppSettings.h"
 
 @import MatrixSDK;
 @import MobileCoreServices;
@@ -587,7 +588,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         if (self.type == MXKAttachmentTypeImage)
         {
             [self getImage:^(MXKAttachment *attachment, UIImage *img) {
-                [[UIPasteboard generalPasteboard] setImage:img];
+                MXKAppSettings.standardAppSettings.pasteboard.image = img;
                 if (onSuccess)
                 {
                     onSuccess();
@@ -607,7 +608,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
                     
                     if (UTI)
                     {
-                        [[UIPasteboard generalPasteboard] setData:data forPasteboardType:UTI];
+                        [MXKAppSettings.standardAppSettings.pasteboard setData:data forPasteboardType:UTI];
                         if (onSuccess)
                         {
                             onSuccess();

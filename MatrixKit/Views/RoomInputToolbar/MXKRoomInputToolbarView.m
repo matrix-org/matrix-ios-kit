@@ -17,6 +17,7 @@
  */
 
 #import "MXKRoomInputToolbarView.h"
+#import "MXKAppSettings.h"
 
 @import MatrixSDK.MXMediaManager;
 @import MediaPlayer;
@@ -1146,15 +1147,15 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
 - (void)paste:(id)sender
 {
-    UIPasteboard *generalPasteboard = [UIPasteboard generalPasteboard];
-    if (generalPasteboard.numberOfItems)
+    UIPasteboard *pasteboard = MXKAppSettings.standardAppSettings.pasteboard;
+    if (pasteboard.numberOfItems)
     {
         [self dismissValidationViews];
         [self dismissKeyboard];
         
         __weak typeof(self) weakSelf = self;
         
-        for (NSDictionary* dict in generalPasteboard.items)
+        for (NSDictionary* dict in pasteboard.items)
         {
             NSArray* allKeys = dict.allKeys;
             for (NSString* key in allKeys)
@@ -1333,10 +1334,10 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     if (action == @selector(paste:))
     {
         // Check whether some data listed in general pasteboard can be paste
-        UIPasteboard *generalPasteboard = [UIPasteboard generalPasteboard];
-        if (generalPasteboard.numberOfItems)
+        UIPasteboard *pasteboard = MXKAppSettings.standardAppSettings.pasteboard;
+        if (pasteboard.numberOfItems)
         {
-            for (NSDictionary* dict in generalPasteboard.items)
+            for (NSDictionary* dict in pasteboard.items)
             {
                 NSArray* allKeys = dict.allKeys;
                 for (NSString* key in allKeys)
