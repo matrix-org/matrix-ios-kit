@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKAppSettings: Introduce pasteboard to be used on copy operations (vector-im/element-ios/issues/3732). 
 
 🐛 Bugfix
  * Room: Refresh UI when the app is fully active (vector-im/element-ios/issues/3672).
