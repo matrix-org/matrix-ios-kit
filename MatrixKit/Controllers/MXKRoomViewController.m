@@ -51,6 +51,7 @@
 #import "NSBundle+MatrixKit.h"
 #import "UIScrollView+MatrixKit.h"
 #import "MXKSlashCommands.h"
+#import "MXKSwiftHeader.h"
 
 @interface MXKRoomViewController ()
 {
@@ -2858,7 +2859,7 @@
                                                                    
                                                                    if (textMessage)
                                                                    {
-                                                                       [[UIPasteboard generalPasteboard] setString:textMessage];
+                                                                       MXKPasteboardManager.shared.pasteboard.string = textMessage;
                                                                    }
                                                                    else
                                                                    {
@@ -3181,7 +3182,7 @@
 {
     if (selectedText)
     {
-        [[UIPasteboard generalPasteboard] setString:selectedText];
+        MXKPasteboardManager.shared.pasteboard.string = selectedText;
     }
     else
     {
