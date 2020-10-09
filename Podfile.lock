@@ -14,7 +14,7 @@ PODS:
   - AFNetworking/Serialization (4.0.1)
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
-  - cmark (0.24.1)
+  - Down (0.9.3)
   - DTCoreText (1.6.23):
     - DTCoreText/Core (= 1.6.23)
     - DTFoundation/Core (~> 1.7.5)
@@ -39,9 +39,9 @@ PODS:
   - JSQSystemSoundPlayer (2.0.1)
   - libbase58 (0.1.4)
   - libPhoneNumber-iOS (0.9.15)
-  - MatrixSDK (0.16.16):
-    - MatrixSDK/Core (= 0.16.16)
-  - MatrixSDK/Core (0.16.16):
+  - MatrixSDK (0.16.17):
+    - MatrixSDK/Core (= 0.16.17)
+  - MatrixSDK/Core (0.16.17):
     - AFNetworking (~> 4.0.0)
     - GZIP (~> 1.2.2)
     - libbase58 (~> 0.1.4)
@@ -57,17 +57,17 @@ PODS:
   - Realm/Headers (4.4.1)
 
 DEPENDENCIES:
-  - cmark (~> 0.24.1)
+  - Down (~> 0.9.3)
   - DTCoreText (~> 1.6.21)
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (= 0.16.16)
+  - MatrixSDK (= 0.16.17)
 
 SPEC REPOS:
   trunk:
     - AFNetworking
-    - cmark
+    - Down
     - DTCoreText
     - DTFoundation
     - GZIP
@@ -82,7 +82,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
-  cmark: 1d9ad0375e3b9fa281732e992467903606015520
+  Down: 4553b984236807e384fa0ef7c7e360ef9f7c425d
   DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
   DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   GZIP: af5c90ef903776a7e9afe6ebebd794a84a2929d4
@@ -91,10 +91,10 @@ SPEC CHECKSUMS:
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libbase58: 7c040313537b8c44b6e2d15586af8e21f7354efd
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
-  MatrixSDK: 12259762d604dd351313e4d9e65cc48e16377247
+  MatrixSDK: f0cda22f265a2cd5555f843b2fc5003575aced56
   OLMKit: 4ee0159d63feeb86d836fdcfefe418e163511639
   Realm: 4eb04d7487bd43c0581256f40b424eafb711deff
 
-PODFILE CHECKSUM: b1cf1c8fe0c2973d14d76e366761793056cda992
+PODFILE CHECKSUM: 1c50fd421a5201076069db9277b27925b9f55518
 
 COCOAPODS: 1.9.3

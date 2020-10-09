@@ -1,3 +1,30 @@
+Changes in 0.12.23 (2020-10-09)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKPasteboardManager: Introduce dedicated pasteboard manager to change the pasteboard used on copy operations (vector-im/element-ios/issues/3732). 
+
+🐛 Bugfix
+ * Room: Refresh UI when the app is fully active (vector-im/element-ios/issues/3672).
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.17](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.17)).
+
 Changes in 0.12.22 (2020-10-02)
 =================================================
 
@@ -155,7 +182,7 @@ Translations:
  * 
 
 Others:
- * 
+ * MXKEventFormatter: Replace cmark with Down (vector-im/element/issues/3569). 
 
 Build:
  * 

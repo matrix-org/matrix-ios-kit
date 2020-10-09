@@ -1,6 +1,6 @@
 /*
  Copyright 2020 The Matrix.org Foundation C.I.C
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -14,6 +14,20 @@
  limitations under the License.
  */
 
-#import <Foundation/Foundation.h>
+import Foundation
+import UIKit
 
-NSString *const MatrixKitVersion = @"0.12.23";
+@objcMembers
+public class MXKPasteboardManager: NSObject {
+    
+    public static let shared = MXKPasteboardManager(withPasteboard: .general)
+    
+    private init(withPasteboard pasteboard: UIPasteboard) {
+        self.pasteboard = pasteboard
+        super.init()
+    }
+    
+    /// Pasteboard to use on copy operations. Defaults to `UIPasteboard.generalPasteboard`.
+    public var pasteboard: UIPasteboard
+    
+}
