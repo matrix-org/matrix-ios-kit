@@ -221,7 +221,7 @@
 "message_reply_to_sender_sent_a_file" = "sandte eine Datei.";
 "message_reply_to_message_to_reply_to_prefix" = "Als Antwort auf";
 // Room members
-"room_member_ignore_prompt" = "Sicher, dass alle Nachrichten von diesem Benutzer versteckt werden?";
+"room_member_ignore_prompt" = "Sicher, dass alle Nachrichten von diesem Benutzer versteckt werden sollen?";
 "room_member_power_level_prompt" = "Du kannst diese Änderung nicht rückgangig machen, weil du dem Benutzer die gleiche Berechtigungsstufe gibst, die du selbst hast.\nBist du sicher?";
 // Attachment
 "attachment_size_prompt" = "Möchtest du senden als:";
