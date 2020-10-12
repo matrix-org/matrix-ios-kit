@@ -75,6 +75,9 @@
 		B1668AC021072F93002B14F1 /* MXKSlashCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */; };
 		CE14CA661E80122600E329A3 /* MXKAttachmentAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */; };
 		CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */; };
+		EC45DB9C2534B3AF006911C1 /* NSDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC45DB9B2534B3AF006911C1 /* NSDictionary.swift */; };
+		EC45DB9F2534B45F006911C1 /* SyncResponseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC45DB9E2534B45F006911C1 /* SyncResponseStore.swift */; };
+		EC45DBA12534B48A006911C1 /* SyncResponseFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC45DBA02534B48A006911C1 /* SyncResponseFileStore.swift */; };
 		EC6DC7BB24F9562600B6C40F /* MarkdownToHTMLRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6DC7BA24F9562600B6C40F /* MarkdownToHTMLRenderer.swift */; };
 		EC9010C825308312004DC138 /* MXKPasteboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9010C725308312004DC138 /* MXKPasteboardManager.swift */; };
 		F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */; };
@@ -399,6 +402,9 @@
 		CE14CA641E80122600E329A3 /* MXKAttachmentInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAttachmentInteractionController.h; sourceTree = "<group>"; };
 		CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAttachmentInteractionController.m; sourceTree = "<group>"; };
 		E5AB7F3690B214D676BB9B72 /* Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
+		EC45DB9B2534B3AF006911C1 /* NSDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSDictionary.swift; sourceTree = "<group>"; };
+		EC45DB9E2534B45F006911C1 /* SyncResponseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncResponseStore.swift; sourceTree = "<group>"; };
+		EC45DBA02534B48A006911C1 /* SyncResponseFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncResponseFileStore.swift; sourceTree = "<group>"; };
 		EC6DC7BA24F9562600B6C40F /* MarkdownToHTMLRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownToHTMLRenderer.swift; sourceTree = "<group>"; };
 		EC9010C725308312004DC138 /* MXKPasteboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKPasteboardManager.swift; sourceTree = "<group>"; };
 		EC9010C92530875E004DC138 /* MXKSwiftHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKSwiftHeader.h; sourceTree = "<group>"; };
@@ -1022,6 +1028,7 @@
 		32CEE21C1AB1A57E00F7C74D /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				EC45DB9D2534B445006911C1 /* SyncResponseStore */,
 				B12C470520BECAF7004FBF96 /* ErrorPresentation */,
 				32BA86B421538B35008F277E /* EventFormatter */,
 				F02D21471B7109950002DE01 /* MXKConstants.h */,
@@ -1160,6 +1167,15 @@
 				CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */,
 			);
 			path = Animators;
+			sourceTree = "<group>";
+		};
+		EC45DB9D2534B445006911C1 /* SyncResponseStore */ = {
+			isa = PBXGroup;
+			children = (
+				EC45DB9E2534B45F006911C1 /* SyncResponseStore.swift */,
+				EC45DBA02534B48A006911C1 /* SyncResponseFileStore.swift */,
+			);
+			path = SyncResponseStore;
 			sourceTree = "<group>";
 		};
 		F00BB4471AB840B300AE388E /* RoomInputToolbar */ = {
@@ -1314,6 +1330,7 @@
 				32B046712101EB5E002A24A1 /* MXRoom+Sync.m */,
 				B12C56F02396D75500FAC6DE /* UITextView+MatrixKit.h */,
 				B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */,
+				EC45DB9B2534B3AF006911C1 /* NSDictionary.swift */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -1852,6 +1869,7 @@
 				F0B14DDB1FF65C7C00F11630 /* MXKTableViewHeaderFooterView.m in Sources */,
 				F07E180E1ABC2EDA00DE3766 /* MXKRoomBubbleCellData.m in Sources */,
 				F080B42B1BD6990300DE095E /* MXKAttachmentsViewController.m in Sources */,
+				EC45DBA12534B48A006911C1 /* SyncResponseFileStore.swift in Sources */,
 				F0CF98DE1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndTextField.m in Sources */,
 				F06E76811AF0FEB100980E5A /* MXKAuthenticationViewController.m in Sources */,
 				F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */,
@@ -1860,6 +1878,7 @@
 				CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */,
 				B125D10C22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift in Sources */,
 				324978F4243F444C000D0384 /* UTI.swift in Sources */,
+				EC45DB9C2534B3AF006911C1 /* NSDictionary.swift in Sources */,
 				3235CD7B1C32DEBF0084EA40 /* MXKSearchViewController.m in Sources */,
 				F079333E1F38A6A600F04D4C /* MXKView.m in Sources */,
 				F00FA8791C08A51B00E25826 /* MXKRoomOutgoingTextMsgWithoutSenderInfoBubbleCell.m in Sources */,
@@ -1987,6 +2006,7 @@
 				F01449B11B56A92800EA7D73 /* MXKNotificationSettingsViewController.m in Sources */,
 				F06E76891AF0FEBC00980E5A /* MXKAccountManager.m in Sources */,
 				F06E76971AF0FED000980E5A /* MXKAuthInputsPasswordBasedView.m in Sources */,
+				EC45DB9F2534B45F006911C1 /* SyncResponseStore.swift in Sources */,
 				71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */,
 				F043563B1B2EFEBD0096FA02 /* MXKTableViewCellWithButtons.m in Sources */,
 				328AC48C1AA760520044A6FB /* MXKRoomOutgoingBubbleTableViewCell.m in Sources */,
