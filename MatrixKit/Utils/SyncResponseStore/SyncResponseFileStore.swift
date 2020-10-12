@@ -21,7 +21,7 @@ import MatrixSDK
 public class SyncResponseFileStore: NSObject {
     
     private enum SyncResponseFileStoreConstants {
-        static let folderNname = "SyncResponse"
+        static let folderName = "SyncResponse"
         static let fileName = "syncResponse"
         static let fileEncoding: String.Encoding = .utf8
         static let fileOperationQueue: DispatchQueue = .global(qos: .default)
@@ -42,7 +42,7 @@ public class SyncResponseFileStore: NSObject {
         }
         
         filePath = cachePath
-            .appendingPathComponent(SyncResponseFileStoreConstants.folderNname)
+            .appendingPathComponent(SyncResponseFileStoreConstants.folderName)
             .appendingPathComponent(userId)
             .appendingPathComponent(SyncResponseFileStoreConstants.fileName)
         
