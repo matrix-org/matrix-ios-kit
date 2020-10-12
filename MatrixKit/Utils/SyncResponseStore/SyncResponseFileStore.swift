@@ -22,7 +22,7 @@ public class SyncResponseFileStore: NSObject {
     
     private enum SyncResponseFileStoreConstants {
         static let folderNname = "SyncResponse"
-        static let fileName = "syncResponse.json"
+        static let fileName = "syncResponse"
         static let fileEncoding: String.Encoding = .utf8
         static let fileOperationQueue: DispatchQueue = .global(qos: .default)
     }
