@@ -19,7 +19,7 @@
 
 #import "MXKAccountManager.h"
 #import "MXKAppSettings.h"
-
+#import "MXKSwiftHeader.h"
 #import "MXKTools.h"
 
 static NSString *const kMXKAccountsKey = @"accounts";
@@ -57,6 +57,7 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
     if (self)
     {
         _storeClass = [MXFileStore class];
+        _syncResponseStoreClass = [SyncResponseFileStore class];
         
         // Load existing accounts from local storage
         [self loadAccounts];
@@ -299,6 +300,14 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
     NSAssert([storeClass conformsToProtocol:@protocol(MXStore)], @"MXKAccountManager only manages store class that conforms to MXStore protocol");
     
     _storeClass = storeClass;
+}
+
+- (void)setSyncResponseStoreClass:(Class)syncResponseStoreClass
+{
+    // Sanity check
+    NSAssert([syncResponseStoreClass conformsToProtocol:@protocol(SyncResponseStore)], @"MXKAccountManager only manages sync response store class that conforms to SyncResponseStore protocol");
+    
+    _syncResponseStoreClass = syncResponseStoreClass;
 }
 
 - (NSArray<MXKAccount *> *)accounts

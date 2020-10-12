@@ -51,6 +51,12 @@ extern NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification;
 @property (nonatomic) Class storeClass;
 
 /**
+ The sync response store used to feed sessions before streaming. This class must conform the SyncResponseStore protocol.
+ By default this class is SyncResponseFileStore..
+ */
+@property (nonatomic) Class syncResponseStoreClass;
+
+/**
  List of all available accounts (enabled and disabled).
  */
 @property (nonatomic, readonly) NSArray<MXKAccount *> *accounts;
