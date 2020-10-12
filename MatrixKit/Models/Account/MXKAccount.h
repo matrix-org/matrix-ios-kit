@@ -19,6 +19,7 @@
 #import <MatrixSDK/MatrixSDK.h>
 
 @class MXKAccount;
+@protocol SyncResponseStore;
 
 /**
  Posted when account user information (display name, picture, presence) has been updated.
@@ -79,6 +80,11 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  This URL should be over HTTPS and never over HTTP.
  */
 @property (nonatomic) NSString *pushGatewayURL;
+
+/**
+ The sync response store used to feed sessions before streaming. This will be an instance of MXKAccountManager.shared.syncResponseStoreClass.
+ */
+@property (nonatomic, readonly) id<SyncResponseStore> syncResponseStore;
 
 /**
  The matrix REST client used to make matrix API requests.

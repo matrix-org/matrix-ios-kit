@@ -22,7 +22,7 @@
 #import "MXKAccountManager.h"
 #import "MXKRoomDataSourceManager.h"
 #import "MXKEventFormatter.h"
-
+#import "MXKSwiftHeader.h"
 #import "MXKTools.h"
 
 #import "MXKConstants.h"
@@ -911,6 +911,7 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         if (clearStore)
         {
+            [_syncResponseStore deleteData];
             [mxSession.store deleteAllData];
         }
         
@@ -1104,6 +1105,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         if (mxSession.state == MXSessionStatePaused || mxSession.state == MXSessionStatePauseRequested)
         {
+            [self handleSyncResponseIfRequired];
+            
             // Resume SDK and update user presence
             [mxSession resume:^{
                 [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
@@ -1561,6 +1564,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 [self reload:YES];
                 return;
             }
+            
+            [self handleSyncResponseIfRequired];
 
             // Launch mxSession
             MXWeakify(self);
@@ -1677,6 +1682,31 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         // Soft logout this account
         [[MXKAccountManager sharedManager] softLogout:self];
     }
+}
+
+- (void)handleSyncResponseIfRequired
+{
+    if (!mxCredentials)
+    {
+        return;
+    }
+    
+    //  create store if does not exist
+    if (!_syncResponseStore)
+    {
+        _syncResponseStore = [[[MXKAccountManager sharedManager].syncResponseStoreClass alloc] init];
+        [_syncResponseStore openWithCredentials:mxCredentials];
+    }
+    
+    //  read sync response
+    MXSyncResponse *syncResponse = [_syncResponseStore syncResponse];
+    if (syncResponse)
+    {
+        //  pass it to the session if exists
+        [mxSession handleSyncResponse:syncResponse];
+    }
+    //  remove sync response to avoid further processing
+    [_syncResponseStore deleteData];
 }
 
 - (void)prepareRESTClient
