@@ -23,13 +23,7 @@
 
 #import "MXEvent+MatrixKit.h"
 #import "NSBundle+MatrixKit.h"
-
-#if __has_include(<MatrixKit/MatrixKit-Swift.h>)
-    #import <MatrixKit/MatrixKit-Swift.h>
-#elif __has_include("MatrixKit-Swift.h")
-    #import "MatrixKit-Swift.h"
-#endif
-
+#import "MXKSwiftHeader.h"
 #import "MXKTools.h"
 #import "MXRoom+Sync.h"
 
