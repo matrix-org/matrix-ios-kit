@@ -442,6 +442,6 @@
 "notice_room_name_changed_by_you_for_dm" = "Você alterou o nome da sala para %@.";
 "notice_room_name_removed_by_you_for_dm" = "Você removeu o nome da sala";
 "notice_room_created_by_you_for_dm" = "Você entrou.";
-"notice_room_history_visible_to_members_by_you_for_dm" = "Você definitiu que mensagens enviadas a partir do presente momento estarão disponíveis para todos os integrantes da sala.";
+"notice_room_history_visible_to_members_by_you_for_dm" = "Você definiu que mensagens enviadas a partir do presente momento estarão disponíveis para todos os integrantes da sala.";
 "notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Você definiu que mensagens enviadas a partir do presente momento estarão disponíveis para todos os integrantes desta sala, a partir do momento em que eles foram convidados a entrar na sala.";
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Você definiu que mensagens enviadas a partir do presente momento estarão disponíveis para todos os integrantes desta sala, a partir do momento em que eles entrarem na sala.";
