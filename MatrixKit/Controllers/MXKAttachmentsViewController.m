@@ -1219,31 +1219,34 @@
             }]];
         }
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction * action) {
-                                                    
-                                                    typeof(self) self = weakSelf;
-                                                    self->currentAlert = nil;
-                                                    
-                                                    [self startActivityIndicator];
-                                                    
-                                                    [attachment copy:^{
-                                                        
-                                                        typeof(self) self = weakSelf;
-                                                        [self stopActivityIndicator];
-                                                        
-                                                    } failure:^(NSError *error) {
-                                                        
-                                                        typeof(self) self = weakSelf;
-                                                        [self stopActivityIndicator];
-                                                        
-                                                        // Notify MatrixKit user
-                                                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
-                                                        
-                                                    }];
-                                                    
-                                                }]];
+        if ([MXKAppSettings standardAppSettings].messageDetailsAllowCopyingMedia)
+        {
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                
+                typeof(self) self = weakSelf;
+                self->currentAlert = nil;
+                
+                [self startActivityIndicator];
+                
+                [attachment copy:^{
+                    
+                    typeof(self) self = weakSelf;
+                    [self stopActivityIndicator];
+                    
+                } failure:^(NSError *error) {
+                    
+                    typeof(self) self = weakSelf;
+                    [self stopActivityIndicator];
+                    
+                    // Notify MatrixKit user
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
+                    
+                }];
+                
+            }]];
+        }
         
         if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
         {
@@ -1307,18 +1310,25 @@
                                                            }]];
         }
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                         style:UIAlertActionStyleCancel
-                                                       handler:^(UIAlertAction * action) {
-                                                           
-                                                           typeof(self) self = weakSelf;
-                                                           self->currentAlert = nil;
-                                                           
-                                                       }]];
-        
-        [currentAlert popoverPresentationController].sourceView = _attachmentsCollection;
-        [currentAlert popoverPresentationController].sourceRect = _attachmentsCollection.bounds;
-        [self presentViewController:currentAlert animated:YES completion:nil];
+        if (currentAlert.actions.count)
+        {
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                             style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction * action) {
+                                                               
+                                                               typeof(self) self = weakSelf;
+                                                               self->currentAlert = nil;
+                                                               
+                                                           }]];
+            
+            [currentAlert popoverPresentationController].sourceView = _attachmentsCollection;
+            [currentAlert popoverPresentationController].sourceRect = _attachmentsCollection.bounds;
+            [self presentViewController:currentAlert animated:YES completion:nil];
+        }
+        else
+        {
+            currentAlert = nil;
+        }
     }
 }
 

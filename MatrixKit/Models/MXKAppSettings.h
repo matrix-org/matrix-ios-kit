@@ -131,6 +131,9 @@
 /// Flag to allow saving a message or not. Default value is YES.
 @property (nonatomic) BOOL messageDetailsAllowSaving;
 
+/// Flag to allow copying a media/file or not. Default value is YES.
+@property (nonatomic) BOOL messageDetailsAllowCopyingMedia;
+
 #pragma mark - Contacts
 
 /**
