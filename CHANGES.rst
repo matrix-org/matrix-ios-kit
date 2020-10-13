@@ -5,13 +5,15 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * SyncResponseStore & SyncResponseFileStore: New classes to manage/store sync responses (vector-im/element-ios/issues/3579).
+ * MXKAccountManager: Introduce syncResponseStoreClass to feed account sessions with sync responses before streaming (vector-im/element-ios/issues/3579).
+ * MXKAccount: Introduce syncResponseStore, which will be used to feed the account's session before streaming (vector-im/element-ios/issues/3579).
 
 🐛 Bugfix
  * 
 
 ⚠️ API Changes
- * 
+ * MXKAccount: backgroundSync now returns syncResponse on success (vector-im/element-ios/issues/3579). 
 
 🗣 Translations
  * 
