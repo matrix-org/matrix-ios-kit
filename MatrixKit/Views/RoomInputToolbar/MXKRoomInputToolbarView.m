@@ -18,6 +18,7 @@
 
 #import "MXKRoomInputToolbarView.h"
 #import "MXKSwiftHeader.h"
+#import "MXKAppSettings.h"
 
 @import MatrixSDK.MXMediaManager;
 @import MediaPlayer;
@@ -1331,7 +1332,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-    if (action == @selector(paste:))
+    if (action == @selector(paste:) && MXKAppSettings.standardAppSettings.messageDetailsAllowPastingMedia)
     {
         // Check whether some data listed in general pasteboard can be paste
         UIPasteboard *pasteboard = MXKPasteboardManager.shared.pasteboard;

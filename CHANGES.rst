@@ -1,3 +1,30 @@
+Changes in 0.12.25 (2020-10-14)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * Make copying & pasting media configurable. 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.16.19](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.19)).
+
 Changes in 0.12.24 (2020-10-13)
 =================================================
 
