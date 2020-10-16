@@ -2307,8 +2307,9 @@
             UITableViewCell *cellTmp;
             if (!cell)
             {
+                NSString *reuseIdentifier = [self cellReuseIdentifierForCellData:[roomDataSource cellDataAtIndex:rowIndex]];
                 // Create temporarily the cell (this cell will released at the end, to be reusable)
-                cellTmp = [roomDataSource tableView:_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:0]];
+                cellTmp = [_bubblesTableView dequeueReusableCellWithIdentifier:reuseIdentifier];
                 cell = cellTmp;
             }
             
