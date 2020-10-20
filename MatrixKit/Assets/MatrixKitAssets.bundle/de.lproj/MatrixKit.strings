@@ -83,14 +83,14 @@
 "notice_event_redacted_reason" = " [Grund: %@]";
 "notice_profile_change_redacted" = "%@ aktualisierte sein Profil %@";
 "notice_room_created" = "%@ hat den Raum erstellt und konfiguriert.";
-"notice_room_created_for_dm" = "%@ beigetreten.";
+"notice_room_created_for_dm" = "%@ ist beigetreten.";
 //  Old
 "notice_room_join_rule" = "Die Beitrittsregel ist: %@";
 //  New
 "notice_room_join_rule_invite" = "%@ hat den Raum auf \"nur-einladen\" gestellt.";
-"notice_room_join_rule_invite_for_dm" = "%@ hat nur diesen Beitritt gemacht.";
+"notice_room_join_rule_invite_for_dm" = "%@ hat auf Einladungen beschränkt.";
 "notice_room_join_rule_invite_by_you" = "Du hast den Raumbeitritt auf Einladungen beschränkt.";
-"notice_room_join_rule_invite_by_you_for_dm" = "Du hast nur diesen Beitritt gemacht.";
+"notice_room_join_rule_invite_by_you_for_dm" = "Du hast dies auf Einladungen beschränkt.";
 "notice_room_join_rule_public" = "%@ hat den Raum öffentlich gemacht.";
 "notice_room_join_rule_public_for_dm" = "%@ hat es öffentlich gemacht.";
 "notice_room_join_rule_public_by_you" = "Du hast den Raum öffentlich gemacht.";
