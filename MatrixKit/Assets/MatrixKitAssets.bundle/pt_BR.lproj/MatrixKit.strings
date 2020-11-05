@@ -249,7 +249,7 @@
 "e2e_passphrase_create" = "Criar frase secreta";
 // Others
 "user_id_title" = "ID do usuário:";
-"offline" = "desconectado";
+"offline" = "offline";
 "unsent" = "Não enviado";
 "error" = "Erro";
 "error_common_message" = "Um erro ocorreu. Por favor, tente novamente mais tarde.";
