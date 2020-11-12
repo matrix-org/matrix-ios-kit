@@ -1498,6 +1498,18 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             }
             break;
         }
+        case MXEventTypeCallReject:
+        {
+            if (isEventSenderMyUser)
+            {
+                displayText = [NSBundle mxk_localizedStringForKey:@"notice_declined_video_call_by_you"];
+            }
+            else
+            {
+                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_declined_video_call"], senderDisplayName];
+            }
+            break;
+        }
         case MXEventTypeSticker:
         {
             // Is redacted?
