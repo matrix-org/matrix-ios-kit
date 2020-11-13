@@ -671,7 +671,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [self updateProximityAndSleep];
 }
 
-- (void)call:(MXCall *)call didEncounterError:(NSError *)error
+- (void)call:(MXCall *)call didEncounterError:(NSError *)error reason:(MXCallHangupReason)reason
 {
     NSLog(@"[MXKCallViewController] didEncounterError. mxCall.state: %tu. Stop call due to error: %@", mxCall.state, error);
 
@@ -706,7 +706,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         [self presentViewController:errorAlert animated:YES completion:nil];
         
         // And interrupt the call
-        [mxCall hangup];
+        [mxCall hangupWithReason:reason];
     }
 }
 
