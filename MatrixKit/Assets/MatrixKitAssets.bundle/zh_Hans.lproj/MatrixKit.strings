@@ -76,7 +76,7 @@
 "notice_event_redacted_by" = " 由 %@";
 "notice_event_redacted_reason" = " [理由：%@]";
 "notice_profile_change_redacted" = "%@ 已经更新了他的个人档案 %@";
-"notice_room_created" = "%@ 创建了此聊天室";
+"notice_room_created" = "%@ 创建并配置了此聊天室。";
 "notice_room_join_rule" = "加入规则是：%@";
 "notice_room_power_level_intro" = "此聊天室成员的权限级别是：";
 "notice_room_power_level_acting_requirement" = "完成这个动作之前用户必须具备的最小权限级别是 ：";
@@ -214,7 +214,7 @@
 "notice_display_name_set" = "%@ 将自己的昵称设置为 %@";
 "notice_display_name_changed_from" = "%@ 将自己的昵称从 %@ 改成 %@";
 "notice_display_name_removed" = "%@ 删除了自己的昵称";
-"notice_room_name_changed" = "%@ 将聊天室名称修改为 %@";
+"notice_room_name_changed" = "%@ 将聊天室名称修改为 %@。";
 // button names 
 "ok" = "确定";
 "send" = "发送";
@@ -294,7 +294,7 @@
 "e2e_passphrase_not_match" = "密码必须匹配";
 "not_supported_yet" = "尚未支持";
 "local_contacts_access_discovery_warning_title" = "发现用户";
-"notice_topic_changed" = "%@ 已将主题修改为：%@";
+"notice_topic_changed" = "%@ 将主题修改为\"%@\"。";
 "notice_placed_voice_call" = "%@ 发起了语音通话";
 "notice_placed_video_call" = "%@ 发起了视频通话";
 "notice_answered_video_call" = "%@ 已接听通话";
