@@ -138,6 +138,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                   kMXEventTypeStringCallAnswer,
                                                                   kMXEventTypeStringCallHangup,
                                                                   kMXEventTypeStringCallReject,
+                                                                  kMXEventTypeStringCallNegotiate,
                                                                   kMXEventTypeStringSticker,
                                                                   kMXEventTypeStringKeyVerificationCancel,
                                                                   kMXEventTypeStringKeyVerificationDone
@@ -167,6 +168,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                     kMXEventTypeStringCallSelectAnswer,
                                                                     kMXEventTypeStringCallHangup,
                                                                     kMXEventTypeStringCallReject,
+                                                                    kMXEventTypeStringCallNegotiate,
                                                                     kMXEventTypeStringSticker,
                                                                     kMXEventTypeStringKeyVerificationCancel,
                                                                     kMXEventTypeStringKeyVerificationDone
