@@ -46,15 +46,15 @@ PODS:
     - GZIP (~> 1.3.0)
     - libbase58 (~> 0.1.4)
     - OLMKit (~> 3.1.0)
-    - Realm (~> 5.4.8)
+    - Realm (~> 10.1.2)
   - OLMKit (3.1.0):
     - OLMKit/olmc (= 3.1.0)
     - OLMKit/olmcpp (= 3.1.0)
   - OLMKit/olmc (3.1.0)
   - OLMKit/olmcpp (3.1.0)
-  - Realm (5.4.8):
-    - Realm/Headers (= 5.4.8)
-  - Realm/Headers (5.4.8)
+  - Realm (10.1.3):
+    - Realm/Headers (= 10.1.3)
+  - Realm/Headers (10.1.3)
 
 DEPENDENCIES:
   - Down (~> 0.9.3)
@@ -93,8 +93,8 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   MatrixSDK: b4a837585997c462761b8faa894cd490e24acb11
   OLMKit: 4ee0159d63feeb86d836fdcfefe418e163511639
-  Realm: 042bbb59227a0159eda397b8a5a49fbd67495ce7
+  Realm: 072f4060c99150cb1d35e35ce1dd4dda7d9ddfed
 
 PODFILE CHECKSUM: e929a6a389c2b8be9f1fcf32d89f7099fe4c06a3
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0

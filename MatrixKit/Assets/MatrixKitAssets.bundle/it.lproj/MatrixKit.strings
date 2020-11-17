@@ -234,7 +234,7 @@
 "format_time_d" = "d";
 // E2E import
 "e2e_import_room_keys" = "Importa le chiavi del canale";
-"e2e_import_prompt" = "Questo processo ti consente di importare le chiavi di crittografia che hai precedentemente esportato da un altro client Matrix. Sarai quindi in grado di decriptare gli stessi messaggi leggibili dall'altro client.";
+"e2e_import_prompt" = "Questo processo ti consente di importare le chiavi di crittografia che hai precedentemente esportato da un altro client Matrix. Sarai quindi in grado di decifrare gli stessi messaggi leggibili dall'altro client.\nIl file esportato è protetto da password. Devi inserirla qui per decifrare il file.";
 "e2e_import" = "Importa";
 "e2e_passphrase_enter" = "Inserisci password";
 // E2E export
