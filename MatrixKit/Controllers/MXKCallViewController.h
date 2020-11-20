@@ -75,6 +75,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet UIButton *speakerButton;
 @property (weak, nonatomic) IBOutlet UIButton *audioMuteButton;
 @property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
+@property (weak, nonatomic) IBOutlet UIButton *holdButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *backToAppButton;
 @property (weak, nonatomic) IBOutlet UIButton *cameraSwitchButton;

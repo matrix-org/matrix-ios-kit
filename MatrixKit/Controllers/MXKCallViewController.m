@@ -119,6 +119,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     self.backToAppButton.backgroundColor = [UIColor clearColor];
     self.audioMuteButton.backgroundColor = [UIColor clearColor];
     self.videoMuteButton.backgroundColor = [UIColor clearColor];
+    self.holdButton.backgroundColor = [UIColor clearColor];
     self.speakerButton.backgroundColor = [UIColor clearColor];
     
     [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateNormal];
@@ -127,6 +128,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [self.audioMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_audio_mute"] forState:UIControlStateSelected];
     [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_unmute"] forState:UIControlStateNormal];
     [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_mute"] forState:UIControlStateSelected];
+    [self.holdButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_hold"] forState:UIControlStateNormal];
+    [self.holdButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_holded"] forState:UIControlStateSelected];
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_off"] forState:UIControlStateNormal];
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_on"] forState:UIControlStateSelected];
     
@@ -510,6 +513,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         mxCall.videoMuted = !mxCall.videoMuted;
         videoMuteButton.selected = mxCall.videoMuted;
     }
+    else if (sender == _holdButton)
+    {
+        BOOL isHolded = (mxCall.state == MXCallStateHolded);
+        [mxCall hold:!isHolded];
+        _holdButton.selected = !isHolded;
+    }
     else if (sender == speakerButton)
     {
         mxCall.audioToSpeaker = !mxCall.audioToSpeaker;
@@ -548,6 +557,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     endCallButton.hidden = NO;
     rejectCallButton.hidden = YES;
     answerCallButton.hidden = YES;
+    _holdButton.hidden = !call.supportsHolding;
     
     [localPreviewActivityView stopAnimating];
     
@@ -632,13 +642,34 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 // Well, hide does not work. So, shrink the view to nil
                 self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
             }
+            _holdButton.selected = NO;
+            _holdButton.enabled = YES;
+            audioMuteButton.enabled = YES;
+            videoMuteButton.enabled = YES;
+            speakerButton.enabled = YES;
+            cameraSwitchButton.enabled = YES;
 
+            break;
+        case MXCallStateHolded:
+            _holdButton.selected = YES;
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_holded"];
+            
+            break;
+        case MXCallStateRemoteHolded:
+            audioMuteButton.enabled = NO;
+            videoMuteButton.enabled = NO;
+            speakerButton.enabled = NO;
+            cameraSwitchButton.enabled = NO;
+            _holdButton.enabled = NO;
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_remote_holded"];
+            
             break;
         case MXCallStateInviteExpired:
             // MXCallStateInviteExpired state is sent as an notification
             // MXCall will move quickly to the MXCallStateEnded state
             self.isRinging = NO;
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_invite_expired"];
+            
             break;
         case MXCallStateEnded:
         {
@@ -792,10 +823,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (BOOL)isBuiltInReceiverAudioOuput
 {
+#if TARGET_IPHONE_SIMULATOR
+    return YES;
+#endif
     BOOL isBuiltInReceiverUsed = NO;
     
     // Check whether the audio output is the built-in receiver
-    AVAudioSessionRouteDescription *audioRoute= [[AVAudioSession sharedInstance] currentRoute];
+    AVAudioSessionRouteDescription *audioRoute = [[AVAudioSession sharedInstance] currentRoute];
     if (audioRoute.outputs.count)
     {
         // TODO: handle the case where multiple outputs are returned
@@ -939,22 +973,25 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)updateProximityAndSleep
 {
-    BOOL isBuiltInReceiverUsed = self.isBuiltInReceiverAudioOuput;
-    
     BOOL inCall = (mxCall.state == MXCallStateConnected || mxCall.state == MXCallStateRinging || mxCall.state == MXCallStateInviteSent || mxCall.state == MXCallStateConnecting || mxCall.state == MXCallStateCreateOffer || mxCall.state == MXCallStateCreateAnswer);
     
-    // Enable the proximity monitoring when the built in receiver is used as the audio output.
-    BOOL enableProxMonitoring = inCall && isBuiltInReceiverUsed;
-    [[UIDevice currentDevice] setProximityMonitoringEnabled:enableProxMonitoring];
-    
-    // Disable the idle timer during a video call, or during a voice call which is performed with the built-in receiver.
-    // Note: if the device is locked, VoIP calling get dropped if an incoming GSM call is received.
-    BOOL disableIdleTimer = inCall && (mxCall.isVideoCall || isBuiltInReceiverUsed);
-    
-    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-    if (sharedApplication)
+    if (inCall)
     {
-        sharedApplication.idleTimerDisabled = disableIdleTimer;
+        BOOL isBuiltInReceiverUsed = self.isBuiltInReceiverAudioOuput;
+        
+        // Enable the proximity monitoring when the built in receiver is used as the audio output.
+        BOOL enableProxMonitoring = isBuiltInReceiverUsed;
+        [[UIDevice currentDevice] setProximityMonitoringEnabled:enableProxMonitoring];
+        
+        // Disable the idle timer during a video call, or during a voice call which is performed with the built-in receiver.
+        // Note: if the device is locked, VoIP calling get dropped if an incoming GSM call is received.
+        BOOL disableIdleTimer = mxCall.isVideoCall || isBuiltInReceiverUsed;
+        
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication)
+        {
+            sharedApplication.idleTimerDisabled = disableIdleTimer;
+        }
     }
 }
 

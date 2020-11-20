@@ -537,6 +537,8 @@
 "incoming_video_call" = "Incoming Video Call";
 "incoming_voice_call" = "Incoming Voice Call";
 "call_invite_expired" = "Call Invite Expired";
+"call_remote_holded" = "Remotely On Hold";
+"call_holded" = "On Hold";
 
 // unrecognized SSL certificate
 "ssl_trust" = "Trust";
