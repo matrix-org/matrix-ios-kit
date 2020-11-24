@@ -1,8 +1,35 @@
-Changes in 0.13.0 (2020-11-17)
+Changes in 0.13.1 (2020-11-24)
 =================================================
 
 ✨ Features
  * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.3)).
+
+Changes in 0.13.0 (2020-11-17)
+=================================================
+
+✨ Features
+ * Expose Webview object to SDK consumer (https://github.com/vector-im/element-ios/issues/3829)
 
 🙌 Improvements
  * 

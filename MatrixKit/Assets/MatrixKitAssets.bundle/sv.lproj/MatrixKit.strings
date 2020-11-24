@@ -386,7 +386,7 @@
 "notification_settings_other_alerts" = "Andra larm";
 "notification_settings_contain_my_user_name" = "Avisera mig med ett ljud om meddelande som innehåller mitt användarnamn";
 "notification_settings_contain_my_display_name" = "Avisera mig med ett ljud om meddelande som innehåller mitt visningsnamn";
-"notification_settings_just_sent_to_me" = "Avisera med med ett ljud om meddelanden skickade till bara mig";
+"notification_settings_just_sent_to_me" = "Avisera med ett ljud om meddelanden skickade till bara mig";
 "notification_settings_invite_to_a_new_room" = "Avisera mig när jag bjuds in till ett nytt rum";
 "notification_settings_people_join_leave_rooms" = "Avisera mig när personer går med i eller lämnar rum";
 "notification_settings_receive_a_call" = "Avisera mig när jag får ett samtal";
