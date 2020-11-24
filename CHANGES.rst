@@ -26,7 +26,7 @@ Changes in 0.13.0 (2020-11-17)
 =================================================
 
 ✨ Features
- * 
+ * Expose Webview object to SDK consumer (https://github.com/vector-im/element-ios/issues/3829)
 
 🙌 Improvements
  * 
