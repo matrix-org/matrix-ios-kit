@@ -10,7 +10,7 @@
 "login_password_placeholder" = "Senha";
 "login_optional_field" = "opcional";
 "login_display_name_placeholder" = "Nome e sobrenome (por exemplo: Roberto Silva)";
-"login_email_info" = "Fornecer um endereço de e-mail  permite que outros usuários possam encontrar você com mais facilidade, e dá a você uma forma de redefinir sua senha no futuro.";
+"login_email_info" = "Fornecer um endereço de e-mail permite que outros usuários possam encontrar você com mais facilidade, e dá a você uma forma de redefinir sua senha no futuro.";
 "login_email_placeholder" = "Endereço de e-mail";
 "login_prompt_email_token" = "Por favor, informe o token de validação enviado por e-mail:";
 "login_error_title" = "Erro de login";
@@ -136,14 +136,14 @@
 "device_details_delete_prompt_title" = "Autenticação";
 "device_details_delete_prompt_message" = "Esta operação requer autenticação adicional.\nPara continuar, digite sua senha.";
 // Encryption information
-"room_event_encryption_info_title" = "Informações da criptografia de ponta a ponta↵\n↵\n\n";
+"room_event_encryption_info_title" = "Informações da criptografia de ponta a ponta\n\n";
 "room_event_encryption_info_event" = "Informação do evento\n";
 "room_event_encryption_info_event_user_id" = "ID do usuário\n";
 "room_event_encryption_info_event_algorithm" = "Algoritmo\n";
 "room_event_encryption_info_event_session_id" = "ID da sessão\n";
 "room_event_encryption_info_event_unencrypted" = "não criptografado";
 "room_event_encryption_info_event_none" = "nenhuma";
-"room_event_encryption_info_device" = "\n↵\nInformação da sessão do remetente↵\n";
+"room_event_encryption_info_device" = "\nInformação da sessão do remetente\n";
 "room_event_encryption_info_device_unknown" = "sessão desconhecida↵\n";
 "room_event_encryption_info_device_name" = "Nome público↵\n";
 "room_event_encryption_info_device_id" = "ID↵\n";
@@ -272,7 +272,7 @@
 "language_picker_title" = "Escolha um idioma";
 "language_picker_default_language" = "Padrão (%@)";
 "notice_room_invite" = "%@ convidado %@";
-"notice_room_third_party_invite" = "%@ enviou um convite para %@ para entrar na sala";
+"notice_room_third_party_invite" = "%@ enviou um convite para %@ entrar na sala";
 "notice_room_third_party_registered_invite" = "%@ aceitou o convite para %@";
 "notice_room_join" = "%@ entrou";
 "notice_room_leave" = "%@ saiu";

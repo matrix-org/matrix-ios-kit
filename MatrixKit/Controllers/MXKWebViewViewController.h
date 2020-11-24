@@ -29,6 +29,7 @@
      */
     UIBarButtonItem *backButton;
     
+@public
     /**
      The content of this screen is fully displayed by this webview
      */
