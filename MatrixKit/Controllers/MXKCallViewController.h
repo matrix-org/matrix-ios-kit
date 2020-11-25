@@ -63,8 +63,10 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet UIView *overlayContainerView;
 @property (weak, nonatomic) IBOutlet UIView *callContainerView;
 @property (weak, nonatomic) IBOutlet MXKImageView *callerImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *pausedIcon;
 @property (weak, nonatomic) IBOutlet UILabel *callerNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *callStatusLabel;
+@property (weak, nonatomic) IBOutlet UIButton *resumeButton;
 
 @property (weak, nonatomic) IBOutlet UIView *callToolBar;
 @property (weak, nonatomic) IBOutlet UIButton *rejectCallButton;
@@ -72,10 +74,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet UIButton *endCallButton;
 
 @property (weak, nonatomic) IBOutlet UIView *callControlContainerView;
+@property (weak, nonatomic) IBOutlet UIButton *pipButton;
 @property (weak, nonatomic) IBOutlet UIButton *speakerButton;
 @property (weak, nonatomic) IBOutlet UIButton *audioMuteButton;
 @property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
-@property (weak, nonatomic) IBOutlet UIButton *holdButton;
+@property (weak, nonatomic) IBOutlet UIButton *moreButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *backToAppButton;
 @property (weak, nonatomic) IBOutlet UIButton *cameraSwitchButton;

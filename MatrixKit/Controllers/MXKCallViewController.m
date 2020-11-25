@@ -53,6 +53,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     // Observe AVAudioSessionRouteChangeNotification
     id audioSessionRouteChangeNotificationObserver;
+    
+    // Current alert (if any).
+    UIAlertController *currentAlert;
 }
 
 @property (nonatomic, assign) Boolean isRinging;
@@ -119,7 +122,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     self.backToAppButton.backgroundColor = [UIColor clearColor];
     self.audioMuteButton.backgroundColor = [UIColor clearColor];
     self.videoMuteButton.backgroundColor = [UIColor clearColor];
-    self.holdButton.backgroundColor = [UIColor clearColor];
+    self.resumeButton.backgroundColor = [UIColor clearColor];
+    self.moreButton.backgroundColor = [UIColor clearColor];
     self.speakerButton.backgroundColor = [UIColor clearColor];
     
     [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateNormal];
@@ -128,8 +132,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [self.audioMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_audio_mute"] forState:UIControlStateSelected];
     [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_unmute"] forState:UIControlStateNormal];
     [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_mute"] forState:UIControlStateSelected];
-    [self.holdButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_hold"] forState:UIControlStateNormal];
-    [self.holdButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_holded"] forState:UIControlStateSelected];
+    [self.moreButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_more"] forState:UIControlStateNormal];
+    [self.moreButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_more"] forState:UIControlStateSelected];
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_off"] forState:UIControlStateNormal];
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_on"] forState:UIControlStateSelected];
     
@@ -140,6 +144,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [rejectCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"reject_call"] forState:UIControlStateHighlighted];
     [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateNormal];
     [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateHighlighted];
+    [_resumeButton setTitle:[NSBundle mxk_localizedStringForKey:@"resume_call"] forState:UIControlStateNormal];
+    [_resumeButton setTitle:[NSBundle mxk_localizedStringForKey:@"resume_call"] forState:UIControlStateHighlighted];
     
     // Refresh call information
     self.mxCall = mxCall;
@@ -325,6 +331,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         // Hide camera switch on voice call
         self.cameraSwitchButton.hidden = !call.isVideoCall;
+        
+        // Hide pip on voice call
+        self.pipButton.hidden = !call.isVideoCall;
         
         // Observe call state change
         call.delegate = self;
@@ -513,11 +522,74 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         mxCall.videoMuted = !mxCall.videoMuted;
         videoMuteButton.selected = mxCall.videoMuted;
     }
-    else if (sender == _holdButton)
+    else if (sender == _resumeButton)
     {
-        BOOL isHolded = (mxCall.state == MXCallStateHolded);
-        [mxCall hold:!isHolded];
-        _holdButton.selected = !isHolded;
+        [mxCall hold:NO];
+    }
+    else if (sender == _moreButton)
+    {
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
+        
+        __weak typeof(self) weakSelf = self;
+        
+        NSMutableArray<UIAlertAction *> *actions = [NSMutableArray arrayWithCapacity:4];
+        
+        //  check the call be holded/unholded
+        if (mxCall.supportsHolding)
+        {
+            NSString *actionLocKey = (mxCall.state == MXCallStateHolded) ? @"call_more_actions_unhold" : @"call_more_actions_hold";
+            
+            UIAlertAction *holdAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:actionLocKey]
+                                                                 style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * action) {
+                
+                if (weakSelf)
+                {
+                    typeof(self) self = weakSelf;
+                    self->currentAlert = nil;
+                    [self->mxCall hold:(self.mxCall.state != MXCallStateHolded)];
+                }
+                
+            }];
+            
+            [actions addObject:holdAction];
+        }
+        
+        //  check the call can be up/downgraded
+        
+        //  check the call can use dialpad
+        
+        //  check the call be transferred
+        
+        if (actions.count > 0)
+        {
+            //  create the alert
+            currentAlert = [UIAlertController alertControllerWithTitle:nil
+                                                               message:nil
+                                                        preferredStyle:UIAlertControllerStyleActionSheet];
+            
+            //  add actions
+            [actions enumerateObjectsUsingBlock:^(UIAlertAction * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [currentAlert addAction:obj];
+            }];
+            
+            //  add cancel action always
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                             style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction * action) {
+                
+                if (weakSelf)
+                {
+                    typeof(self) self = weakSelf;
+                    self->currentAlert = nil;
+                }
+                
+            }]];
+            
+            [currentAlert popoverPresentationController].sourceView = _moreButton;
+            [currentAlert popoverPresentationController].sourceRect = _moreButton.bounds;
+            [self presentViewController:currentAlert animated:YES completion:nil];
+        }
     }
     else if (sender == speakerButton)
     {
@@ -557,7 +629,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     endCallButton.hidden = NO;
     rejectCallButton.hidden = YES;
     answerCallButton.hidden = YES;
-    _holdButton.hidden = !call.supportsHolding;
+    _moreButton.enabled = YES;
+    _resumeButton.hidden = state != MXCallStateHolded;
+    _pausedIcon.hidden = state != MXCallStateHolded && state != MXCallStateRemoteHolded;
     
     [localPreviewActivityView stopAnimating];
     
@@ -642,8 +716,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 // Well, hide does not work. So, shrink the view to nil
                 self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
             }
-            _holdButton.selected = NO;
-            _holdButton.enabled = YES;
             audioMuteButton.enabled = YES;
             videoMuteButton.enabled = YES;
             speakerButton.enabled = YES;
@@ -651,7 +723,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
             break;
         case MXCallStateHolded:
-            _holdButton.selected = YES;
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_holded"];
             
             break;
@@ -660,8 +731,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             videoMuteButton.enabled = NO;
             speakerButton.enabled = NO;
             cameraSwitchButton.enabled = NO;
-            _holdButton.enabled = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_remote_holded"];
+            _moreButton.enabled = NO;
+            callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], callerNameLabel.text];
             
             break;
         case MXCallStateInviteExpired:

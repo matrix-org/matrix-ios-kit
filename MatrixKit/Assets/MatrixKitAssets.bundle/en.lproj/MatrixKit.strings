@@ -94,6 +94,7 @@
 "answer_call" = "Answer Call";
 "reject_call" = "Reject Call";
 "end_call" = "End Call";
+"resume_call" = "Resume";
 "ignore" = "Ignore";
 "unignore" = "Unignore";
 
@@ -537,8 +538,10 @@
 "incoming_video_call" = "Incoming Video Call";
 "incoming_voice_call" = "Incoming Voice Call";
 "call_invite_expired" = "Call Invite Expired";
-"call_remote_holded" = "Remotely On Hold";
-"call_holded" = "On Hold";
+"call_remote_holded" = "%@ held the call";
+"call_holded" = "You held the call";
+"call_more_actions_hold" = "Hold";
+"call_more_actions_unhold" = "Resume";
 
 // unrecognized SSL certificate
 "ssl_trust" = "Trust";
