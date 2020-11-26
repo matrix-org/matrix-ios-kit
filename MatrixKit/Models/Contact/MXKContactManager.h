@@ -73,6 +73,23 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
 };
 
 /**
+ This protocol is used to provide AES key and IV to the manager when needed
+ */
+@protocol MXKContactEncryptionDelegate <NSObject>
+
+@required
+/// check if the delegate is ready to give the ecryption keys
+- (BOOL) isReady;
+
+/// AES IV to be used for encryption
+- (NSData* _Nullable) iv;
+
+/// AES key to be used for encryption
+- (NSData* _Nullable) aesKey;
+
+@end
+
+/**
  This manager handles 2 kinds of contact list:
  - The local contacts retrieved from the device phonebook.
  - The matrix contacts retrieved from the matrix one-to-one rooms.
@@ -144,6 +161,9 @@ typedef void(^MXKContactManagerDiscoverUsersBoundTo3PIDs)(NSArray<NSArray<NSStri
 
 /// Flag to allow local contacts access or not. Default value is YES.
 @property (nonatomic, assign) BOOL allowLocalContactsAccess;
+
+/// Set this delegate to enable data encryption into contact data file
+@property (nonatomic, weak, nullable) id<MXKContactEncryptionDelegate> encryptionDelegate;
 
 /**
  Add/remove matrix session. The matrix contact list is automatically updated (see kMXKContactManagerDidUpdateMatrixContactsNotification event).
