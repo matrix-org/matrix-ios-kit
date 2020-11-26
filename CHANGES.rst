@@ -26,7 +26,7 @@ Changes in 0.13.1 (2020-11-24)
 =================================================
 
 ✨ Features
- * 
+ * Added AES encryption support in MXKContactManager
 
 🙌 Improvements
  * 
