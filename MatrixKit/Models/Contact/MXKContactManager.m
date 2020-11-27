@@ -1534,10 +1534,10 @@ static NSString *matrixIDsDictFileOld = @"matrixIDsDict";
 static NSString *localContactsFileOld = @"localContacts";
 static NSString *contactsBookInfoFileOld = @"contacts";
 
-static NSString *matrixContactsFile = @"matrixContactsCiph";
-static NSString *matrixIDsDictFile = @"matrixIDsDictCiph";
-static NSString *localContactsFile = @"localContactsCiph";
-static NSString *contactsBookInfoFile = @"contactsCiph";
+static NSString *matrixContactsFile = @"matrixContactsV2";
+static NSString *matrixIDsDictFile = @"matrixIDsDictV2";
+static NSString *localContactsFile = @"localContactsV2";
+static NSString *contactsBookInfoFile = @"contactsV2";
 
 - (NSString*)dataFilePathForComponent:(NSString*)component
 {
@@ -1593,7 +1593,8 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
             NSError *error = nil;
             filecontent = [self decryptData:filecontent error:&error fileName:matrixContactsFile];
 
-            if (!error) {
+            if (!error)
+            {
                 NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
                 
                 id object = [decoder decodeObjectForKey:@"matrixContactByContactID"];
@@ -1604,8 +1605,10 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
                 }
                 
                 [decoder finishDecoding];
-            } else {
-                NSLog(@"[MXKContactManager] failed to decrypt %@: %@", matrixContactsFile, error);
+            }
+            else
+            {
+                NSLog(@"[MXKContactManager] fetchCachedMatrixContacts: failed to decrypt %@: %@", matrixContactsFile, error);
             }
         }
         @catch (NSException *exception)
@@ -1655,7 +1658,8 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
             NSError *error = nil;
             filecontent = [self decryptData:filecontent error:&error fileName:matrixIDsDictFile];
 
-            if (!error) {
+            if (!error)
+            {
                 NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
                 
                 id object = [decoder decodeObjectForKey:@"matrixIDsDict"];
@@ -1666,8 +1670,10 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
                 }
                 
                 [decoder finishDecoding];
-            } else {
-                NSLog(@"[MXKContactManager] failed to decrypt %@: %@", matrixIDsDictFile, error);
+            }
+            else
+            {
+                NSLog(@"[MXKContactManager] loadCachedMatrixIDsDict: failed to decrypt %@: %@", matrixIDsDictFile, error);
             }
         }
         @catch (NSException *exception)
@@ -1719,7 +1725,8 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
             NSError *error = nil;
             filecontent = [self decryptData:filecontent error:&error fileName:localContactsFile];
 
-            if (!error) {
+            if (!error)
+            {
                 NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
                 
                 id object = [decoder decodeObjectForKey:@"localContactByContactID"];
@@ -1730,10 +1737,13 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
                 }
                 
                 [decoder finishDecoding];
-            } else {
-                NSLog(@"[MXKContactManager] failed to decrypt %@: %@", localContactsFile, error);
             }
-        } @catch (NSException *exception)
+            else
+            {
+                NSLog(@"[MXKContactManager] loadCachedLocalContacts: failed to decrypt %@: %@", localContactsFile, error);
+            }
+        }
+        @catch (NSException *exception)
         {
             lastSyncDate = nil;
         }
@@ -1783,65 +1793,79 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
             NSError *error = nil;
             filecontent = [self decryptData:filecontent error:&error fileName:contactsBookInfoFile];
 
-            if (!error) {
+            if (!error)
+            {
                 NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
                 
                 lastSyncDate = [decoder decodeObjectForKey:@"lastSyncDate"];
                 
                 [decoder finishDecoding];
-            } else {
-                lastSyncDate = nil;
-                NSLog(@"[MXKContactManager] failed to decrypt %@: %@", contactsBookInfoFile, error);
             }
-        } @catch (NSException *exception)
+            else
+            {
+                lastSyncDate = nil;
+                NSLog(@"[MXKContactManager] loadCachedContactBookInfo: failed to decrypt %@: %@", contactsBookInfoFile, error);
+            }
+        }
+        @catch (NSException *exception)
         {
             lastSyncDate = nil;
         }
     }
 }
 
-- (BOOL)encryptAndSaveData:(NSData*)data toFile:(NSString*)fileName {
+- (BOOL)encryptAndSaveData:(NSData*)data toFile:(NSString*)fileName
+{
     NSError *error = nil;
     NSData *cipher = [self encryptData:data error:&error fileName:fileName];
 
-    if (error == nil) {
+    if (error == nil)
+    {
         [cipher writeToFile:[self dataFilePathForComponent:fileName] atomically:YES];
-    } else {
-        NSLog(@"[MXKContactManager] failed to encrypt %@", fileName);
+    }
+    else
+    {
+        NSLog(@"[MXKContactManager] encryptAndSaveData: failed to encrypt %@", fileName);
     }
     
     return error == nil;
 }
 
-- (NSData*)encryptData:(NSData*)data error:(NSError**)error fileName:(NSString*)fileName  {
-    if (self.encryptionDelegate) {
-        if (![self.encryptionDelegate isReady]) {
+- (NSData*)encryptData:(NSData*)data error:(NSError**)error fileName:(NSString*)fileName
+{
+    if (self.encryptionDelegate)
+    {
+        if (![self.encryptionDelegate isReady])
+        {
             *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: @"Encryption Delegate not ready"}];
             return nil;
         }
         
         NSData *cipher = [MXAes encrypt: data aesKey:[self.encryptionDelegate aesKey] iv:[self.encryptionDelegate iv] error: error];
-        NSLog(@"[MXKContactManager] encrypted %lu Bytes for %@", cipher.length, fileName);
+        NSLog(@"[MXKContactManager] encryptData: encrypted %lu Bytes for %@", cipher.length, fileName);
         return cipher;
     }
     
-    NSLog(@"[MXKContactManager] WARNING: no key method provided for encryption of %@", fileName);
+    NSLog(@"[MXKContactManager] encryptData: no key method provided for encryption of %@", fileName);
     return data;
 }
 
-- (NSData*)decryptData:(NSData*)data error:(NSError**)error fileName:(NSString*)fileName  {
-    if (self.encryptionDelegate) {
-        if (![self.encryptionDelegate isReady]) {
+- (NSData*)decryptData:(NSData*)data error:(NSError**)error fileName:(NSString*)fileName
+{
+    if (self.encryptionDelegate)
+    {
+        if (![self.encryptionDelegate isReady])
+        {
             *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: @"Encryption Delegate not ready"}];
             return nil;
         }
         
         NSData *decrypt = [MXAes decrypt:data aesKey:[self.encryptionDelegate aesKey] iv:[self.encryptionDelegate iv] error:error];
-        NSLog(@"[MXKContactManager] decrypted %lu Bytes for %@", decrypt.length, fileName);
+        NSLog(@"[MXKContactManager] decryptData: decrypted %lu Bytes for %@", decrypt.length, fileName);
         return decrypt;
     }
     
-    NSLog(@"[MXKContactManager] WARNING: no key method provided for decryption of %@", fileName);
+    NSLog(@"[MXKContactManager] decryptData: no key method provided for decryption of %@", fileName);
     return data;
 }
 
@@ -1852,10 +1876,12 @@ static NSString *contactsBookInfoFile = @"contactsCiph";
     
     for (NSString *fileName in oldFileNames) {
         NSString *filePath = [self dataFilePathForComponent:fileName];
-        if ([fileManager fileExistsAtPath:filePath]) {
+        if ([fileManager fileExistsAtPath:filePath])
+        {
             error = nil;
-            if (![fileManager removeItemAtPath:filePath error:&error]) {
-                NSLog(@"[MXKContactManager] failed to remove %@", fileName);
+            if (![fileManager removeItemAtPath:filePath error:&error])
+            {
+                NSLog(@"[MXKContactManager] deleteOldFiles: failed to remove %@", fileName);
             }
         }
     }
