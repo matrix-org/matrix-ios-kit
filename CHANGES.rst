@@ -2,7 +2,7 @@ Changes to be released in next version
 =================================================
 
 ✨ Features
- * 
+ * Added AES encryption support in MXKContactManager (vector-im/element-ios/issues/3833).
 
 🙌 Improvements
  * 
@@ -26,7 +26,7 @@ Changes in 0.13.1 (2020-11-24)
 =================================================
 
 ✨ Features
- * Added AES encryption support in MXKContactManager (vector-im/element-ios/issues/3833).
+ * 
 
 🙌 Improvements
  * 
