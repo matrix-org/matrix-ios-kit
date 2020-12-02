@@ -537,7 +537,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         //  check the call be holded/unholded
         if (mxCall.supportsHolding)
         {
-            NSString *actionLocKey = (mxCall.state == MXCallStateHolded) ? @"call_more_actions_unhold" : @"call_more_actions_hold";
+            NSString *actionLocKey = (mxCall.state == MXCallStateOnHold) ? @"call_more_actions_unhold" : @"call_more_actions_hold";
             
             UIAlertAction *holdAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:actionLocKey]
                                                                  style:UIAlertActionStyleDefault
@@ -547,7 +547,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 {
                     typeof(self) self = weakSelf;
                     self->currentAlert = nil;
-                    [self->mxCall hold:(self.mxCall.state != MXCallStateHolded)];
+                    [self->mxCall hold:(self.mxCall.state != MXCallStateOnHold)];
                 }
                 
             }];
@@ -630,8 +630,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     rejectCallButton.hidden = YES;
     answerCallButton.hidden = YES;
     _moreButton.enabled = YES;
-    _resumeButton.hidden = state != MXCallStateHolded;
-    _pausedIcon.hidden = state != MXCallStateHolded && state != MXCallStateRemoteHolded;
+    _resumeButton.hidden = state != MXCallStateOnHold;
+    _pausedIcon.hidden = state != MXCallStateOnHold && state != MXCallStateRemotelyOnHold;
     
     [localPreviewActivityView stopAnimating];
     
@@ -722,11 +722,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             cameraSwitchButton.enabled = YES;
 
             break;
-        case MXCallStateHolded:
+        case MXCallStateOnHold:
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_holded"];
             
             break;
-        case MXCallStateRemoteHolded:
+        case MXCallStateRemotelyOnHold:
             audioMuteButton.enabled = NO;
             videoMuteButton.enabled = NO;
             speakerButton.enabled = NO;
