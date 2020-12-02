@@ -1,3 +1,30 @@
+Changes in 0.13.2 (2020-12-02)
+=================================================
+
+✨ Features
+ * Added AES encryption support in MXKContactManager (vector-im/element-ios/issues/3833).
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.4)).
+
 Changes in 0.13.1 (2020-11-24)
 =================================================
 
