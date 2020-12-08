@@ -53,7 +53,9 @@
 #import "MXKSlashCommands.h"
 #import "MXKSwiftHeader.h"
 
-@interface MXKRoomViewController ()
+#import "MXKPreviewViewController.h"
+
+@interface MXKRoomViewController () <MXKPreviewViewControllerDelegate>
 {
     /**
      YES if scrolling to bottom is in progress
@@ -213,6 +215,9 @@
     
     // Keep visible the status bar by default.
     isStatusBarHidden = NO;
+    
+    // By default actions button is shown in document preview
+    _allowActionsInDocumentPreview = YES;
 }
 
 - (void)viewDidLoad
@@ -283,6 +288,8 @@
             self.bubbleTableViewDisplayInTransition = NO;
         }
     }];
+    
+    self.navigationController.delegate = self;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -3708,18 +3715,29 @@
 
                     void(^viewAttachment)(void) = ^() {
 
-                        self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-                        [self->documentInteractionController setDelegate:self];
-                        self->currentSharedAttachment = selectedAttachment;
-
-                        if (![self->documentInteractionController presentPreviewAnimated:YES])
+                        if (self.allowActionsInDocumentPreview)
                         {
-                            if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                            // We could get rid of this part of code and use only a MXKPreviewViewController
+                            // Nevertheless, MXKRoomViewController is complient to UIDocumentInteractionControllerDelegate
+                            // and remove all this code could have effect on some custom implementations.
+                            self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+                            [self->documentInteractionController setDelegate:self];
+                            self->currentSharedAttachment = selectedAttachment;
+
+                            if (![self->documentInteractionController presentPreviewAnimated:YES])
                             {
-                                self->documentInteractionController = nil;
-                                [selectedAttachment onShareEnded];
-                                self->currentSharedAttachment = nil;
+                                if (![self->documentInteractionController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES])
+                                {
+                                    self->documentInteractionController = nil;
+                                    [selectedAttachment onShareEnded];
+                                    self->currentSharedAttachment = nil;
+                                }
                             }
+                        }
+                        else
+                        {
+                            self->currentSharedAttachment = selectedAttachment;
+                            [MXKPreviewViewController presentFrom:self fileUrl:fileURL allowActions:self.allowActionsInDocumentPreview delegate:self];
                         }
                     };
 
@@ -3833,6 +3851,17 @@
     if (shouldScrollToBottom)
     {
         [self scrollBubblesTableViewToBottomAnimated:YES];
+    }
+}
+
+#pragma mark - MXKPreviewViewControllerDelegate
+
+- (void)previewViewControllerDidEndPreview:(MXKPreviewViewController *)controller
+{
+    if (currentSharedAttachment)
+    {
+        [currentSharedAttachment onShareEnded];
+        currentSharedAttachment = nil;
     }
 }
 
