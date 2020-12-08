@@ -50,6 +50,7 @@
 		32D9F4E221D54A08008007F2 /* UIViewController+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9F4E121D54A08008007F2 /* UIViewController+MatrixKit.m */; };
 		32FBDAF81E4484C40033C519 /* MXKEncryptionKeysImportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */; };
 		32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */; };
+		3A1293A825801D9400F3474B /* MXKPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1293A625801D9400F3474B /* MXKPreviewViewController.m */; };
 		4F236C27EC459185548BEF4F /* Pods_MatrixKitSamplePods_MatrixKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B455B95A7B9ECAD75BA21E12 /* Pods_MatrixKitSamplePods_MatrixKitTests.framework */; };
 		550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */; };
 		71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */; };
@@ -348,6 +349,8 @@
 		32FBDAF91E44B0FC0033C519 /* MXKEncryptionKeysExportView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEncryptionKeysExportView.h; sourceTree = "<group>"; };
 		32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEncryptionKeysExportView.m; sourceTree = "<group>"; };
 		392A579537BBF28A9436C420 /* Pods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSample/Pods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
+		3A1293A625801D9400F3474B /* MXKPreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKPreviewViewController.m; sourceTree = "<group>"; };
+		3A1293A725801D9400F3474B /* MXKPreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPreviewViewController.h; sourceTree = "<group>"; };
 		550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EncryptedAttachmentsTest.m; sourceTree = "<group>"; };
 		5537B7A941FDD5CF92368345 /* Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitTests/Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKitSamplePods_MatrixKitSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -845,6 +848,8 @@
 				F00C25281ADBC3C100065077 /* MXKViewControllerHandling.h */,
 				F0026B641C91EED1001D2C04 /* MXKWebViewViewController.h */,
 				F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */,
+				3A1293A725801D9400F3474B /* MXKPreviewViewController.h */,
+				3A1293A625801D9400F3474B /* MXKPreviewViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1973,6 +1978,7 @@
 				F09A66671FD812CA004B13B5 /* MXKGroupCellData.m in Sources */,
 				F0036EEF1AB98DC40008E432 /* MXKRoomInputToolbarView.m in Sources */,
 				F0CF98E01B0B7FDC00EAE373 /* MXKTableViewCellWithPicker.m in Sources */,
+				3A1293A825801D9400F3474B /* MXKPreviewViewController.m in Sources */,
 				F07E180D1ABC2EDA00DE3766 /* MXKQueuedEvent.m in Sources */,
 				71352D691C1588BE001D50B0 /* MXKTableViewCellWithLabelAndMXKImageView.m in Sources */,
 				328AC4931AA8B05C0044A6FB /* MXKCellData.m in Sources */,
