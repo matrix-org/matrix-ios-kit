@@ -79,7 +79,8 @@
     }
 }
 
-- (IBAction)doneAction:(id)sender {
+- (IBAction)doneAction:(id)sender
+{
     [self dismissViewControllerAnimated:YES completion:^{
         if ([self.previewDelegate respondsToSelector:@selector(previewViewControllerDidEndPreview:)]) {
             [self.previewDelegate previewViewControllerDidEndPreview:self];
