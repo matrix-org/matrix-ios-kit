@@ -3718,7 +3718,7 @@
                         if (self.allowActionsInDocumentPreview)
                         {
                             // We could get rid of this part of code and use only a MXKPreviewViewController
-                            // Nevertheless, MXKRoomViewController is complient to UIDocumentInteractionControllerDelegate
+                            // Nevertheless, MXKRoomViewController is compliant to UIDocumentInteractionControllerDelegate
                             // and remove all this code could have effect on some custom implementations.
                             self->documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
                             [self->documentInteractionController setDelegate:self];
