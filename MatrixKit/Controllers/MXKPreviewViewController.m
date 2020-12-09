@@ -69,7 +69,8 @@
 {
     [super viewDidLayoutSubviews];
     
-    if (!self.allowActions) {
+    if (!self.allowActions)
+    {
         NSMutableArray *items = [NSMutableArray arrayWithArray: self.previewController.navigationItem.rightBarButtonItems];
         if (items.count > 0)
         {
