@@ -27,6 +27,7 @@ Changes in 0.13.2 (2020-12-02)
 
 ✨ Features
  * Added AES encryption support in MXKContactManager (vector-im/element-ios/issues/3833).
+ * Added allowActionsInDocumentPreview property in MXKRoomViewController to show or hide the actions button in document preview. (#3864)
 
 🙌 Improvements
  * 
