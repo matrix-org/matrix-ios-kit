@@ -64,6 +64,11 @@ extern NSString * _Nonnull const kMXKContactManagerMatrixPresenceKey;
 extern NSString * _Nonnull const kMXKContactManagerDidInternationalizeNotification;
 
 /**
+ Used to identify the type of data when requesting MXKeyProvider
+ */
+extern NSString *const kMXKContactManagerDataType;
+
+/**
  Define the contact creation for the room members
  */
 typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {

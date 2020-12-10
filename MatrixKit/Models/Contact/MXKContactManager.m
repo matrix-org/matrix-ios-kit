@@ -37,6 +37,8 @@ NSString *const kMXKContactManagerMatrixPresenceKey = @"kMXKContactManagerMatrix
 
 NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContactManagerDidInternationalizeNotification";
 
+NSString *const kMXKContactManagerDataType = @"kMXKContactManagerDataType";
+
 @interface MXKContactManager()
 {
     /**
@@ -1836,7 +1838,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
 {
     @try
     {
-        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kContactsType];
+        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKContactManagerDataType isMandatory:NO expectedKeyType:kAes];
         if (keyData)
         {
             NSData *cipher = [MXAes encrypt:data aesKey:keyData.key iv:keyData.iv error:error];
@@ -1857,7 +1859,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
 {
     @try
     {
-        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kContactsType];
+        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKContactManagerDataType isMandatory:NO expectedKeyType:kAes];
         if (keyData)
         {
             NSData *decrypt = [MXAes decrypt:data aesKey:keyData.key iv:keyData.iv error:error];

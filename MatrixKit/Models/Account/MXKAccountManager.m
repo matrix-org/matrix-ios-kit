@@ -28,6 +28,7 @@ static NSString *const kMXKAccountsKey = @"accountsV2";
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
 NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccountManagerDidSoftlogoutAccountNotification";
+NSString *const kMXKAccountManagerDataType = @"kMXKAccountManagerDataType";
 
 @interface MXKAccountManager()
 {
@@ -615,7 +616,8 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
         NSError *error = nil;
         NSData* filecontent = [NSData dataWithContentsOfFile:accountFile options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:&error];
         
-        if (!error) {
+        if (!error)
+        {
             // Decrypt data if encryption method is provided
             filecontent = [self decryptData:filecontent];
             NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
@@ -667,7 +669,7 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
 {
     // Exceptions are not cached as the key is always needed if the KeyProviderDelegate
     // is provided.
-    MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kAccountType];
+    MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
     if (keyData)
     {
         NSData *cipher = [MXAes encrypt:data aesKey:keyData.key iv:keyData.iv error:nil];
@@ -682,7 +684,7 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
 {
     // Exceptions are not cached as the key is always needed if the KeyProviderDelegate
     // is provided.
-    MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kAccountType];
+    MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
     if (keyData)
     {
         NSData *decrypt = [MXAes decrypt:data aesKey:keyData.key iv:keyData.iv error:nil];
