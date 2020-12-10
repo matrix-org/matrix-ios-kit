@@ -25,6 +25,7 @@
 #import "NSBundle+MatrixKit.h"
 #import <MatrixSDK/MXAes.h>
 #import <MatrixSDK/MXRestClient.h>
+#import <MatrixSDK/MXKeyProvider.h>
 
 NSString *const kMXKContactManagerDidUpdateMatrixContactsNotification = @"kMXKContactManagerDidUpdateMatrixContactsNotification";
 
@@ -1833,17 +1834,19 @@ static NSString *contactsBookInfoFile = @"contactsV2";
 
 - (NSData*)encryptData:(NSData*)data error:(NSError**)error fileName:(NSString*)fileName
 {
-    if (self.encryptionDelegate)
+    @try
     {
-        if (![self.encryptionDelegate isReady])
+        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kContactsType];
+        if (keyData)
         {
-            *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: @"Encryption Delegate not ready"}];
-            return nil;
+            NSData *cipher = [MXAes encrypt:data aesKey:keyData.key iv:keyData.iv error:error];
+            NSLog(@"[MXKContactManager] encryptData: encrypted %lu Bytes for %@", cipher.length, fileName);
+            return cipher;
         }
-        
-        NSData *cipher = [MXAes encrypt: data aesKey:[self.encryptionDelegate aesKey] iv:[self.encryptionDelegate iv] error: error];
-        NSLog(@"[MXKContactManager] encryptData: encrypted %lu Bytes for %@", cipher.length, fileName);
-        return cipher;
+    }
+    @catch (NSException *exception)
+    {
+        *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"encryptData failed: %@", exception.reason]}];
     }
     
     NSLog(@"[MXKContactManager] encryptData: no key method provided for encryption of %@", fileName);
@@ -1852,17 +1855,19 @@ static NSString *contactsBookInfoFile = @"contactsV2";
 
 - (NSData*)decryptData:(NSData*)data error:(NSError**)error fileName:(NSString*)fileName
 {
-    if (self.encryptionDelegate)
+    @try
     {
-        if (![self.encryptionDelegate isReady])
+        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kContactsType];
+        if (keyData)
         {
-            *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: @"Encryption Delegate not ready"}];
-            return nil;
+            NSData *decrypt = [MXAes decrypt:data aesKey:keyData.key iv:keyData.iv error:error];
+            NSLog(@"[MXKContactManager] decryptData: decrypted %lu Bytes for %@", decrypt.length, fileName);
+            return decrypt;
         }
-        
-        NSData *decrypt = [MXAes decrypt:data aesKey:[self.encryptionDelegate aesKey] iv:[self.encryptionDelegate iv] error:error];
-        NSLog(@"[MXKContactManager] decryptData: decrypted %lu Bytes for %@", decrypt.length, fileName);
-        return decrypt;
+    }
+    @catch (NSException *exception)
+    {
+        *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"decryptData failed: %@", exception.reason]}];
     }
     
     NSLog(@"[MXKContactManager] decryptData: no key method provided for decryption of %@", fileName);
