@@ -534,6 +534,21 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         NSMutableArray<UIAlertAction *> *actions = [NSMutableArray arrayWithCapacity:4];
         
+        UIAlertAction *audioDeviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_change_audio_device"]
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
+            
+            if (weakSelf)
+            {
+                typeof(self) self = weakSelf;
+                self->currentAlert = nil;
+                self->mxCall.audioToSpeaker = !self->mxCall.audioToSpeaker;
+            }
+            
+        }];
+        
+        [actions addObject:audioDeviceAction];
+        
         //  check the call be holded/unholded
         if (mxCall.supportsHolding)
         {

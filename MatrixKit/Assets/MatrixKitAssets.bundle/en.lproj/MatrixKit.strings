@@ -542,6 +542,7 @@
 "call_holded" = "You held the call";
 "call_more_actions_hold" = "Hold";
 "call_more_actions_unhold" = "Resume";
+"call_more_actions_change_audio_device" = "Change Audio Device";
 
 // unrecognized SSL certificate
 "ssl_trust" = "Trust";
