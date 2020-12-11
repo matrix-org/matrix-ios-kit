@@ -598,6 +598,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                     [self.mainSession.callManager transferCall:self->mxCall
                                                             to:targetUser
                                                 withTransferee:transfereeUser
+                                                  consultFirst:NO
                                                        success:^(NSString * _Nonnull newCallId){
                         NSLog(@"Call transfer succeeded with new call ID: %@", newCallId);
                     } failure:^(NSError * _Nullable error) {
