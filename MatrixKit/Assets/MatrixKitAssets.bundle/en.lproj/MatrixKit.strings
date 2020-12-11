@@ -543,6 +543,7 @@
 "call_more_actions_hold" = "Hold";
 "call_more_actions_unhold" = "Resume";
 "call_more_actions_change_audio_device" = "Change Audio Device";
+"call_more_actions_transfer" = "Transfer";
 
 // unrecognized SSL certificate
 "ssl_trust" = "Trust";

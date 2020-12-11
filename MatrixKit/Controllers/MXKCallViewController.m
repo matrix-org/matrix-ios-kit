@@ -576,6 +576,39 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         
         //  check the call be transferred
+        if (mxCall.supportsTransferring && self.peer)
+        {
+            UIAlertAction *transferAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_transfer"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                
+                if (weakSelf)
+                {
+                    typeof(self) self = weakSelf;
+                    self->currentAlert = nil;
+                    //  TODO: Introduce a new screen to select the transfer target
+                    //  Hardcode target for now
+                    NSString *targetUserId = @"@ismailgulekmac7:matrix.org";
+                    
+                    MXUserModel *targetUser = [[MXUserModel alloc] initWithUserId:targetUserId
+                                                                      displayname:nil
+                                                                        avatarUrl:nil];
+                    MXUserModel *transfereeUser = [[MXUserModel alloc] initWithUser:self.peer];
+                    
+                    [self.mainSession.callManager transferCall:self->mxCall
+                                                            to:targetUser
+                                                withTransferee:transfereeUser
+                                                       success:^(NSString * _Nonnull newCallId){
+                        NSLog(@"Call transfer succeeded with new call ID: %@", newCallId);
+                    } failure:^(NSError * _Nullable error) {
+                        NSLog(@"Call transfer failed with error: %@", error);
+                    }];
+                }
+                
+            }];
+            
+            [actions addObject:transferAction];
+        }
         
         if (actions.count > 0)
         {
