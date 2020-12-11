@@ -28,7 +28,7 @@ static NSString *const kMXKAccountsKey = @"accountsV2";
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
 NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccountManagerDidSoftlogoutAccountNotification";
-NSString *const kMXKAccountManagerDataType = @"kMXKAccountManagerDataType";
+NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDataType";
 
 @interface MXKAccountManager()
 {
