@@ -667,7 +667,7 @@ NSString *const kMXKAccountManagerDataType = @"kMXKAccountManagerDataType";
 
 - (NSData*)encryptData:(NSData*)data
 {
-    // Exceptions are not cached as the key is always needed if the KeyProviderDelegate
+    // Exceptions are not caught as the key is always needed if the KeyProviderDelegate
     // is provided.
     MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
     if (keyData)
