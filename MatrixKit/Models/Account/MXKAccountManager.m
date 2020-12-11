@@ -669,10 +669,11 @@ NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerD
 {
     // Exceptions are not caught as the key is always needed if the KeyProviderDelegate
     // is provided.
-    MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
-    if (keyData)
+    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
+    if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
     {
-        NSData *cipher = [MXAes encrypt:data aesKey:keyData.key iv:keyData.iv error:nil];
+        MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
+        NSData *cipher = [MXAes encrypt:data aesKey:aesKey.key iv:aesKey.iv error:nil];
         return cipher;
     }
 
@@ -684,10 +685,11 @@ NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerD
 {
     // Exceptions are not cached as the key is always needed if the KeyProviderDelegate
     // is provided.
-    MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
-    if (keyData)
+    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
+    if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
     {
-        NSData *decrypt = [MXAes decrypt:data aesKey:keyData.key iv:keyData.iv error:nil];
+        MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
+        NSData *decrypt = [MXAes decrypt:data aesKey:aesKey.key iv:aesKey.iv error:nil];
         return decrypt;
     }
 
@@ -704,10 +706,13 @@ NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerD
     {
         if (![fileManager fileExistsAtPath:pathNew])
         {
+            NSLog(@"[MXKAccountManager] migrateAccounts: reading account");
             mxAccounts = [NSKeyedUnarchiver unarchiveObjectWithFile:pathOld];
+            NSLog(@"[MXKAccountManager] migrateAccounts: writing to accountV2");
             [self saveAccounts];
         }
         
+        NSLog(@"[MXKAccountManager] migrateAccounts: removing account");
         [fileManager removeItemAtPath:pathOld error:nil];
     }
 }

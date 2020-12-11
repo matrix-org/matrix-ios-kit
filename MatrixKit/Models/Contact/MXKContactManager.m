@@ -1838,10 +1838,11 @@ static NSString *contactsBookInfoFile = @"contactsV2";
 {
     @try
     {
-        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKContactManagerDataType isMandatory:NO expectedKeyType:kAes];
-        if (keyData)
+        MXKeyData *keyData = (MXKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKContactManagerDataType isMandatory:NO expectedKeyType:kAes];
+        if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
         {
-            NSData *cipher = [MXAes encrypt:data aesKey:keyData.key iv:keyData.iv error:error];
+            MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
+            NSData *cipher = [MXAes encrypt:data aesKey:aesKey.key iv:aesKey.iv error:error];
             NSLog(@"[MXKContactManager] encryptData: encrypted %lu Bytes for %@", cipher.length, fileName);
             return cipher;
         }
@@ -1859,10 +1860,11 @@ static NSString *contactsBookInfoFile = @"contactsV2";
 {
     @try
     {
-        MXAesKeyData *keyData = (MXAesKeyData *) [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKContactManagerDataType isMandatory:NO expectedKeyType:kAes];
-        if (keyData)
+        MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKContactManagerDataType isMandatory:NO expectedKeyType:kAes];
+        if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
         {
-            NSData *decrypt = [MXAes decrypt:data aesKey:keyData.key iv:keyData.iv error:error];
+            MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
+            NSData *decrypt = [MXAes decrypt:data aesKey:aesKey.key iv:aesKey.iv error:error];
             NSLog(@"[MXKContactManager] decryptData: decrypted %lu Bytes for %@", decrypt.length, fileName);
             return decrypt;
         }
