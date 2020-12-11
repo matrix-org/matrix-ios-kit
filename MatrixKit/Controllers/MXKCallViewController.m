@@ -534,6 +534,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         NSMutableArray<UIAlertAction *> *actions = [NSMutableArray arrayWithCapacity:4];
         
+        //  audio device action
         UIAlertAction *audioDeviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_change_audio_device"]
                                                                     style:UIAlertActionStyleDefault
                                                                   handler:^(UIAlertAction * action) {
@@ -548,6 +549,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }];
         
         [actions addObject:audioDeviceAction];
+        
+        //  check the call can be up/downgraded
+        
+        //  check the call can use dialpad
         
         //  check the call be holded/unholded
         if (mxCall.supportsHolding)
@@ -569,10 +574,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             [actions addObject:holdAction];
         }
-        
-        //  check the call can be up/downgraded
-        
-        //  check the call can use dialpad
         
         //  check the call be transferred
         
