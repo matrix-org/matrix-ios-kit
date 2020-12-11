@@ -37,7 +37,7 @@ NSString *const kMXKContactManagerMatrixPresenceKey = @"kMXKContactManagerMatrix
 
 NSString *const kMXKContactManagerDidInternationalizeNotification = @"kMXKContactManagerDidInternationalizeNotification";
 
-NSString *const kMXKContactManagerDataType = @"kMXKContactManagerDataType";
+NSString *const kMXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDataType";
 
 @interface MXKContactManager()
 {
