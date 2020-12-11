@@ -2,7 +2,7 @@ Changes to be released in next version
 =================================================
 
 ✨ Features
- * 
+ * Data encryption for MXKContactManager and MXKAccountManager using MXKeyProvider (#3866)
 
 🙌 Improvements
  * 
