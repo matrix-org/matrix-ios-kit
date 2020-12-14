@@ -619,9 +619,23 @@ NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerD
         if (!error)
         {
             // Decrypt data if encryption method is provided
-            filecontent = [self decryptData:filecontent];
-            NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
+            NSData *unciphered = [self decryptData:filecontent];
+            NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:unciphered];
             mxAccounts = [decoder decodeObjectForKey:@"mxAccounts"];
+            
+            if (!mxAccounts && [[MXKeyProvider sharedInstance] isEncryptionAvailableForDataOfType:kMXKAccountManagerDataType])
+            {
+                // This happens if the V2 file has not been encrypted -> read file content then save encrypted accounts
+                NSLog(@"[MXKAccountManager] loadAccounts. Failed to read decrypted data: reading file data without encryption.");
+                decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
+                mxAccounts = [decoder decodeObjectForKey:@"mxAccounts"];
+                
+                if (mxAccounts)
+                {
+                    NSLog(@"[MXKAccountManager] loadAccounts. saving encrypted accounts");
+                    [self saveAccounts];
+                }
+            }
         }
 
         NSLog(@"[MXKAccountManager] loadAccounts. %tu accounts loaded in %.0fms", mxAccounts.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
