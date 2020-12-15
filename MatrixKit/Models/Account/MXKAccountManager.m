@@ -28,7 +28,7 @@ static NSString *const kMXKAccountsKey = @"accountsV2";
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
 NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccountManagerDidSoftlogoutAccountNotification";
-NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDataType";
+NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDataType";
 
 @interface MXKAccountManager()
 {
@@ -623,7 +623,7 @@ NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerD
             NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:unciphered];
             mxAccounts = [decoder decodeObjectForKey:@"mxAccounts"];
             
-            if (!mxAccounts && [[MXKeyProvider sharedInstance] isEncryptionAvailableForDataOfType:kMXKAccountManagerDataType])
+            if (!mxAccounts && [[MXKeyProvider sharedInstance] isEncryptionAvailableForDataOfType:MXKAccountManagerDataType])
             {
                 // This happens if the V2 file has not been encrypted -> read file content then save encrypted accounts
                 NSLog(@"[MXKAccountManager] loadAccounts. Failed to read decrypted data: reading file data without encryption.");
@@ -683,7 +683,7 @@ NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerD
 {
     // Exceptions are not caught as the key is always needed if the KeyProviderDelegate
     // is provided.
-    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
+    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:MXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
     if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
     {
         MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
@@ -699,7 +699,7 @@ NSString *const kMXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerD
 {
     // Exceptions are not cached as the key is always needed if the KeyProviderDelegate
     // is provided.
-    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:kMXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
+    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:MXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
     if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
     {
         MXAesKeyData *aesKey = (MXAesKeyData *) keyData;

@@ -66,7 +66,7 @@ extern NSString * _Nonnull const kMXKContactManagerDidInternationalizeNotificati
 /**
  Used to identify the type of data when requesting MXKeyProvider
  */
-extern NSString * _Nonnull const kMXKContactManagerDataType;
+extern NSString * _Nonnull const MXKContactManagerDataType;
 
 /**
  Define the contact creation for the room members
