@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * MXKAccountManager: fix a bug that prevents user to stay logged in if V2 file is not initially encrypted.
 
 ⚠️ API Changes
  * 
