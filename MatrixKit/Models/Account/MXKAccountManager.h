@@ -38,6 +38,10 @@ extern NSString *const kMXKAccountManagerDidRemoveAccountNotification;
  */
 extern NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification;
 
+/**
+ Used to identify the type of data when requesting MXKeyProvider
+ */
+extern NSString *const MXKAccountManagerDataType;
 
 /**
  `MXKAccountManager` manages a pool of `MXKAccount` instances.
