@@ -58,6 +58,9 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic, readonly) IBOutlet UIView *localPreviewContainerView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *localPreviewActivityView;
 
+@property (weak, nonatomic, readonly) IBOutlet UIView *onHoldCallContainerView;
+@property (weak, nonatomic) IBOutlet MXKImageView *onHoldCallerImageView;
+
 @property (weak, nonatomic, readonly) IBOutlet UIView *remotePreviewContainerView;
 
 @property (weak, nonatomic) IBOutlet UIView *overlayContainerView;
@@ -104,9 +107,19 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (nonatomic) MXCall *mxCall;
 
 /**
+ The current call on hold
+ */
+@property (nonatomic) MXCall *mxCallOnHold;
+
+/**
  The current peer
  */
 @property (nonatomic, readonly) MXUser *peer;
+
+/**
+ The current peer of the call on hold
+ */
+@property (nonatomic, readonly) MXUser *peerOnHold;
 
 /**
  The delegate.

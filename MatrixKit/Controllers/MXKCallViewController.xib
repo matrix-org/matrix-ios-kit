@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -27,6 +27,7 @@
                 <outlet property="localPreviewContainerViewTopConstraint" destination="3kN-Qi-Klq" id="zT0-lf-noP"/>
                 <outlet property="localPreviewContainerViewWidthConstraint" destination="gyu-kv-SLy" id="h6P-sv-f69"/>
                 <outlet property="moreButton" destination="XCC-Xd-83F" id="81o-Fc-RfE"/>
+                <outlet property="onHoldCallContainerView" destination="gYL-ur-SUZ" id="sWc-c5-84F"/>
                 <outlet property="overlayContainerView" destination="JAR-tn-sGN" id="09u-3G-1UA"/>
                 <outlet property="pipButton" destination="gFf-Ug-Arq" id="m3K-bf-1qm"/>
                 <outlet property="rejectCallButton" destination="cst-tR-uHV" id="Ust-PL-R6A"/>
@@ -66,6 +67,53 @@
                         <constraint firstAttribute="height" constant="120" id="dZW-ZL-5rV"/>
                         <constraint firstAttribute="width" constant="100" id="gyu-kv-SLy"/>
                     </constraints>
+                </view>
+                <view hidden="YES" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gYL-ur-SUZ" userLabel="OnHold Call Container View">
+                    <rect key="frame" x="255" y="20" width="100" height="120"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BnO-XU-rbO">
+                            <rect key="frame" x="0.0" y="0.0" width="100" height="120"/>
+                            <subviews>
+                                <view contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yi0-Kz-f8n" userLabel="Caller Image View" customClass="MXKImageView">
+                                    <rect key="frame" x="0.0" y="0.0" width="100" height="120"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </view>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="call_paused_icon" translatesAutoresizingMaskIntoConstraints="NO" id="tDd-nl-o66">
+                                    <rect key="frame" x="40" y="50" width="20" height="20"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="20" id="4ZR-gY-TFU"/>
+                                        <constraint firstAttribute="height" constant="20" id="VOl-de-wx3"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="tDd-nl-o66" firstAttribute="centerY" secondItem="BnO-XU-rbO" secondAttribute="centerY" id="0WW-DK-ikE"/>
+                                <constraint firstItem="Yi0-Kz-f8n" firstAttribute="top" secondItem="BnO-XU-rbO" secondAttribute="top" id="ATS-v3-un5"/>
+                                <constraint firstAttribute="trailing" secondItem="Yi0-Kz-f8n" secondAttribute="trailing" id="Ems-Vb-x8T"/>
+                                <constraint firstItem="tDd-nl-o66" firstAttribute="centerX" secondItem="BnO-XU-rbO" secondAttribute="centerX" id="KI3-Lj-zWM"/>
+                                <constraint firstAttribute="bottom" secondItem="Yi0-Kz-f8n" secondAttribute="bottom" id="u9w-k7-Tu4"/>
+                                <constraint firstItem="Yi0-Kz-f8n" firstAttribute="leading" secondItem="BnO-XU-rbO" secondAttribute="leading" id="yTR-nN-6l2"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                    <accessibility key="accessibilityConfiguration">
+                        <accessibilityTraits key="traits" notEnabled="YES"/>
+                    </accessibility>
+                    <constraints>
+                        <constraint firstItem="BnO-XU-rbO" firstAttribute="leading" secondItem="gYL-ur-SUZ" secondAttribute="leading" id="2tc-aB-SHR"/>
+                        <constraint firstAttribute="width" constant="100" id="Wuk-6q-X0l"/>
+                        <constraint firstAttribute="trailing" secondItem="BnO-XU-rbO" secondAttribute="trailing" id="YIx-kL-fSQ"/>
+                        <constraint firstAttribute="height" constant="120" id="eQ5-RY-39A"/>
+                        <constraint firstAttribute="bottom" secondItem="BnO-XU-rbO" secondAttribute="bottom" id="rRV-2N-Wrr"/>
+                        <constraint firstItem="BnO-XU-rbO" firstAttribute="top" secondItem="gYL-ur-SUZ" secondAttribute="top" id="rlC-LI-TF2"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="8"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                 </view>
                 <view opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JAR-tn-sGN" userLabel="Overlay Container View">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -327,11 +375,13 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
+                <constraint firstItem="gYL-ur-SUZ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="20" id="2Vf-YX-syR"/>
                 <constraint firstItem="6gQ-zo-2Zw" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="3Fs-0f-Aws"/>
                 <constraint firstItem="6gQ-zo-2Zw" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="20" id="3kN-Qi-Klq"/>
                 <constraint firstAttribute="trailing" secondItem="JAR-tn-sGN" secondAttribute="trailing" id="IGf-YS-JEj"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="6gQ-zo-2Zw" secondAttribute="trailing" id="IZd-Uv-ucs"/>
                 <constraint firstAttribute="bottom" secondItem="JAR-tn-sGN" secondAttribute="bottom" id="KDu-Kr-vji"/>
+                <constraint firstAttribute="trailing" secondItem="gYL-ur-SUZ" secondAttribute="trailing" constant="20" id="TbF-td-23k"/>
                 <constraint firstItem="v1I-LH-wvv" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="VF9-js-1ub"/>
                 <constraint firstItem="JAR-tn-sGN" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Z6W-gz-KKT"/>
                 <constraint firstItem="Tjb-57-yB1" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="aKy-Ol-bhc"/>
@@ -347,4 +397,7 @@
             <point key="canvasLocation" x="-215.19999999999999" y="129.98500749625188"/>
         </view>
     </objects>
+    <resources>
+        <image name="call_paused_icon" width="24" height="24"/>
+    </resources>
 </document>

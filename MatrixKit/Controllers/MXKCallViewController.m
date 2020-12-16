@@ -73,6 +73,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 @synthesize backToAppButton, cameraSwitchButton;
 @synthesize backToAppStatusWindow;
 @synthesize mxCall;
+@synthesize mxCallOnHold;
+@synthesize onHoldCallerImageView;
 
 #pragma mark - Class methods
 
@@ -377,11 +379,63 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
+- (void)setMxCallOnHold:(MXCall *)callOnHold
+{
+    mxCallOnHold = callOnHold;
+    
+    if (mxCallOnHold)
+    {
+        self.onHoldCallContainerView.hidden = NO;
+        self.peerOnHold = [callOnHold.room.mxSession getOrCreateUser:callOnHold.callerId];
+    }
+    else
+    {
+        self.onHoldCallContainerView.hidden = YES;
+        self.peerOnHold = nil;
+    }
+}
+
 - (void)setPeer:(MXUser *)peer
 {
     _peer = peer;
     
     [self updatePeerInfoDisplay];
+}
+
+- (void)setPeerOnHold:(MXUser *)peerOnHold
+{
+    _peerOnHold = peerOnHold;
+    
+    NSString *peerAvatarURL;
+    
+    if (_peerOnHold)
+    {
+        peerAvatarURL = _peerOnHold.avatarUrl;
+    }
+    else if (mxCall.isConferenceCall)
+    {
+        peerAvatarURL = mxCallOnHold.room.summary.avatar;
+    }
+    
+    onHoldCallerImageView.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    
+    if (peerAvatarURL)
+    {
+        // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+        onHoldCallerImageView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
+        onHoldCallerImageView.enableInMemoryCache = YES;
+        [onHoldCallerImageView setImageURI:peerAvatarURL
+                                  withType:nil
+                       andImageOrientation:UIImageOrientationUp
+                             toFitViewSize:onHoldCallerImageView.frame.size
+                                withMethod:MXThumbnailingMethodCrop
+                              previewImage:self.picturePlaceholder
+                              mediaManager:self.mainSession.mediaManager];
+    }
+    else
+    {
+        onHoldCallerImageView.image = self.picturePlaceholder;
+    }
 }
 
 - (void)updatePeerInfoDisplay
@@ -1130,6 +1184,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if ((!self.localPreviewContainerView.hidden) && CGRectContainsPoint(self.localPreviewContainerView.frame, point))
     {
         // Starting to move the local preview view
+        if (mxCallOnHold)
+        {
+            //  if there is a call on hold, do not move local preview for now
+            //  TODO: Instead of wholly avoiding mobility of local preview, just avoid the on hold call's corner here
+            return;
+        }
         isSelectingLocalPreview = YES;
     }
 }
