@@ -64,6 +64,11 @@ extern NSString * _Nonnull const kMXKContactManagerMatrixPresenceKey;
 extern NSString * _Nonnull const kMXKContactManagerDidInternationalizeNotification;
 
 /**
+ Used to identify the type of data when requesting MXKeyProvider
+ */
+extern NSString * _Nonnull const MXKContactManagerDataType;
+
+/**
  Define the contact creation for the room members
  */
 typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
@@ -71,23 +76,6 @@ typedef NS_ENUM(NSInteger, MXKContactManagerMXRoomSource) {
     MXKContactManagerMXRoomSourceDirectChats = 1,   // the direct chat users have their own contact even if they are not defined in the device contacts book
     MXKContactManagerMXRoomSourceAll         = 2,   // all the room members have their own contact even if they are not defined in the device contacts book
 };
-
-/**
- This protocol is used to provide AES key and IV to the manager when needed
- */
-@protocol MXKContactEncryptionDelegate <NSObject>
-
-@required
-/// check if the delegate is ready to give the ecryption keys
-- (BOOL) isReady;
-
-/// AES IV to be used for encryption
-- (NSData* _Nullable) iv;
-
-/// AES key to be used for encryption
-- (NSData* _Nullable) aesKey;
-
-@end
 
 /**
  This manager handles 2 kinds of contact list:
@@ -161,9 +149,6 @@ typedef void(^MXKContactManagerDiscoverUsersBoundTo3PIDs)(NSArray<NSArray<NSStri
 
 /// Flag to allow local contacts access or not. Default value is YES.
 @property (nonatomic, assign) BOOL allowLocalContactsAccess;
-
-/// Set this delegate to enable data encryption into contact data file
-@property (nonatomic, weak, nullable) id<MXKContactEncryptionDelegate> encryptionDelegate;
 
 /**
  Add/remove matrix session. The matrix contact list is automatically updated (see kMXKContactManagerDidUpdateMatrixContactsNotification event).
