@@ -32,29 +32,29 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.14):
     - DTFoundation/Core
-  - GZIP (1.2.3)
+  - GZIP (1.3.0)
   - HPGrowingTextView (1.1)
   - JSQMessagesViewController (7.2.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libbase58 (0.1.4)
   - libPhoneNumber-iOS (0.9.15)
-  - MatrixSDK (0.16.19):
-    - MatrixSDK/Core (= 0.16.19)
-  - MatrixSDK/Core (0.16.19):
+  - MatrixSDK (0.17.5):
+    - MatrixSDK/Core (= 0.17.5)
+  - MatrixSDK/Core (0.17.5):
     - AFNetworking (~> 4.0.0)
-    - GZIP (~> 1.2.2)
+    - GZIP (~> 1.3.0)
     - libbase58 (~> 0.1.4)
     - OLMKit (~> 3.1.0)
-    - Realm (~> 4.4.0)
+    - Realm (= 10.1.4)
   - OLMKit (3.1.0):
     - OLMKit/olmc (= 3.1.0)
     - OLMKit/olmcpp (= 3.1.0)
   - OLMKit/olmc (3.1.0)
   - OLMKit/olmcpp (3.1.0)
-  - Realm (4.4.1):
-    - Realm/Headers (= 4.4.1)
-  - Realm/Headers (4.4.1)
+  - Realm (10.1.4):
+    - Realm/Headers (= 10.1.4)
+  - Realm/Headers (10.1.4)
 
 DEPENDENCIES:
   - Down (~> 0.9.3)
@@ -62,7 +62,7 @@ DEPENDENCIES:
   - HPGrowingTextView (~> 1.1)
   - JSQMessagesViewController (~> 7.2.0)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (= 0.16.19)
+  - MatrixSDK (= 0.17.5)
 
 SPEC REPOS:
   trunk:
@@ -85,16 +85,16 @@ SPEC CHECKSUMS:
   Down: 4553b984236807e384fa0ef7c7e360ef9f7c425d
   DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
   DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
-  GZIP: af5c90ef903776a7e9afe6ebebd794a84a2929d4
+  GZIP: 416858efbe66b41b206895ac6dfd5493200d95b3
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
   JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libbase58: 7c040313537b8c44b6e2d15586af8e21f7354efd
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
-  MatrixSDK: 1c4aee61037751f3b582ea09dbc7efeaf9b423d0
+  MatrixSDK: aadf483438804d9e93d5d46ad3e5e832b7bb8848
   OLMKit: 4ee0159d63feeb86d836fdcfefe418e163511639
-  Realm: 4eb04d7487bd43c0581256f40b424eafb711deff
+  Realm: 80f4fb2971ccb9adc27a47d0955ae8e533a7030b
 
-PODFILE CHECKSUM: dae5c7956eca120b0421f0511d09bb286ae9228a
+PODFILE CHECKSUM: a8e85ba11c7aba281c4d6d6f4e472095ca06d31e
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0
