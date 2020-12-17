@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * MXKRoomViewController: Fix a crash by not calling UITableViewDataSource method, but dequeuing the cell.
 
 ⚠️ API Changes
  * 
