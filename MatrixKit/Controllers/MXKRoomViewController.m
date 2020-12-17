@@ -2316,7 +2316,8 @@
             {
                 NSString *reuseIdentifier = [self cellReuseIdentifierForCellData:[roomDataSource cellDataAtIndex:rowIndex]];
                 // Create temporarily the cell (this cell will released at the end, to be reusable)
-                cellTmp = [_bubblesTableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+                cellTmp = [_bubblesTableView dequeueReusableCellWithIdentifier:reuseIdentifier
+                                                                  forIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:0]];
                 cell = cellTmp;
             }
             
