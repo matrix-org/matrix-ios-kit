@@ -1,3 +1,30 @@
+Changes in 0.13.4 (2020-12-18)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * MXKRoomViewController: Fix a crash by not calling UITableViewDataSource method, but dequeuing the cell.
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.6)).
+
 Changes in 0.13.3 (2020-12-16)
 =================================================
 
