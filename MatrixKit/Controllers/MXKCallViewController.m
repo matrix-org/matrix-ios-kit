@@ -62,6 +62,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 @property (nonatomic, nullable) UIView *incomingCallView;
 
+@property (nonatomic, strong) UITapGestureRecognizer *onHoldCallContainerTapRecognizer;
+
 @end
 
 @implementation MXKCallViewController
@@ -75,6 +77,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 @synthesize mxCall;
 @synthesize mxCallOnHold;
 @synthesize onHoldCallerImageView;
+@synthesize onHoldCallContainerView;
 
 #pragma mark - Class methods
 
@@ -263,6 +266,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     _incomingCallView = nil;
     
+    _onHoldCallContainerTapRecognizer = nil;
+    
     [super destroy];
 }
 
@@ -381,15 +386,25 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)setMxCallOnHold:(MXCall *)callOnHold
 {
+    if (mxCallOnHold == callOnHold)
+    {
+        //  setting same property, return
+        return;
+    }
+    
     mxCallOnHold = callOnHold;
     
     if (mxCallOnHold)
     {
         self.onHoldCallContainerView.hidden = NO;
         self.peerOnHold = [callOnHold.room.mxSession getOrCreateUser:callOnHold.callerId];
+        [self.onHoldCallContainerView addGestureRecognizer:self.onHoldCallContainerTapRecognizer];
+        [self.onHoldCallContainerView setUserInteractionEnabled:YES];
     }
     else
     {
+        [self.onHoldCallContainerView removeGestureRecognizer:self.onHoldCallContainerTapRecognizer];
+        [self.onHoldCallContainerView setUserInteractionEnabled:NO];
         self.onHoldCallContainerView.hidden = YES;
         self.peerOnHold = nil;
     }
@@ -527,6 +542,16 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
+- (UITapGestureRecognizer *)onHoldCallContainerTapRecognizer
+{
+    if (_onHoldCallContainerTapRecognizer == nil)
+    {
+        _onHoldCallContainerTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                    action:@selector(onHoldCallContainerTapped:)];
+    }
+    return _onHoldCallContainerTapRecognizer;
+}
+
 #pragma mark - Sounds
 
 - (NSURL *)audioURLWithName:(NSString *)soundName
@@ -535,6 +560,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 }
 
 #pragma mark - Actions
+
+- (void)onHoldCallContainerTapped:(UITapGestureRecognizer *)recognizer
+{
+    if ([self.delegate respondsToSelector:@selector(callViewControllerDidTapOnHoldCall:)])
+    {
+        [self.delegate callViewControllerDidTapOnHoldCall:self];
+    }
+}
 
 - (IBAction)onButtonPressed:(id)sender
 {

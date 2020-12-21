@@ -40,6 +40,12 @@
  */
 - (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)(void))completion;
 
+/**
+ Tells the delegate that user tapped on hold call.
+ @param callViewController the call view controller.
+ */
+- (void)callViewControllerDidTapOnHoldCall:(MXKCallViewController *)callViewController;
+
 @end
 
 extern NSString *const kMXKCallViewControllerWillAppearNotification;
