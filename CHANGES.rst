@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * MXKRoomDataSource: Fixed deep links to rooms from matrix.to no longer work
 
 ⚠️ API Changes
  * 

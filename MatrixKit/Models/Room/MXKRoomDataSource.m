@@ -200,7 +200,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     //  In order to successfully fetch the room, we should wait for store to be ready.
     if (mxSession.state >= MXSessionStateStoreDataReady)
     {
-        [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
+        [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:nil andMatrixSession:mxSession onComplete:onComplete];
     }
     else
     {
