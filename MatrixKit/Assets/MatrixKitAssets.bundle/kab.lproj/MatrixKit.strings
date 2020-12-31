@@ -197,3 +197,5 @@
 /* *********************** */
 
 "matrix" = "Matrix";
+"account_msisdn_validation_message" = "Ad naze-n SMS deg-s tangalt n usenqed. Ttxil-k·m sekcem tangalt-a ddaw.";
+"login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
