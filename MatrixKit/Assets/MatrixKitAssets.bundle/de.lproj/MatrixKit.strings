@@ -2,7 +2,7 @@
 // Login Screen
 "login_create_account" = "Konto erstellen:";
 "login_server_url_placeholder" = "URL (z.B. https://matrix.org)";
-"login_home_server_title" = "Heimserver-Adresse-URL:";
+"login_home_server_title" = "Heimserver-URL:";
 "login_home_server_info" = "Dein Home-Server speichert alle deine Gespräche und Benutzerkontodaten";
 "login_identity_server_title" = "Identitätsserver-URL:";
 "login_identity_server_info" = "Matrix stellt Identitätsserver bereit, um feststellen zu können, welche E-Mail-Adressen, etc. zu welchen Matrix-IDs gehören. Momentan existiert nur https://vector.im.";
