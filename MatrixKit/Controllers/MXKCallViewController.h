@@ -46,6 +46,12 @@
  */
 - (void)callViewControllerDidTapOnHoldCall:(MXKCallViewController *)callViewController;
 
+/**
+ Tells the delegate that user tapped PiP button.
+ @param callViewController the call view controller.
+ */
+- (void)callViewControllerDidTapPiPButton:(MXKCallViewController *)callViewController;
+
 @end
 
 extern NSString *const kMXKCallViewControllerWillAppearNotification;

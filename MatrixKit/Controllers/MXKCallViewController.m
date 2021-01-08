@@ -588,6 +588,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                }
            }];
     }
+    else if (sender == _pipButton)
+    {
+        if ([self.delegate respondsToSelector:@selector(callViewControllerDidTapPiPButton:)])
+        {
+            [self.delegate callViewControllerDidTapPiPButton:self];
+        }
+    }
     else if (sender == rejectCallButton || sender == endCallButton)
     {
         if (mxCall.state != MXCallStateEnded)
