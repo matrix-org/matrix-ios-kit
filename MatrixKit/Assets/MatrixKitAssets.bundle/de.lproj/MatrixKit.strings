@@ -119,7 +119,7 @@
 "notice_error_unknown_event_type" = "Unbekannter Ereignistyp";
 "notice_room_history_visible_to_anyone" = "%@ hat den zukünftigen Raum-Verlauf für alle sichtbar gemacht.";
 "notice_room_history_visible_to_members" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer sichtbar gemacht.";
-"notice_room_history_visible_to_members_for_dm" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer  sichtbar gemacht.";
+"notice_room_history_visible_to_members_for_dm" = "%@ hat die folgenden Nachrichten für alle Teilnehmer des Raumes sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_invited_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ hat den zukünftigen Verlauf für alle Raum-Teilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ hat den zukünftigen Raum-Verlauf für alle Raum-Teilnehmer ab deren Einladung sichtbar gemacht.";
@@ -251,7 +251,7 @@
 "format_time_d" = "t";
 // E2E import
 "e2e_import_room_keys" = "Importiere Raum Schlüssel";
-"e2e_import_prompt" = "Dieser Prozess erlaubt es dir, Schlüssel zu importieren, die du vorher von einem anderen Matrix-Client exportiert hast. Du kannst anschließend alle Nachrichten entschlüsseln, die auch bereits der andere Client entschlüsseln konnte. Die Export-Datei ist mit einer Passphrase geschützt. Gib die Passphrase hier ein, um die Datei zu importieren.";
+"e2e_import_prompt" = "Dieser Prozess erlaubt es dir, Schlüssel zu importieren, die du vorher von einem anderen Matrix-Client exportiert hast. Du kannst anschließend alle Nachrichten entschlüsseln, die auch bereits der andere Client entschlüsseln konnte.\nDie Export-Datei ist mit einer Passphrase geschützt. Gib die Passphrase hier ein, um die Datei zu importieren.";
 "e2e_import" = "Import";
 "e2e_passphrase_enter" = "Passphrase eingeben";
 // E2E export
@@ -355,10 +355,10 @@
 "notice_room_history_visible_to_anyone_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für jede/n sichtbar gemacht.";
 "notice_room_history_visible_to_members_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Mitglieder des Raums sichtbar gemacht.";
 "notice_room_history_visible_to_members_by_you_for_dm" = "Du hast den zukünftigen Nachrichtenverlauf für alle Mitglieder des Raums sichtbar gemacht.";
-"notice_room_history_visible_to_members_from_invited_point_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Raum-Mitglieder ab deren Teilnahme  sichtbar gemacht.";
-"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Du hast den zukünftigen Nachrichtenverlauf für alle Raum-Mitglieder ab deren Teilnahme  sichtbar gemacht.";
-"notice_room_history_visible_to_members_from_joined_point_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Raum-Mitglieder ab deren Teilnahme  sichtbar gemacht.";
-"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Du hast den zukünftigen Nachrichtenverlauf für alle Raum-Mitglieder ab deren Teilnahme  sichtbar gemacht.";
+"notice_room_history_visible_to_members_from_invited_point_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Mitglieder des Raums ab deren Teilnahme sichtbar gemacht.";
+"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Du hast den zukünftigen Nachrichtenverlauf für alle sichtbar gemacht, sobald sie eingeladen werden.";
+"notice_room_history_visible_to_members_from_joined_point_by_you" = "Du hast den zukünftigen Nachrichtenverlauf für alle Mitglieder des Raums ab deren Teilnahme sichtbar gemacht.";
+"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Du hast den zukünftigen Nachrichtenverlauf für alle Mitglieder des Raums sichtbar gemacht, ab deren Teilnahme.";
 // Room Screen
 
 // general errors
