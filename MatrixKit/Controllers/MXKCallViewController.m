@@ -646,7 +646,25 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         
         //  check the call can be up/downgraded
         
-        //  check the call can use dialpad
+        //  check the call can send DTMF tones
+        if (self.mxCall.supportsDTMF)
+        {
+            UIAlertAction *dialpadAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_dialpad"]
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
+                
+                if (weakSelf)
+                {
+                    typeof(self) self = weakSelf;
+                    self->currentAlert = nil;
+                    
+                    [self openDialpad];
+                }
+                
+            }];
+            
+            [actions addObject:dialpadAction];
+        }
         
         //  check the call be holded/unholded
         if (mxCall.supportsHolding)
@@ -763,6 +781,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
     
     [self updateProximityAndSleep];
+}
+    
+#pragma mark - DTMF
+
+- (void)openDialpad
+{
+    //  no-op
 }
 
 #pragma mark - MXCallDelegate

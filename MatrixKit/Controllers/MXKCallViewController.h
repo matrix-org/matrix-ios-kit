@@ -214,4 +214,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  */
 - (IBAction)onButtonPressed:(id)sender;
 
+#pragma mark - DTMF
+
+/**
+ Default implementation does nothing. Override to show a dial pad and then use MXCall methods to send DTMF tones.
+ */
+- (void)openDialpad;
+
 @end
