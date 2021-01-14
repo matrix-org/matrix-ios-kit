@@ -276,6 +276,9 @@
  */
 - (void)onSuccessfulLogin:(MXCredentials*)credentials;
 
+/// Login with custom parameters
+/// @param parameters Login parameters
+- (void)loginWithParameters:(NSDictionary*)parameters;
 
 #pragma mark - Authentication Fallback
 

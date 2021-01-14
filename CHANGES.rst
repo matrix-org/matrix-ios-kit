@@ -1,3 +1,30 @@
+Changes in 0.13.5 (2021-01-14)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAuthenticationViewController: Expose loginWithParameters method.
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.7)).
+
 Changes in 0.13.4 (2020-12-18)
 =================================================
 
