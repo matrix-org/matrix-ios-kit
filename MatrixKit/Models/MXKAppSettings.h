@@ -106,6 +106,11 @@
  */
 @property (nonatomic) BOOL hideUndecryptableEvents;
 
+/**
+ Indicates to send the shared key to all users of the room when user enters the room.
+ */
+@property (nonatomic) BOOL sendSharedKeyWhenEnterRoom;
+
 #pragma mark - Room members
 
 /**
