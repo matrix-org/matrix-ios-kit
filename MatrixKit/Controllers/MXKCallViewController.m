@@ -624,7 +624,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         [currentAlert dismissViewControllerAnimated:NO completion:nil];
         
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
         
         NSMutableArray<UIAlertAction *> *actions = [NSMutableArray arrayWithCapacity:4];
         
@@ -633,12 +633,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                                                                     style:UIAlertActionStyleDefault
                                                                   handler:^(UIAlertAction * action) {
             
-            if (weakSelf)
-            {
-                typeof(self) self = weakSelf;
-                self->currentAlert = nil;
-                self->mxCall.audioToSpeaker = !self->mxCall.audioToSpeaker;
-            }
+            MXStrongifyAndReturnIfNil(self);
+            self->currentAlert = nil;
+            self->mxCall.audioToSpeaker = !self->mxCall.audioToSpeaker;
             
         }];
         
@@ -653,13 +650,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                                                                     style:UIAlertActionStyleDefault
                                                                   handler:^(UIAlertAction * action) {
                 
-                if (weakSelf)
-                {
-                    typeof(self) self = weakSelf;
-                    self->currentAlert = nil;
-                    
-                    [self openDialpad];
-                }
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                [self openDialpad];
                 
             }];
             
@@ -675,12 +668,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                 
-                if (weakSelf)
-                {
-                    typeof(self) self = weakSelf;
-                    self->currentAlert = nil;
-                    [self->mxCall hold:(self.mxCall.state != MXCallStateOnHold)];
-                }
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                [self->mxCall hold:(self.mxCall.state != MXCallStateOnHold)];
                 
             }];
             
@@ -694,29 +684,26 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                 
-                if (weakSelf)
-                {
-                    typeof(self) self = weakSelf;
-                    self->currentAlert = nil;
-                    //  TODO: Introduce a new screen to select the transfer target
-                    //  Hardcode target for now
-                    NSString *targetUserId = @"@ismailgulekmac7:matrix.org";
-                    
-                    MXUserModel *targetUser = [[MXUserModel alloc] initWithUserId:targetUserId
-                                                                      displayname:nil
-                                                                        avatarUrl:nil];
-                    MXUserModel *transfereeUser = [[MXUserModel alloc] initWithUser:self.peer];
-                    
-                    [self.mainSession.callManager transferCall:self->mxCall
-                                                            to:targetUser
-                                                withTransferee:transfereeUser
-                                                  consultFirst:NO
-                                                       success:^(NSString * _Nonnull newCallId){
-                        NSLog(@"Call transfer succeeded with new call ID: %@", newCallId);
-                    } failure:^(NSError * _Nullable error) {
-                        NSLog(@"Call transfer failed with error: %@", error);
-                    }];
-                }
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                //  TODO: Introduce a new screen to select the transfer target
+                //  Hardcode target for now
+                NSString *targetUserId = @"@ismailgulekmac7:matrix.org";
+                
+                MXUserModel *targetUser = [[MXUserModel alloc] initWithUserId:targetUserId
+                                                                  displayname:nil
+                                                                    avatarUrl:nil];
+                MXUserModel *transfereeUser = [[MXUserModel alloc] initWithUser:self.peer];
+                
+                [self.mainSession.callManager transferCall:self->mxCall
+                                                        to:targetUser
+                                            withTransferee:transfereeUser
+                                              consultFirst:NO
+                                                   success:^(NSString * _Nonnull newCallId){
+                    NSLog(@"Call transfer succeeded with new call ID: %@", newCallId);
+                } failure:^(NSError * _Nullable error) {
+                    NSLog(@"Call transfer failed with error: %@", error);
+                }];
                 
             }];
             
@@ -740,11 +727,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                                                              style:UIAlertActionStyleCancel
                                                            handler:^(UIAlertAction * action) {
                 
-                if (weakSelf)
-                {
-                    typeof(self) self = weakSelf;
-                    self->currentAlert = nil;
-                }
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
                 
             }]];
             
@@ -956,23 +940,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
 
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
         errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
         
         [errorAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
                                                        style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction * action) {
-                                                         
-                                                         typeof(self) self = weakSelf;
-                                                         if (self)
-                                                         {
-                                                             self->errorAlert = nil;
-                                                             
-                                                             [self dismiss];
-                                                         }
-                                                         
-                                                     }]];
-        
+            
+            MXStrongifyAndReturnIfNil(self);
+            self->errorAlert = nil;
+            [self dismiss];
+            
+        }]];
         
         [self presentViewController:errorAlert animated:YES completion:nil];
         
