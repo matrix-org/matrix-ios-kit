@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * VoIP: DTMF support in calls (vector-im/element-ios/issues/3929).
 
 🐛 Bugfix
  * 
