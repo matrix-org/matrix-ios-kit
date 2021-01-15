@@ -22,11 +22,93 @@ Changes to be released in next version
 Others
  * 
 
+Changes in 0.13.5 (2021-01-14)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAuthenticationViewController: Expose loginWithParameters method.
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.7)).
+
+Changes in 0.13.4 (2020-12-18)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * MXKRoomViewController: Fix a crash by not calling UITableViewDataSource method, but dequeuing the cell.
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.6)).
+
+Changes in 0.13.3 (2020-12-16)
+=================================================
+
+✨ Features
+ * Data encryption for MXKContactManager and MXKAccountManager using MXKeyProvider (#3866)
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * MXKAccountManager: fix a bug that prevents user to stay logged in if V2 file is not initially encrypted (vector-im/element-ios/issues/3866).
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.5)).
+
 Changes in 0.13.2 (2020-12-02)
 =================================================
 
 ✨ Features
  * Added AES encryption support in MXKContactManager (vector-im/element-ios/issues/3833).
+ * Added allowActionsInDocumentPreview property in MXKRoomViewController to show or hide the actions button in document preview. (#3864)
 
 🙌 Improvements
  * 

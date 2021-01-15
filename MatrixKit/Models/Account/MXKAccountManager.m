@@ -22,11 +22,13 @@
 
 #import "MXKTools.h"
 
-static NSString *const kMXKAccountsKey = @"accounts";
+static NSString *const kMXKAccountsKeyOld = @"accounts";
+static NSString *const kMXKAccountsKey = @"accountsV2";
 
 NSString *const kMXKAccountManagerDidAddAccountNotification = @"kMXKAccountManagerDidAddAccountNotification";
 NSString *const kMXKAccountManagerDidRemoveAccountNotification = @"kMXKAccountManagerDidRemoveAccountNotification";
 NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccountManagerDidSoftlogoutAccountNotification";
+NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDataType";
 
 @interface MXKAccountManager()
 {
@@ -57,6 +59,9 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
     if (self)
     {
         _storeClass = [MXFileStore class];
+        
+        // Migrate old account file to new format
+        [self migrateAccounts];
         
         // Load existing accounts from local storage
         [self loadAccounts];
@@ -91,7 +96,18 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
     NSDate *startDate = [NSDate date];
     
     NSLog(@"[MXKAccountManager] saveAccounts...");
-    BOOL result = [NSKeyedArchiver archiveRootObject:mxAccounts toFile:[self accountFile]];
+    
+    NSMutableData *data = [NSMutableData data];
+    NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+
+    [encoder encodeObject:mxAccounts forKey:@"mxAccounts"];
+
+    [encoder finishEncoding];
+
+    [data setData:[self encryptData:data]];
+
+    BOOL result = [data writeToFile:[self accountFile] atomically:YES];
+
     NSLog(@"[MXKAccountManager] saveAccounts. Done (result: %@) in %.0fms", @(result), [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
 }
 
@@ -596,7 +612,32 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
     if ([[NSFileManager defaultManager] fileExistsAtPath:accountFile])
     {
         NSDate *startDate = [NSDate date];
-        mxAccounts = [NSKeyedUnarchiver unarchiveObjectWithFile:accountFile];
+        
+        NSError *error = nil;
+        NSData* filecontent = [NSData dataWithContentsOfFile:accountFile options:(NSDataReadingMappedAlways | NSDataReadingUncached) error:&error];
+        
+        if (!error)
+        {
+            // Decrypt data if encryption method is provided
+            NSData *unciphered = [self decryptData:filecontent];
+            NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:unciphered];
+            mxAccounts = [decoder decodeObjectForKey:@"mxAccounts"];
+            
+            if (!mxAccounts && [[MXKeyProvider sharedInstance] isEncryptionAvailableForDataOfType:MXKAccountManagerDataType])
+            {
+                // This happens if the V2 file has not been encrypted -> read file content then save encrypted accounts
+                NSLog(@"[MXKAccountManager] loadAccounts. Failed to read decrypted data: reading file data without encryption.");
+                decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
+                mxAccounts = [decoder decodeObjectForKey:@"mxAccounts"];
+                
+                if (mxAccounts)
+                {
+                    NSLog(@"[MXKAccountManager] loadAccounts. saving encrypted accounts");
+                    [self saveAccounts];
+                }
+            }
+        }
+
         NSLog(@"[MXKAccountManager] loadAccounts. %tu accounts loaded in %.0fms", mxAccounts.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
     }
     else
@@ -636,6 +677,58 @@ NSString *const kMXKAccountManagerDidSoftlogoutAccountNotification = @"kMXKAccou
 {
     NSLog(@"[MXKAccountManager] Force reload existing accounts from local storage");
     [self loadAccounts];
+}
+
+- (NSData*)encryptData:(NSData*)data
+{
+    // Exceptions are not caught as the key is always needed if the KeyProviderDelegate
+    // is provided.
+    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:MXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
+    if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
+    {
+        MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
+        NSData *cipher = [MXAes encrypt:data aesKey:aesKey.key iv:aesKey.iv error:nil];
+        return cipher;
+    }
+
+    NSLog(@"[MXKAccountManager] encryptData: no key method provided for encryption.");
+    return data;
+}
+
+- (NSData*)decryptData:(NSData*)data
+{
+    // Exceptions are not cached as the key is always needed if the KeyProviderDelegate
+    // is provided.
+    MXKeyData *keyData = [[MXKeyProvider sharedInstance] requestKeyForDataOfType:MXKAccountManagerDataType isMandatory:YES expectedKeyType:kAes];
+    if (keyData && [keyData isKindOfClass:[MXAesKeyData class]])
+    {
+        MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
+        NSData *decrypt = [MXAes decrypt:data aesKey:aesKey.key iv:aesKey.iv error:nil];
+        return decrypt;
+    }
+
+    NSLog(@"[MXKAccountManager] decryptData: no key method provided for decryption.");
+    return data;
+}
+
+- (void)migrateAccounts
+{
+    NSString *pathOld = [[MXKAppSettings cacheFolder] stringByAppendingPathComponent:kMXKAccountsKeyOld];
+    NSString *pathNew = [[MXKAppSettings cacheFolder] stringByAppendingPathComponent:kMXKAccountsKey];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:pathOld])
+    {
+        if (![fileManager fileExistsAtPath:pathNew])
+        {
+            NSLog(@"[MXKAccountManager] migrateAccounts: reading account");
+            mxAccounts = [NSKeyedUnarchiver unarchiveObjectWithFile:pathOld];
+            NSLog(@"[MXKAccountManager] migrateAccounts: writing to accountV2");
+            [self saveAccounts];
+        }
+        
+        NSLog(@"[MXKAccountManager] migrateAccounts: removing account");
+        [fileManager removeItemAtPath:pathOld error:nil];
+    }
 }
 
 @end
