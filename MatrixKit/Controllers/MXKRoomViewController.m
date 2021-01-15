@@ -289,6 +289,13 @@
         }
     }];
     
+    __block NSString *roomId = roomDataSource.roomId;
+    [roomDataSource.mxSession.crypto ensureEncryptionInRoom:roomId success:^{
+        NSLog(@"[MXKRoomViewController] Key shared for room: %@", roomId);
+    } failure:^(NSError *error) {
+        NSLog(@"[MXKRoomViewController] Failed to share key for room %@: %@", roomId, error);
+    }];
+    
     self.navigationController.delegate = self;
 }
 

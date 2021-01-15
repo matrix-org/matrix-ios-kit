@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * Pre-share session keys when opening a room (vector-im/element-ios/issues/3934)
 
 🐛 Bugfix
  * 
