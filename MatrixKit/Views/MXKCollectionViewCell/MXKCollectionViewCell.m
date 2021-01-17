@@ -30,7 +30,7 @@
         nibs = [[NSMutableDictionary alloc] init];
     });
 
-    id result = nibs[self];
+    id result = nibs[(id)self];
     if (!result)
     {
         NSString *className = NSStringFromClass(self);
@@ -39,7 +39,7 @@
         {
             result = [UINib nibWithNibName:className bundle:[NSBundle bundleForClass:self]];
         }
-        nibs[self] = result ?: [NSNull null];
+        nibs[(id)self] = result ?: [NSNull null];
     }
     return result == [NSNull null] ? nil : result;
 }
