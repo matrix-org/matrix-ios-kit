@@ -686,25 +686,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 
                 MXStrongifyAndReturnIfNil(self);
                 self->currentAlert = nil;
-                //  TODO: Introduce a new screen to select the transfer target
-                //  Hardcode target for now
-                NSString *targetUserId = @"@ismailgulekmac7:matrix.org";
                 
-                MXUserModel *targetUser = [[MXUserModel alloc] initWithUserId:targetUserId
-                                                                  displayname:nil
-                                                                    avatarUrl:nil];
-                MXUserModel *transfereeUser = [[MXUserModel alloc] initWithUser:self.peer];
-                
-                [self.mainSession.callManager transferCall:self->mxCall
-                                                        to:targetUser
-                                            withTransferee:transfereeUser
-                                              consultFirst:NO
-                                                   success:^(NSString * _Nonnull newCallId){
-                    NSLog(@"Call transfer succeeded with new call ID: %@", newCallId);
-                } failure:^(NSError * _Nullable error) {
-                    NSLog(@"Call transfer failed with error: %@", error);
-                }];
-                
+                [self openCallTransfer];
             }];
             
             [actions addObject:transferAction];
@@ -770,6 +753,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 #pragma mark - DTMF
 
 - (void)openDialpad
+{
+    //  no-op
+}
+
+#pragma mark - Call Transfer
+
+- (void)openCallTransfer
 {
     //  no-op
 }

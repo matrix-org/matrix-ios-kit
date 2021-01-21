@@ -221,4 +221,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  */
 - (void)openDialpad;
 
+#pragma mark - Call Transfer
+
+/**
+ Default implementation does nothing. Override to show a contact selection screen and then use MXCallManager methods to start the transfer.
+ */
+- (void)openCallTransfer;
+
 @end
