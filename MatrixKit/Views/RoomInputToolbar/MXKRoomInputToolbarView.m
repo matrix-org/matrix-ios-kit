@@ -1336,29 +1336,26 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     {
         // Check whether some data listed in general pasteboard can be paste
         UIPasteboard *pasteboard = MXKPasteboardManager.shared.pasteboard;
-        if (pasteboard.numberOfItems)
+        NSIndexSet* all = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, pasteboard.numberOfItems)];
+        for (NSArray<NSString*>* typesForItem in [pasteboard pasteboardTypesForItemSet:all])
         {
-            for (NSDictionary* dict in pasteboard.items)
+            for (NSString* type in typesForItem)
             {
-                NSArray* allKeys = dict.allKeys;
-                for (NSString* key in allKeys)
+                NSString* MIMEType = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)type, kUTTagClassMIMEType);
+
+                if ([MIMEType hasPrefix:@"image/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)])
                 {
-                    NSString* MIMEType = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)key, kUTTagClassMIMEType);
-                    
-                    if ([MIMEType hasPrefix:@"image/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)])
-                    {
-                        return YES;
-                    }
-                    
-                    if ([MIMEType hasPrefix:@"video/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
-                    {
-                        return YES;
-                    }
-                    
-                    if ([MIMEType hasPrefix:@"application/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendFile:withMimeType:)])
-                    {
-                        return YES;
-                    }
+                    return YES;
+                }
+
+                if ([MIMEType hasPrefix:@"video/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
+                {
+                    return YES;
+                }
+
+                if ([MIMEType hasPrefix:@"application/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendFile:withMimeType:)])
+                {
+                    return YES;
                 }
             }
         }
