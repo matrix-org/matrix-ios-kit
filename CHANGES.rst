@@ -1,3 +1,30 @@
+Changes in 0.13.8 (2021-01-27)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.10](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.10)).
+
 Changes in 0.13.7 (2021-01-18)
 =================================================
 
