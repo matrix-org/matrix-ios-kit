@@ -902,19 +902,7 @@
                     
                     selectedCell.moviePlayer.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-                    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-                    {
-                        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, bottomConstraint, trailingConstraint]];
-                    }
-                    else
-                    {
-                        // iOS < 8 support
-                        [self.view addConstraint:topConstraint];
-                        [self.view addConstraint:leadingConstraint];
-                        [self.view addConstraint:bottomConstraint];
-                        [self.view addConstraint:trailingConstraint];
-                    }
-
+                    [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, bottomConstraint, trailingConstraint]];
                     [[NSNotificationCenter defaultCenter] addObserver:self
                                                              selector:@selector(moviePlayerPlaybackDidFinishWithErrorNotification:)
                                                                  name:AVPlayerItemFailedToPlayToEndTimeNotification

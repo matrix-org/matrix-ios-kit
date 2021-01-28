@@ -353,16 +353,8 @@
     if (_authInputsView)
     {
         [_authInputsView removeObserver:self forKeyPath:@"viewHeightConstraint.constant"];
-        
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-        {
-            [NSLayoutConstraint deactivateConstraints:_authInputsView.constraints];
-        }
-        else
-        {
-            [_authInputsContainerView removeConstraints:_authInputsView.constraints];
-        }
-        
+
+        [NSLayoutConstraint deactivateConstraints:_authInputsView.constraints];
         [_authInputsView removeFromSuperview];
         _authInputsView.delegate = nil;
         [_authInputsView destroy];
@@ -411,16 +403,7 @@
                                                                                constant:0.0f];
         
         
-        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-        {
-            [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, trailingConstraint]];
-        }
-        else
-        {
-            [_authInputsContainerView addConstraint:topConstraint];
-            [_authInputsContainerView addConstraint:leadingConstraint];
-            [_authInputsContainerView addConstraint:trailingConstraint];
-        }
+        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, trailingConstraint]];
         
         [_authInputsView addObserver:self forKeyPath:@"viewHeightConstraint.constant" options:0 context:nil];
     }

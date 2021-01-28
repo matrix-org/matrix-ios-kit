@@ -232,15 +232,7 @@
     }
     
     // Adjust bottom constraint of the input toolbar container in order to take into account potential tabBar
-    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-    {
-        [NSLayoutConstraint deactivateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
-    }
-    else
-    {
-        [self.view removeConstraint:_roomInputToolbarContainerBottomConstraint];
-    }
-    
+    _roomInputToolbarContainerBottomConstraint.active = NO;
     _roomInputToolbarContainerBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
                                                                               attribute:NSLayoutAttributeTop
                                                                               relatedBy:NSLayoutRelationEqual
@@ -248,15 +240,7 @@
                                                                               attribute:NSLayoutAttributeBottom
                                                                              multiplier:1.0f
                                                                                constant:0.0f];
-    
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-    {
-        [NSLayoutConstraint activateConstraints:@[_roomInputToolbarContainerBottomConstraint]];
-    }
-    else
-    {
-        [self.view addConstraint:_roomInputToolbarContainerBottomConstraint];
-    }
+    _roomInputToolbarContainerBottomConstraint.active = YES;
     [self.view setNeedsUpdateConstraints];
     
     // Hide bubbles table by default in order to hide initial scrolling to the bottom
@@ -1141,14 +1125,7 @@
     {
         NSLog(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView with class %@ to nil", [self.inputToolbarView class]);
         
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-        {
-            [NSLayoutConstraint deactivateConstraints:inputToolbarView.constraints];
-        }
-        else
-        {
-            [_roomInputToolbarContainer removeConstraints:inputToolbarView.constraints];
-        }
+        [NSLayoutConstraint deactivateConstraints:inputToolbarView.constraints];
         [inputToolbarView dismissKeyboard];
         [inputToolbarView removeFromSuperview];
         [inputToolbarView destroy];
@@ -1220,14 +1197,7 @@
     // Remove potential toolbar
     if (activitiesView)
     {
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-        {
-            [NSLayoutConstraint deactivateConstraints:activitiesView.constraints];
-        }
-        else
-        {
-            [_roomActivitiesContainer removeConstraints:activitiesView.constraints];
-        }
+        [NSLayoutConstraint deactivateConstraints:activitiesView.constraints];
         [activitiesView removeFromSuperview];
         [activitiesView destroy];
         activitiesView = nil;
@@ -1277,18 +1247,8 @@
                                                                            multiplier:1.0f
                                                                              constant:0.0f];
         
-        
-        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-        {
-            [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint, heightConstraint]];
-        }
-        else
-        {
-            [_roomActivitiesContainer addConstraint:topConstraint];
-            [_roomActivitiesContainer addConstraint:leadingConstraint];
-            [_roomActivitiesContainer addConstraint:widthConstraint];
-            [_roomActivitiesContainer addConstraint:heightConstraint];
-        }
+
+        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, widthConstraint, heightConstraint]];
         
         // let the provide view to define a height.
         // it could have no constrainst if there is no defined xib

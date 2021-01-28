@@ -102,15 +102,7 @@
     }
     
     // Adjust Top and Bottom constraints to take into account potential navBar and tabBar.
-    if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-    {
-        [NSLayoutConstraint deactivateConstraints:@[_membersSearchBarTopConstraint, _membersTableViewBottomConstraint]];
-    }
-    else
-    {
-        [self.view removeConstraint:_membersSearchBarTopConstraint];
-        [self.view removeConstraint:_membersTableViewBottomConstraint];
-    }
+    [NSLayoutConstraint deactivateConstraints:@[_membersSearchBarTopConstraint, _membersTableViewBottomConstraint]];
     
     _membersSearchBarTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLayoutGuide
                                                                   attribute:NSLayoutAttributeBottom
@@ -128,15 +120,7 @@
                                                                     multiplier:1.0f
                                                                       constant:0.0f];
     
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-    {
-        [NSLayoutConstraint activateConstraints:@[_membersSearchBarTopConstraint, _membersTableViewBottomConstraint]];
-    }
-    else
-    {
-        [self.view addConstraint:_membersSearchBarTopConstraint];
-        [self.view addConstraint:_membersTableViewBottomConstraint];
-    }
+    [NSLayoutConstraint activateConstraints:@[_membersSearchBarTopConstraint, _membersTableViewBottomConstraint]];
     
     // Hide search bar by default
     self.membersSearchBar.hidden = YES;

@@ -121,16 +121,7 @@
                                                               multiplier:1
                                                                 constant:0];
             }
-            if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-            {
-                [NSLayoutConstraint activateConstraints:@[leftConstraint, widthConstraint]];
-            }
-            else
-            {
-                [sectionHeader addConstraint:leftConstraint];
-                [sectionHeader addConstraint:widthConstraint];
-                
-            }
+            [NSLayoutConstraint activateConstraints:@[leftConstraint, widthConstraint]];
             previousShrinkButton = shrinkButton;
             
             // Add shrink icon
