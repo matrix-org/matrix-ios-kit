@@ -93,7 +93,7 @@
 "notice_event_redacted_by" = " door %@";
 "notice_event_redacted_reason" = " [reden: %@]";
 "notice_profile_change_redacted" = "%@ heeft zijn/haar profiel bijgewerkt %@";
-"notice_room_created" = "%@ heeft het gesprek aangemaakt";
+"notice_room_created" = "%@ heeft de kamer aangemaakt en ingesteld.";
 "notice_room_join_rule" = "De toetredingsregel is: %@";
 "notice_room_power_level_intro" = "Het machtsniveau van gespreksleden is:";
 "notice_room_power_level_acting_requirement" = "De minimale machtsniveaus waarover een gebruiker moet beschikken vooraleer deze kan handelen zijn:";
@@ -441,3 +441,4 @@
 "device_details_rename_prompt_title" = "Sessienaam";
 "notice_encryption_enabled_ok" = "%@ heeft eind-tot-eind-versleuteling ingeschakeld.";
 "notice_encryption_enabled_unknown_algorithm" = "%1$@ heeft eind-tot-eind-versleuteling ingeschakeld (onbekend algoritme %2$@).";
+"notice_room_name_removed_for_dm" = "%@ heeft de naam verwijderd";
