@@ -16,6 +16,13 @@
  */
 #import <MatrixSDK/MatrixSDK.h>
 
+typedef NS_OPTIONS(NSUInteger, MXKKeySharingStrategy)
+{
+    MXKKeySharingNone = 0,
+    MXKKeySharingWhenEnteringRoom = 1 << 0,
+    MXKKeySharingWhenTyping = 1 << 1
+};
+
 /**
  `MXKAppSettings` represents the application settings. Most of them are used to handle matrix session data.
  
@@ -107,9 +114,19 @@
 @property (nonatomic) BOOL hideUndecryptableEvents;
 
 /**
- Indicates to send the shared key to all users of the room when user enters the room.
+ Indicates the strategy for sharing the outbound session key to other devices of the room (bitmask)
  */
-@property (nonatomic) BOOL sendSharedKeyWhenEnterRoom;
+@property (nonatomic) MXKKeySharingStrategy outboundGroupSessionKeySharingStrategy;
+
+/**
+ YES if Outbound group session key should be sent when the user enters the room
+ */
+@property (nonatomic, readonly) BOOL sendOutboundGroupSessionKeyWhenEnteringRoom;
+
+/**
+ YES if Outbound group session key should be sent when the user starts typing text
+ */
+@property (nonatomic, readonly) BOOL sendOutboundGroupSessionKeyWhenTyping;
 
 #pragma mark - Room members
 

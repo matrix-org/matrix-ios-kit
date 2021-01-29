@@ -289,14 +289,9 @@
         }
     }];
     
-    if ([MXKAppSettings standardAppSettings].sendSharedKeyWhenEnterRoom)
+    if ([MXKAppSettings standardAppSettings].sendOutboundGroupSessionKeyWhenEnteringRoom)
     {
-        __block NSString *roomId = roomDataSource.roomId;
-        [roomDataSource.mxSession.crypto ensureEncryptionInRoom:roomId success:^{
-            NSLog(@"[MXKRoomViewController] Key shared for room: %@", roomId);
-        } failure:^(NSError *error) {
-            NSLog(@"[MXKRoomViewController] Failed to share key for room %@: %@", roomId, error);
-        }];
+        [self shareEncryptionKeys];
     }
     
     self.navigationController.delegate = self;
@@ -3568,6 +3563,12 @@
             return;
         }
         
+        // No typing event has been yet reported -> share encryption keys if requested
+        if ([MXKAppSettings standardAppSettings].sendOutboundGroupSessionKeyWhenTyping)
+        {
+            [self shareEncryptionKeys];
+        }
+        
         // Launch a timer to prevent sending multiple typing notifications
         NSTimeInterval timerTimeout = MXKROOMVIEWCONTROLLER_DEFAULT_TYPING_TIMEOUT_SEC;
         if (lastTypingDate)
@@ -4024,6 +4025,18 @@
     }
     //default frame which will be used if the user scrolls to other attachments in MXKAttachmentsViewController
     return CGRectMake(CGRectGetWidth(self.view.frame)/2, 0.0, 0.0, 0.0);
+}
+
+#pragma mark - Encryption key sharing
+
+- (void)shareEncryptionKeys
+{
+    __block NSString *roomId = roomDataSource.roomId;
+    [roomDataSource.mxSession.crypto ensureEncryptionInRoom:roomId success:^{
+        NSLog(@"[MXKRoomViewController] Key shared for room: %@", roomId);
+    } failure:^(NSError *error) {
+        NSLog(@"[MXKRoomViewController] Failed to share key for room %@: %@", roomId, error);
+    }];
 }
 
 @end
