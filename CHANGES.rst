@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * Login screen: Unexpected request to access the contact book (vector-im/element-ios/issues/3984).
 
 ⚠️ API Changes
  * 
