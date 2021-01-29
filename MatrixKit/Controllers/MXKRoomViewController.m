@@ -289,7 +289,7 @@
         }
     }];
     
-    if ([MXKAppSettings standardAppSettings].sendOutboundGroupSessionKeyWhenEnteringRoom)
+    if ([MXKAppSettings standardAppSettings].outboundGroupSessionKeySharingStrategy == MXKKeySharingWhenEnteringRoom)
     {
         [self shareEncryptionKeys];
     }
@@ -3564,7 +3564,7 @@
         }
         
         // No typing event has been yet reported -> share encryption keys if requested
-        if ([MXKAppSettings standardAppSettings].sendOutboundGroupSessionKeyWhenTyping)
+        if ([MXKAppSettings standardAppSettings].outboundGroupSessionKeySharingStrategy == MXKKeySharingWhenTyping)
         {
             [self shareEncryptionKeys];
         }

@@ -16,11 +16,11 @@
  */
 #import <MatrixSDK/MatrixSDK.h>
 
-typedef NS_OPTIONS(NSUInteger, MXKKeySharingStrategy)
+typedef NS_ENUM(NSUInteger, MXKKeySharingStrategy)
 {
     MXKKeySharingNone = 0,
-    MXKKeySharingWhenEnteringRoom = 1 << 0,
-    MXKKeySharingWhenTyping = 1 << 1
+    MXKKeySharingWhenEnteringRoom = 1,
+    MXKKeySharingWhenTyping = 2
 };
 
 /**
@@ -117,16 +117,6 @@ typedef NS_OPTIONS(NSUInteger, MXKKeySharingStrategy)
  Indicates the strategy for sharing the outbound session key to other devices of the room (bitmask)
  */
 @property (nonatomic) MXKKeySharingStrategy outboundGroupSessionKeySharingStrategy;
-
-/**
- YES if Outbound group session key should be sent when the user enters the room
- */
-@property (nonatomic, readonly) BOOL sendOutboundGroupSessionKeyWhenEnteringRoom;
-
-/**
- YES if Outbound group session key should be sent when the user starts typing text
- */
-@property (nonatomic, readonly) BOOL sendOutboundGroupSessionKeyWhenTyping;
 
 #pragma mark - Room members
 
