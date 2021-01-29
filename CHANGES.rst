@@ -8,7 +8,7 @@ Changes to be released in next version
  * Pre-share session keys when opening a room (vector-im/element-ios/issues/3934)
 
 🐛 Bugfix
- * 
+ * Login screen: Unexpected request to access the contact book (vector-im/element-ios/issues/3984).
 
 ⚠️ API Changes
  * 
