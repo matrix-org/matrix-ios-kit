@@ -173,7 +173,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         _messageDetailsAllowSaving = YES;
         _messageDetailsAllowCopyingMedia = YES;
         _messageDetailsAllowPastingMedia = YES;
-        _outboundGroupSessionKeySharingStrategy = MXKKeySharingNone;
+        _outboundGroupSessionKeyPreSharingStrategy = MXKKeyPreSharingNone;
     }
     return self;
 }
@@ -457,16 +457,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     {
         httpsLinkScheme = stringValue;
     }
-}
-
-- (BOOL)sendOutboundGroupSessionKeyWhenEnteringRoom
-{
-    return (_outboundGroupSessionKeySharingStrategy & MXKKeySharingWhenEnteringRoom) == MXKKeySharingWhenEnteringRoom;
-}
-
-- (BOOL)sendOutboundGroupSessionKeyWhenTyping
-{
-    return (_outboundGroupSessionKeySharingStrategy & MXKKeySharingWhenTyping) == MXKKeySharingWhenTyping;
 }
 
 #pragma mark - Room members

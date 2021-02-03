@@ -16,11 +16,11 @@
  */
 #import <MatrixSDK/MatrixSDK.h>
 
-typedef NS_ENUM(NSUInteger, MXKKeySharingStrategy)
+typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
 {
-    MXKKeySharingNone = 0,
-    MXKKeySharingWhenEnteringRoom = 1,
-    MXKKeySharingWhenTyping = 2
+    MXKKeyPreSharingNone = 0,
+    MXKKeyPreSharingWhenEnteringRoom = 1,
+    MXKKeyPreSharingWhenTyping = 2
 };
 
 /**
@@ -116,7 +116,7 @@ typedef NS_ENUM(NSUInteger, MXKKeySharingStrategy)
 /**
  Indicates the strategy for sharing the outbound session key to other devices of the room (bitmask)
  */
-@property (nonatomic) MXKKeySharingStrategy outboundGroupSessionKeySharingStrategy;
+@property (nonatomic) MXKKeyPreSharingStrategy outboundGroupSessionKeyPreSharingStrategy;
 
 #pragma mark - Room members
 
