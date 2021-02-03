@@ -1521,7 +1521,12 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
         dispatch_async(dispatch_get_main_queue(), ^{
             
             [self internationalizePhoneNumbers:[[MXKAppSettings standardAppSettings] phonebookCountryCode]];
-            [self refreshLocalContacts];
+            
+            // Refresh local contacts if we have some
+            if (!self->localContactByContactID)
+            {
+                [self refreshLocalContacts];
+            }
             
         });
     }
