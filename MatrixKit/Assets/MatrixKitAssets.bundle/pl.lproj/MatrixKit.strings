@@ -171,3 +171,21 @@
 "notification_settings_custom_sound" = "Dźwięk niestandardowy";
 "login_home_server_info" = "Twój serwer domowy przechowuje wszystkie Twoje rozmowy i dane konta";
 "login_user_id_placeholder" = "Matrix ID (np. @bob:matrix.org or bob)";
+"search_searching" = "Wyszukiwanie...";
+
+// Search
+"search_no_results" = "Brak wyników";
+"group_section" = "Grupy";
+
+// Groups
+"group_invite_section" = "Zaproszenia";
+"attachment_e2e_keys_import" = "Importuj...";
+"attachment_multiselection_original" = "Rozmiar rzeczywisty";
+"attachment_multiselection_size_prompt" = "Czy chcesz wysłać grafiki jak:";
+"attachment_cancel_upload" = "Czy na pewno chcesz przerwać wgrywanie?";
+"attachment_cancel_download" = "Czy na pewno chcesz przerwać pobieranie?";
+"membership_ban" = "Odmowa";
+"login_desktop_device" = "Pulpit";
+"login_mobile_device" = "Przenośny";
+"login_error_forgot_password_is_not_supported" = "Niestety, opcja „zapomiałam/em hasła” nie jest jeszcze dostępna";
+"login_prompt_email_token" = "Proszę, podaj kod weryfikacyjny z e-mail:";
