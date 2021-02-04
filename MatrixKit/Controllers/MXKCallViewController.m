@@ -635,7 +635,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             
             MXStrongifyAndReturnIfNil(self);
             self->currentAlert = nil;
-            self->mxCall.audioToSpeaker = !self->mxCall.audioToSpeaker;
+            [self showAudioDeviceOptions];
             
         }];
         
@@ -748,6 +748,55 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
     
     [self updateProximityAndSleep];
+}
+
+- (void)showAudioDeviceOptions
+{
+    //  create the alert
+    currentAlert = [UIAlertController alertControllerWithTitle:nil
+                                                       message:nil
+                                                preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    MXWeakify(self);
+    
+    //  headset action
+    UIAlertAction *headsetAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_headset"]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        self->mxCall.audioToSpeaker = NO;
+        
+    }];
+    
+    //  device action
+    UIAlertAction *deviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_device"]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        self->mxCall.audioToSpeaker = YES;
+        
+    }];
+    
+    [currentAlert addAction:headsetAction];
+    [currentAlert addAction:deviceAction];
+    
+    //  add cancel action
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        
+    }]];
+    
+    [currentAlert popoverPresentationController].sourceView = _moreButton;
+    [currentAlert popoverPresentationController].sourceRect = _moreButton.bounds;
+    [self presentViewController:currentAlert animated:YES completion:nil];
 }
     
 #pragma mark - DTMF
