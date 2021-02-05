@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * Pasteboard contents are no longer queried when deciding whether to show Paste option.
 
 ⚠️ API Changes
  * 
