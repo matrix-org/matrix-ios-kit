@@ -34,10 +34,11 @@
     if (!result)
     {
         NSString *className = NSStringFromClass(self);
-        NSString *path = [mainBundle pathForResource:className ofType:@"nib"];
+        NSBundle *bundle = [NSBundle bundleForClass:self];
+        NSString *path = [bundle pathForResource:className ofType:@"nib"];
         if (path)
         {
-            result = [UINib nibWithNibName:className bundle:[NSBundle bundleForClass:self]];
+            result = [UINib nibWithNibName:className bundle:bundle];
         }
         nibs[(id)self] = result ?: [NSNull null];
     }
