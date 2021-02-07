@@ -8,6 +8,30 @@ Changes to be released in next version
  * VoIP: DTMF support in calls (vector-im/element-ios/issues/3929).
 
 🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Changes in 0.13.9 (2021-02-03)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
  * Login screen: Unexpected request to access the contact book (vector-im/element-ios/issues/3984).
 
 ⚠️ API Changes
@@ -21,6 +45,9 @@ Changes to be released in next version
 
 Others
  * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.17.11](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.11)).
 
 Changes in 0.13.8 (2021-01-27)
 =================================================
