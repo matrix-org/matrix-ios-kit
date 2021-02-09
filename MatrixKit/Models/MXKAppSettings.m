@@ -178,6 +178,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         _messageDetailsAllowSaving = YES;
         _messageDetailsAllowCopyingMedia = YES;
         _messageDetailsAllowPastingMedia = YES;
+        _outboundGroupSessionKeyPreSharingStrategy = MXKKeyPreSharingNone;
     }
     return self;
 }
