@@ -1174,7 +1174,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     CGPoint previewOrigin = self.localPreviewContainerView.frame.origin;
     
-    if (previewOrigin.x != 20)
+    if (previewOrigin.x != (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - 20.0))
     {
         CGFloat posX = (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - 20.0);
         _localPreviewContainerViewLeadingConstraint.constant = posX;
