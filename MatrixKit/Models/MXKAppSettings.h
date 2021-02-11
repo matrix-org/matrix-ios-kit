@@ -16,6 +16,13 @@
  */
 #import <MatrixSDK/MatrixSDK.h>
 
+typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
+{
+    MXKKeyPreSharingNone = 0,
+    MXKKeyPreSharingWhenEnteringRoom = 1,
+    MXKKeyPreSharingWhenTyping = 2
+};
+
 /**
  `MXKAppSettings` represents the application settings. Most of them are used to handle matrix session data.
  
@@ -105,6 +112,11 @@
  Indicate to hide un-decryptable events in the room. Default is `NO`.
  */
 @property (nonatomic) BOOL hideUndecryptableEvents;
+
+/**
+ Indicates the strategy for sharing the outbound session key to other devices of the room (bitmask)
+ */
+@property (nonatomic) MXKKeyPreSharingStrategy outboundGroupSessionKeyPreSharingStrategy;
 
 #pragma mark - Room members
 

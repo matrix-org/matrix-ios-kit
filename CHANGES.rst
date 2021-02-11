@@ -1,3 +1,31 @@
+Changes in 0.14.0 (2021-02-11)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * Pre-share session keys when opening a room (vector-im/element-ios/issues/3934)
+ * VoIP: DTMF support in calls (vector-im/element-ios/issues/3929).
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.0)).
+
 Changes in 0.13.9 (2021-02-03)
 =================================================
 
