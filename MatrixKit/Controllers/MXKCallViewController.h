@@ -40,6 +40,18 @@
  */
 - (void)dismissCallViewController:(MXKCallViewController *)callViewController completion:(void (^)(void))completion;
 
+/**
+ Tells the delegate that user tapped on hold call.
+ @param callViewController the call view controller.
+ */
+- (void)callViewControllerDidTapOnHoldCall:(MXKCallViewController *)callViewController;
+
+/**
+ Tells the delegate that user tapped PiP button.
+ @param callViewController the call view controller.
+ */
+- (void)callViewControllerDidTapPiPButton:(MXKCallViewController *)callViewController;
+
 @end
 
 extern NSString *const kMXKCallViewControllerWillAppearNotification;
@@ -58,13 +70,18 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic, readonly) IBOutlet UIView *localPreviewContainerView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *localPreviewActivityView;
 
+@property (weak, nonatomic, readonly) IBOutlet UIView *onHoldCallContainerView;
+@property (weak, nonatomic) IBOutlet MXKImageView *onHoldCallerImageView;
+
 @property (weak, nonatomic, readonly) IBOutlet UIView *remotePreviewContainerView;
 
 @property (weak, nonatomic) IBOutlet UIView *overlayContainerView;
 @property (weak, nonatomic) IBOutlet UIView *callContainerView;
 @property (weak, nonatomic) IBOutlet MXKImageView *callerImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *pausedIcon;
 @property (weak, nonatomic) IBOutlet UILabel *callerNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *callStatusLabel;
+@property (weak, nonatomic) IBOutlet UIButton *resumeButton;
 
 @property (weak, nonatomic) IBOutlet UIView *callToolBar;
 @property (weak, nonatomic) IBOutlet UIButton *rejectCallButton;
@@ -72,9 +89,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet UIButton *endCallButton;
 
 @property (weak, nonatomic) IBOutlet UIView *callControlContainerView;
+@property (weak, nonatomic) IBOutlet UIButton *pipButton;
 @property (weak, nonatomic) IBOutlet UIButton *speakerButton;
 @property (weak, nonatomic) IBOutlet UIButton *audioMuteButton;
 @property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
+@property (weak, nonatomic) IBOutlet UIButton *moreButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *backToAppButton;
 @property (weak, nonatomic) IBOutlet UIButton *cameraSwitchButton;
@@ -100,9 +119,19 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (nonatomic) MXCall *mxCall;
 
 /**
+ The current call on hold
+ */
+@property (nonatomic) MXCall *mxCallOnHold;
+
+/**
  The current peer
  */
 @property (nonatomic, readonly) MXUser *peer;
+
+/**
+ The current peer of the call on hold
+ */
+@property (nonatomic, readonly) MXUser *peerOnHold;
 
 /**
  The delegate.
@@ -184,5 +213,19 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  Action registered on the event 'UIControlEventTouchUpInside' for each UIButton instance.
  */
 - (IBAction)onButtonPressed:(id)sender;
+
+#pragma mark - DTMF
+
+/**
+ Default implementation does nothing. Override to show a dial pad and then use MXCall methods to send DTMF tones.
+ */
+- (void)openDialpad;
+
+#pragma mark - Call Transfer
+
+/**
+ Default implementation does nothing. Override to show a contact selection screen and then use MXCallManager methods to start the transfer.
+ */
+- (void)openCallTransfer;
 
 @end

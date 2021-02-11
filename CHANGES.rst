@@ -6,6 +6,7 @@ Changes to be released in next version
 
 🙌 Improvements
  * Pre-share session keys when opening a room (vector-im/element-ios/issues/3934)
+ * VoIP: DTMF support in calls (vector-im/element-ios/issues/3929).
 
 🐛 Bugfix
  * 
