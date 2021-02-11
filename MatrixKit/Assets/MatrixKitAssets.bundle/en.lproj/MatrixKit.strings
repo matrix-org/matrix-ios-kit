@@ -94,6 +94,7 @@
 "answer_call" = "Answer Call";
 "reject_call" = "Reject Call";
 "end_call" = "End Call";
+"resume_call" = "Resume";
 "ignore" = "Ignore";
 "unignore" = "Unignore";
 
@@ -369,6 +370,7 @@
 "notice_placed_video_call" = "%@ placed a video call";
 "notice_answered_video_call" = "%@ answered the call";
 "notice_ended_video_call" = "%@ ended the call";
+"notice_declined_video_call" = "%@ declined the call";
 "notice_conference_call_request" = "%@ requested a VoIP conference";
 "notice_conference_call_started" = "VoIP conference started";
 "notice_conference_call_finished" = "VoIP conference finished";
@@ -399,6 +401,7 @@
 "notice_placed_video_call_by_you" = "You placed a video call";
 "notice_answered_video_call_by_you" = "You answered the call";
 "notice_ended_video_call_by_you" = "You ended the call";
+"notice_declined_video_call_by_you" = "You declined the call";
 "notice_conference_call_request_by_you" = "You requested a VoIP conference";
 "notice_room_name_removed_by_you" = "You removed the room name";
 "notice_room_name_removed_by_you_for_dm" = "You removed the name";
@@ -535,6 +538,15 @@
 "incoming_video_call" = "Incoming Video Call";
 "incoming_voice_call" = "Incoming Voice Call";
 "call_invite_expired" = "Call Invite Expired";
+"call_remote_holded" = "%@ held the call";
+"call_holded" = "You held the call";
+"call_more_actions_hold" = "Hold";
+"call_more_actions_unhold" = "Resume";
+"call_more_actions_change_audio_device" = "Change Audio Device";
+"call_more_actions_audio_use_headset" = "Use Headset Audio";
+"call_more_actions_audio_use_device" = "Use Device Audio";
+"call_more_actions_transfer" = "Transfer";
+"call_more_actions_dialpad" = "Dial pad";
 
 // unrecognized SSL certificate
 "ssl_trust" = "Trust";

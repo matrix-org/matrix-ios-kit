@@ -53,11 +53,16 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     // Observe AVAudioSessionRouteChangeNotification
     id audioSessionRouteChangeNotificationObserver;
+    
+    // Current alert (if any).
+    UIAlertController *currentAlert;
 }
 
 @property (nonatomic, assign) Boolean isRinging;
 
 @property (nonatomic, nullable) UIView *incomingCallView;
+
+@property (nonatomic, strong) UITapGestureRecognizer *onHoldCallContainerTapRecognizer;
 
 @end
 
@@ -70,6 +75,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 @synthesize backToAppButton, cameraSwitchButton;
 @synthesize backToAppStatusWindow;
 @synthesize mxCall;
+@synthesize mxCallOnHold;
+@synthesize onHoldCallerImageView;
+@synthesize onHoldCallContainerView;
 
 #pragma mark - Class methods
 
@@ -119,6 +127,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     self.backToAppButton.backgroundColor = [UIColor clearColor];
     self.audioMuteButton.backgroundColor = [UIColor clearColor];
     self.videoMuteButton.backgroundColor = [UIColor clearColor];
+    self.resumeButton.backgroundColor = [UIColor clearColor];
+    self.moreButton.backgroundColor = [UIColor clearColor];
     self.speakerButton.backgroundColor = [UIColor clearColor];
     
     [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateNormal];
@@ -127,6 +137,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [self.audioMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_audio_mute"] forState:UIControlStateSelected];
     [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_unmute"] forState:UIControlStateNormal];
     [self.videoMuteButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_video_mute"] forState:UIControlStateSelected];
+    [self.moreButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_more"] forState:UIControlStateNormal];
+    [self.moreButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_call_more"] forState:UIControlStateSelected];
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_off"] forState:UIControlStateNormal];
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_on"] forState:UIControlStateSelected];
     
@@ -137,6 +149,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [rejectCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"reject_call"] forState:UIControlStateHighlighted];
     [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateNormal];
     [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateHighlighted];
+    [_resumeButton setTitle:[NSBundle mxk_localizedStringForKey:@"resume_call"] forState:UIControlStateNormal];
+    [_resumeButton setTitle:[NSBundle mxk_localizedStringForKey:@"resume_call"] forState:UIControlStateHighlighted];
     
     // Refresh call information
     self.mxCall = mxCall;
@@ -252,6 +266,8 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     _incomingCallView = nil;
     
+    _onHoldCallContainerTapRecognizer = nil;
+    
     [super destroy];
 }
 
@@ -323,6 +339,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Hide camera switch on voice call
         self.cameraSwitchButton.hidden = !call.isVideoCall;
         
+        // Hide pip on voice call
+        self.pipButton.hidden = !call.isVideoCall;
+        
         // Observe call state change
         call.delegate = self;
 
@@ -365,11 +384,73 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
+- (void)setMxCallOnHold:(MXCall *)callOnHold
+{
+    if (mxCallOnHold == callOnHold)
+    {
+        //  setting same property, return
+        return;
+    }
+    
+    mxCallOnHold = callOnHold;
+    
+    if (mxCallOnHold)
+    {
+        self.onHoldCallContainerView.hidden = NO;
+        self.peerOnHold = [callOnHold.room.mxSession getOrCreateUser:callOnHold.callerId];
+        [self.onHoldCallContainerView addGestureRecognizer:self.onHoldCallContainerTapRecognizer];
+        [self.onHoldCallContainerView setUserInteractionEnabled:YES];
+    }
+    else
+    {
+        [self.onHoldCallContainerView removeGestureRecognizer:self.onHoldCallContainerTapRecognizer];
+        [self.onHoldCallContainerView setUserInteractionEnabled:NO];
+        self.onHoldCallContainerView.hidden = YES;
+        self.peerOnHold = nil;
+    }
+}
+
 - (void)setPeer:(MXUser *)peer
 {
     _peer = peer;
     
     [self updatePeerInfoDisplay];
+}
+
+- (void)setPeerOnHold:(MXUser *)peerOnHold
+{
+    _peerOnHold = peerOnHold;
+    
+    NSString *peerAvatarURL;
+    
+    if (_peerOnHold)
+    {
+        peerAvatarURL = _peerOnHold.avatarUrl;
+    }
+    else if (mxCall.isConferenceCall)
+    {
+        peerAvatarURL = mxCallOnHold.room.summary.avatar;
+    }
+    
+    onHoldCallerImageView.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    
+    if (peerAvatarURL)
+    {
+        // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+        onHoldCallerImageView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
+        onHoldCallerImageView.enableInMemoryCache = YES;
+        [onHoldCallerImageView setImageURI:peerAvatarURL
+                                  withType:nil
+                       andImageOrientation:UIImageOrientationUp
+                             toFitViewSize:onHoldCallerImageView.frame.size
+                                withMethod:MXThumbnailingMethodCrop
+                              previewImage:self.picturePlaceholder
+                              mediaManager:self.mainSession.mediaManager];
+    }
+    else
+    {
+        onHoldCallerImageView.image = self.picturePlaceholder;
+    }
 }
 
 - (void)updatePeerInfoDisplay
@@ -461,6 +542,16 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     }
 }
 
+- (UITapGestureRecognizer *)onHoldCallContainerTapRecognizer
+{
+    if (_onHoldCallContainerTapRecognizer == nil)
+    {
+        _onHoldCallContainerTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                    action:@selector(onHoldCallContainerTapped:)];
+    }
+    return _onHoldCallContainerTapRecognizer;
+}
+
 #pragma mark - Sounds
 
 - (NSURL *)audioURLWithName:(NSString *)soundName
@@ -469,6 +560,14 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 }
 
 #pragma mark - Actions
+
+- (void)onHoldCallContainerTapped:(UITapGestureRecognizer *)recognizer
+{
+    if ([self.delegate respondsToSelector:@selector(callViewControllerDidTapOnHoldCall:)])
+    {
+        [self.delegate callViewControllerDidTapOnHoldCall:self];
+    }
+}
 
 - (IBAction)onButtonPressed:(id)sender
 {
@@ -488,6 +587,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                    [self->mxCall answer];
                }
            }];
+    }
+    else if (sender == _pipButton)
+    {
+        if ([self.delegate respondsToSelector:@selector(callViewControllerDidTapPiPButton:)])
+        {
+            [self.delegate callViewControllerDidTapPiPButton:self];
+        }
     }
     else if (sender == rejectCallButton || sender == endCallButton)
     {
@@ -509,6 +615,110 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         mxCall.videoMuted = !mxCall.videoMuted;
         videoMuteButton.selected = mxCall.videoMuted;
+    }
+    else if (sender == _resumeButton)
+    {
+        [mxCall hold:NO];
+    }
+    else if (sender == _moreButton)
+    {
+        [currentAlert dismissViewControllerAnimated:NO completion:nil];
+        
+        MXWeakify(self);
+        
+        NSMutableArray<UIAlertAction *> *actions = [NSMutableArray arrayWithCapacity:4];
+        
+        //  audio device action
+        UIAlertAction *audioDeviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_change_audio_device"]
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
+            
+            MXStrongifyAndReturnIfNil(self);
+            self->currentAlert = nil;
+            [self showAudioDeviceOptions];
+            
+        }];
+        
+        [actions addObject:audioDeviceAction];
+        
+        //  check the call can be up/downgraded
+        
+        //  check the call can send DTMF tones
+        if (self.mxCall.supportsDTMF)
+        {
+            UIAlertAction *dialpadAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_dialpad"]
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
+                
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                [self openDialpad];
+                
+            }];
+            
+            [actions addObject:dialpadAction];
+        }
+        
+        //  check the call be holded/unholded
+        if (mxCall.supportsHolding)
+        {
+            NSString *actionLocKey = (mxCall.state == MXCallStateOnHold) ? @"call_more_actions_unhold" : @"call_more_actions_hold";
+            
+            UIAlertAction *holdAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:actionLocKey]
+                                                                 style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * action) {
+                
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                [self->mxCall hold:(self.mxCall.state != MXCallStateOnHold)];
+                
+            }];
+            
+            [actions addObject:holdAction];
+        }
+        
+        //  check the call be transferred
+        if (mxCall.supportsTransferring && self.peer)
+        {
+            UIAlertAction *transferAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_transfer"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                
+                [self openCallTransfer];
+            }];
+            
+            [actions addObject:transferAction];
+        }
+        
+        if (actions.count > 0)
+        {
+            //  create the alert
+            currentAlert = [UIAlertController alertControllerWithTitle:nil
+                                                               message:nil
+                                                        preferredStyle:UIAlertControllerStyleActionSheet];
+            
+            //  add actions
+            [actions enumerateObjectsUsingBlock:^(UIAlertAction * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [currentAlert addAction:obj];
+            }];
+            
+            //  add cancel action always
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                             style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction * action) {
+                
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                
+            }]];
+            
+            [currentAlert popoverPresentationController].sourceView = _moreButton;
+            [currentAlert popoverPresentationController].sourceRect = _moreButton.bounds;
+            [self presentViewController:currentAlert animated:YES completion:nil];
+        }
     }
     else if (sender == speakerButton)
     {
@@ -540,6 +750,69 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [self updateProximityAndSleep];
 }
 
+- (void)showAudioDeviceOptions
+{
+    //  create the alert
+    currentAlert = [UIAlertController alertControllerWithTitle:nil
+                                                       message:nil
+                                                preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    MXWeakify(self);
+    
+    //  headset action
+    UIAlertAction *headsetAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_headset"]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        self->mxCall.audioToSpeaker = NO;
+        
+    }];
+    
+    //  device action
+    UIAlertAction *deviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_device"]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        self->mxCall.audioToSpeaker = YES;
+        
+    }];
+    
+    [currentAlert addAction:headsetAction];
+    [currentAlert addAction:deviceAction];
+    
+    //  add cancel action
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        
+    }]];
+    
+    [currentAlert popoverPresentationController].sourceView = _moreButton;
+    [currentAlert popoverPresentationController].sourceRect = _moreButton.bounds;
+    [self presentViewController:currentAlert animated:YES completion:nil];
+}
+    
+#pragma mark - DTMF
+
+- (void)openDialpad
+{
+    //  no-op
+}
+
+#pragma mark - Call Transfer
+
+- (void)openCallTransfer
+{
+    //  no-op
+}
+
 #pragma mark - MXCallDelegate
 
 - (void)call:(MXCall *)call stateDidChange:(MXCallState)state reason:(MXEvent *)event
@@ -548,6 +821,9 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     endCallButton.hidden = NO;
     rejectCallButton.hidden = YES;
     answerCallButton.hidden = YES;
+    _moreButton.enabled = YES;
+    _resumeButton.hidden = state != MXCallStateOnHold;
+    _pausedIcon.hidden = state != MXCallStateOnHold && state != MXCallStateRemotelyOnHold;
     
     [localPreviewActivityView stopAnimating];
     
@@ -632,13 +908,31 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 // Well, hide does not work. So, shrink the view to nil
                 self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
             }
+            audioMuteButton.enabled = YES;
+            videoMuteButton.enabled = YES;
+            speakerButton.enabled = YES;
+            cameraSwitchButton.enabled = YES;
 
+            break;
+        case MXCallStateOnHold:
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_holded"];
+            
+            break;
+        case MXCallStateRemotelyOnHold:
+            audioMuteButton.enabled = NO;
+            videoMuteButton.enabled = NO;
+            speakerButton.enabled = NO;
+            cameraSwitchButton.enabled = NO;
+            _moreButton.enabled = NO;
+            callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], callerNameLabel.text];
+            
             break;
         case MXCallStateInviteExpired:
             // MXCallStateInviteExpired state is sent as an notification
             // MXCall will move quickly to the MXCallStateEnded state
             self.isRinging = NO;
             callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_invite_expired"];
+            
             break;
         case MXCallStateEnded:
         {
@@ -671,7 +965,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     [self updateProximityAndSleep];
 }
 
-- (void)call:(MXCall *)call didEncounterError:(NSError *)error
+- (void)call:(MXCall *)call didEncounterError:(NSError *)error reason:(MXCallHangupReason)reason
 {
     NSLog(@"[MXKCallViewController] didEncounterError. mxCall.state: %tu. Stop call due to error: %@", mxCall.state, error);
 
@@ -685,28 +979,23 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         }
         NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
 
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
         errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
         
         [errorAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
                                                        style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction * action) {
-                                                         
-                                                         typeof(self) self = weakSelf;
-                                                         if (self)
-                                                         {
-                                                             self->errorAlert = nil;
-                                                             
-                                                             [self dismiss];
-                                                         }
-                                                         
-                                                     }]];
-        
+            
+            MXStrongifyAndReturnIfNil(self);
+            self->errorAlert = nil;
+            [self dismiss];
+            
+        }]];
         
         [self presentViewController:errorAlert animated:YES completion:nil];
         
         // And interrupt the call
-        [mxCall hangup];
+        [mxCall hangupWithReason:reason];
     }
 }
 
@@ -792,10 +1081,13 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (BOOL)isBuiltInReceiverAudioOuput
 {
+#if TARGET_IPHONE_SIMULATOR
+    return YES;
+#endif
     BOOL isBuiltInReceiverUsed = NO;
     
     // Check whether the audio output is the built-in receiver
-    AVAudioSessionRouteDescription *audioRoute= [[AVAudioSession sharedInstance] currentRoute];
+    AVAudioSessionRouteDescription *audioRoute = [[AVAudioSession sharedInstance] currentRoute];
     if (audioRoute.outputs.count)
     {
         // TODO: handle the case where multiple outputs are returned
@@ -939,22 +1231,25 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 - (void)updateProximityAndSleep
 {
-    BOOL isBuiltInReceiverUsed = self.isBuiltInReceiverAudioOuput;
-    
     BOOL inCall = (mxCall.state == MXCallStateConnected || mxCall.state == MXCallStateRinging || mxCall.state == MXCallStateInviteSent || mxCall.state == MXCallStateConnecting || mxCall.state == MXCallStateCreateOffer || mxCall.state == MXCallStateCreateAnswer);
     
-    // Enable the proximity monitoring when the built in receiver is used as the audio output.
-    BOOL enableProxMonitoring = inCall && isBuiltInReceiverUsed;
-    [[UIDevice currentDevice] setProximityMonitoringEnabled:enableProxMonitoring];
-    
-    // Disable the idle timer during a video call, or during a voice call which is performed with the built-in receiver.
-    // Note: if the device is locked, VoIP calling get dropped if an incoming GSM call is received.
-    BOOL disableIdleTimer = inCall && (mxCall.isVideoCall || isBuiltInReceiverUsed);
-    
-    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-    if (sharedApplication)
+    if (inCall)
     {
-        sharedApplication.idleTimerDisabled = disableIdleTimer;
+        BOOL isBuiltInReceiverUsed = self.isBuiltInReceiverAudioOuput;
+        
+        // Enable the proximity monitoring when the built in receiver is used as the audio output.
+        BOOL enableProxMonitoring = isBuiltInReceiverUsed;
+        [[UIDevice currentDevice] setProximityMonitoringEnabled:enableProxMonitoring];
+        
+        // Disable the idle timer during a video call, or during a voice call which is performed with the built-in receiver.
+        // Note: if the device is locked, VoIP calling get dropped if an incoming GSM call is received.
+        BOOL disableIdleTimer = mxCall.isVideoCall || isBuiltInReceiverUsed;
+        
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication)
+        {
+            sharedApplication.idleTimerDisabled = disableIdleTimer;
+        }
     }
 }
 
@@ -972,6 +1267,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     if ((!self.localPreviewContainerView.hidden) && CGRectContainsPoint(self.localPreviewContainerView.frame, point))
     {
         // Starting to move the local preview view
+        if (mxCallOnHold)
+        {
+            //  if there is a call on hold, do not move local preview for now
+            //  TODO: Instead of wholly avoiding mobility of local preview, just avoid the on hold call's corner here
+            return;
+        }
         isSelectingLocalPreview = YES;
     }
 }
