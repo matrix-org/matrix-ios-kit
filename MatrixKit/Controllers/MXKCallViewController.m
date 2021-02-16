@@ -978,6 +978,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             title = [NSBundle mxk_localizedStringForKey:@"error"];
         }
         NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+        if (!msg)
+        {
+            msg = [NSBundle mxk_localizedStringForKey:@"error_common_message"];
+        }
 
         MXWeakify(self);
         errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
