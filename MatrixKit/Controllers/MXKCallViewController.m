@@ -552,6 +552,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     return _onHoldCallContainerTapRecognizer;
 }
 
+- (BOOL)isDisplayingAlert
+{
+    return errorAlert != nil;
+}
+
 #pragma mark - Sounds
 
 - (NSURL *)audioURLWithName:(NSString *)soundName

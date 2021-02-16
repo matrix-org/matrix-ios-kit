@@ -114,6 +114,11 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (nonatomic, readonly) UIWindow *backToAppStatusWindow;
 
 /**
+ Flag whether this call screen is displaying an alert right now.
+ */
+@property (nonatomic, readonly, getter=isDisplayingAlert) BOOL displayingAlert;
+
+/**
  The current call
  */
 @property (nonatomic) MXCall *mxCall;
