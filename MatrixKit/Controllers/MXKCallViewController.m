@@ -68,7 +68,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 @implementation MXKCallViewController
 @synthesize backgroundImageView;
-@synthesize localPreviewContainerView, localPreviewActivityView, remotePreviewContainerView;
+@synthesize localPreviewContainerView, localPreviewVideoView, localPreviewActivityView, remotePreviewContainerView;
 @synthesize overlayContainerView, callContainerView, callerImageView, callerNameLabel, callStatusLabel;
 @synthesize callToolBar, rejectCallButton, answerCallButton, endCallButton;
 @synthesize callControlContainerView, speakerButton, audioMuteButton, videoMuteButton;
@@ -339,9 +339,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Hide camera switch on voice call
         self.cameraSwitchButton.hidden = !call.isVideoCall;
         
-        // Hide pip on voice call
-        self.pipButton.hidden = !call.isVideoCall;
-        
         // Observe call state change
         call.delegate = self;
 
@@ -365,7 +362,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                        self->localPreviewContainerView.hidden = NO;
                        self->remotePreviewContainerView.hidden = NO;
 
-                       call.selfVideoView = self->localPreviewContainerView;
+                       call.selfVideoView = self->localPreviewVideoView;
                        call.remoteVideoView = self->remotePreviewContainerView;
                        [self applyDeviceOrientation:YES];
 
@@ -592,13 +589,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                    [self->mxCall answer];
                }
            }];
-    }
-    else if (sender == _pipButton)
-    {
-        if ([self.delegate respondsToSelector:@selector(callViewControllerDidTapPiPButton:)])
-        {
-            [self.delegate callViewControllerDidTapPiPButton:self];
-        }
     }
     else if (sender == rejectCallButton || sender == endCallButton)
     {
@@ -911,7 +901,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 self.localPreviewContainerView.hidden = YES;
 
                 // Well, hide does not work. So, shrink the view to nil
-                self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
+                self.localPreviewContainerView.frame = CGRectZero;
             }
             audioMuteButton.enabled = YES;
             videoMuteButton.enabled = YES;

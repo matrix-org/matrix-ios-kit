@@ -46,12 +46,6 @@
  */
 - (void)callViewControllerDidTapOnHoldCall:(MXKCallViewController *)callViewController;
 
-/**
- Tells the delegate that user tapped PiP button.
- @param callViewController the call view controller.
- */
-- (void)callViewControllerDidTapPiPButton:(MXKCallViewController *)callViewController;
-
 @end
 
 extern NSString *const kMXKCallViewControllerWillAppearNotification;
@@ -68,6 +62,7 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet MXKImageView *backgroundImageView;
 
 @property (weak, nonatomic, readonly) IBOutlet UIView *localPreviewContainerView;
+@property (weak, nonatomic, readonly) IBOutlet UIView *localPreviewVideoView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *localPreviewActivityView;
 
 @property (weak, nonatomic, readonly) IBOutlet UIView *onHoldCallContainerView;
@@ -89,7 +84,6 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet UIButton *endCallButton;
 
 @property (weak, nonatomic) IBOutlet UIView *callControlContainerView;
-@property (weak, nonatomic) IBOutlet UIButton *pipButton;
 @property (weak, nonatomic) IBOutlet UIButton *speakerButton;
 @property (weak, nonatomic) IBOutlet UIButton *audioMuteButton;
 @property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
