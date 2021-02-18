@@ -25,7 +25,7 @@
 "sign_up" = "الاِشتِراك";
 "retry" = "إعادَة المُحاوَلة";
 "dismiss" = "إبعَاد";
-"discard" = "تَجَاهُل";
+"discard" = "اِستِبعاد";
 "continue" = "الاِستِمرار";
 "close" = "إغلاق";
 "back" = "الرُّجُوع";
@@ -75,3 +75,39 @@
 /* *********************** */
 
 "matrix" = "Matrix";
+"notice_encrypted_message" = "رِسَالَة مُعمّاة";
+"notice_room_related_groups" = "المَجمُوعات المُرتَبِطَة بِهَذِهِ الغُرفَة هِيَ: %@";
+"notice_room_aliases_for_dm" = "الاسماء البَديلَة هِيَ: %@";
+"notice_room_aliases" = "الاسماء البَديلَة لِلغُرفَة هِيَ: %@";
+"notice_room_power_level_event_requirement" = "مُستَوى القُوَّة الأدنَى المُتَعلِّق بِالأحداث هُوَ:";
+"notice_room_power_level_acting_requirement" = "مُستَوى القُوَّة الأدنَى الذي يَجِبُ عَلَى المُستَخدِم اِمتِلاكه قَبلَ التَّفاعُل هُوَ:";
+"notice_room_power_level_intro_for_dm" = "مُستَوى القُوَّة لِلأعضاء هُوَ:";
+"notice_room_power_level_intro" = "مُستَوى القُوَّة لِأعضاء الغُرفَة هُوَ:";
+"notice_room_join_rule_public_by_you_for_dm" = "أنتَ قد جَعلتَ هَذِه عَامَّة.";
+"notice_room_join_rule_public_by_you" = "أنتَ قد جَعلتَ الغُرفَة عَامَّة.";
+"notice_room_join_rule_public_for_dm" = "إنَّ %@ قد جَعَلَ هَذِه عَامَّة.";
+"notice_room_join_rule_public" = "إنَّ %@ قد جَعَلَ الغُرفَة عَامَّة.";
+"notice_room_join_rule_invite_by_you_for_dm" = "أنتَ قد جَعلتَ هَذِه بالدَّعوَة فَقَط.";
+"notice_room_join_rule_invite_by_you" = "أنتَ قد جَعلتَ الغُرفَة بالدَّعوَة فَقَط.";
+"notice_room_join_rule_invite_for_dm" = "إنَّ %@ قد جَعَلَ هَذِه بِالدَّعوَة فَقَط.";
+//  New
+"notice_room_join_rule_invite" = "إنَّ %@ قد جَعَلَ الغُرفَة بِالدَّعوَة فَقَط.";
+//  Old
+"notice_room_join_rule" = "قاعِدَة الاِنضِمام هِي: %@";
+"notice_room_created_for_dm" = "إنَّ %@ قد اِنضَمّ.";
+"notice_room_created" = "إنَّ %@ قد أنشأ الغُرفَة وَهَيَّأَها.";
+"notice_profile_change_redacted" = "إنَّ %@ قد حدَّثَ مَلفّه الشَّخصي %@";
+"notice_event_redacted_reason" = " [السَّبَب: %@]";
+"notice_event_redacted_by" = " بِواسِطَة %@";
+"notice_event_redacted" = "<مُنَقَّح%@>";
+"notice_room_topic_removed" = "إنَّ %@ قد أزالَ المَوضُوع";
+"notice_room_name_removed_for_dm" = "إنَّ %@ قد أزالَ الاِسم";
+"notice_room_name_removed" = "إنَّ %@ قد أزالَ اِسم الغُرفَة";
+
+// Events formatter
+"notice_avatar_changed_too" = "(غُيِّرَت الصُّورَة الرَّمزية أيضًا)";
+"unignore" = "إلغَاء التَجاهُل";
+"ignore" = "تَجاهُل";
+"end_call" = "إنهَاء المُكالَمَة";
+"reject_call" = "رَفض المُكالَمَة";
+"answer_call" = "الإجابَة عَلى المُكالَمَة";
