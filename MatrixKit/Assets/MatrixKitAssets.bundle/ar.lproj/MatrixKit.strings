@@ -1,1 +1,77 @@
 
+
+"show_details" = "إظهَار التَّفاصيل";
+"cancel_download" = "إلغَاء التَّنزيل";
+"cancel_upload" = "إلغَاء الرَّفع";
+"select_all" = "تَحديد الكُل";
+"resend_message" = "إعادَة إرسَال الرِسَالَة";
+"reset_to_default" = "إعادة ضَبط إِلَى الاِفتراضي";
+"invite_user" = "دَعوَة مُستَخدِم matrix";
+"capture_media" = "اِلتِقَاط صُّورة/مَقطَعَ مَرئيّ";
+"attach_media" = "إرفاق وسائط مِن المَكتَبة";
+"select_account" = "حَدِّد حِسَابًا";
+"mention" = "الذِّكْر";
+"start_video_call" = "بَدأ مُكالَمَة مَرئيَّة";
+"start_voice_call" = "بَدأ مُكالَمَة صَوتيَّة";
+"start_chat" = "بَدأ مُحادَثَة";
+"login_error_resource_limit_exceeded_contact_button" = "التَّواصُل مع المُدير";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nيُرجى التَّواصُل مَعَ مُدير خِدمتك لِمُواصَلة استِخدام هَذِه الخِدمَة.";
+"set_admin" = "تَعيِّين مُدير";
+"set_moderator" = "تَعيِّين مُشرِف";
+"set_default_power_level" = "إعادَة ضَبط مُستَوى القُوَّة";
+"set_power_level" = "ضَبط مُستَوى القُوَّة";
+"submit_code" = "تَسلِيم الرَّمز";
+"submit" = "التَّسلِيم";
+"sign_up" = "الاِشتِراك";
+"retry" = "إعادَة المُحاوَلة";
+"dismiss" = "إبعَاد";
+"discard" = "تَجَاهُل";
+"continue" = "الاِستِمرار";
+"close" = "إغلاق";
+"back" = "الرُّجُوع";
+"abort" = "إِجهَاض";
+"yes" = "نَعَم";
+
+// Action
+"no" = "لَا";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "هَذَا الخادِم الرَّئيس قد وَصَلَ إلى حَدّه الشهري للمُستخدِم النَشِط.";
+"login_error_resource_limit_exceeded_message_default" = "هَذَا الخادِم الرَّئيس قد تَجاوزَ أحَد حُدُود مَوارده.";
+"login_error_resource_limit_exceeded_title" = "تمَّ تَجاوز حَدّ المَورد";
+"login_email_placeholder" = "عُنوان بريد إلكتروني";
+"login_email_info" = "إنَّ تعيِّين عُنوان بريد إلكتروني يُتيحُ للمُستخدِمين الآخرين العُثور عليك في Matrix بشكل أكثر سُهُولة، ويمنحُكَ طريقة لإعادة تعيِّين كَلِمة المُرُور الخاصَّة بك في المُستقبل.";
+"login_desktop_device" = "سَطح مَكتَب";
+"login_tablet_device" = "لَوحي";
+"login_mobile_device" = "هَاتِف";
+"login_error_forgot_password_is_not_supported" = "نِسيان كَلِمَة المُرُور غَير مَدعُوم حاليًا";
+"register_error_title" = "فَشَلَ التَّسجِيل";
+"login_invalid_param" = "مُعامِل غَير صَالِح";
+"login_leave_fallback" = "إلغَاء";
+"login_use_fallback" = "اِستخدام صَفحَة اِحتياطيَّة بَديلَة";
+"login_error_user_in_use" = "إنَّ اِسم مُستَخدِم هَذَا مُستخدَم بِالفِعل";
+"login_error_limit_exceeded" = "لَقَد أُرسِلَت العَديد مِنَ الطّلبات";
+"login_error_not_json" = "لم يَحتَوي على JSON صالِح";
+"login_error_bad_json" = "إنَّ JSON مُشَوَّه";
+"login_error_unknown_token" = "لم يتِمّ التَّعرُّف عَلَى رَمز الوُصُول المَذكُور";
+"login_error_forbidden" = "اِسم مُستَخدِم/كَلِمَةُ المُرُور غير صالحة";
+"login_error_registration_is_not_supported" = "إنَّ التَّسجِيل غَير مَدعوم حاليًا";
+"login_error_do_not_support_login_flows" = "حاليًا، نَحنُ لا ندعَم أيًا مِن تدفقات تَسجيل الدُّخُول المُعَرَّفة بِواسطة هَذَا الخادِم الرَّئيس";
+"login_error_no_login_flow" = "لقد فَشلنَا في اِسترداد بَيَانات المُصادَقة مِن هَذَا الخادِم الرَّئيس";
+"login_error_title" = "فشلَ تَسجيلُ الدُّخُول";
+"login_prompt_email_token" = "يُرجى إدخال رَمز التَحقُّق مِنَ البريد الإلكتروني الخاص بك:";
+"login_user_id_placeholder" = "مُعَرِّف Matrix (مِثل bob:matrix.org@ أو bob)";
+"login_display_name_placeholder" = "الاِسم الظّاهِر (مِثل. محمد عبدالله)";
+"login_optional_field" = "اِختياري";
+"login_password_placeholder" = "كَلِمَةُ المُرُور";
+"login_identity_server_info" = "تُوفِّر Matrix خَوادِم هُويَّة لتتبُع عناوين البريد الإلكتروني وما إلى ذلك مِنَ التي تنتمي إلى مُعَرِّفات Matrix. فقط https://matrix.org مُتَوَفِّر حاليًا.";
+"login_identity_server_title" = "عُنوان URL لِخادِم الهُويَّة:";
+"login_home_server_info" = "الخادِم الرَّئيس الخاص بِك يُخَزِّن جميع مُحادثاتك ومَعلومات حِسابك";
+"login_home_server_title" = "عُنوان URL لِلخادِم الرَّئيس:";
+"login_server_url_placeholder" = "عُنوان URL (مِثل https://matrix.org)";
+
+// Login Screen
+"login_create_account" = "إنشاء حِساب:";
+/* *********************** */
+/*      iOS specific       */
+/* *********************** */
+
+"matrix" = "Matrix";
