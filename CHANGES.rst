@@ -5,8 +5,8 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
-
+ * MXKRoomDataSource: Notify subclasses on room change.
+ 
 🐛 Bugfix
  * 
 
