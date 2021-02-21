@@ -329,6 +329,11 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (void)reload;
 
+/**
+ Called when room property changed. Designed to be used by subclasses.
+ */
+- (void)roomDidChange;
+
 #pragma mark - Public methods
 /**
  Get the data for the cell at the given index.
