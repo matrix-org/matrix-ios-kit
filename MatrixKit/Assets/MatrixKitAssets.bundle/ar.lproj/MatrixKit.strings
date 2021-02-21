@@ -111,3 +111,143 @@
 "end_call" = "إنهَاء المُكالَمَة";
 "reject_call" = "رَفض المُكالَمَة";
 "answer_call" = "الإجابَة عَلى المُكالَمَة";
+"attachment_multiselection_original" = "الحَجمُ الفِعلي";
+"attachment_multiselection_size_prompt" = "هَل تُريدُ إِرسَالَ الصُّوَر كَـ :";
+"attachment_cancel_upload" = "إلغَاء الرَّفع؟";
+"attachment_cancel_download" = "إلغَاء التَّنزيل؟";
+"attachment_large" = "كَبير: %@";
+"attachment_medium" = "مُتَوَسِّط: %@";
+"attachment_small" = "صَغير: %@";
+"attachment_original" = "الحَجمُ الفِعلي: %@";
+
+// Attachment
+"attachment_size_prompt" = "هَل تُريدُ الإِرسَالَ كَـ :";
+"room_member_power_level_prompt" = "لَن تَكُونَ قَادِرًا عَلَى التَّراجُع عَن هَذا التَّغيِير فَأنتَ تُرَقِّي المُستَخدِم لِيَكُونَ لَهُ نَفس مُستَوى القُوَّة الَّذِي لدَيك.\nهَل أَنتَ مُتَأكِّد؟";
+
+// Room members
+"room_member_ignore_prompt" = "هَل أنتَ مُتَأكِّدٌ مِن رَغبَتِكَ فِي إخفَاء جَميع الرَّسَائِل عَن هَذَا المُستَخدِم؟";
+"message_reply_to_message_to_reply_to_prefix" = "رَدًّا عَلَى";
+"message_reply_to_sender_sent_a_file" = "أرسَلَ مَلَفّ.";
+"message_reply_to_sender_sent_a_video" = "أرسَلَ مَقطَعًا مَرئيًا.";
+"message_reply_to_sender_sent_an_audio_file" = "أرسَلَ مَلَفًّا صَوتيًا.";
+
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "أرسَلَ صُورَةَ.";
+"room_no_conference_call_in_encrypted_rooms" = "إنَّ مُكالَمَاتُ الاِجتِمَاع غَير مَدعُومَة فِي الغُرَف المُعمّاة";
+"room_no_power_to_create_conference_call" = "أنتَ بِحاجَة إلَى إذن للدَّعوَة حَتَّى تَبدَأ اِجتِمَاع فِي هَذِهِ الغُرفَة";
+"room_left_for_dm" = "أنتَ قَد غادَرت";
+"room_left" = "أنتَ قَد غادَرتَ الغُرفَة";
+"room_error_timeline_event_not_found" = "التَّطبيق كَانَ يُحاوِلُ تَحميل نُقطَة مُعَيَّنَة مِنَ الخَطِّ الزَّمَني لِهَذِهِ الغُرفَة لَكِن تَعَذَّرَ عَليه العُثُور عَلَيهَا";
+"room_error_cannot_load_timeline" = "فَشَلَ تَحمِيل الخَطّ الزَّمَنِي";
+"room_error_timeline_event_not_found_title" = "فَشَلَ تَحمِيل مَوضِع الخَطّ الزَّمَنِي";
+"room_error_topic_edition_not_authorized" = "أنتَ غَير مُخَوَّل لِتَحرِير مَوضُوع هَذِهِ الغُرفَة";
+"room_error_name_edition_not_authorized" = "أنتَ غَير مُخَوَّل لِتَحرِير اِسم هَذِهِ الغُرفَة";
+"room_error_join_failed_empty_room" = "حاليًّا مِن غَير المُمكِن إعادَة الاِنضِمام إلى غُرفَة فارِغَة.";
+"room_error_join_failed_title" = "فَشَلَ الاِنضِمام إلى الغُرفَة";
+
+// Room
+"room_please_select" = "يُرجَى تَحديد غُرفَة";
+"room_creation_participants_placeholder" = "(مِثل. ‭(@bob:homeserver1; @john:homeserver2...";
+"room_creation_participants_title" = "المُشَارِكُون:";
+"room_creation_alias_placeholder_with_homeserver" = "(مِثل. %@foo#)";
+"room_creation_alias_placeholder" = "(مِثل. foo:example.org#)";
+"room_creation_alias_title" = "اسم الغُرفَة البَديل:";
+"room_creation_name_placeholder" = "(مِثل. مجموعة الغداء)";
+
+// Room creation
+"room_creation_name_title" = "اِسم الغُرفَة:";
+"account_error_push_not_allowed" = "الإِشعَارات غَيرُ مَسمُوحَة";
+"account_error_msisdn_wrong_description" = "يَبدو أنَّ هَذَا لَيسَ رَقم هَاتِف صَالِح";
+"account_error_msisdn_wrong_title" = "رَقم هَاتِف غَير صَالِح";
+"account_error_email_wrong_description" = "يَبدو أنَّ هَذَا لَيسَ عُنوان بَريد إلِكتُرونيّ صَالِح";
+"account_error_email_wrong_title" = "عُنوان بَريد إلِكتُرونيّ غَير صَالِح";
+"account_error_matrix_session_is_not_opened" = "جَلسَةُ Matrix غَير مَفتُوحَة";
+"account_error_display_name_change_failed" = "فَشَلَ تَغيِيرُ الاِسم الظّاهِر";
+"account_error_picture_change_failed" = "فَشَلَ تَغيِيرُ الصُّورَة";
+"account_msisdn_validation_error" = "يَتَعَذَّر التَّحَقُّق مِن رَقم الهَاتِف.";
+"account_msisdn_validation_message" = "لَقَد أرسَلنا رِسَالَة SMS تَحوِي رَمزًا لِلتَفعِيل. يُرجَى إدخَال هَذَا الرَّمز أَدناه.";
+"account_msisdn_validation_title" = "قَيد التَّحَقُّق";
+"account_email_validation_title" = "قَيد التَّحَقُّق";
+"account_email_validation_error" = "يَتَعَذَّر التَّحَقُّق مِن عُنوان البَريد إلِكتُرونيّ. يُرجَى الاِطِّلاع عَلَى البَريد إلِكتُرونيّ الخاصّ بِك ثُمَّ النَّقر عَلَى الرَّابِط الّذي يَحوِيه. بِمُجَرَّد الاِنتِهاء مِن ذَلِك، اُنقُر عَلَى الاِستِمرار";
+"account_email_validation_message" = "يُرجَى الاِطِّلاع عَلَى البَريد إلِكتُرونيّ الخاصّ بِك ثُمَّ النَّقر عَلَى الرَّابِط الّذي يَحوِيه. بِمُجَرَّد الاِنتِهاء مِن ذَلِك، اُنقُر عَلَى الاِستِمرار.";
+"account_linked_emails" = "عَناوين البَريد الإلِكتُرونيّ المُرتَبِطَة";
+"account_link_email" = "رَبط بَريد إلِكتُرونيّ";
+
+// Account
+"account_save_changes" = "حِفظُ التَّغَيُّرات";
+"room_event_encryption_verify_ok" = "تَأكِيدُ التَّحَقُّق";
+"room_event_encryption_verify_message" = "لِلتَحَقُّق مِن إِمكانيَّة الوُثُوق بِهَذِه الجَلسَة، يُرجَى التَّوَاصُل مَعَ المَالِك بِاِستِخدام بَعض الوَسَائِل الأُخرَى (عَلَى سَبِيلِ المِثَال شَخصيًّا أَو عَن طَرِيق مُكَالَمَة هَاتِفيَّة) وَاِسأَلهُ عَمَّا إِذَا كَانَ المِفتَاح الَّذِي يَرَاه فِي إعدادَات المُستَخدِم لِهَذِهِ الجَلسَة يَتَطَابَقُ مَعَ المِفتَاح أَدناه:\n\nاِسم الجَلسَة: %@\nمُعَرِّف الجَلسَة: %@\nمِفتَاح الجَلسَة: %@\n\nإِذَا تَطَابق، اِضغَط عَلَى زِرِّ التَّحَقُّق أَدناه. إِذَا لَم يَحدُث ذَلِك، فَهَذَا يَعنِي أَنَّ شَخصًا آخَر يَعتَرَضُ هَذِهِ الجَلسَة وَرُبَّما تُوَدُّ الضَّغطَ عَلَى زِرُّ الإضافَةِ لِلقَائِمَة السَّوداء بَدَلَا مِن ذَلِك.\n\n سَوفَ تَكُونُ عَمَلِيَّةُ التَّحَقُّقِ هَذِهِ أَكثَرُ تَطَوُّرًا في المُستَقبَل.";
+"room_event_encryption_verify_title" = "التَّحَقُّق مِن الجَلسَة\n\n";
+"room_event_encryption_info_unblock" = "إزالَة مِن القائِمَة السَّوداء";
+"room_event_encryption_info_block" = "إضافَة لِلقائِمَة السَّوداء";
+"room_event_encryption_info_unverify" = "إلغَاء التَّحَقُّق";
+"room_event_encryption_info_verify" = "يَجري التَّحَقُّق...";
+"room_event_encryption_info_device_blocked" = "ضِمن القائِمَة السَّوداء";
+"room_event_encryption_info_device_not_verified" = "غَير مُتَحَقَّق مِنه";
+"room_event_encryption_info_device_verified" = "مُتَحَقَّق مِنه";
+"room_event_encryption_info_device_fingerprint" = "بَصمَة Ed25519\n";
+"room_event_encryption_info_device_verification" = "التَّحَقُّق\n";
+"room_event_encryption_info_device_id" = "المُعَرِّف\n";
+"room_event_encryption_info_device_name" = "الاِسم العَامّ\n";
+"room_event_encryption_info_device_unknown" = "جَلسَة غَير مَعرُوفة\n";
+"room_event_encryption_info_device" = "\nمَعلُومَات جَلسَة المُرسِل\n";
+"room_event_encryption_info_event_none" = "لَا شَيء";
+"room_event_encryption_info_event_unencrypted" = "غَير مُعمّى";
+"room_event_encryption_info_event_decryption_error" = "خَطَأ فِي فَكّ التَّعميَة\n";
+"room_event_encryption_info_event_session_id" = "مُعَرِّف الجَلسَة\n";
+"room_event_encryption_info_event_algorithm" = "خَوارِزميَّة\n";
+"room_event_encryption_info_event_fingerprint_key" = "مُطَالَبَة مِفتَاح بَصمَة Ed25519\n";
+"room_event_encryption_info_event_identity_key" = "مِفتَاح هُويَّة Curve25519\n";
+"room_event_encryption_info_event_user_id" = "مُعَرِّف المُستَخدِم\n";
+"room_event_encryption_info_event" = "مَعلُومَات الحَدَث\n";
+
+// Encryption information
+"room_event_encryption_info_title" = "مَعلُومَات تَعمِيَة النِّهايَة-إلى-النِّهايَة\n\n";
+"device_details_delete_prompt_message" = "هَذِه العَمَلِيَّة تَتَطَلَّب مُصادَقة إضافيَة.\nللاِستِمرار، يُرجَى إدخَال كَلِمَة المُرُور الخاصَّة بِك.";
+"device_details_delete_prompt_title" = "المُصادَقة";
+"device_details_rename_prompt_message" = "إنَّ اِسم الجَلسَة العَام مَرئيّ لِلأشخَاص الَّذِينَ تَتَواصَل مَعَهُم";
+"device_details_rename_prompt_title" = "اِسمُ الجَلسَة";
+"device_details_last_seen_format" = "%@ @ %@\n";
+"device_details_last_seen" = "آخِرُ ظُهور\n";
+"device_details_identifier" = "المُعَرِّف\n";
+"device_details_name" = "الاِسم العَامّ\n";
+
+// Devices
+"device_details_title" = "مَعلُومَات الجَلسَة\n";
+"notification_settings_room_rule_title" = "الغُرفَة: '%@'";
+"settings_enter_validation_token_for" = "أدخِل رَمز المُصادَقَة لِـ %@:";
+"settings_enable_push_notifications" = "تَفعِيل دَفع الإِشعَارات";
+"settings_enable_inapp_notifications" = "تَفعِيل الإِشعَارات دَاخِل التَّطبِيق";
+
+// Settings
+"settings" = "الإعدادَات";
+"room_displayname_more_than_two_members" = "العُضو %@ وَعَدَد %@ آخَرُون";
+"room_displayname_two_members" = "العُضو %@ وَ %@";
+
+// room display name
+"room_displayname_empty_room" = "غُرفَة فَارِغَة";
+"notice_in_reply_to" = "رَدًّا عَلَى";
+"notice_sticker" = "مُلصَق";
+"notice_crypto_error_unknown_inbound_session_id" = "إنَّ جَلسَة المُرسِل لَم تَرسل إلَينا المَفاتيح لِهَذِه الرِسَالَة.";
+"notice_crypto_unable_to_decrypt" = "** يَتَعَذَّر فَكّ التَّعميَة: %@ **";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "إنَّ %@ قد جَعَلَ الرَّسائِل المُستَقبَليَّة مَرئيَّة لِلجَميع، مُنذُ أن اِنضَمُّوا.";
+"notice_room_history_visible_to_members_from_joined_point" = "إنَّ %@ قد جَعَلَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِجَميع أعضاء الغُرفَة، مِن النُّقطَة الَّتي اِنضَمُّوا فِيهَا.";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "إنَّ %@ قد جَعَلَ الرَّسائِل المُستَقبَليَّة مَرئيَّة لِلجَميع، مُنذُ أن تَمَّت دَعوَتُهُم.";
+"notice_room_history_visible_to_members_from_invited_point" = "إنَّ %@ قد جَعَلَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِجَميع أعضاء الغُرفَة، مِن النُّقطَة الَّتي تَمَّت دَعوَتُهُم فِيهَا.";
+"notice_room_history_visible_to_members_for_dm" = "إنَّ %@ قد جَعَلَ الرَّسائِل المُستَقبَليَّة مَرئيَّة لِجَميع أعضاء الغُرفَة.";
+"notice_room_history_visible_to_members" = "إنَّ %@ قد جَعَلَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِجَميع أعضاء الغُرفَة.";
+"notice_room_history_visible_to_anyone" = "إنَّ %@ قد جَعَلَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِأَيّ شَخص.";
+"notice_error_unknown_event_type" = "حَدث غَير مَعرُوف النَّوع";
+"notice_error_unexpected_event" = "حَدَث غَير مُتَوَقَّع";
+"notice_error_unsupported_event" = "حَدَث غَير مَدعُوم";
+"notice_redaction" = "إنَّ %@ قد نَقَّحَ حَدَث (المُعَرِّف: %@)";
+"notice_feedback" = "حَدَث اِنطِباع (المُعَرِّف: %@): %@";
+"notice_unsupported_attachment" = "مُرفَق غَير مَدعُوم: %@";
+"notice_invalid_attachment" = "مُرفَق غَير صَالِح";
+"notice_file_attachment" = "مُرفَق مَلَفّ";
+"notice_location_attachment" = "مُرفَق مَوقِع";
+"notice_video_attachment" = "مُرفَق مَقطَع مَرئي";
+"notice_audio_attachment" = "مُرفَق صَوت";
+"notice_image_attachment" = "مُرفَق صُّورَة";
+"notice_encryption_enabled_unknown_algorithm" = "إنَّ %1$@ قد شَغَّلَ تَعميّة النِّهايَة-إلى-النِّهايَة (خَوارِزميَّة غَير مُتَعَرَّف عَليها %2$@).";
+"notice_encryption_enabled_ok" = "إنَّ %@ قد شَغَّلَ تَعميّة النِّهايَة-إلى-النِّهايَة.";
