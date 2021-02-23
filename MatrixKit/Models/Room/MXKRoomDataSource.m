@@ -1066,11 +1066,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         _room = room;
         
-        [self roomDidChange];
+        [self roomDidSet];
     }
 }
 
-- (void)roomDidChange
+- (void)roomDidSet
 {
     
 }

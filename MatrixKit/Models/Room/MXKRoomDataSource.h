@@ -332,7 +332,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 /**
  Called when room property changed. Designed to be used by subclasses.
  */
-- (void)roomDidChange;
+- (void)roomDidSet;
 
 #pragma mark - Public methods
 /**
