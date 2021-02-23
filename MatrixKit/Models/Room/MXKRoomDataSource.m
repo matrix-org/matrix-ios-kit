@@ -171,6 +171,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
  */
 @property (nonatomic, assign) BOOL shouldStopBackPagination;
 
+@property (nonatomic, readwrite) MXRoom *room;
+
 @end
 
 @implementation MXKRoomDataSource
@@ -482,7 +484,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             [eventIdToBubbleMap removeAllObjects];
         }
         
-        _room = nil;
+        self.room = nil;
     }
     
     _serverSyncEventCount = 0;
@@ -567,11 +569,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             // Are we peeking into a random room or displaying a room the user is part of?
             if (peekingRoom)
             {
-                _room = peekingRoom;
+                self.room = peekingRoom;
             }
             else
             {
-                _room = [self.mxSession roomWithRoomId:_roomId];
+                self.room = [self.mxSession roomWithRoomId:_roomId];
             }
 
             if (_room)
@@ -1056,6 +1058,21 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [self registerReactionsChangeListener];
         [self registerEventEditsListener];
     }
+}
+
+- (void)setRoom:(MXRoom *)room
+{
+    if (![_room isEqual:room])
+    {
+        _room = room;
+        
+        [self roomDidSet];
+    }
+}
+
+- (void)roomDidSet
+{
+    
 }
 
 #pragma mark - KVO
