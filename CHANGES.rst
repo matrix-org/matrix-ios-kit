@@ -1,3 +1,30 @@
+Changes in 0.14.2 (2021-02-24)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKRoomDataSource: Notify subclasses on room change.
+ 
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.2)).
+
 Changes in 0.14.1 (2021-02-12)
 =================================================
 
