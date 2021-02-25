@@ -95,7 +95,7 @@
 "notice_profile_change_redacted" = "%@ heeft zijn/haar profiel bijgewerkt %@";
 "notice_room_created" = "%@ heeft de kamer aangemaakt en ingesteld.";
 "notice_room_join_rule" = "De toetredingsregel is: %@";
-"notice_room_power_level_intro" = "Het machtsniveau van gespreksleden is:";
+"notice_room_power_level_intro" = "De machtsniveaus van de gespreksleden zijn:";
 "notice_room_power_level_acting_requirement" = "De minimale machtsniveaus waarover een gebruiker moet beschikken vooraleer deze kan handelen zijn:";
 "notice_room_power_level_event_requirement" = "De minimale machtsniveaus gerelateerd aan gebeurtenissen zijn:";
 "notice_room_aliases" = "De gespreksbijnamen zijn: %@";
@@ -500,3 +500,9 @@
 "notice_room_join_rule_public_for_dm" = "%@ maakte dit openbaar.";
 "notice_room_join_rule_public" = "%@ heeft het gesprek openbaar gemaakt.";
 "notice_room_created_for_dm" = "%@ is toegetreden.";
+"notice_room_power_level_intro_for_dm" = "De machtsniveaus van de gespreksleden zijn:";
+"notice_room_join_rule_invite_by_you_for_dm" = "U maakte dit gesprek alleen op uitnodiging.";
+"notice_room_join_rule_invite_by_you" = "U maakte dit gesprek alleen op uitnodiging.";
+//  New
+"notice_room_join_rule_invite" = "%@ heeft dit gesprek alleen op uitnodiging gemaakt.";
+"notice_room_join_rule_invite_for_dm" = "%@ heeft dit gesprek alleen op uitnodiging gemaakt.";
