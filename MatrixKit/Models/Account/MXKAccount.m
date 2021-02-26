@@ -1088,6 +1088,16 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
         
         if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised || mxSession.state == MXSessionStateStoreDataReady)
         {
+            // Make sure the SDK finish its work before the app goes sleeping in background
+            id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
+            if (handler)
+            {
+                if (!self.backgroundTask.isRunning)
+                {
+                    self.backgroundTask = [handler startBackgroundTaskWithName:@"[MXKAccount] pauseInBackgroundTask" expirationHandler:nil];
+                }
+            }
+            
             NSLog(@"[MXKAccount] Pause is delayed at the end of sync (current state %tu)", mxSession.state);
             isPauseRequested = YES;
         }
