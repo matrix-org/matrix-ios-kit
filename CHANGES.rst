@@ -8,7 +8,7 @@ Changes to be released in next version
  * Crypto: Pre share session keys when typing by default (vector-im/element-ios/issues/4075).
 
 🐛 Bugfix
- * 
+ * App state: Infinite loading spinner when resuming the app (vector-im/element-ios/issues/4073).
 
 ⚠️ API Changes
  * 
