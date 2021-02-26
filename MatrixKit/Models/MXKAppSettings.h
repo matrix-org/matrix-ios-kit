@@ -114,7 +114,7 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
 @property (nonatomic) BOOL hideUndecryptableEvents;
 
 /**
- Indicates the strategy for sharing the outbound session key to other devices of the room (bitmask)
+ Indicates the strategy for sharing the outbound session key to other devices of the room
  */
 @property (nonatomic) MXKKeyPreSharingStrategy outboundGroupSessionKeyPreSharingStrategy;
 

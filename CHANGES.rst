@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * Crypto: Pre share session keys when typing by default (vector-im/element-ios/issues/4075).
 
 🐛 Bugfix
  * 
@@ -83,7 +83,7 @@ Changes in 0.14.0 (2021-02-11)
  * 
 
 🙌 Improvements
- * Pre-share session keys when opening a room (vector-im/element-ios/issues/3934)
+ * Crypto: Add a MXKAppSettings option to pre-share session keys (vector-im/element-ios/issues/3934).
  * VoIP: DTMF support in calls (vector-im/element-ios/issues/3929).
 
 🐛 Bugfix
