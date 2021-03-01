@@ -112,7 +112,7 @@
 "reject_call" = "رَفضُ المُكالَمَة";
 "answer_call" = "الإجابَةُ عَلَى المُكالَمَة";
 "attachment_multiselection_original" = "الحَجمُ الفِعلي";
-"attachment_multiselection_size_prompt" = "هَل تُريدُ إِرسَالَ الصُّوَر كَـ :";
+"attachment_multiselection_size_prompt" = "هَل تُريدُ إِرسَالَ الصُّوَرِ كَـ :";
 "attachment_cancel_upload" = "إلغَاء الرَّفع؟";
 "attachment_cancel_download" = "إلغَاء التَّنزيل؟";
 "attachment_large" = "كَبير: %@";
@@ -125,7 +125,7 @@
 "room_member_power_level_prompt" = "لَن تَكُونَ قَادِرًا عَلَى التَّراجُع عَن هَذا التَّغيِير فَأنتَ تُرَقِّي المُستَخدِم لِيَكُونَ لَهُ نَفس مُستَوى القُوَّة الَّذِي لدَيك.\nهَل أَنتَ مُتَأكِّد؟";
 
 // Room members
-"room_member_ignore_prompt" = "هَل أنتَ مُتَأكِّدٌ مِن رَغبَتِكَ فِي إخفَاء جَميع الرَّسَائِل عَن هَذَا المُستَخدِم؟";
+"room_member_ignore_prompt" = "هَل أنتَ مُتَأكِّدٌ مِن رَغبَتِكَ فِي إخفَاءِ جَميعِ الرَّسَائِل عَن هَذَا المُستَخدِم؟";
 "message_reply_to_message_to_reply_to_prefix" = "رَدًّا عَلَى";
 "message_reply_to_sender_sent_a_file" = "أرسَلَ مَلَفّ.";
 "message_reply_to_sender_sent_a_video" = "أرسَلَ مَقطَعًا مَرئيًا.";
@@ -133,32 +133,32 @@
 
 // Reply to message
 "message_reply_to_sender_sent_an_image" = "أرسَلَ صُورَةَ.";
-"room_no_conference_call_in_encrypted_rooms" = "إنَّ مُكالَمَاتُ الاِجتِمَاع غَير مَدعُومَة فِي الغُرَف المُعمّاة";
-"room_no_power_to_create_conference_call" = "أنتَ بِحاجَة إلَى إذن للدَّعوَة حَتَّى تَبدَأ اِجتِمَاع فِي هَذِهِ الغُرفَة";
+"room_no_conference_call_in_encrypted_rooms" = "إنَّ مُكالَمَاتُ الاِجتِمَاع غَيرُ مَدعُومَةٍ فِي الغُرَفِ المُعمّاة";
+"room_no_power_to_create_conference_call" = "أنتَ بِحاجَةٍ إلَى إذن لِلدَّعوَة حَتَّى تَبدَأَ اِجتِمَاع فِي هَذِهِ الغُرفَة";
 "room_left_for_dm" = "أنتَ قَد غادَرت";
 "room_left" = "أنتَ قَد غادَرتَ الغُرفَة";
-"room_error_timeline_event_not_found" = "التَّطبيق كَانَ يُحاوِلُ تَحميل نُقطَة مُعَيَّنَة مِنَ الخَطِّ الزَّمَني لِهَذِهِ الغُرفَة لَكِن تَعَذَّرَ عَليه العُثُور عَلَيهَا";
-"room_error_cannot_load_timeline" = "فَشَلَ تَحمِيل الخَطّ الزَّمَنِي";
-"room_error_timeline_event_not_found_title" = "فَشَلَ تَحمِيل مَوضِع الخَطّ الزَّمَنِي";
-"room_error_topic_edition_not_authorized" = "أنتَ غَير مُخَوَّل لِتَحرِير مَوضُوع هَذِهِ الغُرفَة";
-"room_error_name_edition_not_authorized" = "أنتَ غَير مُخَوَّل لِتَحرِير اِسم هَذِهِ الغُرفَة";
-"room_error_join_failed_empty_room" = "حاليًّا مِن غَير المُمكِن إعادَة الاِنضِمام إلى غُرفَة فارِغَة.";
+"room_error_timeline_event_not_found" = "التَّطبيقُ كَانَ يُحاوِلُ تَحميلَ نُقطَةٍ مُعَيَّنَةٍ مِنَ الخَطِّ الزَّمَنيِ لِهَذِهِ الغُرفَة لَكِن تَعَذَّرَ عَليهِ العُثُور عَلَيهَا";
+"room_error_cannot_load_timeline" = "فَشَلَ تَحمِيلُ الخَطِّ الزَّمَنِي";
+"room_error_timeline_event_not_found_title" = "فَشَلَ تَحمِيلُ مَوضِعِ الخَطِّ الزَّمَنِي";
+"room_error_topic_edition_not_authorized" = "أنتَ غَيرُ مُخَوَّلٍ لِتَحرِيرِ مَوضُوعِ هَذِهِ الغُرفَة";
+"room_error_name_edition_not_authorized" = "أنتَ غَيرُ مُخَوَّلٍ لِتَحرِيرِ اِسمِ هَذِهِ الغُرفَة";
+"room_error_join_failed_empty_room" = "حاليًّا مِن غَيرِ المُمكِنِ إعادَةُ الاِنضِمامِ إلى غُرفَةٍ فارِغَة.";
 "room_error_join_failed_title" = "فَشَلَ الاِنضِمام إلى الغُرفَة";
 
 // Room
-"room_please_select" = "يُرجَى تَحديد غُرفَة";
+"room_please_select" = "يُرجَى تَحديدُ غُرفَة";
 "room_creation_participants_placeholder" = "(مِثل. ‭(@bob:homeserver1; @john:homeserver2...";
 "room_creation_participants_title" = "المُشَارِكُون:";
 "room_creation_alias_placeholder_with_homeserver" = "(مِثل. %@foo#)";
 "room_creation_alias_placeholder" = "(مِثل. foo:example.org#)";
-"room_creation_alias_title" = "اسم الغُرفَة البَديل:";
+"room_creation_alias_title" = "اِسمُ الغُرفَةِ البَديل:";
 "room_creation_name_placeholder" = "(مِثل. مجموعة الغداء)";
 
 // Room creation
-"room_creation_name_title" = "اِسم الغُرفَة:";
-"account_error_push_not_allowed" = "الإِشعَارات غَيرُ مَسمُوحَة";
-"account_error_msisdn_wrong_description" = "يَبدو أنَّ هَذَا لَيسَ رَقم هَاتِف صَالِح";
-"account_error_msisdn_wrong_title" = "رَقم هَاتِف غَير صَالِح";
+"room_creation_name_title" = "اِسمُ الغُرفَة:";
+"account_error_push_not_allowed" = "الإِشعَاراتُ غَيرُ مَسمُوحَة";
+"account_error_msisdn_wrong_description" = "يَبدو أنَّ هَذَا لَيسَ رَقمُ هَاتِفٍ صَالِح";
+"account_error_msisdn_wrong_title" = "رَقمُ هَاتِفٍ غَيرُ صَالِح";
 "account_error_email_wrong_description" = "يَبدو أنَّ هَذَا لَيسَ عُنوان بَريد إلِكتُرونيّ صَالِح";
 "account_error_email_wrong_title" = "عُنوانُ بَريدٍ إلِكتُرونيّ غَيرَ صَالِح";
 "account_error_matrix_session_is_not_opened" = "جَلسَةُ Matrix غَيرَ مَفتُوحَة";
@@ -255,7 +255,7 @@
 "public" = "عَامّ";
 "private" = "خاصّ";
 "default" = "الاِفتراضي";
-"not_supported_yet" = "غَيرُ مَدعُومَة حَتَّى الآن";
+"not_supported_yet" = "غَيرُ مَدعُومَةٍ حَتَّى الآن";
 "error_common_message" = "لَقَد حَدَثَ خَطَأ. يُرجَى المُحاوَلَة مَرَّةً أُخرَى.";
 "error" = "خَطَأ";
 "unsent" = "غَيرُ مُرسَلَة";
@@ -263,21 +263,21 @@
 
 // Others
 "user_id_title" = "مُعَرِّف المُستَخدِم:";
-"e2e_passphrase_not_match" = "عِبارَاتُ المُرُور يَجِبُ أن تَكُون مُتَطابَقة";
-"e2e_passphrase_create" = "إنشاء عِبارَة مُرُور";
-"e2e_passphrase_empty" = "عِبارَةُ المُرُور يَجِبُ ألَا تَكونَ خَالِيَة";
-"e2e_passphrase_confirm" = "تَأكيد عِبارَة المُرُور";
+"e2e_passphrase_not_match" = "عِبارَاتُ المُرُورِ يَجِبُ أن تَكُونَ مُتَطابَقة";
+"e2e_passphrase_create" = "إنشاءُ عِبارَةِ مُرُور";
+"e2e_passphrase_empty" = "عِبارَةُ المُرُورِ يَجِبُ ألَا تَكونَ خَالِيَة";
+"e2e_passphrase_confirm" = "تَأكيدُ عِبارَةِ المُرُور";
 "e2e_export_prompt" = "تُتيحُ لَكَ هَذِهِ العَمَلِيَّة تَصدير مَفاتيح الرَّسائِل الَّتي قَد تَلَقَّيتَها فِي الغُرَف المُعَمّاة إلى مَلَفّ مَحَلِّيّ. يُمكِنُكَ بَعدَ ذَلِكَ أن تَستَورِدَ المَلَفّ إلى عَميل Matrix آخر في المُستَقبَل، لِكَي يَتَمَكَّن هَذَا العَميل أيضًا مِن فَكّ تَعمِيَة هَذِهِ الرَّسائِل.\nالمَلَفّ الَّذِي قَد تَمَّ تَصديرُه سَيَسمَحُ لِأيّ شَخص يُمكِنَهُ قِرَاءته أن يَفُكّ تَعمِيَة أيّ رَسائِل مُعمّاة يُمكِنُكَ رُؤيَتها، لِذَلِك يَجِبُ أن تَكُونَ حَريصًا عَلَى إبقائه آمِن.";
 "e2e_export" = "تَصدير";
 
 // E2E export
-"e2e_export_room_keys" = "تَصدير مَفاتيح الغُرفَة";
+"e2e_export_room_keys" = "تَصديرُ مَفاتيحِ الغُرفَة";
 "e2e_passphrase_enter" = "أدخِل عِبارَةَ المُرُور";
 "e2e_import" = "اِستيراد";
 "e2e_import_prompt" = "تُتِيحُ لَكَ هَذِهِ العَمَلِيَّة اِستيراد المَفاتيح الَّتي قَد صَدَّرتَهَا مُسبقًا مِن عَميل Matrix آخر. أنتَ سَتَتَمَكَّن بَعدَ ذَلِك مِن فَكّ تَّعميَة جَميع رَسائِل الَّتي يُمكِن لِلعَميل الآخر فَكّ تَعمِيَتها.\nإنَّ المَلَفّ الْمُصَدَّر مَحميّ بِعِبارَة مُرُور. يَجِبُ إدخال عِبارَة المُرُور هُنا لِفَكّ تَعمِيَة المَلَفّ.";
 
 // E2E import
-"e2e_import_room_keys" = "اِستيراد مَفاتيح الغُرفَة";
+"e2e_import_room_keys" = "اِستيرادُ مَفاتيحِ الغُرفَة";
 "format_time_d" = "ي";
 "format_time_h" = "س";
 "format_time_m" = "د";
@@ -292,18 +292,18 @@
 
 // Groups
 "group_invite_section" = "الدَّعَوات";
-"contact_local_contacts" = "جِهاتُ الاِتِّصال المَحَلِّيَّة";
+"contact_local_contacts" = "جِهاتُ الاِتِّصالِ المَحَلِّيَّة";
 
 // Contacts
 "contact_mx_users" = "مُستَخدِمُو Matrix";
 "attachment_e2e_keys_import" = "يَجري الاِستيراد...";
-"attachment_e2e_keys_file_prompt" = "يَحتَوي هَذَا المَلَفّ عَلَى مَفاتيح تَعمِيَة قَد تمَّ تَصديرُها مِن عَميل Matrix.\nهَل تُريدُ عَرض مُحتَوى المَلفّ أم اِستيراد المَفاتيح الَّتي يَحويها؟";
+"attachment_e2e_keys_file_prompt" = "يَحتَوي هَذَا المَلَفّ عَلَى مَفاتيح تَعمِيَة قَد تمَّ تَصديرُها مِن عَميلِ Matrix.\nهَل تُريدُ عَرضَ مُحتَوى المَلفّ أمِ اِستيرادُ المَفاتيحِ الَّتي يَحويها؟";
 
 // Settings screen 
 "settings_title_config" = "الإعداد";
 "notice_room_third_party_registered_invite_by_you" = "أنتَ قَد قَبلتَ دَعوَة %@";
 "notice_room_third_party_revoked_invite" = "لَقَد ألغَى %@ دَعوَة %@ لِلاِنضِمام إلى الغُرفَة";
-"notice_room_third_party_registered_invite" = "لَقَد قَبَلَ %@ دَعوَة %@‏";
+"notice_room_third_party_registered_invite" = "لَقَد قَبَلَ %@ دَعوَةَ %@‏";
 "ssl_only_accept" = "فَقَطّ اِقبَل الشَّهادَة إذا نَشَرَ مُدير الخادِم بَصمَة تُطابِق البَصمَة أعلَاه.";
 "ssl_expected_existing_expl" = "لَقَد تَغَيَّرَت الشَّهادَة الَّتي قَد كانَت مَوثُوقَة مُسبَقًا إلى أُخرَى غَير مَوثُوقَة. مِنَ المُمكِن أنَّ الخادِم قَد جَدَّدَ شَهادَته. تَواصَل مَعَ المُدير لِلحُصُول عَلَى البَصمَة المُتَوَقَّعَة.";
 "ssl_unexpected_existing_expl" = "تَمَّ تَغيِير الشَّهادَة الَّتي قَد كانَت مَوثُوقة مِن قِبَل هاتِفك. هَذَا غَيرُ طَبِيعِيّ لِلغَايَة. يُوصَى بِعَدَم قُبُول هَذِهِ الشَّهادَة الجَديدَة.";
@@ -320,8 +320,8 @@
 // unrecognized SSL certificate
 "ssl_trust" = "الوُثُوق";
 "call_invite_expired" = "لَقَد اِنتَهَت صَلاحيَّةُ دَعوَة المُكالَمَة";
-"incoming_voice_call" = "مُكالَمَة صَوتيَّة وَارِدَة";
-"incoming_video_call" = "مُكالَمَة مَرئيَّة وَارِدَة";
+"incoming_voice_call" = "مُكالَمَةٌ صَوتيَّةٌ وَارِدَة";
+"incoming_video_call" = "مُكالَمَةٌ مَرئيَّةٌ وَارِدَة";
 "call_ring" = "تَجري المُكالَمَة…";
 "call_ended" = "اِنتَهَت المُكالَمَة";
 "call_connecting" = "اِتِّصالُ المُكالَمَةِ جارٍ…";
@@ -330,13 +330,13 @@
 
 // call string
 "call_waiting" = "يَجري الاِنتِظار…";
-"settings_config_user_id" = "مُعَرِّف المُستَخدِم: %@";
+"settings_config_user_id" = "مُعَرِّفُ المُستَخدِم: %@";
 "settings_config_identity_server" = "خادِم الهُويَّة: %@";
 
 // gcm section 
 "settings_config_home_server" = "الخادِم الرَّئيس: %@";
 "notification_settings_notify_all_other" = "أخطِرني لِكَافَّةِ الرَّسائِل/الغُرَف الأُخرَى";
-"notification_settings_by_default" = "بِشَكل اِفتِراضي...";
+"notification_settings_by_default" = "بِشَكلٍ اِفتِراضي...";
 "notification_settings_suppress_from_bots" = "كَتْمُ الإشعَارات مِنَ الرُّوبُوتَات";
 "notification_settings_receive_a_call" = "أخطِرني عِندَما أَتَلَقَّى مُكالَمَة";
 "notification_settings_people_join_leave_rooms" = "أخطِرني عِندَما يَنضَمّ الأشخاص أو يُغادِرُوا الغُرَف";
@@ -344,22 +344,22 @@
 "notification_settings_just_sent_to_me" = "أخطِرني بِالصَّوت حَولَ الرَّسَائِل الَّتي أُرسِلَت إليَّ فَقَط";
 "notification_settings_contain_my_display_name" = "أخطِرني بِالصَّوت حَولَ الرَّسَائِل الَّتي تَحتَوي عَلَى الاِسم الظّاهِر الخاصّ بِي";
 "notification_settings_contain_my_user_name" = "أخطِرني بِالصَّوت حَولَ الرَّسَائِل الَّتي تَحتَوي عَلَى اِسم المُستَخدِم الخاصّ بِي";
-"notification_settings_other_alerts" = "تَنبيهات أُخرَى";
+"notification_settings_other_alerts" = "تَنبيهاتٌ أُخرَى";
 "notification_settings_select_room" = "حَّدِد غُرفَة";
 "notification_settings_sender_hint" = "user:domain.com@";
-"notification_settings_per_sender_notifications" = "الإِشعَارات وَفقًا لِلمُرسِل";
-"notification_settings_per_room_notifications" = "الإِشعَارات وَفقًا لِلغُرفَة";
-"notification_settings_custom_sound" = "صَوت مُخَصَّص";
+"notification_settings_per_sender_notifications" = "الإِشعَاراتٌ وَفقًا لِلمُرسِل";
+"notification_settings_per_room_notifications" = "الإِشعَاراتُ وَفقًا لِلغُرفَة";
+"notification_settings_custom_sound" = "صَوتٌ مُخَصَّص";
 "notification_settings_highlight" = "إبرَاز";
-"notification_settings_word_to_match" = "كَلِمَة لِلمُطابَقَة";
+"notification_settings_word_to_match" = "كَلِمَةٌ لِلمُطابَقَة";
 "notification_settings_never_notify" = "لا تُخطِرني أبَدًا";
 "notification_settings_always_notify" = "أخطِرني دَومًا";
-"notification_settings_per_word_notifications" = "الإِشعَارات وَفقًا لِلكَلِمَة";
-"notification_settings_enable_notifications_warning" = "جَميعُ الإِشعَارات مُعَطَّلَة حالِيًّا لِكُل الأجهِزَة.";
-"notification_settings_enable_notifications" = "تَفعِيل الإِشعَارات";
+"notification_settings_per_word_notifications" = "الإِشعَاراتُ وَفقًا لِلكَلِمَة";
+"notification_settings_enable_notifications_warning" = "جَميعُ الإِشعَاراتِ مُعَطَّلَةٌ حالِيًّا لِكُلِ الأجهِزَة.";
+"notification_settings_enable_notifications" = "تَفعِيلُ الإِشعَارات";
 
 // Notification settings screen 
-"notification_settings_disable_all" = "تَعطيلُ كَافَّة الإِشعَارات";
+"notification_settings_disable_all" = "تَعطيلُ كَافَّةِ الإِشعَارات";
 "settings_title_notifications" = "الإِشعَارات";
 
 // contacts list screen 
@@ -384,13 +384,13 @@
 // Login Screen 
 "login_error_already_logged_in" = "مُسَجِّل الدُّخُولِ بِالفِعل";
 "message_unsaved_changes" = "تُوجَدُ تَغيِيرات غَير مَحفُوظَة. المُغادَرَة سَوفَ تَستَبعِدَها.";
-"unban" = "رَفع-الحَظر";
-"ban" = "حَظر";
+"unban" = "رَفع-الحَظْر";
+"ban" = "حَظْر";
 "kick" = "طَرد";
 "invite" = "دَعوة";
 "num_members_other" = "عَدَد %@ مُستَخدِم";
 "num_members_one" = "عَدَد %@ مُستَخدِم";
-"membership_ban" = "حَظر";
+"membership_ban" = "حَظْر";
 "membership_leave" = "غادَر";
 "membership_invite" = "مَدعُوّ";
 "create_account" = "إنشاءُ حِساب";
@@ -432,12 +432,12 @@
 
 // button names 
 "ok" = "حَسَنًا";
-"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "أنتَ قَد جَعَلتَ الرَّسائِل المُستَقبَليَّة مَرئيَّة لِلجَميع، مُنذُ أن اِنضَمُّوا.";
-"notice_room_history_visible_to_members_from_joined_point_by_you" = "أنتَ قَد جَعَلتَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِجَميع أعضاء الغُرفَة، مِن النُّقطَة الَّتي اِنضَمُّوا فِيهَا.";
-"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "أنتَ قَد جَعَلتَ الرَّسائِل المُستَقبَليَّة مَرئيَّة لِلجَميع، مُنذُ أن تَمَّت دَعوَتُهُم.";
-"notice_room_history_visible_to_members_from_invited_point_by_you" = "أنتَ قَد جَعَلتَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِجَميع أعضاء الغُرفَة، مِن النُّقطَة الَّتي تَمَّت دَعوَتُهُم فِيهَا.";
+"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "أنتَ قَد جَعَلتَ الرَّسائِلَ المُستَقبَليَّة مَرئيَّة لِلجَميع، مُنذُ أنِ اِنضَمُّوا.";
+"notice_room_history_visible_to_members_from_joined_point_by_you" = "أنتَ قَد جَعَلتَ تَأريخَ الغُرفَةِ المُستَقبَليّ مَرئيٌّ لِجَميعِ أعضاءِ الغُرفَة، مِن النُّقطَة الَّتي اِنضَمُّوا فِيهَا.";
+"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "أنتَ قَد جَعَلتَ الرَّسائِلَ المُستَقبَليَّة مَرئيَّة لِلجَميع، مُنذُ أن تَمَّت دَعوَتُهُم.";
+"notice_room_history_visible_to_members_from_invited_point_by_you" = "أنتَ قَد جَعَلتَ تَأريخ الغُرفَة المُستَقبَليّ مَرئيٌّ لِجَميعِ أعضاءِ الغُرفَة، مِنَ النُّقطَةِ الَّتي تَمَّت دَعوَتُهُم فِيهَا.";
 "notice_room_history_visible_to_members_by_you_for_dm" = "أنتَ قَد جَعَلتَ الرَّسائِل المُستَقبَليَّة مَرئيَّة لِجَميع أعضاء الغُرفَة.";
-"notice_room_history_visible_to_members_by_you" = "أنتَ قَد جَعَلتَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِجَميع أعضاء الغُرفَة.";
+"notice_room_history_visible_to_members_by_you" = "أنتَ قَد جَعَلتَ تَأريخَ الغُرفَةِ المُستَقبَليّ مَرئيٌّ لِجَميعِ أعضاءِ الغُرفَة.";
 "notice_room_history_visible_to_anyone_by_you" = "أنتَ قَد جَعَلتَ تَأريخ الغُرفَة المُستَقبَليّ مَرئي لِأَيّ شَخص.";
 "notice_redaction_by_you" = "أنتَ قَد نَقَّحتَ حَدَث (المُعَرِّف: %@))";
 "notice_encryption_enabled_unknown_algorithm_by_you" = "أنتَ قَد شَغَّلتَ تَعمِيَة النِّهايَة-إلى-النِّهايَة. (خَوارِزميَّة غَير مُتَعَرَّف عَليها %@).";
@@ -446,16 +446,16 @@
 "notice_room_created_by_you" = "أنتَ قَد أنشأتَ الغُرفَة وَهَيَّأَتَها.";
 "notice_profile_change_redacted_by_you" = "أنتَ قَد حدَّثتَ مَلفَّكَ الشَّخصي %@";
 "notice_event_redacted_by_you" = " بِواسِطَتِك";
-"notice_room_topic_removed_by_you" = "أنتَ قَد أزَلتَ المَوضُوع";
+"notice_room_topic_removed_by_you" = "أنتَ قَد أزلتَ المَوضُوع";
 "notice_room_name_removed_by_you_for_dm" = "أنتَ قَد أزَلتَ الاِسم";
 "notice_room_name_removed_by_you" = "أنتَ قَد أزَلتَ اِسم الغُرفَة";
-"notice_conference_call_request_by_you" = "أنتَ قد طَلَبتَ عَقد اِجتِمَاع VoIP";
+"notice_conference_call_request_by_you" = "أنتَ قَد طَلبتَ عَقد اِجتِمَاع VoIP";
 "notice_ended_video_call_by_you" = "أنتَ قَد أنهيتَ المُكالَمَة";
-"notice_answered_video_call_by_you" = "أنتَ قَد أجَبتَ على المُكالَمَة";
-"notice_placed_video_call_by_you" = "أنتَ قَد أجرَيتَ مُكالَمَة مَرئيَّة";
-"notice_placed_voice_call_by_you" = "أنتَ قَد أجرَيتَ مُكالَمَة صَوتيَّة";
+"notice_answered_video_call_by_you" = "أنتَ قَد أجَبتَ عَلَى المُكالَمَة";
+"notice_placed_video_call_by_you" = "أنتَ قَد أجرَيتَ مُكالَمَةً مَرئيَّة";
+"notice_placed_voice_call_by_you" = "أنتَ قَد أجرَيتَ مُكالَمَةً صَوتيَّة";
 "notice_room_name_changed_by_you_for_dm" = "أنتَ قَد غيَّرتَ الاِسم إلى %@.";
-"notice_room_name_changed_by_you" = "أنتَ قَد غيَّرتَ اِسم الغُرفَة إلى %@.";
+"notice_room_name_changed_by_you" = "أنتَ قَد غيَّرتَ اِسمَ الغُرفَةِ إلى %@.";
 "notice_topic_changed_by_you" = "أنتَ قَد غيَّرتَ المَوضُوع إلى \"%@\".";
 "notice_display_name_removed_by_you" = "أنتَ قَد أزَلتَ اِسمكَ الظّاهِر";
 "notice_display_name_changed_from_by_you" = "أنتَ قَد غيَّرتَ اِسمكَ الظّاهِر مِن %@ إلى %@";
@@ -463,15 +463,15 @@
 "notice_avatar_url_changed_by_you" = "أنتَ قَد غيَّرتَ صُّورَتكَ الرَّمزية";
 "notice_room_withdraw_by_you" = "أنتَ قَد سَحبتَ دَعوَة %@";
 "notice_room_ban_by_you" = "أنتَ قَد حَظرتَ %@";
-"notice_room_unban_by_you" = "أنتَ قَد رَفعتَ الحَظر عَن %@";
+"notice_room_unban_by_you" = "أنتَ قَد رَفعتَ الحَظرَ عَن %@";
 "notice_room_kick_by_you" = "أنتَ قَد طَردتَ %@";
 "notice_room_reject_by_you" = "أنتَ قَد رَفضتَ الدَعوَة";
 "notice_room_join_by_you" = "أنتَ قَد اِنضَمَمت";
 "notice_room_leave_by_you" = "أنتَ قَد غادَرت";
 "notice_room_third_party_revoked_invite_by_you_for_dm" = "أنتَ قد ألغيتَ دَعوَة %@";
 "notice_room_third_party_revoked_invite_by_you" = "أنتَ قَد ألغيتَ دَعوَة %@ لِلاِنضِمام إلى الغُرفَة";
-"notice_room_third_party_invite_by_you_for_dm" = "أنتَ قد دَعوتَ %@";
-"notice_room_third_party_invite_by_you" = "أنتَ قَد أرسَلتَ دَعوَة إلى %@ لِلاِنضِمام إلى الغُرفَة";
+"notice_room_third_party_invite_by_you_for_dm" = "أنتَ قَد دَعوتَ %@";
+"notice_room_third_party_invite_by_you" = "أنتَ قَد أرسَلتَ دَعوَةً إلى %@ لِلاِنضِمامِ إلى الغُرفَة";
 "notice_room_invite_you" = "لَقَد دَعاكَ %@";
 
 // Notice Events with "You"
@@ -493,13 +493,13 @@
 "notice_room_reason" = ". السَّبَب: %@";
 "notice_room_withdraw" = "لَقَد سَحَبَ %@ دَعوَة %@";
 "notice_room_ban" = "إنَّ %@ قَد حَظَرَ %@";
-"notice_room_unban" = "إنَّ %@ قَد رَفَعَ الحَظرَ عَن %@";
+"notice_room_unban" = "لَقَد رَفَعَ %@ الحَظرَ عَن %@";
 "notice_room_kick" = "إنَّ %@ قَد طَرَدَ %@";
-"notice_room_reject" = "إنَّ %@ قَد رَفَضَ الدَّعوَة";
-"notice_room_leave" = "إنَّ %@ قَد غَادَر";
-"notice_room_third_party_invite" = "إنَّ %@ قَد أرسَلَ دَعوَة إلى %@ لِلاِنضِمام إلى الغُرفَة";
-"notice_room_join" = "إنَّ %@ قَد اِنضَمّ";
-"notice_room_third_party_revoked_invite_for_dm" = "إنَّ %@ قَد ألغَى دَعوَة %@";
+"notice_room_reject" = "لَقَد رَفَضَ %@ الدَّعوَة";
+"notice_room_leave" = "لَقَد غَادَرَ %@";
+"notice_room_third_party_invite" = "لَقَد أرسَلَ %@ دَعوَةً إلى %@ لِلاِنضِمامِ إلى الغُرفَة";
+"notice_room_join" = "لَقَد اِنضَمَّ %@";
+"notice_room_third_party_revoked_invite_for_dm" = "لَقَد ألغَى %@ دَعوَة %@";
 "notice_room_third_party_invite_for_dm" = "إنَّ %@ قَد أضافَ %@";
 
 /* -*- 
@@ -513,17 +513,17 @@
 "language_picker_default_language" = "الاِفتراضي (%@)";
 
 // Language picker
-"language_picker_title" = "اِختَر لُغَة";
+"language_picker_title" = "اِختَر لُغَةً";
 
 // Country picker
 "country_picker_title" = "اِختَر بَلَدًا";
 "local_contacts_access_discovery_warning" = "لاِكتِشاف جِهات الاِتِّصال الَّتي تَستَخدِمُ Matrix بِالفِعل، يُمكِنُ لِـ%@ إرسَال عَناوين البَريد الإلِكتُرونيّ وأرقام الهَواتِف الَّتي في دَفتَرِ العَناوين الخاصِّ بِك إلى خادِمِ هُويَّة Matrix المُختار. يَتِّمُ تَجزِئة البَياناتِ الشَّخصيَّة قَبلَ إرسالِها حَيثُما كانَت مَدعُومَة - يُرجى مُراجَعَة سياسَة الخُصُوصيَّة الخاصَّة بِخادِم الهُويَّة لِلحُصُولِ عَلَى المَزيدِ مِنَ التَّفاصيل.";
 "local_contacts_access_discovery_warning_title" = "اِكتِشافُ المُستَخدِمين";
-"local_contacts_access_not_granted" = "اِكتِشافُ المُستَخدِمين مِن جِهاتِ الاِتِّصالِ المَحَلِّيَّة يَتَطَلَّب الوُصُول إلَى جِهاتِ الاِتِّصالِ الخاصّةِ بِك لَكنّ %@ لَيسَ لَدَيهِ الاِذن لاِستِخدامَها";
-"microphone_access_not_granted_for_call" = "المُكالَمَاتُ المَرئيَّة تَتَطَلَّب الوُصُول إلَى المِيكرُوفُون لَكنّ %@ لَيسَ لَدَيهِ الاِذن لاِستِخدامه";
+"local_contacts_access_not_granted" = "اِكتِشافُ المُستَخدِمين مِن جِهاتِ الاِتِّصالِ المَحَلِّيَّة يَتَطَلَّب الوُصُول إلَى جِهاتِ الاِتِّصالِ الخاصّةِ بِك لَكِنّ %@ لَيسَ لَدَيهِ الاِذن لاِستِخدامَها";
+"microphone_access_not_granted_for_call" = "المُكالَمَاتُ المَرئيَّة تَتَطَلَّب الوُصُول إلَى المِيكرُوفُون لَكِنّ %@ لَيسَ لَدَيهِ الاِذن لاِستِخدامه";
 
 // Permissions
-"camera_access_not_granted_for_call" = "المُكالَمَاتُ المَرئيَّة تَتَطَلَّب الوُصُول إلَى الكاميرة لَكنّ %@ لَيسَ لَدَيهِ الاِذن لاِستِخدامها";
+"camera_access_not_granted_for_call" = "المُكالَمَاتُ المَرئيَّة تَتَطَلَّب الوُصُول إلَى الكاميرة لَكِنّ %@ لَيسَ لَدَيهِ الاِذن لاِستِخدامها";
 "ssl_homeserver_url" = "عُنوانُ URL لِلخادِم الرَّئيس: %@";
 "user_id_placeholder" = "مِثال: bob:homeserver@";
-"network_error_not_reachable" = "يُرجَى التَّحَقُق مِن اِتِّصالَكَ بِالشَبَكَة";
+"network_error_not_reachable" = "يُرجَى التَّحَقُّق مِن اِتِّصالَكَ بِالشَبَكَة";
