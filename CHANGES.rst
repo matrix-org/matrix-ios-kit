@@ -20,7 +20,7 @@ Changes to be released in next version
  * 
 
 Others
- * 
+ * Ensure room on event editions.
 
 Changes in 0.14.4 (2021-03-03)
 =================================================
