@@ -476,6 +476,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         @synchronized(bubbles)
         {
+            for (id<MXKRoomBubbleCellDataStoring> bubble in bubbles) {
+                bubble.prevCollapsableCellData = nil;
+                bubble.nextCollapsableCellData = nil;
+            }
             [bubbles removeAllObjects];
         }
         

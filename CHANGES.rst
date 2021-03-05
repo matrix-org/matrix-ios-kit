@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * MXKRoomDataSource: Fix memory leak in `bubbles` array.
 
 ⚠️ API Changes
  * 
