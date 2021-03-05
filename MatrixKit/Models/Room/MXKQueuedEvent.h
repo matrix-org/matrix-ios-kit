@@ -44,4 +44,6 @@
 
 - (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)state direction:(MXTimelineDirection)direction;
 
+@property (nonatomic, readonly) NSDate *eventDate;
+
 @end
