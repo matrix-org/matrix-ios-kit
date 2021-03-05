@@ -93,6 +93,26 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     id eventEditsListener;
     
     /**
+     Current secondary pagination request (if any)
+     */
+    MXHTTPOperation *secondaryPaginationRequest;
+    
+    /**
+     The listener to incoming events in the secondary room.
+     */
+    id secondaryLiveEventsListener;
+    
+    /**
+     The listener to redaction events in the secondary room.
+     */
+    id secondaryRedactionListener;
+    
+    /**
+     The actual listener related to the current pagination in the secondary timeline.
+     */
+    id secondaryPaginationListener;
+    
+    /**
      Mapping between events ids and bubbles.
      */
     NSMutableDictionary *eventIdToBubbleMap;
@@ -115,7 +135,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     /**
      Snapshot of the bubbles used during events processing.
      */
-    NSMutableArray *bubblesSnapshot;
+    NSMutableArray<id<MXKRoomBubbleCellDataStoring>> *bubblesSnapshot;
     
     /**
      The room being peeked, if any.
@@ -172,6 +192,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 @property (nonatomic, assign) BOOL shouldStopBackPagination;
 
 @property (nonatomic, readwrite) MXRoom *room;
+
+@property (nonatomic, readwrite) MXRoom *secondaryRoom;
+@property (nonatomic, strong) MXEventTimeline *secondaryTimeline;
 
 @end
 
@@ -272,6 +295,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         //NSLog(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
         
         _roomId = roomId;
+        _secondaryRoomEventTypes = @[
+            kMXEventTypeStringCallInvite,
+            kMXEventTypeStringCallCandidates,
+            kMXEventTypeStringCallAnswer,
+            kMXEventTypeStringCallSelectAnswer,
+            kMXEventTypeStringCallHangup,
+            kMXEventTypeStringCallReject,
+            kMXEventTypeStringCallNegotiate,
+            kMXEventTypeStringCallReplaces,
+            kMXEventTypeStringCallRejectReplacement
+        ];
         _isLive = YES;
         bubbles = [NSMutableArray array];
         eventsToProcess = [NSMutableArray array];
@@ -415,6 +449,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)reset
 {
+    [self resetNotifying:YES];
+}
+
+- (void)resetNotifying:(BOOL)notify
+{
     [externalRelatedGroups removeAllObjects];
     
     if (roomDidFlushDataNotificationObserver)
@@ -439,6 +478,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         paginationRequest = nil;
     }
     
+    if (secondaryPaginationRequest)
+    {
+        // We have to remove here the listener. A new pagination request may be triggered whereas the cancellation of this one is in progress
+        [_secondaryTimeline removeListener:secondaryPaginationListener];
+        secondaryPaginationListener = nil;
+        
+        [secondaryPaginationRequest cancel];
+        secondaryPaginationRequest = nil;
+    }
+    
     if (_room && liveEventsListener)
     {
         [_timeline removeListener:liveEventsListener];
@@ -452,6 +501,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         [_timeline removeListener:relatedGroupsListener];
         relatedGroupsListener = nil;
+    }
+    
+    if (_secondaryRoom && secondaryLiveEventsListener)
+    {
+        [_secondaryTimeline removeListener:secondaryLiveEventsListener];
+        secondaryLiveEventsListener = nil;
+        
+        [_secondaryTimeline removeListener:secondaryRedactionListener];
+        secondaryRedactionListener = nil;
     }
     
     if (_room && typingNotifListener)
@@ -485,12 +543,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
         
         self.room = nil;
+        self.secondaryRoom = nil;
     }
     
     _serverSyncEventCount = 0;
 
     // Notify the delegate to reload its tableview
-    if (self.delegate)
+    if (notify && self.delegate)
     {
         [self.delegate dataSource:self didCellChange:nil];
     }
@@ -498,15 +557,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)reload
 {
+    [self reloadNotifying:YES];
+}
+
+- (void)reloadNotifying:(BOOL)notify
+{
     //    NSLog(@"[MXKRoomDataSource] Reload %p - room id: %@", self, _roomId);
     
-    state = MXKDataSourceStatePreparing;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
-    {
-        [self.delegate dataSource:self didStateChange:state];
-    }
+    [self setState:MXKDataSourceStatePreparing];
     
-    [self reset];
+    [self resetNotifying:notify];
     
     // Reload
     [self didMXSessionStateChange];
@@ -553,6 +613,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     eventIdToBubbleMap = nil;
 
     [_timeline destroy];
+    [_secondaryTimeline destroy];
     
     externalRelatedGroups = nil;
     
@@ -596,7 +657,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         self->roomDidFlushDataNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomDidFlushDataNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
 
                             MXRoom *room = notif.object;
-                            if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
+                            if (self.mxSession == room.mxSession && ([self.roomId isEqualToString:room.roomId] ||
+                                                                     ([self.secondaryRoomId isEqualToString:room.roomId])))
                             {
                                 // The existing room history has been flushed during server sync because a gap has been observed between local and server storage.
                                 [self reload];
@@ -620,7 +682,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         [self handleUnsentMessages];
 
                         // Update here data source state if it is not already ready
-                        self->state = MXKDataSourceStateReady;
+                        if (!self->_secondaryRoomId)
+                        {
+                            [self setState:MXKDataSourceStateReady];
+                        }
 
                         // Check user membership in this room
                         MXMembership membership = self.room.summary.membership;
@@ -630,9 +695,45 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             // Note: In case of invitation, a full sync will be triggered if the user joins this room.
 
                             // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
-                            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:nil];
+                            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:self.room];
                         }
                     }];
+                    
+                    if (!_secondaryRoom && _secondaryRoomId)
+                    {
+                        _secondaryRoom = [self.mxSession roomWithRoomId:_secondaryRoomId];
+                        
+                        if (_secondaryRoom)
+                        {
+                            MXWeakify(self);
+                            [_secondaryRoom liveTimeline:^(MXEventTimeline *liveTimeline) {
+                                MXStrongifyAndReturnIfNil(self);
+
+                                self->_secondaryTimeline = liveTimeline;
+
+                                // Only one pagination process can be done at a time by an MXRoom object.
+                                // This assumption is satisfied by MatrixKit. Only MXRoomDataSource does it.
+                                [self.secondaryTimeline resetPagination];
+
+                                // Add the secondary event listeners, by considering the event types in self.secondaryRoomEventTypes
+                                [self refreshSecondaryEventListeners:self.secondaryRoomEventTypes];
+                                
+                                // Update here data source state if it is not already ready
+                                [self setState:MXKDataSourceStateReady];
+
+                                // Check user membership in the secondary room
+                                MXMembership membership = self.secondaryRoom.summary.membership;
+                                if (membership == MXMembershipUnknown || membership == MXMembershipInvite)
+                                {
+                                    // Here the initial sync is not ended or the room is a pending invitation.
+                                    // Note: In case of invitation, a full sync will be triggered if the user joins this room.
+
+                                    // We have to observe here 'kMXRoomInitialSyncNotification' to reload room data when room sync is done.
+                                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMXRoomInitialSynced:) name:kMXRoomInitialSyncNotification object:self.secondaryRoom];
+                                }
+                            }];
+                        }
+                    }
                 }
                 else
                 {
@@ -657,12 +758,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                             [self.timeline resetPagination];
                             
                             // Update here data source state if it is not already ready
-                            self->state = MXKDataSourceStateReady;
-                            
-                            if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
-                            {
-                                [self.delegate dataSource:self didStateChange:self->state];
-                            }
+                            [self setState:MXKDataSourceStateReady];
                         }
 
                     } failure:^(NSError *error) {
@@ -683,12 +779,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 NSLog(@"[MXKRoomDataSource] Warning: The user does not know the room %@", _roomId);
                 
                 // Update here data source state if it is not already ready
-                state = MXKDataSourceStateFailed;
-            }
-            
-            if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
-            {
-                [self.delegate dataSource:self didStateChange:state];
+                [self setState:MXKDataSourceStateFailed];
             }
         }
         
@@ -844,6 +935,133 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
     // Register a listener to handle redaction which can affect live and past timelines
     redactionListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
+
+        // Consider only live redaction events
+        if (direction == MXTimelineDirectionForwards)
+        {
+            // Do the processing on the processing queue
+            dispatch_async(MXKRoomDataSource.processingQueue, ^{
+
+                // Check whether a message contains the redacted event
+                id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:redactionEvent.redacts];
+                if (bubbleData)
+                {
+                    BOOL shouldRemoveBubbleData = NO;
+                    BOOL hasChanged = NO;
+                    MXEvent *redactedEvent = nil;
+
+                    @synchronized (bubbleData)
+                    {
+                        // Retrieve the original event to redact it
+                        NSArray *events = bubbleData.events;
+
+                        for (MXEvent *event in events)
+                        {
+                            if ([event.eventId isEqualToString:redactionEvent.redacts])
+                            {
+                                // Check whether the event was not already redacted (Redaction may be handled by event timeline too).
+                                if (!event.isRedactedEvent)
+                                {
+                                    redactedEvent = [event prune];
+                                    redactedEvent.redactedBecause = redactionEvent.JSONDictionary;
+                                }
+
+                                break;
+                            }
+                        }
+
+                        if (redactedEvent)
+                        {
+                            // Update bubble data
+                            NSUInteger remainingEvents = [bubbleData updateEvent:redactionEvent.redacts withEvent:redactedEvent];
+
+                            hasChanged = YES;
+
+                            // Remove the bubble if there is no more events
+                            shouldRemoveBubbleData = (remainingEvents == 0);
+                        }
+                    }
+
+                    // Check whether the bubble should be removed
+                    if (shouldRemoveBubbleData)
+                    {
+                        [self removeCellData:bubbleData];
+                    }
+
+                    if (hasChanged)
+                    {
+                        // Update the delegate on main thread
+                        dispatch_async(dispatch_get_main_queue(), ^{
+
+                            if (self.delegate)
+                            {
+                                [self.delegate dataSource:self didCellChange:nil];
+                            }
+
+                        });
+                    }
+                }
+
+            });
+        }
+    }];
+}
+
+- (void)refreshSecondaryEventListeners:(NSArray *)liveEventTypesFilterForMessages
+{
+    // Remove the existing listeners
+    if (secondaryLiveEventsListener)
+    {
+        [_secondaryTimeline removeListener:secondaryLiveEventsListener];
+        [_secondaryTimeline removeListener:secondaryRedactionListener];
+    }
+
+    // Listen to live events only for live timeline
+    // Events for past timelines come only from pagination request
+    if (_isLive)
+    {
+        // Register a new one with the requested filter
+        __weak typeof(self) weakSelf = self;
+        secondaryLiveEventsListener = [_secondaryTimeline listenToEventsOfTypes:liveEventTypesFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+            
+            if (MXTimelineDirectionForwards == direction && weakSelf)
+            {
+                typeof(self) self = weakSelf;
+                
+                // Check for local echo suppression
+                MXEvent *localEcho;
+                if (self.secondaryRoom.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUserId])
+                {
+                    localEcho = [self.secondaryRoom pendingLocalEchoRelatedToEvent:event];
+                    if (localEcho)
+                    {
+                        // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
+                        if (localEcho.originServerTs != kMXUndefinedTimestamp)
+                        {
+                            // Replace the local echo by the true event sent by the homeserver
+                            [self replaceEvent:localEcho withEvent:event];
+                        }
+                        else
+                        {
+                            // Remove the local echo, and process independently the true event.
+                            [self replaceEvent:localEcho withEvent:nil];
+                            localEcho = nil;
+                        }
+                    }
+                }
+
+                if (nil == localEcho)
+                {
+                    // Process here incoming events, and outgoing events sent from another device.
+                    [self reloadNotifying:NO];
+                }
+            }
+        }];
+
+    }
+
+    // Register a listener to handle redaction which can affect live and past timelines
+    secondaryRedactionListener = [_secondaryTimeline listenToEventsOfTypes:@[kMXEventTypeStringRoomRedaction] onEvent:^(MXEvent *redactionEvent, MXTimelineDirection direction, MXRoomState *roomState) {
 
         // Consider only live redaction events
         if (direction == MXTimelineDirectionForwards)
@@ -1171,7 +1389,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    if (paginationRequest)
+    if (paginationRequest || secondaryPaginationRequest)
     {
         NSLog(@"[MXKRoomDataSource] paginate: a pagination is already in progress");
         if (failure)
@@ -1190,6 +1408,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
     }
     
+    __block NSUInteger addedCellNb = 0;
+    __block NSMutableArray<NSError*> *operationErrors = [NSMutableArray arrayWithCapacity:2];
+    dispatch_group_t dispatchGroup = dispatch_group_create();
+    
     // Define a new listener for this pagination
     paginationListener = [_timeline listenToEventsOfTypes:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages) onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
         
@@ -1203,6 +1425,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     // Keep a local reference to this listener.
     id localPaginationListenerRef = paginationListener;
     
+    dispatch_group_enter(dispatchGroup);
     // Launch the pagination
     __weak typeof(self) weakSelf = self;
     paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
@@ -1221,11 +1444,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         // Once done, process retrieved events
         [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
             
-            if (success)
-            {
-                NSUInteger addedCellNb = (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
-                success(addedCellNb);
-            }
+            addedCellNb += (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
+            dispatch_group_leave(dispatchGroup);
+            
+//            if (success)
+//            {
+//                success(addedCellNb);
+//            }
             
         }];
         
@@ -1250,19 +1475,131 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             // Process at least events retrieved from store
             [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
                 
-                if (failure)
+                [operationErrors addObject:error];
+                if (addedHistoryCellNb)
                 {
-                    failure(error);
+                    addedCellNb += addedHistoryCellNb;
                 }
-                else if (addedHistoryCellNb && success)
-                {
-                    success(addedHistoryCellNb);
-                }
+                dispatch_group_leave(dispatchGroup);
+                
+//                if (failure)
+//                {
+//                    failure(error);
+//                }
+//                else if (addedHistoryCellNb && success)
+//                {
+//                    success(addedHistoryCellNb);
+//                }
+                
+                
                 
             }];
         }
         
     }];
+    
+    if (_secondaryTimeline)
+    {
+        // Define a new listener for this pagination
+        secondaryPaginationListener = [_secondaryTimeline listenToEventsOfTypes:_secondaryRoomEventTypes onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+            
+            if (direction2 == direction)
+            {
+                [self queueEventForProcessing:event withRoomState:roomState direction:direction];
+            }
+            
+        }];
+        
+        // Keep a local reference to this listener.
+        id localPaginationListenerRef = secondaryPaginationListener;
+        
+        dispatch_group_enter(dispatchGroup);
+        // Launch the pagination
+        __weak typeof(self) weakSelf = self;
+        secondaryPaginationRequest = [_secondaryTimeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
+            
+            typeof(self) self = weakSelf;
+            if (!self)
+            {
+                return;
+            }
+            
+            // Everything went well, remove the listener
+            self->secondaryPaginationRequest = nil;
+            [self.secondaryTimeline removeListener:self->secondaryPaginationListener];
+            self->secondaryPaginationListener = nil;
+            
+            // Once done, process retrieved events
+            [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+                
+                addedCellNb += (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
+                dispatch_group_leave(dispatchGroup);
+//                if (success)
+//                {
+//                    NSUInteger addedCellNb = (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
+//                    success(addedCellNb);
+//                }
+                
+            }];
+            
+        } failure:^(NSError *error) {
+            
+            NSLog(@"[MXKRoomDataSource] paginateBackMessages fails");
+            
+            typeof(self) self = weakSelf;
+            if (!self)
+            {
+                return;
+            }
+            
+            // Something wrong happened or the request was cancelled.
+            // Check whether the request is the actual one before removing listener and handling the retrieved events.
+            if (localPaginationListenerRef == self->secondaryPaginationListener)
+            {
+                self->secondaryPaginationRequest = nil;
+                [self.secondaryTimeline removeListener:self->secondaryPaginationListener];
+                self->secondaryPaginationListener = nil;
+                
+                // Process at least events retrieved from store
+                [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+                    
+                    [operationErrors addObject:error];
+                    if (addedHistoryCellNb)
+                    {
+                        addedCellNb += addedHistoryCellNb;
+                    }
+                    dispatch_group_leave(dispatchGroup);
+//                    if (failure)
+//                    {
+//                        failure(error);
+//                    }
+//                    else if (addedHistoryCellNb && success)
+//                    {
+//                        success(addedHistoryCellNb);
+//                    }
+                    
+                }];
+            }
+            
+        }];
+    }
+    
+    dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (operationErrors.count)
+        {
+            if (failure)
+            {
+                failure(operationErrors.firstObject);
+            }
+        }
+        else
+        {
+            if (success)
+            {
+                success(addedCellNb);
+            }
+        }
+    });
 }
 
 - (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)(void))success failure:(void (^)(NSError *error))failure
@@ -2077,11 +2414,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     // Refresh the room data source when the room has been initialSync'ed
     MXRoom *room = notif.object;
-    if (self.mxSession == room.mxSession && [self.roomId isEqualToString:room.roomId])
+    if (self.mxSession == room.mxSession &&
+        ([self.roomId isEqualToString:room.roomId] || [self.secondaryRoomId isEqualToString:room.roomId]))
     { 
-        NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", _roomId);
+        NSLog(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", room.roomId);
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:room];
         
         [self reload];
     }
@@ -2170,7 +2508,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)eventDidDecrypt:(NSNotification *)notif
 {
     MXEvent *event = notif.object;
-    if ([event.roomId isEqualToString:_roomId])
+    if ([event.roomId isEqualToString:_roomId] ||
+        ([event.roomId isEqualToString:_secondaryRoomId] && [_secondaryRoomEventTypes containsObject:event.type]))
     {
         // Retrieve the cell data hosting the event
         id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:event.eventId];
@@ -2305,6 +2644,36 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     return isSent && isRoomMessage && messageType && ![messageType isEqualToString:@"m.bad.encrypted"];
 }
 
+- (void)setState:(MXKDataSourceState)newState
+{
+    self->state = newState;
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dataSource:didStateChange:)])
+    {
+        [self.delegate dataSource:self didStateChange:self->state];
+    }
+}
+
+- (void)setSecondaryRoomId:(NSString *)secondaryRoomId
+{
+    _secondaryRoomId = secondaryRoomId;
+    
+    if (self.state == MXKDataSourceStateReady)
+    {
+        [self reload];
+    }
+}
+
+- (void)setSecondaryRoomEventTypes:(NSArray<MXEventTypeString> *)secondaryRoomEventTypes
+{
+    _secondaryRoomEventTypes = secondaryRoomEventTypes;
+    
+    if (self.state == MXKDataSourceStateReady)
+    {
+        [self reload];
+    }
+}
+
 #pragma mark - Asynchronous events processing
  + (dispatch_queue_t)processingQueue
 {
@@ -2367,14 +2736,32 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     @synchronized(eventsToProcess)
     {
         [eventsToProcess addObject:queuedEvent];
+        
+        if (self.secondaryRoom)
+        {
+            [eventsToProcess sortUsingComparator:^NSComparisonResult(MXKQueuedEvent * _Nonnull event1, MXKQueuedEvent * _Nonnull event2) {
+//                return [@(event2.event.originServerTs) compare:@(event1.event.originServerTs)];
+                return [event2.eventDate compare:event1.eventDate];
+            }];
+        }
     }
 }
 
 - (BOOL)canPaginate:(MXTimelineDirection)direction
 {
-    if (![_timeline canPaginate:direction])
+    if (_secondaryTimeline)
     {
-        return NO;
+        if (![_timeline canPaginate:direction] && ![_secondaryTimeline canPaginate:direction])
+        {
+            return NO;
+        }
+    }
+    else
+    {
+        if (![_timeline canPaginate:direction])
+        {
+            return NO;
+        }
     }
     
     if (direction == MXTimelineDirectionBackwards && self.shouldStopBackPagination)
@@ -2524,7 +2911,18 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             if (self->eventsToProcess.count)
             {
                 self->eventsToProcessSnapshot = self->eventsToProcess;
-                self->eventsToProcess = [NSMutableArray array];
+                if (self.secondaryRoom)
+                {
+                    @synchronized(self->bubbles)
+                    {
+                        [self->bubbles removeAllObjects];
+                        [self->bubblesSnapshot removeAllObjects];
+                    }
+                }
+                else
+                {
+                    self->eventsToProcess = [NSMutableArray array];
+                }
             }
         }
 
@@ -2923,7 +3321,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 {
                     @autoreleasepool
                     {
-                        [self addReadReceiptsForEvent:queuedEvent.event.eventId inCellDatas:bubblesSnapshot startingAtCellData:self->eventIdToBubbleMap[queuedEvent.event.eventId]];
+                        [self addReadReceiptsForEvent:queuedEvent.event.eventId inCellDatas:self->bubblesSnapshot startingAtCellData:self->eventIdToBubbleMap[queuedEvent.event.eventId]];
                     }
                 }
 
@@ -3114,7 +3512,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
         if (!areReadReceiptsAssigned)
         {
-            NSLog(@"[MXKRoomDataSource] addReadReceipts: Try to attach read receipts to an older message", eventId);
+            NSLog(@"[MXKRoomDataSource] addReadReceipts: Try to attach read receipts to an older message: %@", eventId);
 
             // Try to assign RRs to a previous cell data
             if (cellDataIndex >= 1)
