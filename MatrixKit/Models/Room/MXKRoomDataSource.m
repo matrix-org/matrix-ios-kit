@@ -365,6 +365,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventDidChangeSentState:) name:kMXEventDidChangeSentStateNotification object:nil];
         // Listen to events decrypted
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventDidDecrypt:) name:kMXEventDidDecryptNotification object:nil];
+        // Listen to virtual rooms change
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(virtualRoomsDidChange:) name:kMXSessionVirtualRoomsDidChangeNotification object:matrixSession];
     }
     return self;
 }
@@ -590,6 +592,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeSentStateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidDecryptNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXEventDidChangeIdentifierNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionVirtualRoomsDidChangeNotification object:nil];
 
     if (NSCurrentLocaleDidChangeNotificationObserver)
     {
@@ -3989,6 +3992,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     {
         failure(nil);
     }
+}
+
+#pragma mark - Virtual Rooms
+
+- (void)virtualRoomsDidChange:(NSNotification *)notification
+{
+    //  update secondary room id
+    self.secondaryRoomId = [self.mxSession virtualRoomOf:self.roomId];
 }
 
 @end
