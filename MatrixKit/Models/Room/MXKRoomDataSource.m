@@ -2661,21 +2661,27 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)setSecondaryRoomId:(NSString *)secondaryRoomId
 {
-    _secondaryRoomId = secondaryRoomId;
-    
-    if (self.state == MXKDataSourceStateReady)
+    if (_secondaryRoomId != secondaryRoomId)
     {
-        [self reload];
+        _secondaryRoomId = secondaryRoomId;
+        
+        if (self.state == MXKDataSourceStateReady)
+        {
+            [self reload];
+        }
     }
 }
 
 - (void)setSecondaryRoomEventTypes:(NSArray<MXEventTypeString> *)secondaryRoomEventTypes
 {
-    _secondaryRoomEventTypes = secondaryRoomEventTypes;
-    
-    if (self.state == MXKDataSourceStateReady)
+    if (_secondaryRoomEventTypes != secondaryRoomEventTypes)
     {
-        [self reload];
+        _secondaryRoomEventTypes = secondaryRoomEventTypes;
+        
+        if (self.state == MXKDataSourceStateReady)
+        {
+            [self reload];
+        }
     }
 }
 
