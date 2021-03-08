@@ -306,6 +306,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             kMXEventTypeStringCallReplaces,
             kMXEventTypeStringCallRejectReplacement
         ];
+        NSString *virtualRoomId = [matrixSession virtualRoomOf:_roomId];
+        if (virtualRoomId)
+        {
+            _secondaryRoomId = virtualRoomId;
+        }
         _isLive = YES;
         bubbles = [NSMutableArray array];
         eventsToProcess = [NSMutableArray array];
