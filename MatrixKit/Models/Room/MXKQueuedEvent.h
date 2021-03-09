@@ -42,8 +42,11 @@
  */
 @property (nonatomic) BOOL serverSyncEvent;
 
-- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)state direction:(MXTimelineDirection)direction;
-
+/**
+ Date of the `event`. If event has a valid `originServerTs`, it's converted to a date object, otherwise current date.
+ */
 @property (nonatomic, readonly) NSDate *eventDate;
+
+- (instancetype)initWithEvent:(MXEvent*)event andRoomState:(MXRoomState*)state direction:(MXTimelineDirection)direction;
 
 @end
