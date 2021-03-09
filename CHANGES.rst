@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKRoomDataSource: Introduce secondaryRoomId and secondaryRoomEventTypes.
 
 🐛 Bugfix
  * 
