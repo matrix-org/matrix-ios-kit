@@ -20,7 +20,88 @@ Changes to be released in next version
  * 
 
 Others
+ * Ensure room on event editions.
+
+Changes in 0.14.4 (2021-03-03)
+=================================================
+
+✨ Features
  * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.4)).
+
+Changes in 0.14.3 (2021-02-26)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * Crypto: Pre share session keys when typing by default (vector-im/element-ios/issues/4075).
+
+🐛 Bugfix
+ * App state: Infinite loading spinner when resuming the app (vector-im/element-ios/issues/4073).
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.3)).
+
+Changes in 0.14.2 (2021-02-24)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKRoomDataSource: Notify subclasses on room change.
+ 
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.2)).
 
 Changes in 0.14.1 (2021-02-12)
 =================================================
@@ -56,7 +137,7 @@ Changes in 0.14.0 (2021-02-11)
  * 
 
 🙌 Improvements
- * Pre-share session keys when opening a room (vector-im/element-ios/issues/3934)
+ * Crypto: Add a MXKAppSettings option to pre-share session keys (vector-im/element-ios/issues/3934).
  * VoIP: DTMF support in calls (vector-im/element-ios/issues/3929).
 
 🐛 Bugfix
