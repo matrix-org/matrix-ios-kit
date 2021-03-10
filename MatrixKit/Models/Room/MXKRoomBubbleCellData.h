@@ -110,6 +110,8 @@
  */
 @property (nonatomic, readonly) BOOL containsBubbleComponentWithEncryptionBadge;
 
+@property (nonatomic, weak) MXEvent *event;
+
 /**
  Check and refresh the position of each component.
  */
@@ -147,5 +149,7 @@
  @return First visible component or nil.
  */
 - (MXKRoomBubbleComponent*)getFirstBubbleComponentWithDisplay;
+
+- (BOOL)searchText:(NSString *)text;
 
 @end

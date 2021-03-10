@@ -51,7 +51,7 @@
         {
             bubbleComponents = [NSMutableArray array];
             [bubbleComponents addObject:firstComponent];
-            
+            _event = event;
             senderId = event.sender;
             roomId = roomDataSource.roomId;
             senderDisplayName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
@@ -88,6 +88,10 @@
         }
     }
     return self;
+}
+
+- (BOOL)searchText:(NSString *)text {
+    return [self.textMessage rangeOfString:text  options:NSCaseInsensitiveSearch].location != NSNotFound;
 }
 
 - (void)dealloc

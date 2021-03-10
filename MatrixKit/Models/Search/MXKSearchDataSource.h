@@ -16,6 +16,7 @@
 
 #import "MXKDataSource.h"
 #import "MXKSearchCellDataStoring.h"
+#import "MXKRoomDataSource.h"
 
 #import "MXKEventFormatter.h"
 
@@ -70,6 +71,8 @@ extern NSString *const kMXKSearchCellDataIdentifier;
  Tell whether the room display name should be displayed in each result cell. NO by default.
  */
 @property (nonatomic) BOOL shouldShowRoomDisplayName;
+
+@property (nonatomic) MXKRoomDataSource *roomDataSource;
 
 
 /**

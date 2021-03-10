@@ -708,4 +708,6 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (NSString*)editableTextMessageForEvent:(MXEvent*)event;
 
+- (MXSearchRoomEventResults *)search:(NSString* )text filter:(MXRoomEventFilter *)filter;
+
 @end
