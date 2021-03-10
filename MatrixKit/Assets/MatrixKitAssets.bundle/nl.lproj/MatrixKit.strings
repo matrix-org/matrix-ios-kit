@@ -32,8 +32,8 @@
 "login_display_name_placeholder" = "Weergavenaam (bv. Jan Janssens)";
 "login_email_info" = "Door een e-mailadres in te voeren kunnen andere gebruikers u eenvoudiger op Matrix vinden, verder geeft het u een manier om uw wachtwoord in de toekomst te wijzigen.";
 "login_email_placeholder" = "E-mailadres";
-"login_prompt_email_token" = "Voer uw e-mailadresvalidatiebewijs in:";
-"login_error_title" = "Aanmelden mislukt";
+"login_prompt_email_token" = "Voer uw e-mailadres-validatiebewijs in:";
+"login_error_title" = "Aanmelden Mislukt";
 "login_error_no_login_flow" = "Ophalen van authenticatie-informatie van deze thuisserver is mislukt";
 "login_error_do_not_support_login_flows" = "Momenteel bieden we geen ondersteuning voor sommige of alle aanmeldingsmethoden van deze thuisserver";
 "login_error_registration_is_not_supported" = "Registratie wordt momenteel niet ondersteund";
@@ -47,7 +47,7 @@
 "login_use_fallback" = "Terugvalpagina gebruiken";
 "login_leave_fallback" = "Annuleren";
 "login_invalid_param" = "Ongeldige parameter";
-"register_error_title" = "Registratie mislukt";
+"register_error_title" = "Registratie Mislukt";
 "login_error_forgot_password_is_not_supported" = "Wachtwoord vergeten wordt momenteel nog niet ondersteund";
 // Action
 "no" = "Nee";
@@ -64,8 +64,8 @@
 "submit_code" = "Code versturen";
 "set_power_level" = "Machtsniveau instellen";
 "set_default_power_level" = "Machtsniveau opnieuw instellen";
-"set_moderator" = "Benoemen tot moderator";
-"set_admin" = "Benoemen tot beheerder";
+"set_moderator" = "Tot moderator benoemen";
+"set_admin" = "Tot beheerder benoemen";
 "start_chat" = "Gesprek beginnen";
 "start_voice_call" = "Spraakoproep beginnen";
 "start_video_call" = "Video-oproep beginnen";
@@ -424,7 +424,7 @@
 "notice_sticker" = "sticker";
 "notice_in_reply_to" = "In antwoord op";
 "error_common_message" = "Er is een fout opgetreden. Probeer het later opnieuw.";
-"login_error_resource_limit_exceeded_title" = "Bronlimiet overschreden";
+"login_error_resource_limit_exceeded_title" = "Bronlimiet Overschreden";
 "login_error_resource_limit_exceeded_message_default" = "Deze thuisserver heeft één of meerdere van zijn bronlimieten overschreden.";
 "login_error_resource_limit_exceeded_message_monthly_active_user" = "Deze thuisserver heeft zijn limiet voor maandelijks actieve gebruikers bereikt.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nGelieve contact op te nemen met uw dienstbeheerder om deze dienst te blijven gebruiken.";
