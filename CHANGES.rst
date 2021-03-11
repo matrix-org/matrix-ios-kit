@@ -1,4 +1,4 @@
-Changes to be released in next version
+Changes in 0.14.5 (2021-03-11)
 =================================================
 
 ✨ Features
@@ -21,6 +21,9 @@ Changes to be released in next version
 
 Others
  * Ensure room on event editions.
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.5)).
 
 Changes in 0.14.4 (2021-03-03)
 =================================================
