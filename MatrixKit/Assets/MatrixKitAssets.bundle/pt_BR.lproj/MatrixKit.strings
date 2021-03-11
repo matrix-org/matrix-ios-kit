@@ -445,3 +445,11 @@
 "notice_room_history_visible_to_members_by_you_for_dm" = "Você definiu que mensagens enviadas a partir do presente momento estarão disponíveis para todos os integrantes da sala.";
 "notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Você definiu que mensagens enviadas a partir do presente momento estarão disponíveis para todos os integrantes desta sala, a partir do momento em que eles foram convidados a entrar na sala.";
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Você definiu que mensagens enviadas a partir do presente momento estarão disponíveis para todos os integrantes desta sala, a partir do momento em que eles entrarem na sala.";
+"call_more_actions_dialpad" = "Teclado de discagem";
+"call_more_actions_unhold" = "Retomar";
+"call_more_actions_hold" = "Pausar";
+"call_holded" = "Você pausou a chamada";
+"call_remote_holded" = "%@ pausou a chamada";
+"notice_declined_video_call_by_you" = "Você recusou a chamada";
+"notice_declined_video_call" = "%@ recusou a chamada";
+"resume_call" = "Retomar";
