@@ -3582,17 +3582,17 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
-#pragma mark - Search from locally in encrypted room.
-
+#pragma mark - Search
 - (MXSearchRoomEventResults *)search:(NSString* )text filter:(MXRoomEventFilter *)filter {
     NSArray *bubbles = self->bubbles;
     NSMutableArray *searchResult = [[NSMutableArray alloc] init];
     
     for (MXKRoomBubbleCellData* item in bubbles) {
-        if([item searchText:text]) {
-            if ( (filter.containsURL && item.event.isMediaAttachment) || !filter.containsURL) {
+        NSArray *events = [item searchText:text];
+        for (MXEvent *event in events) {
+            if ( (filter.containsURL && event.isMediaAttachment) || !filter.containsURL) {
                 MXSearchResult *result = [[MXSearchResult alloc] init];
-                result.result = item.event;
+                result.result = event;
                 [searchResult addObject:result];
             }
         }

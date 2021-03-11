@@ -51,7 +51,6 @@
         {
             bubbleComponents = [NSMutableArray array];
             [bubbleComponents addObject:firstComponent];
-            _event = event;
             senderId = event.sender;
             roomId = roomDataSource.roomId;
             senderDisplayName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
@@ -90,8 +89,14 @@
     return self;
 }
 
-- (BOOL)searchText:(NSString *)text {
-    return [self.textMessage rangeOfString:text  options:NSCaseInsensitiveSearch].location != NSNotFound;
+- (NSArray *)searchText:(NSString *)text {
+    NSMutableArray *events = [[NSMutableArray alloc] init];
+    for (MXKRoomBubbleComponent *item in bubbleComponents) {
+        if (item.textMessage && [item.textMessage rangeOfString:text  options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [events addObject:item.event];
+        }
+    }
+    return [NSArray arrayWithArray:events];
 }
 
 - (void)dealloc

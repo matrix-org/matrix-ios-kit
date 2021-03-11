@@ -110,8 +110,6 @@
  */
 @property (nonatomic, readonly) BOOL containsBubbleComponentWithEncryptionBadge;
 
-@property (nonatomic, weak) MXEvent *event;
-
 /**
  Check and refresh the position of each component.
  */
@@ -150,6 +148,11 @@
  */
 - (MXKRoomBubbleComponent*)getFirstBubbleComponentWithDisplay;
 
-- (BOOL)searchText:(NSString *)text;
+/**
+ Search for the matching text
+ 
+ @return Returns array events matching text or empty array
+ */
+- (NSArray *)searchText:(NSString *)text;
 
 @end
