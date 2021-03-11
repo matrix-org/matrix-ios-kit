@@ -18,3 +18,52 @@
 "leave" = "Forlasi";
 "view" = "Vidi";
 "invite" = "Inviti";
+
+// members list Screen 
+
+// accounts list Screen 
+
+// image size selection 
+
+// invitation members list Screen 
+
+// room creation dialog Screen 
+
+// room info dialog Screen
+
+// room details dialog screen
+"room_details_title" = "Detaloj pri ĉambro";
+"register_error_title" = "Registriĝo malsukcesis";
+"login_invalid_param" = "Nevalida parametro";
+"login_leave_fallback" = "Nuligi";
+"login_error_login_email_not_yet" = "La retpoŝta ligilo, kiun vi ankoraŭ ne klakis";
+"login_error_user_in_use" = "Tiu ĉi uzantonomo jam estas uzata";
+"login_error_limit_exceeded" = "Tro multaj petoj sendiĝis";
+"login_error_not_json" = "Ne enhavis validajn JSON-datumojn";
+"login_error_bad_json" = "Misformitaj JSON-datumoj";
+"login_error_unknown_token" = "La donita ĵetono de aliro ne rekoniĝis";
+"login_error_forbidden" = "Nevalidaj uzantonomo aŭ pasvorto";
+"login_error_registration_is_not_supported" = "Registriĝo ne estas nun subtenata";
+"login_error_do_not_support_login_flows" = "Nuntempe ni subtenas neniujn manierojn de salutado difinitajn de tiu ĉi hejmservilo";
+"login_error_no_login_flow" = "Ni malsukcesis akiri informojn pri aŭtentikigo de ĉi tiu hejmservilo";
+"login_error_title" = "Malsukcesis saluto";
+"login_prompt_email_token" = "Bonvolu enigi vian ĵetonon de retpoŝta validigo:";
+"login_email_placeholder" = "Retpoŝtadreso";
+"login_email_info" = "Specifu retpoŝtadresojn por ebligi vian pli facilan troviĝon de aliaj uzantoj, kaj ankaŭ por restarigi vian pasvorton okaze de perdo.";
+"login_display_name_placeholder" = "Prezenta nomo (ekz. Ivano Ĥlestakov)";
+"login_optional_field" = "malnepra";
+"login_password_placeholder" = "Pasvorto";
+"login_user_id_placeholder" = "Identigilo de Matrix (ekz. @ivano:matrix.org aŭ ivano)";
+"login_identity_server_info" = "Matrix havas identigajn servilojn por scii, kiuj retleteroj ktp. bezonas al kiuj identigiloj de Matrix. Nur https://matrix.org ekzistas nuntempe.";
+"login_identity_server_title" = "URL de identiga servilo:";
+"login_home_server_info" = "Via hejmservilo konservas ĉiujn viajn interparolojn kaj datumojn de konto";
+"login_home_server_title" = "URL de hejmservilo:";
+"login_server_url_placeholder" = "URL (ekz. https://matrix.org)";
+
+// Login Screen
+"login_create_account" = "Krei konton:";
+/* *********************** */
+/*      iOS specific       */
+/* *********************** */
+
+"matrix" = "Matrix";

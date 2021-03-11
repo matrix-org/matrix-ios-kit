@@ -3424,7 +3424,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     return isRoomMessage
     && ([messageType isEqualToString:kMXMessageTypeText] || [messageType isEqualToString:kMXMessageTypeEmote])
-    && [event.sender isEqualToString:self.mxSession.myUser.userId];
+    && [event.sender isEqualToString:self.mxSession.myUserId]
+    && [event.roomId isEqualToString:self.roomId];
 }
 
 - (NSString*)editableTextMessageForEvent:(MXEvent*)event
