@@ -35,7 +35,7 @@
 "login_error_resource_limit_exceeded_title" = "Ressourcen-Limit überschritten";
 "login_error_resource_limit_exceeded_message_default" = "Dieser Heimserver hat eine seiner Ressourcen-Limits überschritten.";
 "login_error_resource_limit_exceeded_message_monthly_active_user" = "Dieser Heimserver hat sein Limit an monatlich aktiven Nutzern erreicht.";
-"login_error_resource_limit_exceeded_message_contact" = "\n\nBitte kontaktiere deinen Dienst-Administrator um mit der Nutzung dieses Dienstes fortzufahren.";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nBitte kontaktiere deine Dienst-Administration um mit der Nutzung dieses Dienstes fortzufahren.";
 "login_error_resource_limit_exceeded_contact_button" = "Kontaktiere Administrator";
 // Action
 "no" = "Nein";
@@ -61,7 +61,7 @@
 "select_account" = "Wähle ein Konto";
 "attach_media" = "Anhängen von Medien aus Bibliothek";
 "capture_media" = "Foto/Video aufnehmen";
-"invite_user" = "Matrix-Benutzer einladen";
+"invite_user" = "Matrix-Benutzer:in einladen";
 "reset_to_default" = "Auf Standardeinstellungen zurücksetzen";
 "resend_message" = "Nachricht erneut senden";
 "select_all" = "Alles auswählen";
@@ -97,7 +97,7 @@
 "notice_room_join_rule_public_by_you_for_dm" = "Du hast es öffentlich gemacht.";
 "notice_room_power_level_intro" = "Die Berechtigungsstufe der Teilnehmer ist:";
 "notice_room_power_level_intro_for_dm" = "Die Berechtigungsstufe der Teilnehmer ist:";
-"notice_room_power_level_acting_requirement" = "Die minimale Berechtigungsstufe die ein Benutzer zum Handeln benötigt:";
+"notice_room_power_level_acting_requirement" = "Die minimale Berechtigungsstufe, die ein:e Benutzer:in zum Handeln benötigt:";
 "notice_room_power_level_event_requirement" = "Die minimalen Berechtigungsstufen bezogen auf Ereignisse:";
 "notice_room_aliases" = "Die Raumnamen-Aliase sind: %@";
 "notice_room_aliases_for_dm" = "Die Namen-Aliase sind: %@";
@@ -151,7 +151,7 @@
 // Encryption information
 "room_event_encryption_info_title" = "Ende-zu-Ende Verschlüsselungsinformation\n\n";
 "room_event_encryption_info_event" = "Ereignis Information\n";
-"room_event_encryption_info_event_user_id" = "Benutzer ID\n";
+"room_event_encryption_info_event_user_id" = "Benutzer-ID\n";
 "room_event_encryption_info_event_identity_key" = "Curve25519 Identitätsschlüssel\n";
 "room_event_encryption_info_event_fingerprint_key" = "Verlangter Ed25519 Fingerabdruck\n";
 "room_event_encryption_info_event_algorithm" = "Algorithmus\n";
@@ -222,7 +222,7 @@
 "message_reply_to_message_to_reply_to_prefix" = "Als Antwort auf";
 // Room members
 "room_member_ignore_prompt" = "Sicher, dass alle Nachrichten von diesem/r Benutzer/in versteckt werden sollen?";
-"room_member_power_level_prompt" = "Du kannst diese Änderung nicht rückgangig machen, weil du dem Benutzer die gleiche Berechtigungsstufe gibst, die du selbst hast.\nBist du sicher?";
+"room_member_power_level_prompt" = "Du kannst diese Änderung nicht rückgangig machen, weil du dem/r Benutzer:in die gleiche Berechtigungsstufe gibst, die du selbst hast.\nBist du sicher?";
 // Attachment
 "attachment_size_prompt" = "Möchtest du senden als:";
 "attachment_original" = "Originalgröße: %@";
@@ -263,7 +263,7 @@
 "e2e_passphrase_not_match" = "Passphrasen stimmen nicht überein";
 "e2e_passphrase_create" = "Passphrase erzeugen";
 // Others
-"user_id_title" = "Benutzer ID:";
+"user_id_title" = "Benutzer-ID:";
 "offline" = "offline";
 "unsent" = "Nicht gesendet";
 "error" = "Fehler";
@@ -280,7 +280,7 @@
 "camera_access_not_granted_for_call" = "Video-Anrufe benötigen Zugriff auf die Kamera, aber %@ hat keine Berechtigung";
 "microphone_access_not_granted_for_call" = "Anrufe benötigen Zugriff auf das Mikrofon, aber %@ hat keine Berechtigung";
 "local_contacts_access_not_granted" = "Finden von Benutzern in lokalen Kontakten benötigt Zugriff auf die Kontakte, aber %@ hat keine Berechtigung";
-"local_contacts_access_discovery_warning_title" = "Benutzer finden";
+"local_contacts_access_discovery_warning_title" = "Benutzer:innen finden";
 "local_contacts_access_discovery_warning" = "Um Kontakte zu erkennen, die Matrix bereits verwenden, kann %@ E-Mail-Adressen und Telefonnummern in Ihrem Adressbuch an den von Ihnen ausgewählten Matrix-Identitätsserver senden. Sofern dies unterstützt wird, werden personenbezogene Daten vor dem Senden gehasht. Weitere Informationen finden Sie in den Datenschutzrichtlinien Ihres Identitätsservers.";
 // Country picker
 "country_picker_title" = "Wähle ein Land";
@@ -442,7 +442,7 @@
 "notification_settings_contain_my_display_name" = "Klänge bei Nachrichten die meinen Anzeigenamen enthalten";
 "notification_settings_just_sent_to_me" = "Mich über gerade empfangene Nachrichten mit einem Klang informieren";
 "notification_settings_invite_to_a_new_room" = "Benachrichtige, wenn ich zu einem neuen Raum eingeladen werde";
-"notification_settings_people_join_leave_rooms" = "Benachrichtige, wenn Benutzer einen Raum betreten oder verlassen";
+"notification_settings_people_join_leave_rooms" = "Benachrichtige, wenn Benutzer:innen einen Raum betreten oder verlassen";
 "notification_settings_receive_a_call" = "Benachrichtige, wenn ich einen Anruf erhalte";
 "notification_settings_suppress_from_bots" = "Unterdrücke Benachrichtigungen von Bots";
 "notification_settings_by_default" = "Als Standard...";
@@ -450,7 +450,7 @@
 // gcm section
 "settings_config_home_server" = "Heim-Server: %@";
 "settings_config_identity_server" = "Identitätsserver: %@";
-"settings_config_user_id" = "Benutzer ID: %@";
+"settings_config_user_id" = "Benutzer-ID: %@";
 // Settings keys
 
 // call string
@@ -468,7 +468,7 @@
 "ssl_fingerprint_hash" = "Fingerabdruck (%@):";
 "ssl_could_not_verify" = "Konnte die Identität des Servers nicht verifizieren.";
 "ssl_cert_not_trust" = "Das kann bedeuten, dass jemand den Datenverkehr mitliest, oder dass dein Gerät dem Zertifikat des Servers nicht vertraut.";
-"ssl_cert_new_account_expl" = "Wenn der Server Administrator gesagt hat, dass dies erwartet wird, stell sicher, dass der Fingerabdruck unten dem vom Administrator mitgeteilten Fingerabdruck entspricht.";
+"ssl_cert_new_account_expl" = "Wenn die Server-Administration gesagt hat, dass dies erwartet wird, stelle sicher, dass der Fingerabdruck unten dem von der Administration mitgeteilten Fingerabdruck entspricht.";
 "ssl_unexpected_existing_expl" = "Das Zertifikat des Servers hat sich geändert, es ist nicht mehr das vertraute Zertifikat. Das ist SEHR UNGEWÖHNLICH! Es wird empfohlen das neue Zertifikat NICHT ZU AKZEPTIEREN.";
-"ssl_expected_existing_expl" = "Das Zertifikat des Servers hat sich geändert, es ist nicht mehr das vertraute Zertifikat. Der Server könnte sein Zertifikat erneuert haben. Kontaktiere den Server Administrator um den Fingerabdruck zu überprüfen.";
-"ssl_only_accept" = "Akzeptiere AUSSCHLIESSLICH Zertifikate für die der Server Administrator einen Fingerprint veröffentlicht hat.";
+"ssl_expected_existing_expl" = "Das Zertifikat des Servers hat sich geändert, es ist nicht mehr das vertraute Zertifikat. Der Server könnte sein Zertifikat erneuert haben. Kontaktiere die Server-Administration um den Fingerabdruck zu überprüfen.";
+"ssl_only_accept" = "Akzeptiere AUSSCHLIESSLICH Zertifikate für die die Server-Administration einen Fingerprint veröffentlicht hat.";
