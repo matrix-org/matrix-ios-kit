@@ -470,7 +470,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         peerAvatarURL = mxCall.room.summary.avatar;
     }
     
-    callerNameLabel.text = peerDisplayName;
+    if (mxCall.isVideoCall)
+    {
+        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_video_with_user"], peerDisplayName];
+    }
+    else
+    {
+        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_voice_with_user"], peerDisplayName];
+    }
+    
     if (peerAvatarURL)
     {
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
