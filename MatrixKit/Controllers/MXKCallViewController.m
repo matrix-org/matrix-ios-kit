@@ -895,13 +895,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             self.isRinging = NO;
             [self updateTimeStatusLabel];
 
-            if (call.isVideoCall && call.isConferenceCall)
+            if (call.isVideoCall)
             {
-                // Do not show self view anymore because it is returned by the conference bridge
-                self.localPreviewContainerView.hidden = YES;
+                self.callerImageView.hidden = YES;
+                
+                if (call.isConferenceCall)
+                {
+                    // Do not show self view anymore because it is returned by the conference bridge
+                    self.localPreviewContainerView.hidden = YES;
 
-                // Well, hide does not work. So, shrink the view to nil
-                self.localPreviewContainerView.frame = CGRectZero;
+                    // Well, hide does not work. So, shrink the view to nil
+                    self.localPreviewContainerView.frame = CGRectZero;
+                }
             }
             audioMuteButton.enabled = YES;
             videoMuteButton.enabled = YES;
