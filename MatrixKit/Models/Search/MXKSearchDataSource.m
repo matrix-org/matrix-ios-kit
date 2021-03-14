@@ -169,8 +169,36 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     }
 }
 
+-(void)doLocalSearch {
+    MXWeakify(self);
+
+    [_roomDataSource search:_searchText filter:_roomEventFilter success:^(MXSearchRoomEventResults *result) {
+        // Process HS response to cells data
+        [self convertHomeserverResultsIntoCells:result onComplete:^{
+            MXStrongifyAndReturnIfNil(self);
+
+            self.state = MXKDataSourceStateReady;
+
+            // Provide changes information to the delegate
+            NSIndexSet *insertedIndexes;
+            if (result.results.count)
+            {
+                insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, result.results.count)];
+            }
+
+            [self.delegate dataSource:self didCellChange:insertedIndexes];
+        }];
+    }];
+}
+
 - (void)doSearch
 {
+    
+    // Handle local search
+    if (_roomDataSource.roomState.isEncrypted) {
+        [self doLocalSearch];
+        return;
+    }
     // Handle one request at a time
     if (searchRequest)
     {

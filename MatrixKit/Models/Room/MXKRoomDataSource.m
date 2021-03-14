@@ -3582,4 +3582,42 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
+#pragma mark - Search
+
+
+- (void)search:(NSString* )text filter:(MXRoomEventFilter *)filter success:(void (^)(MXSearchRoomEventResults *result))success {
+
+    id<MXEventsEnumerator> storeMessagesEnumerator = [_room.mxSession.store messagesEnumeratorForRoom:self.roomId];
+    [self paginate:storeMessagesEnumerator.remaining direction:MXTimelineDirectionBackwards onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
+        NSMutableArray *roomEvents = [[NSMutableArray alloc] init];
+        while (0 < storeMessagesEnumerator.remaining) {
+            NSArray<MXEvent *> *messagesFromStore = [storeMessagesEnumerator nextEventsBatch:300];
+            for (MXEvent *event in messagesFromStore) {
+                NSString *body = [event.content valueForKey:@"body"];
+                if (body && [body rangeOfString:text  options:NSCaseInsensitiveSearch].location != NSNotFound) {
+                    [roomEvents addObject:event];
+                }
+            }
+        }
+
+        
+        NSMutableArray *searchResult = [[NSMutableArray alloc] init];
+        for (MXEvent* event in roomEvents) {
+                if ( (filter.containsURL && event.isMediaAttachment) || !filter.containsURL) {
+                    MXSearchResult *result = [[MXSearchResult alloc] init];
+                    result.result = event;
+                    [searchResult addObject:result];
+                }
+        }
+        
+        MXSearchRoomEventResults *result = [[MXSearchRoomEventResults alloc] init];
+        result.count = searchResult.count;
+        result.nextBatch = nil;
+        result.groups = nil;
+        result.results = [NSArray arrayWithArray:searchResult];
+        success(result);
+        } failure:^(NSError *error) {
+            
+        }];
+}
 @end
