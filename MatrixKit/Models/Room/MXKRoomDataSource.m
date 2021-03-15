@@ -3584,23 +3584,41 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 #pragma mark - Search
 
+- (void)paginateTillBeginWithComplete:(void (^)(void))onComplete{
+    MXWeakify(self);
+    
+    if (NO == [self canPaginate:MXTimelineDirectionBackwards]) {
+        onComplete();
+        return;
+    }
+    [self paginate:100 direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+        MXStrongifyAndReturnIfNil(self);
+
+        if(addedCellNumber == 0) {
+            onComplete();
+        } else {
+            [self paginateTillBeginWithComplete:onComplete];
+        }
+    } failure:^(NSError *error) {
+        onComplete();
+    }];
+}
 
 - (void)search:(NSString* )text filter:(MXRoomEventFilter *)filter success:(void (^)(MXSearchRoomEventResults *result))success {
-
-    id<MXEventsEnumerator> storeMessagesEnumerator = [_room.mxSession.store messagesEnumeratorForRoom:self.roomId];
-    [self paginate:storeMessagesEnumerator.remaining direction:MXTimelineDirectionBackwards onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
+    MXWeakify(self);
+    [self paginateTillBeginWithComplete:^{
+        MXStrongifyAndReturnIfNil(self);
+        
+        id<MXEventsEnumerator> storeMessagesEnumerator = [self.room.mxSession.store messagesEnumeratorForRoom:self.roomId];
         NSMutableArray *roomEvents = [[NSMutableArray alloc] init];
         while (0 < storeMessagesEnumerator.remaining) {
-            NSArray<MXEvent *> *messagesFromStore = [storeMessagesEnumerator nextEventsBatch:300];
-            for (MXEvent *event in messagesFromStore) {
+            MXEvent *event = [storeMessagesEnumerator nextEvent];
                 NSString *body = [event.content valueForKey:@"body"];
                 if (body && [body rangeOfString:text  options:NSCaseInsensitiveSearch].location != NSNotFound) {
                     [roomEvents addObject:event];
                 }
-            }
         }
 
-        
         NSMutableArray *searchResult = [[NSMutableArray alloc] init];
         for (MXEvent* event in roomEvents) {
                 if ( (filter.containsURL && event.isMediaAttachment) || !filter.containsURL) {
@@ -3616,8 +3634,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         result.groups = nil;
         result.results = [NSArray arrayWithArray:searchResult];
         success(result);
-        } failure:^(NSError *error) {
-            
-        }];
+    }];
 }
 @end
