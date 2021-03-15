@@ -506,3 +506,15 @@
 //  New
 "notice_room_join_rule_invite" = "%@ heeft dit gesprek alleen op uitnodiging gemaakt.";
 "notice_room_join_rule_invite_for_dm" = "%@ heeft dit gesprek alleen op uitnodiging gemaakt.";
+"call_more_actions_dialpad" = "Kiestoetsen";
+"call_more_actions_transfer" = "Doorschakelen";
+"call_more_actions_audio_use_device" = "Audio-apparaat gebruiken";
+"call_more_actions_audio_use_headset" = "Audio-koptelefoon gebruiken";
+"call_more_actions_change_audio_device" = "Audio-apparaat wisselen";
+"call_more_actions_unhold" = "Hervatten";
+"call_more_actions_hold" = "Vasthouden";
+"call_holded" = "U heeft de oproep in de wacht";
+"call_remote_holded" = "%@ heeft de oproep in de wacht";
+"notice_declined_video_call_by_you" = "U heeft de oproep afgewezen";
+"notice_declined_video_call" = "%@ heeft de oproep afgewezen";
+"resume_call" = "Hervatten";
