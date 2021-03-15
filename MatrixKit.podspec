@@ -26,8 +26,8 @@ Pod::Spec.new do |s|
   s.dependency 'MatrixSDK', "= 0.18.5"
   s.dependency 'HPGrowingTextView', '~> 1.1'
   s.dependency 'libPhoneNumber-iOS', '~> 0.9.13'
-  s.dependency 'DTCoreText', '~> 1.6.23'
-  s.dependency 'Down', '~> 0.9.3'
+  s.dependency 'DTCoreText', '~> 1.6.25'
+  s.dependency 'Down', '~> 0.10.0'
 
   s.default_subspec = 'Core'
 
