@@ -415,7 +415,7 @@
 // room info dialog Screen
 
 // room details dialog screen
-"room_details_title" = "Raum Details";
+"room_details_title" = "Raumdetails";
 // contacts list screen
 "invitation_message" = "Ich würde gerne über Matrix mit dir chatten. Du kannst dich auf https://matrix.org darüber informieren.";
 // Settings screen
