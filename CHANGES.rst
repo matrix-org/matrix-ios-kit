@@ -32,7 +32,7 @@ Changes in 0.14.5 (2021-03-11)
  * 
 
 🐛 Bugfix
- * 
+ * MXKRoomDataSource: Fix memory leak in `bubbles` array.
 
 ⚠️ API Changes
  * 
