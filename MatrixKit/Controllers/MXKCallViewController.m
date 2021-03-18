@@ -834,7 +834,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         case MXCallStateFledgling:
             self.isRinging = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_waiting"];;
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
             break;
         case MXCallStateWaitLocalMedia:
             self.isRinging = NO;
@@ -857,7 +857,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 self.isRinging = YES;
             }
             
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ring"];
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
+            break;
+        }
+        case MXCallStateInviteSent:
+        {
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ringing"];
             break;
         }
         case MXCallStateRinging:
@@ -882,7 +887,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             break;
         case MXCallStateConnecting:
             self.isRinging = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
             
             // User has accepted the call and we can remove incomingCallView
             if (self.incomingCallView)

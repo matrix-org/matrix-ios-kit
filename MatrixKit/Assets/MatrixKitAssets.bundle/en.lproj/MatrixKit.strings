@@ -531,10 +531,9 @@
 // Settings keys 
 
 // call string
-"call_waiting" = "Waiting...";
-"call_connecting" = "Call connecting...";
+"call_connecting" = "Connecting...";
+"call_ringing" = "Ringing...";
 "call_ended" = "Call ended";
-"call_ring" = "Connecting...";
 "incoming_video_call" = "Incoming Video Call";
 "incoming_voice_call" = "Incoming Voice Call";
 "call_invite_expired" = "Call Invite Expired";
