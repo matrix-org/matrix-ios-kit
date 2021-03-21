@@ -472,3 +472,15 @@
 "ssl_unexpected_existing_expl" = "Das Zertifikat des Servers hat sich geändert, es ist nicht mehr das vertraute Zertifikat. Das ist SEHR UNGEWÖHNLICH! Es wird empfohlen das neue Zertifikat NICHT ZU AKZEPTIEREN.";
 "ssl_expected_existing_expl" = "Das Zertifikat des Servers hat sich geändert, es ist nicht mehr das vertraute Zertifikat. Der Server könnte sein Zertifikat erneuert haben. Kontaktiere die Server-Administration um den Fingerabdruck zu überprüfen.";
 "ssl_only_accept" = "Akzeptiere AUSSCHLIESSLICH Zertifikate für die die Server-Administration einen Fingerprint veröffentlicht hat.";
+"call_more_actions_transfer" = "Übertragung";
+"call_more_actions_audio_use_headset" = "Kopfhörer verwenden";
+"call_more_actions_change_audio_device" = "Audiogerät ändern";
+"call_more_actions_unhold" = "Fortsetzen";
+"call_more_actions_hold" = "Halten";
+"call_holded" = "Du hast den Anurf pausiert";
+"call_remote_holded" = "%@ hat den Anruf pausiert";
+"notice_declined_video_call_by_you" = "Du hast den Anruf abgelehnt";
+"notice_declined_video_call" = "%@ hat den Anruf abgelehnt";
+"resume_call" = "Fortsetzen";
+"call_more_actions_dialpad" = "Ziffernblatt";
+"call_more_actions_audio_use_device" = "Lautsprecher verwenden";
