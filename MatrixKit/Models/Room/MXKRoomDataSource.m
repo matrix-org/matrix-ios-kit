@@ -752,24 +752,23 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     // Refresh the event listeners. Note: events for past timelines come only from pagination request
                     [self refreshEventListeners:nil];
                     
-                    __weak typeof(self) weakSelf = self;
+                    MXWeakify(self);
 
                     // Preload the state and some messages around the initial event
                     [_timeline resetPaginationAroundInitialEventWithLimit:_paginationLimitAroundInitialEvent success:^{
 
-                        if (weakSelf)
-                        {
-                            typeof(self) self = weakSelf;
-                            
-                            // Do a "classic" reset. The room view controller will paginate
-                            // from the events stored in the timeline store
-                            [self.timeline resetPagination];
-                            
-                            // Update here data source state if it is not already ready
-                            [self setState:MXKDataSourceStateReady];
-                        }
+                        MXStrongifyAndReturnIfNil(self);
+                        
+                        // Do a "classic" reset. The room view controller will paginate
+                        // from the events stored in the timeline store
+                        [self.timeline resetPagination];
+                        
+                        // Update here data source state if it is not already ready
+                        [self setState:MXKDataSourceStateReady];
 
                     } failure:^(NSError *error) {
+                        
+                        MXStrongifyAndReturnIfNil(self);
 
                         NSLog(@"[MXKRoomDataSource] Failed to resetPaginationAroundInitialEventWithLimit");
 
@@ -883,13 +882,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (_isLive)
     {
         // Register a new one with the requested filter
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
         liveEventsListener = [_timeline listenToEventsOfTypes:liveEventTypesFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
             
-            if (MXTimelineDirectionForwards == direction && weakSelf)
+            MXStrongifyAndReturnIfNil(self);
+            
+            if (MXTimelineDirectionForwards == direction)
             {
-                typeof(self) self = weakSelf;
-                
                 // Check for local echo suppression
                 MXEvent *localEcho;
                 if (self.room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
@@ -1029,13 +1028,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     if (_isLive)
     {
         // Register a new one with the requested filter
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
         secondaryLiveEventsListener = [_secondaryTimeline listenToEventsOfTypes:liveEventTypesFilterForMessages onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
             
-            if (MXTimelineDirectionForwards == direction && weakSelf)
+            MXStrongifyAndReturnIfNil(self);
+            
+            if (MXTimelineDirectionForwards == direction)
             {
-                typeof(self) self = weakSelf;
-                
                 // Check for local echo suppression
                 MXEvent *localEcho;
                 if (self.secondaryRoom.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUserId])
@@ -1214,15 +1213,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
     
     // Add typing notification listener
-    __weak typeof(self) weakSelf = self;
+    MXWeakify(self);
+    
     typingNotifListener = [_timeline listenToEventsOfTypes:@[kMXEventTypeStringTypingNotification] onEvent:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState)
     {
+        MXStrongifyAndReturnIfNil(self);
         
         // Handle only live events
-        if (direction == MXTimelineDirectionForwards && weakSelf)
+        if (direction == MXTimelineDirectionForwards)
         {
-            typeof(self) self = weakSelf;
-            
             // Retrieve typing users list
             NSMutableArray *typingUsers = [NSMutableArray arrayWithArray:self.room.typingUsers];
 
@@ -1435,14 +1434,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     dispatch_group_enter(dispatchGroup);
     // Launch the pagination
-    __weak typeof(self) weakSelf = self;
+    
+    MXWeakify(self);
     paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
         
-        typeof(self) self = weakSelf;
-        if (!self)
-        {
-            return;
-        }
+        MXStrongifyAndReturnIfNil(self);
         
         // Everything went well, remove the listener
         self->paginationRequest = nil;
@@ -1455,22 +1451,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             addedCellNb += (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
             dispatch_group_leave(dispatchGroup);
             
-//            if (success)
-//            {
-//                success(addedCellNb);
-//            }
-            
         }];
         
     } failure:^(NSError *error) {
         
         NSLog(@"[MXKRoomDataSource] paginateBackMessages fails");
         
-        typeof(self) self = weakSelf;
-        if (!self)
-        {
-            return;
-        }
+        MXStrongifyAndReturnIfNil(self);
         
         // Something wrong happened or the request was cancelled.
         // Check whether the request is the actual one before removing listener and handling the retrieved events.
@@ -1489,18 +1476,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     addedCellNb += addedHistoryCellNb;
                 }
                 dispatch_group_leave(dispatchGroup);
-                
-//                if (failure)
-//                {
-//                    failure(error);
-//                }
-//                else if (addedHistoryCellNb && success)
-//                {
-//                    success(addedHistoryCellNb);
-//                }
-                
-                
-                
+
             }];
         }
         
@@ -1523,14 +1499,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         dispatch_group_enter(dispatchGroup);
         // Launch the pagination
-        __weak typeof(self) weakSelf = self;
+        MXWeakify(self);
         secondaryPaginationRequest = [_secondaryTimeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
             
-            typeof(self) self = weakSelf;
-            if (!self)
-            {
-                return;
-            }
+            MXStrongifyAndReturnIfNil(self);
             
             // Everything went well, remove the listener
             self->secondaryPaginationRequest = nil;
@@ -1542,23 +1514,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 
                 addedCellNb += (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
                 dispatch_group_leave(dispatchGroup);
-//                if (success)
-//                {
-//                    NSUInteger addedCellNb = (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
-//                    success(addedCellNb);
-//                }
-                
+
             }];
             
         } failure:^(NSError *error) {
             
             NSLog(@"[MXKRoomDataSource] paginateBackMessages fails");
             
-            typeof(self) self = weakSelf;
-            if (!self)
-            {
-                return;
-            }
+            MXStrongifyAndReturnIfNil(self);
             
             // Something wrong happened or the request was cancelled.
             // Check whether the request is the actual one before removing listener and handling the retrieved events.
@@ -1577,15 +1540,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                         addedCellNb += addedHistoryCellNb;
                     }
                     dispatch_group_leave(dispatchGroup);
-//                    if (failure)
-//                    {
-//                        failure(error);
-//                    }
-//                    else if (addedHistoryCellNb && success)
-//                    {
-//                        success(addedHistoryCellNb);
-//                    }
-                    
+
                 }];
             }
             
@@ -2904,16 +2859,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
  */
 - (void)processQueuedEvents:(void (^)(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb))onComplete
 {
-    __weak typeof(self) weakSelf = self;
+    MXWeakify(self);
     
     // Do the processing on the processing queue
     dispatch_async(MXKRoomDataSource.processingQueue, ^{
         
-        typeof(self) self = weakSelf;
-        if (!self)
-        {
-            return;
-        }
+        MXStrongifyAndReturnIfNil(self);
         
         // Note: As this block is always called from the same processing queue,
         // only one batch process is done at a time. Thus, an event cannot be
