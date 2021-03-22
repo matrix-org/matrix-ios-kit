@@ -2708,8 +2708,9 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         
         if (self.secondaryRoom)
         {
-            [eventsToProcess sortUsingComparator:^NSComparisonResult(MXKQueuedEvent * _Nonnull event1, MXKQueuedEvent * _Nonnull event2) {
-//                return [@(event2.event.originServerTs) compare:@(event1.event.originServerTs)];
+            //  use a stable sorting here, which means it won't change the order of events unless it has to.
+            [eventsToProcess sortWithOptions:NSSortStable
+                             usingComparator:^NSComparisonResult(MXKQueuedEvent * _Nonnull event1, MXKQueuedEvent * _Nonnull event2) {
                 return [event2.eventDate compare:event1.eventDate];
             }];
         }
