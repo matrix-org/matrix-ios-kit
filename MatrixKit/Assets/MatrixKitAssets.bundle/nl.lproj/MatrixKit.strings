@@ -502,9 +502,9 @@
 "notice_room_created_for_dm" = "%@ is toegetreden.";
 "notice_room_power_level_intro_for_dm" = "Het machtsniveau van de gespreksleden is:";
 "notice_room_join_rule_invite_by_you_for_dm" = "U maakte dit gesprek alleen op uitnodiging.";
-"notice_room_join_rule_invite_by_you" = "U maakte dit gesprek alleen op uitnodiging.";
+"notice_room_join_rule_invite_by_you" = "U heeft het toegangsbeleid gewijzigd naar alleen genodigden.";
 //  New
-"notice_room_join_rule_invite" = "%@ heeft dit gesprek alleen op uitnodiging gemaakt.";
+"notice_room_join_rule_invite" = "%@ heeft het toegangsbeleid gewijzigd naar alleen genodigden.";
 "notice_room_join_rule_invite_for_dm" = "%@ heeft dit gesprek alleen op uitnodiging gemaakt.";
 "call_more_actions_dialpad" = "Kiestoetsen";
 "call_more_actions_transfer" = "Doorschakelen";
