@@ -453,3 +453,7 @@
 "notice_declined_video_call_by_you" = "Você recusou a chamada";
 "notice_declined_video_call" = "%@ recusou a chamada";
 "resume_call" = "Retomar";
+"call_more_actions_transfer" = "Transferir";
+"call_more_actions_audio_use_device" = "Usar caixa de som";
+"call_more_actions_audio_use_headset" = "Usar fone de ouvido";
+"call_more_actions_change_audio_device" = "Mudar o dispositivo de áudio";
