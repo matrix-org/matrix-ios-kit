@@ -8,7 +8,7 @@ Changes to be released in next version
  * Pods: Update JSQMessagesViewController, DTCoreText, Down (vector-im/element-ios/issues/4120).
 
 🐛 Bugfix
- * 
+ * Fix collapsing of separately processed events
 
 ⚠️ API Changes
  * 
