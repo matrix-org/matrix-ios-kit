@@ -444,3 +444,15 @@
 "notice_room_history_visible_to_members_by_you_for_dm" = "Du gjorde framtida meddelanden synliga för alla rumsmedlemmar.";
 "notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Du gjorde framtida meddelanden synliga för alla från när de bjöds in.";
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Du gjorde framtida meddelanden synliga för alla från när de gick med.";
+"call_more_actions_dialpad" = "Knappsats";
+"call_more_actions_transfer" = "Överför";
+"call_more_actions_audio_use_device" = "Använd enhetsljud";
+"call_more_actions_audio_use_headset" = "Använd headsetljud";
+"call_more_actions_change_audio_device" = "Byt ljudenhet";
+"call_more_actions_unhold" = "Återuppta";
+"call_more_actions_hold" = "Parkera";
+"call_holded" = "Du parkerade samtalet";
+"call_remote_holded" = "%@ parkerade samtalet";
+"notice_declined_video_call_by_you" = "Du avslog samtalet";
+"notice_declined_video_call" = "%@ avslog samtalet";
+"resume_call" = "Återuppta";

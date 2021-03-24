@@ -61,6 +61,8 @@
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
 		8EE45E64044E107FAB59C7D1 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
+		A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */; };
+		A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */; };
 		B11D3C7E20C032BD00938BCB /* MXKBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */; };
 		B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */; };
 		B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D10322D62A4800570CA4 /* MXKUTITests.swift */; };
@@ -367,6 +369,9 @@
 		8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		92663A6A1EF6E5B3005FB712 /* MXKSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSoundPlayer.h; sourceTree = "<group>"; };
 		92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSoundPlayer.m; sourceTree = "<group>"; };
+		A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKRoomDataSourceTests.swift; sourceTree = "<group>"; };
+		A8C4035925F0C33B00B3F18B /* MXKRoomDataSource+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXKRoomDataSource+Tests.h"; sourceTree = "<group>"; };
+		A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MXKRoomDataSource+Tests.m"; sourceTree = "<group>"; };
 		B11D3C7C20C032BD00938BCB /* MXKBarButtonItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKBarButtonItem.h; sourceTree = "<group>"; };
 		B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKBarButtonItem.m; sourceTree = "<group>"; };
 		B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKUTI.swift; sourceTree = "<group>"; };
@@ -712,6 +717,9 @@
 			children = (
 				B125D10222D62A4800570CA4 /* UTI */,
 				32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */,
+				A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */,
+				A8C4035925F0C33B00B3F18B /* MXKRoomDataSource+Tests.h */,
+				A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */,
 				3203F26C1D2E9CAE0021F170 /* Info.plist */,
 				550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */,
 				B125D0FF22D61F1D00570CA4 /* MatrixKitTests-Bridging-Header.h */,
@@ -1843,9 +1851,11 @@
 			files = (
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
+				A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */,
 				328E410424CB135100DC4490 /* MatrixKitVersion.m in Sources */,
 				B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */,
 				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
+				A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */,
 				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
