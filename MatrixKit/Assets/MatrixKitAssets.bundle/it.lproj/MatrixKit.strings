@@ -445,3 +445,15 @@
 "notice_room_history_visible_to_members_by_you_for_dm" = "Hai reso visibili i messaggi futuri a tutti i membri della stanza.";
 "notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Hai reso visibili i messaggi futuri a chiunque, dal momento dell'invito.";
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Hai reso visibili i messaggi futuri a chiunque, dal momento dell'entrata.";
+"call_more_actions_dialpad" = "Tastierino numerico";
+"call_more_actions_transfer" = "Trasferisci";
+"call_more_actions_audio_use_device" = "Usa audio da dispositivo";
+"call_more_actions_audio_use_headset" = "Usa audio da cuffie";
+"call_more_actions_change_audio_device" = "Cambia dispositivo audio";
+"call_more_actions_unhold" = "Riprendi";
+"call_more_actions_hold" = "In attesa";
+"call_holded" = "Hai messo la chiamata in attesa";
+"call_remote_holded" = "%@ ha messo la chiamata in attesa";
+"notice_declined_video_call_by_you" = "Hai rifiutato la chiamata";
+"notice_declined_video_call" = "%@ ha rifiutato la chiamata";
+"resume_call" = "Riprendi";

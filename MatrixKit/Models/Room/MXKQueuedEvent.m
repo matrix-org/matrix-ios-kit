@@ -30,4 +30,14 @@
     return self;
 }
 
+- (NSDate *)eventDate
+{
+    if (_event.originServerTs != kMXUndefinedTimestamp)
+    {
+        return [NSDate dateWithTimeIntervalSince1970:(double)_event.originServerTs/1000];
+    }
+    
+    return [NSDate date];
+}
+
 @end
