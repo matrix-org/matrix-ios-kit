@@ -9,7 +9,7 @@ Changes to be released in next version
  * MXKRoomDataSource: Introduce secondaryRoomId and secondaryRoomEventTypes.
 
 🐛 Bugfix
- * 
+ * Fix collapsing of separately processed events
 
 ⚠️ API Changes
  * 

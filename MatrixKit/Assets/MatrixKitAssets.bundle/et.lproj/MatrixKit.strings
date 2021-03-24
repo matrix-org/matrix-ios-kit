@@ -444,3 +444,15 @@
 "notice_room_history_visible_to_members_by_you_for_dm" = "Sina tegid jututoa tulevase ajaloo loetavaks kõikidele jututoa liikmetele.";
 "notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Sina määrasid, et jututoa tulevane ajalugu on nähtav kõikidele selle liikmetele liitumiskutse saatmise hetkest.";
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Sina määrasid, et jututoa tulevane ajalugu on nähtav kõikidele selle liikmetele nende liitumise hetkest.";
+"call_more_actions_dialpad" = "Numbriklahvistik";
+"call_more_actions_transfer" = "Suuna kõne edasi";
+"call_more_actions_audio_use_device" = "Kasuta seadme kõlarit ja mikrofoni";
+"call_more_actions_audio_use_headset" = "Kasuta kõrvaklappe";
+"call_more_actions_change_audio_device" = "Muuda heliseadet";
+"call_more_actions_unhold" = "Jätka";
+"call_more_actions_hold" = "Pane ootele";
+"call_holded" = "Sina panid kõne ootele";
+"call_remote_holded" = "%@ pani kõne ootele";
+"notice_declined_video_call_by_you" = "Sina keeldusid kõnest";
+"notice_declined_video_call" = "%@ keeldus kõnest";
+"resume_call" = "Jätka";

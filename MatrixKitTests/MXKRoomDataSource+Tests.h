@@ -21,4 +21,7 @@
 - (NSArray<id<MXKRoomBubbleCellDataStoring>> *)getBubbles;
 - (void)replaceBubbles:(NSArray<id<MXKRoomBubbleCellDataStoring>> *)newBubbles;
 
+- (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXTimelineDirection)direction;
+- (void)processQueuedEvents:(void (^)(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb))onComplete;
+
 @end

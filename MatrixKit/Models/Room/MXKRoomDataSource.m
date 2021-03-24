@@ -3018,6 +3018,12 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
                                             // The new cell must have the collapsed state as the series
                                             bubbleData.collapsed = tailBubbleData.collapsed;
+
+                                            // If the start of the collapsible series stems from an event in a different processing
+                                            // batch, we need to track it here so that we can update the summary string later
+                                            if (![collapsingCellDataSeriess containsObject:self->collapsableSeriesAtEnd]) {
+                                                [collapsingCellDataSeriess addObject:self->collapsableSeriesAtEnd];
+                                            }
                                         }
                                         else
                                         {
@@ -3298,7 +3304,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 // Check if all cells of self.bubbles belongs to a single collapse series.
                 // In this case, collapsableSeriesAtStart and collapsableSeriesAtEnd must be equal
                 // in order to handle next forward or backward pagination.
-                if (self->collapsableSeriesAtStart == self->bubbles.firstObject)
+                if (self->collapsableSeriesAtStart && self->collapsableSeriesAtStart == self->bubbles.firstObject)
                 {
                     // Find the tail
                     id<MXKRoomBubbleCellDataStoring> tailBubbleData = self->collapsableSeriesAtStart;
