@@ -22,6 +22,7 @@
 #import "MXKRoomBubbleCellDataStoring.h"
 #import "MXKEventFormatter.h"
 
+@class MXKQueuedEvent;
 
 /**
  Define the threshold which triggers a bubbles count flush.
@@ -97,7 +98,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
     /**
      The queue of events that need to be processed in order to compute their display.
      */
-    NSMutableArray *eventsToProcess;
+    NSMutableArray<MXKQueuedEvent*> *eventsToProcess;
     
     /**
      The dictionary of the related groups that the current user did not join.
@@ -109,6 +110,18 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  The id of the room managed by the data source.
  */
 @property (nonatomic, readonly) NSString *roomId;
+
+/**
+ The id of the secondary room managed by the data source. Events with specified types from the secondary room will be provided from the data source.
+ @see `secondaryRoomEventTypes`.
+ Can be nil.
+ */
+@property (nonatomic, copy) NSString *secondaryRoomId;
+
+/**
+ Types of events to include from the secondary room. Default is all call events.
+ */
+@property (nonatomic, copy) NSArray<MXEventTypeString> *secondaryRoomEventTypes;
 
 /**
  The room the data comes from.

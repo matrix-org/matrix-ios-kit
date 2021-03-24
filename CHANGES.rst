@@ -6,6 +6,7 @@ Changes to be released in next version
 
 🙌 Improvements
  * Pods: Update JSQMessagesViewController, DTCoreText, Down (vector-im/element-ios/issues/4120).
+ * MXKRoomDataSource: Introduce secondaryRoomId and secondaryRoomEventTypes.
 
 🐛 Bugfix
  * 
