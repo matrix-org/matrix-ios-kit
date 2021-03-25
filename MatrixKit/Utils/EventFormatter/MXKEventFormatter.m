@@ -223,58 +223,86 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 }
 
 
-#pragma mark event sender info
+#pragma mark event sender/target info
 
 - (NSString*)senderDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
-    // Consider first the current display name defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderDisplayName = [roomState.members memberName:event.sender];
-    // Check whether this sender name is updated by the current event (This happens in case of new joined member)
+    // Check whether the sender name is updated by the current event. This happens in case of a
+    // newly joined member. Otherwise, fall back to the current display name defined in the provided
+    // room state (note: this room state is supposed to not take the new event into account).
+    return [self userDisplayNameFromContentInEvent:event withMembershipFilter:@"join"] ?: [roomState.members memberName:event.sender];
+}
+
+- (NSString*)targetDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
+{
+    if (![event.type isEqualToString:kMXEventTypeStringRoomMember])
+    {
+        return nil; // Non-membership events don't have a target
+    }
+    return [self userDisplayNameFromContentInEvent:event withMembershipFilter:nil] ?: [roomState.members memberName:event.stateKey];
+}
+
+- (NSString*)userDisplayNameFromContentInEvent:(MXEvent*)event withMembershipFilter:(NSString *)filter
+{
     NSString* membership;
     MXJSONModelSetString(membership, event.content[@"membership"]);
     NSString* displayname;
     MXJSONModelSetString(displayname, event.content[@"displayname"]);
     
-    if (membership && [membership isEqualToString:@"join"] && [displayname length])
+    if (membership && (!filter || [membership isEqualToString:filter]) && [displayname length])
     {
-        // Use the actual display name
-        senderDisplayName = displayname;
+        return displayname;
     }
-    return senderDisplayName;
+
+    return nil;
 }
 
 - (NSString*)senderAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
 {
-    // Consider first the avatar url defined in provided room state (Note: this room state is supposed to not take the new event into account)
-    NSString *senderAvatarUrl = [roomState.members memberWithUserId:event.sender].avatarUrl;
+    // Check whether the avatar URL is updated by the current event. This happens in case of a
+    // newly joined member. Otherwise, fall back to the avatar URL defined in the provided room
+    // state (note: this room state is supposed to not take the new event into account).
+    NSString *avatarUrl = [self userAvatarUrlFromContentInEvent:event withMembershipFilter:@"join"] ?: [roomState.members memberWithUserId:event.sender].avatarUrl;
     
-    // Check whether this avatar url is updated by the current event (This happens in case of new joined member)
+    // Handle here the case where no avatar is defined
+    return avatarUrl ?: [self fallbackAvatarUrlForUserId:event.sender];
+}
+
+- (NSString*)targetAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState
+{
+    if (![event.type isEqualToString:kMXEventTypeStringRoomMember])
+    {
+        return nil; // Non-membership events don't have a target
+    }
+    NSString *avatarUrl = [self userAvatarUrlFromContentInEvent:event withMembershipFilter:nil] ?: [roomState.members memberWithUserId:event.stateKey].avatarUrl;
+    return avatarUrl ?: [self fallbackAvatarUrlForUserId:event.stateKey];
+}
+
+- (NSString*)userAvatarUrlFromContentInEvent:(MXEvent*)event withMembershipFilter:(NSString *)filter
+{
     NSString* membership;
     MXJSONModelSetString(membership, event.content[@"membership"]);
     NSString* avatarUrl;
     MXJSONModelSetString(avatarUrl, event.content[@"avatar_url"]);
     
-    if (membership && [membership isEqualToString:@"join"] && [avatarUrl length])
+    if (membership && (!filter || [membership isEqualToString:filter]) && [avatarUrl length])
     {
         // We ignore non mxc avatar url
         if ([avatarUrl hasPrefix:kMXContentUriScheme])
         {
-            // Use the actual avatar
-            senderAvatarUrl = avatarUrl;
-        }
-        else
-        {
-            senderAvatarUrl = nil;
+            return avatarUrl;
         }
     }
     
-    // Handle here the case where no avatar is defined (Check SDK options before using identicon).
-    if (!senderAvatarUrl && ![MXSDKOptions sharedInstance].disableIdenticonUseForUserAvatar)
+    return nil;
+}
+
+- (NSString*)fallbackAvatarUrlForUserId:(NSString*)userId {
+    if ([MXSDKOptions sharedInstance].disableIdenticonUseForUserAvatar)
     {
-        senderAvatarUrl = [mxSession.mediaManager urlOfIdenticon:event.sender];
+        return nil;
     }
-    
-    return senderAvatarUrl;
+    return [mxSession.mediaManager urlOfIdenticon:userId];
 }
 
 

@@ -366,6 +366,7 @@
 		71DE22E61BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomBubbleCellDataWithIncomingAppendingMode.h; sourceTree = "<group>"; };
 		71EBE6611C04608100E7D953 /* MXKRoomActivitiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomActivitiesView.h; sourceTree = "<group>"; };
 		71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomActivitiesView.m; sourceTree = "<group>"; };
+		8878281C260C85BB00429B35 /* MXKEventFormatter+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXKEventFormatter+Tests.h"; sourceTree = "<group>"; };
 		8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		92663A6A1EF6E5B3005FB712 /* MXKSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSoundPlayer.h; sourceTree = "<group>"; };
 		92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSoundPlayer.m; sourceTree = "<group>"; };
@@ -717,6 +718,7 @@
 			children = (
 				B125D10222D62A4800570CA4 /* UTI */,
 				32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */,
+				8878281C260C85BB00429B35 /* MXKEventFormatter+Tests.h */,
 				A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */,
 				A8C4035925F0C33B00B3F18B /* MXKRoomDataSource+Tests.h */,
 				A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */,

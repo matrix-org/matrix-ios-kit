@@ -140,6 +140,18 @@ typedef enum : NSUInteger {
 - (NSString*)senderDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState;
 
 /**
+ Compose the event target display name according to the current room state.
+
+ @discussion "target" refers to the room member who is the target of this event (if any), e.g.
+ the invitee, the person being banned, etc.
+
+ @param event the event to format.
+ @param roomState the room state right before the event.
+ @return the target display name (if any)
+ */
+- (NSString*)targetDisplayNameForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState;
+
+/**
  Retrieve the avatar url of the event sender from the current room state.
  
  @param event the event to format.
@@ -147,6 +159,18 @@ typedef enum : NSUInteger {
  @return the sender avatar url
  */
 - (NSString*)senderAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState;
+
+/**
+ Retrieve the avatar url of the event target from the current room state.
+
+ @discussion "target" refers to the room member who is the target of this event (if any), e.g.
+ the invitee, the person being banned, etc.
+
+ @param event the event to format.
+ @param roomState the room state right before the event.
+ @return the target avatar url (if any)
+ */
+- (NSString*)targetAvatarUrlForEvent:(MXEvent*)event withRoomState:(MXRoomState*)roomState;
 
 /**
  Generate a displayable string representating the event.
