@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * vertical layout of typing notifs can go wonky (vector-im/element-ios/issues/4159).
 
 ⚠️ API Changes
  * 
