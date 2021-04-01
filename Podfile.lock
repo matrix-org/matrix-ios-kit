@@ -14,55 +14,55 @@ PODS:
   - AFNetworking/Serialization (4.0.1)
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
-  - Down (0.9.3)
-  - DTCoreText (1.6.23):
-    - DTCoreText/Core (= 1.6.23)
+  - Down (0.10.0)
+  - DTCoreText (1.6.25):
+    - DTCoreText/Core (= 1.6.25)
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTCoreText/Core (1.6.23):
+  - DTCoreText/Core (1.6.25):
     - DTFoundation/Core (~> 1.7.5)
     - DTFoundation/DTAnimatedGIF (~> 1.7.5)
     - DTFoundation/DTHTMLParser (~> 1.7.5)
     - DTFoundation/UIKit (~> 1.7.5)
-  - DTFoundation/Core (1.7.14)
-  - DTFoundation/DTAnimatedGIF (1.7.14)
-  - DTFoundation/DTHTMLParser (1.7.14):
+  - DTFoundation/Core (1.7.16)
+  - DTFoundation/DTAnimatedGIF (1.7.16)
+  - DTFoundation/DTHTMLParser (1.7.16):
     - DTFoundation/Core
-  - DTFoundation/UIKit (1.7.14):
+  - DTFoundation/UIKit (1.7.16):
     - DTFoundation/Core
   - GZIP (1.3.0)
   - HPGrowingTextView (1.1)
-  - JSQMessagesViewController (7.2.0):
+  - JSQMessagesViewController (7.3.5):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libbase58 (0.1.4)
   - libPhoneNumber-iOS (0.9.15)
-  - MatrixSDK (0.18.5):
-    - MatrixSDK/Core (= 0.18.5)
-  - MatrixSDK/Core (0.18.5):
+  - MatrixSDK (0.18.6):
+    - MatrixSDK/Core (= 0.18.6)
+  - MatrixSDK/Core (0.18.6):
     - AFNetworking (~> 4.0.0)
     - GZIP (~> 1.3.0)
     - libbase58 (~> 0.1.4)
     - OLMKit (~> 3.2.2)
-    - Realm (= 10.1.4)
+    - Realm (= 10.7.2)
   - OLMKit (3.2.2):
     - OLMKit/olmc (= 3.2.2)
     - OLMKit/olmcpp (= 3.2.2)
   - OLMKit/olmc (3.2.2)
   - OLMKit/olmcpp (3.2.2)
-  - Realm (10.1.4):
-    - Realm/Headers (= 10.1.4)
-  - Realm/Headers (10.1.4)
+  - Realm (10.7.2):
+    - Realm/Headers (= 10.7.2)
+  - Realm/Headers (10.7.2)
 
 DEPENDENCIES:
-  - Down (~> 0.9.3)
-  - DTCoreText (~> 1.6.21)
+  - Down (~> 0.10.0)
+  - DTCoreText (~> 1.6.25)
   - HPGrowingTextView (~> 1.1)
-  - JSQMessagesViewController (~> 7.2.0)
+  - JSQMessagesViewController (~> 7.3.5)
   - libPhoneNumber-iOS (~> 0.9.13)
-  - MatrixSDK (= 0.18.5)
+  - MatrixSDK (= 0.18.6)
 
 SPEC REPOS:
   trunk:
@@ -82,19 +82,19 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
-  Down: 4553b984236807e384fa0ef7c7e360ef9f7c425d
-  DTCoreText: 67023bb51b26711d5f640c851f4845aea14c24c9
-  DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
+  Down: 01f155f9d7e99673c667efd2218709c3b9a8bc13
+  DTCoreText: e92f4cf6b36d9d71ce4436d12cf089d74ab0596b
+  DTFoundation: e7781d9fd2f202bfd451fbbf8cab71ce83b46498
   GZIP: 416858efbe66b41b206895ac6dfd5493200d95b3
   HPGrowingTextView: 88a716d97fb853bcb08a4a08e4727da17efc9b19
-  JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
+  JSQMessagesViewController: 6587f56aedbcb150a8ba1d968e1ef58b1bc758b7
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libbase58: 7c040313537b8c44b6e2d15586af8e21f7354efd
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
-  MatrixSDK: 013859281629b8cccd3a8af1dec48f36335c058c
+  MatrixSDK: 4437d3c4299b06954809e2eaa96f9193703e920e
   OLMKit: 20d1c564033a1ae7148f8f599378d4c798363905
-  Realm: 80f4fb2971ccb9adc27a47d0955ae8e533a7030b
+  Realm: e523da9ade306c5ae87e85dc09fdef148d3e1cc1
 
-PODFILE CHECKSUM: 484fb743a0f2665dab31e4c9dac9ae54242d820a
+PODFILE CHECKSUM: b6ae55cc5f12134ee3a25a7906640d938f30795b
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1

@@ -23,7 +23,7 @@
 "submit_code" = "تَسلِيم الرَّمز";
 "submit" = "التَّسلِيم";
 "sign_up" = "الاِشتِراك";
-"retry" = "إعادَة المُحاوَلة";
+"retry" = "إعادَةُ المُحاوَلة";
 "dismiss" = "إبعَاد";
 "discard" = "اِستِبعاد";
 "continue" = "الاِستِمرار";
@@ -387,7 +387,7 @@
 "unban" = "رَفع-الحَظْر";
 "ban" = "حَظْر";
 "kick" = "طَرد";
-"invite" = "دَعوة";
+"invite" = "اُدعُ";
 "num_members_other" = "عَدَد %@ مُستَخدِم";
 "num_members_one" = "عَدَد %@ مُستَخدِم";
 "membership_ban" = "حَظْر";
@@ -527,3 +527,15 @@
 "ssl_homeserver_url" = "عُنوانُ URL لِلخادِم الرَّئيس: %@";
 "user_id_placeholder" = "مِثال: bob:homeserver@";
 "network_error_not_reachable" = "يُرجَى التَّحَقُّق مِن اِتِّصالَكَ بِالشَبَكَة";
+"call_more_actions_dialpad" = "لَوحَةُ الاِتِّصَال";
+"call_more_actions_transfer" = "النَّقل";
+"call_more_actions_audio_use_device" = "اِستِخدامُ صَوتَ الجِهَاز";
+"call_more_actions_audio_use_headset" = "اِستِخدامُ صَوتَ سمَّاعَةِ الرَّأس";
+"call_more_actions_change_audio_device" = "تَغيِيرُ جِهَازِ الصَوت";
+"call_more_actions_unhold" = "الاِستِئنَاف";
+"call_more_actions_hold" = "التَّمَسُّك";
+"call_remote_holded" = "لَقَد أمسَكَ %@ المُكالَمَة";
+"call_holded" = "أنتَ قَد أمسَكتَ المُكالَمَة";
+"notice_declined_video_call_by_you" = "أنتَ قَد رَفَضتَ المُكالَمَة";
+"notice_declined_video_call" = "لَقَد رَفضَ %@ المُكالَمَة";
+"resume_call" = "اِستِئنَاف";

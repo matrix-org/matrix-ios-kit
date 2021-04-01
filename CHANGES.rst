@@ -22,6 +22,34 @@ Changes to be released in next version
 Others
  * 
 
+Changes in 0.14.6 (2021-03-24)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * Pods: Update JSQMessagesViewController, DTCoreText, Down (vector-im/element-ios/issues/4120).
+ * MXKRoomDataSource: Introduce secondaryRoomId and secondaryRoomEventTypes.
+
+🐛 Bugfix
+ * Fix collapsing of separately processed events
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.6)).
+
 Changes in 0.14.5 (2021-03-11)
 =================================================
 
@@ -32,7 +60,7 @@ Changes in 0.14.5 (2021-03-11)
  * 
 
 🐛 Bugfix
- * 
+ * MXKRoomDataSource: Fix memory leak in `bubbles` array.
 
 ⚠️ API Changes
  * 
