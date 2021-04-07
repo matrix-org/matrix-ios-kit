@@ -218,6 +218,9 @@
     
     // By default actions button is shown in document preview
     _allowActionsInDocumentPreview = YES;
+    
+    // By default the duration of the composer resizing is 0.3s
+    _resizeComposerAnimationDuration = 0.3;
 }
 
 - (void)viewDidLoad
@@ -3453,7 +3456,7 @@
     _roomInputToolbarContainerHeightConstraint.constant = height;
     
     // Update layout with animation
-    [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+    [UIView animateWithDuration:self.resizeComposerAnimationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                      animations:^{
                          // We will scroll to bottom if the bottom of the table is currently visible
                          BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
