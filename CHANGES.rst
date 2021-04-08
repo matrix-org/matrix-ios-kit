@@ -8,8 +8,8 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * vertical padding is borked on new attachment UI after going into file selector and out again (vector-im/element-ios/issues/4156).
- * vertical layout of typing notifs can go wonky (vector-im/element-ios/issues/4159).
+ * Vertical padding is borked on new attachment UI after going into file selector and out again (vector-im/element-ios/issues/4156).
+ * Vertical layout of typing notifs can go wonky (vector-im/element-ios/issues/4159).
 
 ⚠️ API Changes
  * 
