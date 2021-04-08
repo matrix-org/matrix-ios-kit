@@ -19,6 +19,8 @@
 
 #import "UIViewController+MatrixKit.h"
 
+const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
+
 @interface MXKViewController ()
 {
     /**
@@ -636,11 +638,10 @@
         return;
     }
 
-    // Detect if an external keyboard is used by checking that
-    // the bottom of the provided keyboard frame is outside of the screen
+    // Detect if an external keyboard is used
     CGRect keyboard = [self.view convertRect:endRect fromView:self.view.window];
     CGFloat height = self.view.frame.size.height;
-    BOOL hasExternalKeyboard = keyboard.size.height <= 80;
+    BOOL hasExternalKeyboard = keyboard.size.height <= MXKViewControllerMaxExternalKeyboardHeight;
 
     // Get the animation info
     NSNumber *curveValue = [[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
