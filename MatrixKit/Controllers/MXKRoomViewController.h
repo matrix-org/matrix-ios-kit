@@ -182,6 +182,11 @@
 @property BOOL allowActionsInDocumentPreview;
 
 /**
+ Duration of the animation in case of the composer needs to be resized (default 0.3s)
+ */
+@property NSTimeInterval resizeComposerAnimationDuration;
+
+/**
  This object is defined when the displayed room is left. It is added into the bubbles table header.
  This label is used to display the reason why the room has been left.
  */
