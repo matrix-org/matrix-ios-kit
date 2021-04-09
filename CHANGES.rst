@@ -1,4 +1,4 @@
-Changes to be released in next version
+Changes in 0.14.7 (2021-04-09)
 =================================================
 
 ✨ Features
@@ -22,6 +22,9 @@ Changes to be released in next version
 
 Others
  * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.7)).
 
 Changes in 0.14.6 (2021-03-24)
 =================================================
