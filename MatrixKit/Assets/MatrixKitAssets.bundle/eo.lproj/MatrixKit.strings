@@ -67,3 +67,6 @@
 /* *********************** */
 
 "matrix" = "Matrix";
+"login_desktop_device" = "Tabla komputilo";
+"login_tablet_device" = "Tabulkomputilo";
+"login_mobile_device" = "Telefono";

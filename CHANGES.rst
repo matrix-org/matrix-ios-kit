@@ -1,3 +1,31 @@
+Changes in 0.14.7 (2021-04-09)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * Vertical padding is borked on new attachment UI after going into file selector and out again (vector-im/element-ios/issues/4156).
+ * Vertical layout of typing notifs can go wonky (vector-im/element-ios/issues/4159).
+
+⚠️ API Changes
+ * MXKRoomBubbleCellDataStoring: Introduce target user ID, display name and avatar URL for room membership events (vector-im/element-ios/issues/4102).
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.7)).
+
 Changes in 0.14.6 (2021-03-24)
 =================================================
 
