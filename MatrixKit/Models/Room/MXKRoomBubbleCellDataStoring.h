@@ -40,6 +40,14 @@
 @property (nonatomic) NSString *senderId;
 
 /**
+ The target Id (may be nil)
+
+ @discussion "target" refers to the room member who is the target of this event (if any), e.g.
+ the invitee, the person being banned, etc.
+ */
+@property (nonatomic) NSString *targetId;
+
+/**
  The room id
  */
 @property (nonatomic) NSString *roomId;
@@ -58,6 +66,30 @@
  The sender avatar placeholder (may be nil) - Used when url is nil, or during avatar download.
  */
 @property (nonatomic) UIImage *senderAvatarPlaceholder;
+
+/**
+ The target display name composed when event occured (may be nil)
+
+ @discussion "target" refers to the room member who is the target of this event (if any), e.g.
+ the invitee, the person being banned, etc.
+ */
+@property (nonatomic) NSString *targetDisplayName;
+
+/**
+ The target avatar url retrieved when event occured (may be nil)
+
+ @discussion "target" refers to the room member who is the target of this event (if any), e.g.
+ the invitee, the person being banned, etc.
+ */
+@property (nonatomic) NSString *targetAvatarUrl;
+
+/**
+ The target avatar placeholder (may be nil) - Used when url is nil, or during avatar download.
+
+ @discussion "target" refers to the room member who is the target of this event (if any), e.g.
+ the invitee, the person being banned, etc.
+ */
+@property (nonatomic) UIImage *targetAvatarPlaceholder;
 
 /**
  The current sender flair (list of the publicised groups in the sender profile which matches the room flair settings)

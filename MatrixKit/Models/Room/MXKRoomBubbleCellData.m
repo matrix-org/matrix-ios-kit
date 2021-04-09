@@ -27,7 +27,7 @@
 #import "MXKTools.h"
 
 @implementation MXKRoomBubbleCellData
-@synthesize senderId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, isEncryptedRoom, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment, senderFlair;
+@synthesize senderId, targetId, roomId, senderDisplayName, senderAvatarUrl, senderAvatarPlaceholder, targetDisplayName, targetAvatarUrl, targetAvatarPlaceholder, isEncryptedRoom, isPaginationFirstBubble, shouldHideSenderInformation, date, isIncoming, isAttachmentWithThumbnail, isAttachmentWithIcon, attachment, senderFlair;
 @synthesize textMessage, attributedTextMessage;
 @synthesize shouldHideSenderName, isTyping, showBubbleDateTime, showBubbleReceipts, useCustomDateTimeLabel, useCustomReceipts, useCustomUnsentButton, hasNoDisplay;
 @synthesize tag;
@@ -53,10 +53,14 @@
             [bubbleComponents addObject:firstComponent];
             
             senderId = event.sender;
+            targetId = [event.type isEqualToString:kMXEventTypeStringRoomMember] ? event.stateKey : nil;
             roomId = roomDataSource.roomId;
             senderDisplayName = [roomDataSource.eventFormatter senderDisplayNameForEvent:event withRoomState:roomState];
             senderAvatarUrl = [roomDataSource.eventFormatter senderAvatarUrlForEvent:event withRoomState:roomState];
             senderAvatarPlaceholder = nil;
+            targetDisplayName = [roomDataSource.eventFormatter targetDisplayNameForEvent:event withRoomState:roomState];
+            targetAvatarUrl = [roomDataSource.eventFormatter targetAvatarUrlForEvent:event withRoomState:roomState];
+            targetAvatarPlaceholder = nil;
             isEncryptedRoom = roomState.isEncrypted;
             isIncoming = ([event.sender isEqualToString:roomDataSource.mxSession.myUser.userId] == NO);
             

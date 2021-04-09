@@ -534,8 +534,8 @@
 "call_more_actions_change_audio_device" = "تَغيِيرُ جِهَازِ الصَوت";
 "call_more_actions_unhold" = "الاِستِئنَاف";
 "call_more_actions_hold" = "التَّمَسُّك";
-"call_remote_holded" = "لَقَد أمسَكَ %@ المُكالَمَة";
-"call_holded" = "أنتَ قَد أمسَكتَ المُكالَمَة";
+"call_remote_holded" = "لقد عَلَّقَ %@ المكالمة";
+"call_holded" = "أنتَ قَد عَلَّقتَ المُكالَمَة";
 "notice_declined_video_call_by_you" = "أنتَ قَد رَفَضتَ المُكالَمَة";
 "notice_declined_video_call" = "لَقَد رَفضَ %@ المُكالَمَة";
 "resume_call" = "اِستِئنَاف";
