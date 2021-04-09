@@ -218,6 +218,9 @@
     
     // By default actions button is shown in document preview
     _allowActionsInDocumentPreview = YES;
+    
+    // By default the duration of the composer resizing is 0.3s
+    _resizeComposerAnimationDuration = 0.3;
 }
 
 - (void)viewDidLoad
@@ -461,6 +464,19 @@
         self->shouldScrollToBottomOnTableRefresh = NO;
         self->isSizeTransitionInProgress = NO;
     });
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    
+    CGFloat bubblesTableViewBottomConst = self.roomInputToolbarContainerBottomConstraint.constant + self.roomInputToolbarContainerHeightConstraint.constant + self.roomActivitiesContainerHeightConstraint.constant;
+
+    if (self.bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
+    {
+        self.bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
+    }
+
 }
 
 #pragma mark - Override MXKViewController
@@ -3440,25 +3456,22 @@
     _roomInputToolbarContainerHeightConstraint.constant = height;
     
     // Update layout with animation
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+    [UIView animateWithDuration:self.resizeComposerAnimationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                      animations:^{
                          // We will scroll to bottom if the bottom of the table is currently visible
                          BOOL shouldScrollToBottom = [self isBubblesTableScrollViewAtTheBottom];
                          
                          CGFloat bubblesTableViewBottomConst = self->_roomInputToolbarContainerBottomConstraint.constant + self->_roomInputToolbarContainerHeightConstraint.constant + self->_roomActivitiesContainerHeightConstraint.constant;
                          
-                         if (self->_bubblesTableViewBottomConstraint.constant != bubblesTableViewBottomConst)
-                         {
-                             self->_bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
-                             
-                             // Force to render the view
-                             [self.view layoutIfNeeded];
-                             
-                             if (shouldScrollToBottom)
-                             {
-                                 [self scrollBubblesTableViewToBottomAnimated:NO];
-                             }
-                         }
+                        self->_bubblesTableViewBottomConstraint.constant = bubblesTableViewBottomConst;
+                        
+                        // Force to render the view
+                        [self.view layoutIfNeeded];
+                        
+                        if (shouldScrollToBottom)
+                        {
+                            [self scrollBubblesTableViewToBottomAnimated:NO];
+                        }
                      }
                      completion:^(BOOL finished){
                          if (completion)
