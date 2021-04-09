@@ -12,7 +12,7 @@ Changes to be released in next version
  * Vertical layout of typing notifs can go wonky (vector-im/element-ios/issues/4159).
 
 ⚠️ API Changes
- * 
+ * MXKRoomBubbleCellDataStoring: Introduce target user ID, display name and avatar URL for room membership events (vector-im/element-ios/issues/4102).
 
 🗣 Translations
  * 
