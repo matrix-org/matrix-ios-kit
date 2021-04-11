@@ -261,7 +261,7 @@
 "notice_room_ban" = "%@ a banni %@";
 "notice_room_withdraw" = "%@ a annulé l’invitation de %@";
 "notice_room_reason" = ". Raison : %@";
-"notice_avatar_url_changed" = "%@ ont changé d’avatar";
+"notice_avatar_url_changed" = "%@ a changé d’avatar";
 "notice_display_name_set" = "%@ a modifié son nom en %@";
 "notice_display_name_changed_from" = "%@ a modifié son nom de %@ à %@";
 "notice_display_name_removed" = "%@ a supprimé son nom d’affichage";

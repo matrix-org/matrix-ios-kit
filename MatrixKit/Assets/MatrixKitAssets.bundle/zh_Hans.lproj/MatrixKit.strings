@@ -1,7 +1,7 @@
 "view" = "视图";
 "back" = "返回";
 "continue" = "继续";
-"leave" = "退出";
+"leave" = "离开";
 "invite" = "邀请";
 "retry" = "重试";
 "cancel" = "取消";
@@ -16,14 +16,14 @@
 "login_home_server_info" = "您的主服务器存储了您所有的对话和账户数据";
 "login_identity_server_title" = "身份认证服务器网址：";
 "login_identity_server_info" = "Matrix 提供了身份认证服务器以验证邮箱地址等是否属于某个 Matrix ID。目前只有 https://matrix.org 支持。";
-"login_user_id_placeholder" = "Matrix ID （例如 @bob:matrix.org 或 bob）";
+"login_user_id_placeholder" = "Matrix ID（例如 @bob:matrix.org 或 bob）";
 "login_password_placeholder" = "密码";
 "login_optional_field" = "可选";
-"login_display_name_placeholder" = "显示名（例 Bob Obson）";
+"login_display_name_placeholder" = "显示名（例如 Bob Obson）";
 "login_email_placeholder" = "电子邮件地址";
 "login_prompt_email_token" = "请输入您的电子邮件认证令牌：";
 "login_error_title" = "登录失败";
-"login_error_registration_is_not_supported" = "当前不支持注册";
+"login_error_registration_is_not_supported" = "目前不支持注册";
 "login_error_forbidden" = "无效的用户名/密码";
 "login_error_unknown_token" = "不能识别特定访问令牌";
 "login_error_bad_json" = "JSON 格式错误";
@@ -31,11 +31,11 @@
 "login_error_limit_exceeded" = "发送了太多的请求";
 "login_error_user_in_use" = "此用户名已占用";
 "login_error_login_email_not_yet" = "此电子邮件链接还没有被点击";
-"login_use_fallback" = "使用后备页";
+"login_use_fallback" = "使用备用页面";
 "login_leave_fallback" = "取消";
-"login_invalid_param" = "无效的参数";
+"login_invalid_param" = "参数无效";
 "register_error_title" = "注册失败";
-"login_error_forgot_password_is_not_supported" = "当前不支持遗忘密码";
+"login_error_forgot_password_is_not_supported" = "当前不支持忘记密码";
 // Action
 "no" = "否";
 "yes" = "是";
@@ -67,11 +67,11 @@
 "reject_call" = "拒绝通话";
 "end_call" = "结束通话";
 "ignore" = "忽略";
-"unignore" = "不忽略";
+"unignore" = "取消忽略";
 // Events formatter
 "notice_avatar_changed_too" = "（头像也已经改变）";
-"notice_room_name_removed" = "%@ 移除了此聊天室名字";
-"notice_room_topic_removed" = "%@ 移除了此主题";
+"notice_room_name_removed" = "%@ 移除了此聊天室的名称";
+"notice_room_topic_removed" = "%@ 移除了话题";
 "notice_event_redacted" = "<redacted%@>";
 "notice_event_redacted_by" = " 由 %@";
 "notice_event_redacted_reason" = " [理由：%@]";
@@ -79,10 +79,10 @@
 "notice_room_created" = "%@ 创建并配置了此聊天室。";
 "notice_room_join_rule" = "加入规则是：%@";
 "notice_room_power_level_intro" = "此聊天室成员的权限级别是：";
-"notice_room_power_level_acting_requirement" = "完成这个动作之前用户必须具备的最小权限级别是 ：";
+"notice_room_power_level_acting_requirement" = "要进行此操作，用户必须具备的最低权限级别是 ：";
 "notice_room_power_level_event_requirement" = "事件所需的最小权限级别：";
 "notice_room_aliases" = "此聊天室的别名是：%@";
-"notice_encrypted_message" = "加密的消息";
+"notice_encrypted_message" = "已加密消息";
 "notice_encryption_enabled" = "%@ 打开了端对端加密（算法 %@）";
 "notice_image_attachment" = "图片附件";
 "notice_audio_attachment" = "音频附件";
@@ -91,7 +91,7 @@
 "notice_file_attachment" = "文件附件";
 "notice_invalid_attachment" = "无效附件";
 "notice_unsupported_attachment" = "不支持的附件：%@";
-"login_email_info" = "指定一个电子邮件地址可以让其他 Matirx 用户更容易找到您，并让您可以在以后重置密码。";
+"login_email_info" = "指定邮箱地址可以让其他 Matrix 用户更容易找到您，并允许您可以在未来重置密码。";
 "login_error_no_login_flow" = "从此主服务器获取认证信息失败";
 "login_error_do_not_support_login_flows" = "当前我们不支持任何或者所有此主服务器定义的登录流";
 "notice_feedback" = "反馈事件 (id: %@)：%@";
@@ -99,29 +99,29 @@
 "notice_error_unsupported_event" = "不支持的事件";
 "notice_error_unexpected_event" = "意外的事件";
 "notice_error_unknown_event_type" = "未知的事件类型";
-"notice_room_history_visible_to_anyone" = "%@ 使得聊天室的未来历史记录任何人可见。";
-"notice_room_history_visible_to_members" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见。";
-"notice_room_history_visible_to_members_from_invited_point" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见，从他们被邀请的时候开始。";
-"notice_room_history_visible_to_members_from_joined_point" = "%@ 使得聊天室的未来历史记录所有聊天室成员可见，从他们加入的时候开始。";
+"notice_room_history_visible_to_anyone" = "%@ 将未来的聊天室消息历史设为对所有人可见。";
+"notice_room_history_visible_to_members" = "%@ 将未来的聊天室消息历史设为对所有聊天室成员可见。";
+"notice_room_history_visible_to_members_from_invited_point" = "你将未来的聊天室消息历史设为对所有聊天室成员可见，从他们被邀请时开始。";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ 将未来的聊天室消息历史设为对所有聊天室成员可见，从他们加入时开始。";
 "notice_crypto_unable_to_decrypt" = "** 无法解密：%@ **";
-"notice_crypto_error_unknown_inbound_session_id" = "发送者的会话没有发送给我们此消息的密钥。";
+"notice_crypto_error_unknown_inbound_session_id" = "发送者的会话没有向我们发送此消息的密钥。";
 // room display name
 "room_displayname_empty_room" = "空聊天室";
 "room_displayname_two_members" = "%@ 和 %@";
-"room_displayname_more_than_two_members" = "%@ 和 %u 个其他人";
+"room_displayname_more_than_two_members" = "%@ 和 %@ 个其他人";
 // Settings
 "settings" = "设置";
-"settings_enable_inapp_notifications" = "启用 APP 内部的通知";
+"settings_enable_inapp_notifications" = "启用应用内通知";
 "settings_enable_push_notifications" = "启用推送通知";
-"settings_enter_validation_token_for" = "输入 %@ 的有效令牌：";
+"settings_enter_validation_token_for" = "请输入 %@ 的验证令牌：";
 "notification_settings_room_rule_title" = "聊天室：“%@”";
 // Devices
 "device_details_title" = "会话信息\n";
-"device_details_name" = "公开名字\n";
+"device_details_name" = "公开名称\n";
 "device_details_identifier" = "ID\n";
 "device_details_last_seen" = "最近一次上线\n";
 "device_details_last_seen_format" = "%@ @ %@\n";
-"device_details_rename_prompt_message" = "会话的公开名字会对你联络的人可见";
+"device_details_rename_prompt_message" = "会话的公开名称对与你联络的人可见";
 "device_details_delete_prompt_title" = "认证";
 "device_details_delete_prompt_message" = "此操作需要额外的认证。\n要继续，请输入您的密码。";
 // Encryption information
@@ -148,7 +148,7 @@
 "room_event_encryption_info_verify" = "验证…";
 "room_event_encryption_info_unverify" = "取消验证";
 "room_event_encryption_verify_title" = "验证会话\n\n";
-"account_error_display_name_change_failed" = "修改昵称失败";
+"account_error_display_name_change_failed" = "昵称修改失败";
 "account_error_email_wrong_title" = "邮箱地址无效";
 "account_error_msisdn_wrong_title" = "手机号码无效";
 // Room creation
@@ -157,14 +157,14 @@
 // Room
 "room_please_select" = "请选择一个聊天室";
 "room_error_join_failed_title" = "加入聊天室失败";
-"room_error_cannot_load_timeline" = "加载时间线失败";
-"room_error_timeline_event_not_found_title" = "加载时间线位置失败";
-"room_left" = "你退出了此聊天室";
+"room_error_cannot_load_timeline" = "时间线加载失败";
+"room_error_timeline_event_not_found_title" = "时间线位置加载失败";
+"room_left" = "你离开了聊天室";
 "attachment_small" = "小：%@";
 "attachment_medium" = "中：%@";
 "attachment_large" = "大：%@";
-"attachment_cancel_download" = "取消下载？";
-"attachment_cancel_upload" = "取消上传？";
+"attachment_cancel_download" = "是否取消下载？";
+"attachment_cancel_upload" = "是否取消上传？";
 "attachment_e2e_keys_import" = "导入…";
 // Search
 "search_no_results" = "没有结果";
@@ -200,15 +200,15 @@
 "language_picker_title" = "请选择语言";
 "language_picker_default_language" = "默认（%@）";
 "notice_room_invite" = "%@ 邀请了 %@";
-"notice_room_third_party_invite" = "%@ 邀请了 %@ 加入聊天室";
+"notice_room_third_party_invite" = "%@ 邀请 %@ 加入聊天室";
 "notice_room_third_party_registered_invite" = "%@ 同意了 %@ 的邀请";
 "notice_room_join" = "%@ 已加入";
 "notice_room_leave" = "%@ 已退出";
 "notice_room_reject" = "%@ 拒绝了邀请";
 "notice_room_kick" = "%@ 移除了 %@";
-"notice_room_unban" = "%@ 解除了 %@ 的封禁";
+"notice_room_unban" = "%@ 解封了 %@";
 "notice_room_ban" = "%@ 封禁了 %@";
-"notice_room_withdraw" = "%@ 撤回了 %@ 的邀请";
+"notice_room_withdraw" = "%@ 撤回了对 %@ 的邀请";
 "notice_room_reason" = "。理由：%@";
 "notice_avatar_url_changed" = "%@ 更换了头像";
 "notice_display_name_set" = "%@ 将自己的昵称设置为 %@";
@@ -237,7 +237,7 @@
 "unban" = "解封";
 // Login Screen 
 "login_error_already_logged_in" = "已登录";
-"login_error_must_start_http" = "URL 必须以 http[s]://";
+"login_error_must_start_http" = "URL 必须以 http[s]:// 开头";
 // Settings screen 
 "settings_title_config" = "选项";
 "settings_title_notifications" = "通知";
@@ -248,8 +248,8 @@
 "account_error_msisdn_wrong_description" = "此手机号码似乎是无效的";
 "room_creation_participants_placeholder" = "（例如：@bob:homeserver1; @john:homeserver2…）";
 "room_creation_participants_title" = "成员：";
-"room_creation_alias_placeholder_with_homeserver" = "（例如：）";
-"room_creation_alias_placeholder" = "（例如：）";
+"room_creation_alias_placeholder_with_homeserver" = "（例如：#foo%@）";
+"room_creation_alias_placeholder" = "（例如：#foo:example.org）";
 "room_error_join_failed_empty_room" = "目前无法重新加入空聊天室。";
 "room_error_name_edition_not_authorized" = "你没有修改聊天室名称所需的权限";
 "room_error_topic_edition_not_authorized" = "你没有修改聊天室话题所需的权限";
@@ -260,7 +260,7 @@
 "contact_local_contacts" = "本地联系人";
 // Groups
 "group_invite_section" = "邀请";
-"group_section" = "社区";
+"group_section" = "群组";
 "e2e_passphrase_confirm" = "确认密码";
 "notification_settings_enable_notifications" = "启用通知";
 // Notification settings screen 
@@ -284,7 +284,7 @@
 "notice_sticker" = "贴纸";
 "ssl_could_not_verify" = "无法验证远程服务器的身份。";
 // Account
-"account_save_changes" = "保存修改";
+"account_save_changes" = "保存更改";
 "account_link_email" = "邮箱地址";
 "account_linked_emails" = "邮箱地址";
 "account_email_validation_title" = "等待验证中";
@@ -294,11 +294,11 @@
 "e2e_passphrase_not_match" = "密码必须匹配";
 "not_supported_yet" = "尚未支持";
 "local_contacts_access_discovery_warning_title" = "发现用户";
-"notice_topic_changed" = "%@ 将主题修改为\"%@\"。";
+"notice_topic_changed" = "%@ 将话题修改为 \"%@\"。";
 "notice_placed_voice_call" = "%@ 发起了语音通话";
 "notice_placed_video_call" = "%@ 发起了视频通话";
-"notice_answered_video_call" = "%@ 已接听通话";
-"notice_ended_video_call" = "%@ 已结束通话";
+"notice_answered_video_call" = "%@ 接听了通话";
+"notice_ended_video_call" = "%@ 结束了通话";
 "notification_settings_always_notify" = "总是通知";
 "notification_settings_never_notify" = "从不通知";
 "notification_settings_sender_hint" = "@user:domain.com";
@@ -307,7 +307,7 @@
 "call_connecting" = "通话连接中…";
 "call_ring" = "正在通话…";
 "room_event_encryption_info_event_algorithm" = "算法\n";
-"room_event_encryption_verify_message" = "为验证此会话是否可信，请通过其他方式（例如面对面交换或拨打电话）与其拥有者联系，并询问他们该会话的用户设置中的密钥是否与以下密钥匹配：\n\n\n\t会话名称：%@\n\t会话 ID：%@\n\t会话密钥：%@\n\n未来，这个验证过程将会更加精致、巧妙一些。";
+"room_event_encryption_verify_message" = "为验证此会话是否可信，请通过其他方式（例如当面交换或拨打电话）与其拥有者联系，并询问他们该会话的用户设置中的密钥是否与以下密钥匹配：\n\n\t会话名称：%@\n\t会话 ID：%@\n\t会话密钥：%@\n\n如果匹配，请点击下面的按钮。如果不匹配，那么说明有其他人截取了此会话，您可能想点击黑名单按钮。\n\n未来，这个验证过程将会变得更加精致、巧妙一些。";
 "room_event_encryption_info_event_fingerprint_key" = "声称的 Ed25519 指纹密钥\n";
 "room_event_encryption_info_device_fingerprint" = "Ed25519 指纹\n";
 "room_event_encryption_verify_ok" = "验证";
@@ -315,7 +315,7 @@
 "room_event_encryption_info_unblock" = "取消拉黑";
 "room_creation_alias_title" = "聊天室别称：";
 "notice_conference_call_started" = "VoIP 会议已开始";
-"notice_conference_call_request" = "%@ 已请求发起 VoIP 会议";
+"notice_conference_call_request" = "%@ 发起了 VoIP 会议";
 "notice_conference_call_finished" = "VoIP 会议已结束";
 "notification_settings_enable_notifications_warning" = "所有设备上的通知都已被禁用。";
 "notice_in_reply_to" = "回复";
@@ -331,9 +331,9 @@
 "room_no_power_to_create_conference_call" = "您需要获得邀请权限才能在此聊天室开始会议";
 "room_no_conference_call_in_encrypted_rooms" = "加密聊天室暂不支持通话会议";
 // Reply to message
-"message_reply_to_sender_sent_an_image" = "发送了图片。";
-"message_reply_to_sender_sent_an_audio_file" = "发送了音频文件。";
-"message_reply_to_sender_sent_a_file" = "发送了文件。";
+"message_reply_to_sender_sent_an_image" = "发送了一张图片。";
+"message_reply_to_sender_sent_an_audio_file" = "发送了一个音频文件。";
+"message_reply_to_sender_sent_a_file" = "发送了一个文件。";
 "message_reply_to_message_to_reply_to_prefix" = "回复";
 "room_member_power_level_prompt" = "该用户将被提升至与您一样的权限级别，所以此操作将无法撤销。\n您确定吗？";
 // Attachment
@@ -353,7 +353,7 @@
 "camera_access_not_granted_for_call" = "视频通话需要摄像头使用权限，但 %@ 无此权限";
 "microphone_access_not_granted_for_call" = "通话需要麦克风使用权限，但 %@ 无此权限";
 "local_contacts_access_not_granted" = "本地通讯录用户查找功能需要通讯录权限，但 %@ 无此权限";
-"local_contacts_access_discovery_warning" = "为了发现已经使用Matrix的联系人，%@ 可以把你地址簿里的邮箱地址和电话号码发送给你选定的Matrix身份认证服务器。如果支持的话，个人数据会在发送前被哈希——请检查你的身份认证服务器的隐私条款获知更多细节。";
+"local_contacts_access_discovery_warning" = "为了发现已经使用 Matrix 的联系人，%@ 可以把你地址簿里的邮箱地址和电话号码发送给你选定的 Matrix 身份认证服务器。如果支持的话，个人数据会在发送前被哈希——请检查你的身份认证服务器的隐私条款获知更多细节。";
 "notification_settings_global_info" = "通知设置已保存在您的账号中并在所有支持的客户端中共享（包括桌面通知）。\n\n规则会按顺序应用；第一条匹配的规则定义了消息的输出结果。\n因此：按字符规则的通知比按聊天室规则的通知级别更高，而这两者都比按发送者规则的通知级别更高。\n对于同一类型的多条规则，匹配列表中的第一条优先级最高。";
 "notification_settings_per_word_notifications" = "按字符通知";
 "notification_settings_per_word_info" = "单词不区分大小写，并且可能包含 * 通配符。 所以：\nfoo 匹配由单词分隔符包围的字符串 foo（例如标点符号和空格，或一行的开头/结尾）。\nfoo* 匹配任何以 foo 开头的单词。\n*foo* 匹配任何包含3个字母 foo 的单词。";
@@ -367,17 +367,94 @@
 "notification_settings_people_join_leave_rooms" = "有人加入或离开聊天室时发送通知";
 "notification_settings_receive_a_call" = "当我收到通话请求时发送通知";
 "notification_settings_suppress_from_bots" = "取消来自机器人的通知";
-"notification_settings_by_default" = "默认...";
+"notification_settings_by_default" = "默认…";
 "notification_settings_notify_all_other" = "为所有其他消息/聊天室发送通知";
 "incoming_video_call" = "视频通话来电";
 "incoming_voice_call" = "语音通话来电";
-"ssl_cert_not_trust" = "这可能意味着某人正在恶意拦截您的流量，或者您的手机不信任远程服务器提供的证书。";
-"ssl_cert_new_account_expl" = "如果服务器管理员已经说过这是预期的，请确保下面的指纹与他们提供的指纹相匹配。";
-"ssl_unexpected_existing_expl" = "证书已从您手机信任的证书更改过。 这是非常不寻常的。 建议您不要接受此新证书。";
-"ssl_expected_existing_expl" = "证书已从先前受信任的证书更改为不受信任的证书。 服务器可能已续订其证书。 请联系服务器管理员以获取预期的指纹。";
-"ssl_only_accept" = "请仅在服务器管理员已发布与上述指纹匹配的指纹的情况下接受该证书。";
-"notice_encryption_enabled_ok" = "%@开启了端到端加密。";
-"notice_encryption_enabled_unknown_algorithm" = "%1$@开启了端到端加密（无法识别的算法%2$@）。";
+"ssl_cert_not_trust" = "这可能意味着有人正在恶意劫持您的流量，或者您的手机不信任远程服务器提供的数字证书。";
+"ssl_cert_new_account_expl" = "如果服务器管理员说这是预期的情况，请确保下面的指纹与管理员提供的指纹相匹配。";
+"ssl_unexpected_existing_expl" = "证书已从一个先前受您的设备信任的证书更改为另一个。这非常反常！建议您 不要 接受此新证书。";
+"ssl_expected_existing_expl" = "证书已从曾受信任的证书更改为不受信任的证书。服务器可能已更新其证书，请联系管理员并核对服务器的指纹。";
+"ssl_only_accept" = "请 仅 在服务器管理员发布了与上述指纹匹配的指纹的情况下接受该证书。";
+"notice_encryption_enabled_ok" = "%@ 启用了端到端加密。";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ 启用了端到端加密（无法识别的算法 %2$@）。";
 "device_details_rename_prompt_title" = "会话名称";
 "account_error_push_not_allowed" = "未允许通知";
-"notice_room_third_party_revoked_invite" = "%@撤回了向%@的加入聊天室邀请";
+"notice_room_third_party_revoked_invite" = "%@ 撤回了对 %@ 加入聊天室的邀请";
+"notice_encryption_enabled_ok_by_you" = "你启用了端对端加密。";
+"notice_room_created_by_you_for_dm" = "你加入了。";
+"notice_room_topic_removed_by_you" = "你移除了话题";
+"notice_room_name_removed_by_you_for_dm" = "你移除了名称";
+"notice_room_name_removed_by_you" = "你移除了聊天室名称";
+"notice_conference_call_request_by_you" = "你请求了 VoIP 会议";
+"notice_room_ban_by_you" = "你封禁了 %@";
+"notice_room_unban_by_you" = "你解封了 %@";
+"notice_room_kick_by_you" = "你移除了 %@";
+"notice_room_reject_by_you" = "你拒绝了邀请";
+"notice_room_leave_by_you" = "你退出了";
+"notice_room_join_by_you" = "你加入了";
+"notice_room_third_party_registered_invite_by_you" = "你接受了 %@ 的邀请";
+"notice_room_third_party_invite_by_you_for_dm" = "你邀请了 %@";
+"notice_room_invite_you" = "%@ 邀请了你";
+
+// Notice Events with "You"
+"notice_room_invite_by_you" = "你邀请了 %@";
+"notice_declined_video_call" = "%@ 拒接了通话";
+"notice_room_name_changed_for_dm" = "%@ 将名称修改为 %@。";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ 撤回了对 %@ 的邀请";
+"notice_room_third_party_invite_for_dm" = "%@ 邀请了 %@";
+"room_left_for_dm" = "你离开了";
+"notice_room_power_level_intro_for_dm" = "成员的权限级别是：";
+"notice_room_aliases_for_dm" = "别名是：%@";
+"notice_room_created_for_dm" = "%@ 已加入。";
+"notice_room_name_removed_for_dm" = "%@ 移除了名称";
+"resume_call" = "恢复";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "你启用了端对端加密（无法识别的算法 %@）。";
+"notice_event_redacted_by_you" = " 被你";
+"notice_room_third_party_revoked_invite_by_you" = "你撤回了对 %@ 加入此聊天室的邀请";
+"notice_room_join_rule_public_by_you_for_dm" = "你将此聊天设为公开。";
+"notice_room_join_rule_public_by_you" = "你将此聊天室设为公开。";
+"notice_room_join_rule_public_for_dm" = "%@ 将此聊天设为公开。";
+"notice_room_join_rule_public" = "%@ 将此聊天室设为公开。";
+"notice_room_join_rule_invite_by_you_for_dm" = "你将此聊天设为仅邀请。";
+"notice_room_join_rule_invite_by_you" = "你将此聊天室设为仅邀请。";
+"notice_room_join_rule_invite_for_dm" = "%@ 将此聊天设为仅邀请。";
+//  New
+"notice_room_join_rule_invite" = "%@ 将此聊天室设为仅邀请。";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ 将未来的消息设为对所有人可见，从他们被邀请时开始。";
+"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "你将未来的消息设为对所有人可见，从他们被邀请时开始。";
+"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "你将未来的消息设为对所有人可见，从他们加入时开始。";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ 将未来的消息设为对所有人可见，从他们加入时开始。";
+"notice_room_history_visible_to_members_from_joined_point_by_you" = "你将未来的聊天室消息历史设为对所有聊天室成员可见，从他们加入时开始。";
+"notice_room_history_visible_to_members_from_invited_point_by_you" = "你将未来的聊天室消息历史设为对所有聊天室成员可见，从他们被邀请时开始。";
+"notice_room_history_visible_to_members_for_dm" = "%@ 将未来的消息设为对所有聊天室成员可见。";
+"notice_room_third_party_invite_by_you" = "你邀请 %@ 加入此聊天室";
+"notice_room_history_visible_to_members_by_you_for_dm" = "你将未来的消息设为对所有聊天室成员可见。";
+"notice_room_history_visible_to_members_by_you" = "你将未来的聊天室消息历史设为对所有聊天室成员可见。";
+"notice_room_history_visible_to_anyone_by_you" = "你将未来的聊天室消息历史设为对所有人可见。";
+"notice_redaction_by_you" = "你撤回了一个事件（id：%@）";
+"notice_room_withdraw_by_you" = "你撤回了对 %@ 的邀请";
+"notice_room_third_party_revoked_invite_by_you_for_dm" = "你撤回了对 %@ 的邀请";
+"call_more_actions_dialpad" = "拨号键盘";
+"call_more_actions_transfer" = "转移";
+"call_more_actions_audio_use_device" = "使用设备音频";
+"call_more_actions_audio_use_headset" = "使用耳机音频";
+"call_more_actions_change_audio_device" = "更改音频设备";
+"call_more_actions_unhold" = "继续";
+"call_more_actions_hold" = "挂起";
+"call_holded" = "你挂起了通话";
+"call_remote_holded" = "%@ 挂起了通话";
+"notice_room_created_by_you" = "你创建并配置了此聊天室。";
+"notice_profile_change_redacted_by_you" = "你更新了你的资料 %@";
+"notice_declined_video_call_by_you" = "你拒绝了通话";
+"notice_ended_video_call_by_you" = "你挂断了通话";
+"notice_answered_video_call_by_you" = "你接听了通话";
+"notice_placed_video_call_by_you" = "你发起了视频通话";
+"notice_placed_voice_call_by_you" = "你发起了语音通话";
+"notice_room_name_changed_by_you_for_dm" = "你将名称修改为 %@。";
+"notice_room_name_changed_by_you" = "你将聊天室名称修改为 %@。";
+"notice_topic_changed_by_you" = "你将话题修改为 \"%@\"。";
+"notice_display_name_set_by_you" = "你将你的昵称设置为 %@";
+"notice_display_name_changed_from_by_you" = "你将你的昵称从 %@ 更改为 %@";
+"notice_display_name_removed_by_you" = "你移除了你的昵称";
+"notice_avatar_url_changed_by_you" = "你更换了头像";
