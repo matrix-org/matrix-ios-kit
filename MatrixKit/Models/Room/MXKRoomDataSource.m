@@ -397,6 +397,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     return self;
 }
 
+- (void)dealloc
+{
+    [self unregisterEventEditsListener];
+}
+
 - (MXRoomState *)roomState
 {
     // @TODO(async-state): Just here for dev
