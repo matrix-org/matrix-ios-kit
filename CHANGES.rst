@@ -8,7 +8,7 @@ Changes to be released in next version
  * 
 
 🐛 Bugfix
- * 
+ * RR are not sent if a typing notification is shown in the timeline (vector-im/element-ios/issues/4209).
 
 ⚠️ API Changes
  * 
