@@ -1273,7 +1273,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     
     [self unregisterScanManagerNotifications];
     [self unregisterReactionsChangeListener];
-    [self unregisterEventEditsListener];
     
     // Register to MXScanManager notification only when a delegate is set
     if (delegate && self.mxSession.scanManager)
@@ -3823,6 +3822,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)registerEventEditsListener
 {
+    if (eventEditsListener)
+    {
+        return;
+    }
+    
     MXWeakify(self);
     eventEditsListener = [self.mxSession.aggregations listenToEditsUpdateInRoom:self.roomId block:^(MXEvent * _Nonnull replaceEvent) {
         MXStrongifyAndReturnIfNil(self);
