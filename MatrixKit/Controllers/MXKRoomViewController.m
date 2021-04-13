@@ -2463,86 +2463,80 @@
             // Check whether the cell is actually visible
             if (cell && (cell.frame.origin.y < contentBottomOffsetY))
             {
-                if ([cell isKindOfClass:MXKTableViewCell.class])
+                if (![cell isKindOfClass:MXKTableViewCell.class])
                 {
-                    MXKCellData *cellData = ((MXKTableViewCell *)cell).mxkCellData;
-                    
-                    // Only 'MXKRoomBubbleCellData' is supported here for the moment.
-                    if ([cellData isKindOfClass:MXKRoomBubbleCellData.class])
+                    continue;
+                }
+                
+                MXKCellData *cellData = ((MXKTableViewCell *)cell).mxkCellData;
+                
+                // Only 'MXKRoomBubbleCellData' is supported here for the moment.
+                if (![cellData isKindOfClass:MXKRoomBubbleCellData.class])
+                {
+                    continue;
+                }
+
+                MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
+                
+                // Check which bubble component is displayed at the bottom.
+                // For that update each component position.
+                [bubbleData prepareBubbleComponentsPosition];
+                
+                NSArray *bubbleComponents = bubbleData.bubbleComponents;
+                NSInteger componentIndex = bubbleComponents.count;
+                
+                CGFloat bottomPositionY = cell.frame.size.height;
+                
+                MXKRoomBubbleComponent *component;
+                
+                while (componentIndex --)
+                {
+                    component = bubbleComponents[componentIndex];
+                    if (![cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
                     {
-                        MXKRoomBubbleCellData *bubbleData = (MXKRoomBubbleCellData*)cellData;
-                        
-                        // Check which bubble component is displayed at the bottom.
-                        // For that update each component position.
-                        [bubbleData prepareBubbleComponentsPosition];
-                        
-                        NSArray *bubbleComponents = bubbleData.bubbleComponents;
-                        NSInteger componentIndex = bubbleComponents.count;
-                        
-                        CGFloat bottomPositionY = cell.frame.size.height;
-                        
-                        MXKRoomBubbleComponent *component;
-                        
-                        while (componentIndex --)
-                        {
-                            component = bubbleComponents[componentIndex];
-                            if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
-                            {
-                                MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
-                                
-                                // Check whether the bottom part of the component is visible.
-                                CGFloat pos = cell.frame.origin.y + bottomPositionY;
-                                if (pos <= contentBottomOffsetY)
-                                {
-                                    // We found the component
-                                    currentEventIdAtTableBottom = component.event.eventId;
-                                    break;
-                                }
-                                
-                                // Prepare the bottom position for the next component
-                                bottomPositionY = roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        
-                        if (currentEventIdAtTableBottom)
-                        {
-                            if (acknowledge && self.isEventsAcknowledgementEnabled)
-                            {
-                                // Indicate to the homeserver that the user has read this event.
-                                
-                                // Check whether the read marker must be updated.
-                                BOOL updateReadMarker = _updateRoomReadMarker;
-                                if (updateReadMarker && roomDataSource.room.accountData.readMarkerEventId)
-                                {
-                                    MXEvent *currentReadMarkerEvent = [roomDataSource.mxSession.store eventWithEventId:roomDataSource.room.accountData.readMarkerEventId inRoom:roomDataSource.roomId];
-                                    if (!currentReadMarkerEvent)
-                                    {
-                                        currentReadMarkerEvent = [roomDataSource eventWithEventId:roomDataSource.room.accountData.readMarkerEventId];
-                                    }
-                                    
-                                    // Update the read marker only if the current event is available, and the new event is posterior to it.
-                                    updateReadMarker = (currentReadMarkerEvent && (currentReadMarkerEvent.originServerTs <= component.event.originServerTs));
-                                }
-                                
-                                [roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:updateReadMarker];
-                            }
-                            break;
-                        }
-                        // else we consider the previous cell.
+                        continue;
                     }
-                    else
+
+                    MXKRoomBubbleTableViewCell *roomBubbleTableViewCell = (MXKRoomBubbleTableViewCell *)cell;
+                    
+                    // Check whether the bottom part of the component is visible.
+                    CGFloat pos = cell.frame.origin.y + bottomPositionY;
+                    if (pos <= contentBottomOffsetY)
                     {
+                        // We found the component
+                        currentEventIdAtTableBottom = component.event.eventId;
                         break;
                     }
+                    
+                    // Prepare the bottom position for the next component
+                    bottomPositionY = roomBubbleTableViewCell.msgTextViewTopConstraint.constant + component.position.y;
                 }
-                else
+                
+                if (currentEventIdAtTableBottom)
                 {
+                    if (acknowledge && self.isEventsAcknowledgementEnabled)
+                    {
+                        // Indicate to the homeserver that the user has read this event.
+                        
+                        // Check whether the read marker must be updated.
+                        BOOL updateReadMarker = _updateRoomReadMarker;
+                        if (updateReadMarker && roomDataSource.room.accountData.readMarkerEventId)
+                        {
+                            MXEvent *currentReadMarkerEvent = [roomDataSource.mxSession.store eventWithEventId:roomDataSource.room.accountData.readMarkerEventId inRoom:roomDataSource.roomId];
+                            if (!currentReadMarkerEvent)
+                            {
+                                currentReadMarkerEvent = [roomDataSource eventWithEventId:roomDataSource.room.accountData.readMarkerEventId];
+                            }
+                            
+                            // Update the read marker only if the current event is available, and the new event is posterior to it.
+                            updateReadMarker = (currentReadMarkerEvent && (currentReadMarkerEvent.originServerTs <= component.event.originServerTs));
+                        }
+                        
+                        [roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:updateReadMarker];
+                    }
                     break;
                 }
+                // else we consider the previous cell.
             }
         }
     }
