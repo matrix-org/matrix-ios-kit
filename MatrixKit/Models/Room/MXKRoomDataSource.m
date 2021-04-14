@@ -3705,10 +3705,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)unregisterReactionsChangeListener
 {
-    if (receiptsListener)
+    if (reactionsChangeListener)
     {
-        [self.mxSession.aggregations removeListener:receiptsListener];
-        receiptsListener = nil;
+        [self.mxSession.aggregations removeListener:reactionsChangeListener];
+        reactionsChangeListener = nil;
     }
 }
 
