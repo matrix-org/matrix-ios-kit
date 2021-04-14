@@ -400,6 +400,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)dealloc
 {
     [self unregisterEventEditsListener];
+    [self unregisterScanManagerNotifications];
+    [self unregisterReactionsChangeListener];
 }
 
 - (MXRoomState *)roomState
@@ -1275,9 +1277,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)setDelegate:(id<MXKDataSourceDelegate>)delegate
 {
     super.delegate = delegate;
-    
-    [self unregisterScanManagerNotifications];
-    [self unregisterReactionsChangeListener];
     
     // Register to MXScanManager notification only when a delegate is set
     if (delegate && self.mxSession.scanManager)
@@ -3656,6 +3655,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)registerScanManagerNotifications
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXScanManagerEventScanDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventScansDidChange:) name:MXScanManagerEventScanDidChangeNotification object:nil];
 }
 
@@ -3675,7 +3675,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)registerReactionsChangeListener
 {
-    if (!self.showReactions)
+    if (!self.showReactions || reactionsChangeListener)
     {
         return;
     }
