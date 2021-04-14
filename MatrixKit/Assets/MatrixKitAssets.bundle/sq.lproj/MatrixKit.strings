@@ -445,3 +445,15 @@
 "notice_room_history_visible_to_members_by_you_for_dm" = "I bëtë mesazhet e ardhshëm të dukshëm për krejt anëtarët e dhomës.";
 "notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "I bëtë mesazhet e ardhshëm të dukshëm për këdo, nga çasti që ftohen.";
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "I bëtë mesazhet e ardhshëm të dukshëm për këdo, nga çasti që hyjnë në bisedë.";
+"resume_call" = "Rimerre";
+"call_holded" = "E mbajtët pezull thirrjen";
+"notice_declined_video_call" = "%@ e hodhi poshtë thirrjen";
+"notice_declined_video_call_by_you" = "E hodhët poshtë thirrjen";
+"call_remote_holded" = "%@ e mbajti pezull thirrjen";
+"call_more_actions_hold" = "Mbaje pezull";
+"call_more_actions_unhold" = "Rimerre";
+"call_more_actions_change_audio_device" = "Ndryshoni Pajisje Audio";
+"call_more_actions_audio_use_headset" = "Përdorni Kufje dhe Mikrofon";
+"call_more_actions_audio_use_device" = "Përdor Audio Pajisjeje";
+"call_more_actions_transfer" = "Shpërngule";
+"call_more_actions_dialpad" = "Tastierë numerike";
