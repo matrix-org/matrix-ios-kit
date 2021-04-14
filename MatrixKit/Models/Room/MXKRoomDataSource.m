@@ -397,6 +397,13 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     return self;
 }
 
+- (void)dealloc
+{
+    [self unregisterEventEditsListener];
+    [self unregisterScanManagerNotifications];
+    [self unregisterReactionsChangeListener];
+}
+
 - (MXRoomState *)roomState
 {
     // @TODO(async-state): Just here for dev
@@ -1270,10 +1277,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 - (void)setDelegate:(id<MXKDataSourceDelegate>)delegate
 {
     super.delegate = delegate;
-    
-    [self unregisterScanManagerNotifications];
-    [self unregisterReactionsChangeListener];
-    [self unregisterEventEditsListener];
     
     // Register to MXScanManager notification only when a delegate is set
     if (delegate && self.mxSession.scanManager)
@@ -3652,6 +3655,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)registerScanManagerNotifications
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MXScanManagerEventScanDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventScansDidChange:) name:MXScanManagerEventScanDidChangeNotification object:nil];
 }
 
@@ -3671,7 +3675,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)registerReactionsChangeListener
 {
-    if (!self.showReactions)
+    if (!self.showReactions || reactionsChangeListener)
     {
         return;
     }
@@ -3701,10 +3705,10 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)unregisterReactionsChangeListener
 {
-    if (receiptsListener)
+    if (reactionsChangeListener)
     {
-        [self.mxSession.aggregations removeListener:receiptsListener];
-        receiptsListener = nil;
+        [self.mxSession.aggregations removeListener:reactionsChangeListener];
+        reactionsChangeListener = nil;
     }
 }
 
@@ -3823,6 +3827,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)registerEventEditsListener
 {
+    if (eventEditsListener)
+    {
+        return;
+    }
+    
     MXWeakify(self);
     eventEditsListener = [self.mxSession.aggregations listenToEditsUpdateInRoom:self.roomId block:^(MXEvent * _Nonnull replaceEvent) {
         MXStrongifyAndReturnIfNil(self);
