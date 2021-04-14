@@ -22,6 +22,34 @@ Changes to be released in next version
 Others
  * 
 
+Changes in 0.14.8 (2021-04-14)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * RR are not sent if a typing notification is shown in the timeline (vector-im/element-ios/issues/4209).
+ * Outgoing messages edited on another session are not updated in my room history (vector-im/element-ios/issues/4201).
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.8)).
+
 Changes in 0.14.7 (2021-04-09)
 =================================================
 
