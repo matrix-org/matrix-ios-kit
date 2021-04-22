@@ -15,6 +15,21 @@ platform :ios do
     )
   end
 
+  desc "Run tests"
+  lane :test do
+    cocoapods
+
+    run_tests(
+      workspace: "MatrixKit.xcworkspace",
+      scheme: "MatrixKitSample",
+      code_coverage: true,
+      # Test result configuration
+      result_bundle: true,
+      output_directory: "./build/test",
+      open_report: !is_ci?
+    )
+  end
+
   desc "Modify the MatrixKit.podspec locally to point to the latest 'release/*/release' branch of 'MatrixSDK' if such one exists, or to develop otherwise"
   lane :point_podspec_to_pending_releases do
     edit_podspec(branch_pattern: "release/*/release")
