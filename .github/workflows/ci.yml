@@ -39,8 +39,24 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
 
-      - name: Use right MatrixSDK versions
-        run: bundle exec fastlane point_sample_app_to_pending_releases
+      # Selection of MatrixSDK
+      - uses: nelonoel/branch-name@v1.0.1
+      - name: Extract branch name
+        shell: sh
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
+        id: extract_branch
+      - name: Use the pending release of MatrixSDK ${{ github.event.inputs.from_branch }}
+        if: startsWith(github.event.inputs.from_branch, 'release/')
+        run: |
+          echo 'branch  ${{ github.event.inputs.from_branch }}'
+          echo ${BRANCH_NAME}
+          bundle exec fastlane point_sample_app_to_pending_releases
+      - name: Use the same feature branch of MatrixSDK
+        if: startsWith(github.event.inputs.from_branch, 'release/') != true
+        run: |
+          echo 'branch  ${{ github.event.inputs.from_branch }}'
+          echo ${BRANCH_NAME}
+          bundle exec fastlane point_sample_app_to_same_feature
 
       # Main step
       - name: Build iOS simulator
