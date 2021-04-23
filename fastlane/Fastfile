@@ -42,6 +42,18 @@ platform :ios do
     )
   end
 
+
+  desc "Modify the MatrixKit.podspec locally to point to the related MatrixSDK branch if such one exists,"
+  lane :point_podspec_to_related_branches do
+    current_branch = git_branch
+    UI.message("Current branch: #{current_branch}")
+    if current_branch.start_with?("release/")
+        point_podspec_to_pending_releases
+    else
+        point_podspec_to_same_feature
+    end
+  end
+
   desc "Modify the MatrixKit.podspec locally to point to the latest 'release/*/release' branch of 'MatrixSDK' if such one exists, or to develop otherwise"
   lane :point_podspec_to_pending_releases do
     edit_podspec(branch_pattern: "release/*/release")
@@ -50,6 +62,18 @@ platform :ios do
   desc "Modify the MatrixKit.podspec locally to point to the same branch of 'MatrixSDK' as the current one if such one exists, or to develop otherwise"
   lane :point_podspec_to_same_feature do
     edit_podspec(branch_pattern: git_branch)
+  end
+
+
+  desc "Modify the Podfile of the sample app locally to point to the related MatrixSDK branch if such one exists,"
+  lane :point_sample_app_to_related_branches do
+    current_branch = git_branch
+    UI.message("Current branch: #{current_branch}")
+    if current_branch.start_with?("release/")
+        point_sample_app_to_pending_releases
+    else
+        point_sample_app_to_same_feature
+    end
   end
 
   desc "Modify the Podfile of the sample app locally to point to the latest 'release/*/release' branch of 'MatrixSDK' if such one exists, or to develop otherwise"
@@ -61,6 +85,7 @@ platform :ios do
   lane :point_sample_app_to_same_feature do
     edit_podfile(branch_pattern: git_branch)
   end
+
 
   desc "Send code to SonarCloud for analysis"
   lane :sonarcloud do |options|
@@ -83,7 +108,8 @@ platform :ios do
 
     sdk_slug = "matrix-org/matrix-ios-sdk"
     sdk_branch = find_branch(sdk_slug, options[:branch_pattern]) || 'develop'
-    
+    UI.message("✏️ Editing MatrixKit.podspec to point MatrixSDK to #{sdk_branch}...")
+
     local_podspec_dir = '../' # current dir is 'fastlane/' hence the '../'
     FileUtils.mkdir_p(local_podspec_dir)
 
