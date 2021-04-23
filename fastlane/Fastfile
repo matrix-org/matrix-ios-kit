@@ -23,8 +23,8 @@ platform :ios do
 
   desc "Lint local MatrixKit podspec"
   lane :lint_local_pod_MatrixKit do
-    # MatrixKit-*.podspec and MatrixKit-*.pospec are created by the `bundle exec fastlane point_podspec_to_…` lanes supposed to be run beforehand
-    custom_pod_lib_lint(podspec: "../local-podspecs/MatrixKit.podspec", parameters: ["--allow-warnings", "--fail-fast", "--configuration=Debug", " --external-podspecs=local-podspecs/MatrixSDK.podspec"])
+    # MatrixKit.podspec and MatrixKit.pospec are updated or created by the `bundle exec fastlane point_podspec_to_…` lanes supposed to be run beforehand
+    custom_pod_lib_lint(podspec: "../MatrixKit.podspec", parameters: ["--allow-warnings", "--fail-fast", "--configuration=Debug", " --external-podspecs=MatrixSDK.podspec"])
   end
 
   desc "Run tests"
@@ -84,7 +84,7 @@ platform :ios do
     sdk_slug = "matrix-org/matrix-ios-sdk"
     sdk_branch = find_branch(sdk_slug, options[:branch_pattern]) || 'develop'
     
-    local_podspec_dir = '../local-podspecs/' # current dir is 'fastlane/' hence the '../'
+    local_podspec_dir = '../' # current dir is 'fastlane/' hence the '../'
     FileUtils.mkdir_p(local_podspec_dir)
 
     UI.message("✏️ Making a local copy of MatrixSDK.podspec from the \`#{sdk_branch}\` branch...")
