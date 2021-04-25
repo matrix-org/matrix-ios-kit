@@ -45,7 +45,7 @@ platform :ios do
 
   desc "Modify the MatrixKit.podspec locally to point to the related MatrixSDK branch if such one exists,"
   lane :point_podspec_to_related_branches do
-    current_branch = git_branch
+    current_branch = mx_git_branch
     UI.message("Current branch: #{current_branch}")
     if current_branch.start_with?("release/")
         point_podspec_to_pending_releases
@@ -61,13 +61,13 @@ platform :ios do
 
   desc "Modify the MatrixKit.podspec locally to point to the same branch of 'MatrixSDK' as the current one if such one exists, or to develop otherwise"
   lane :point_podspec_to_same_feature do
-    edit_podspec(branch_pattern: git_branch)
+    edit_podspec(branch_pattern: mx_git_branch)
   end
 
 
   desc "Modify the Podfile of the sample app locally to point to the related MatrixSDK branch if such one exists,"
   lane :point_sample_app_to_related_branches do
-    current_branch = git_branch
+    current_branch = mx_git_branch
     UI.message("Current branch: #{current_branch}")
     if current_branch.start_with?("release/")
         point_sample_app_to_pending_releases
@@ -83,7 +83,7 @@ platform :ios do
 
   desc "Modify the Podfile of the sample app locally to point to the same branch of 'MatrixSDK' as the current one if such one exists, or to develop otherwise"
   lane :point_sample_app_to_same_feature do
-    edit_podfile(branch_pattern: git_branch)
+    edit_podfile(branch_pattern: mx_git_branch)
   end
 
 
@@ -133,6 +133,18 @@ platform :ios do
     podfile_content = File.read('../Podfile')
     podfile_content.gsub!(/(pod\s+(['"])MatrixSDK\2).*$/, "\\1, :git => 'https://github.com/#{sdk_slug}.git', :branch => '#{sdk_branch}'")
     File.write('../Podfile', podfile_content)
+  end
+
+  #
+  def mx_git_branch
+    mx_git_branch = git_branch
+    if mx_git_branch == ""
+        ensure_env_vars(
+            env_vars: ['MX_GIT_BRANCH']
+          )
+        mx_git_branch = ENV["MX_GIT_BRANCH"]
+    end
+    return mx_git_branch
   end
 
   # Find the latest branch with the given name pattern in the given repo

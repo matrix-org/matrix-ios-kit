@@ -39,22 +39,10 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
 
-      # - name: Use right MatrixSDK versions
-      #   run: |
-      #     echo ${{ toJson(github) }}
-      #     echo ${{ github.event.pull_request.head.ref }}
-      #     bundle exec fastlane point_sample_app_to_related_branches
-
-      - name: Use the pending release of MatrixSDK ${{ github.event.pull_request.head.ref }}
-        if: startsWith(github.event.pull_request.head.ref, 'release/')
-        run: |
-          echo 'branch ${{ github.event.pull_request.head.ref }}'
-          bundle exec fastlane point_sample_app_to_pending_releases
-      - name: Use the same feature branch of MatrixSDK
-        if: startsWith(github.event.pull_request.head.ref, 'release/') != true
-        run: |
-          echo 'branch ${{ github.event.pull_request.head.ref }}'
-          bundle exec fastlane point_sample_app_to_same_feature
+      - name: Use right MatrixSDK version
+        run: bundle exec fastlane point_sample_app_to_related_branches
+        env:
+          MX_GIT_BRANCH: ${{ github.event.pull_request.head.ref }}
 
       # Main step
       - name: Build iOS simulator
