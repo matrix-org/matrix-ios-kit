@@ -9,6 +9,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  MX_GIT_BRANCH: ${{ github.event.pull_request.head.ref }}
+
 jobs:
   build:
     name: Build
@@ -41,8 +44,6 @@ jobs:
 
       - name: Use right MatrixSDK version
         run: bundle exec fastlane point_sample_app_to_related_branches
-        env:
-          MX_GIT_BRANCH: ${{ github.event.pull_request.head.ref }}
 
       # Main step
       - name: Build iOS simulator
