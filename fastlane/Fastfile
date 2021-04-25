@@ -135,7 +135,8 @@ platform :ios do
     File.write('../Podfile', podfile_content)
   end
 
-  #
+  # git_branch can return an empty screen with some CI tools (like GH actions) 
+  # The CI build script needs to define MX_GIT_BRANCH with the right branch.
   def mx_git_branch
     mx_git_branch = git_branch
     if mx_git_branch == ""
@@ -174,4 +175,5 @@ platform :ios do
 
     sh(command.join(" "))
   end
+
 end
