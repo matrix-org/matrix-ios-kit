@@ -15,6 +15,45 @@ platform :ios do
     )
   end
 
+  desc "Lint MatrixKit podspec"
+  lane :lint_pod_MatrixKit do
+    # Build only Debug config to divide build time by 3
+    custom_pod_lib_lint(podspec: "../MatrixKit.podspec", parameters: ["--allow-warnings", "--fail-fast", "--configuration=Debug"])
+  end
+
+  desc "Lint local MatrixKit podspec"
+  lane :lint_local_pod_MatrixKit do
+    # MatrixKit.podspec and MatrixKit.pospec are updated or created by the `bundle exec fastlane point_podspec_to_…` lanes supposed to be run beforehand
+    custom_pod_lib_lint(podspec: "../MatrixKit.podspec", parameters: ["--allow-warnings", "--fail-fast", "--configuration=Debug", " --external-podspecs=MatrixSDK.podspec"])
+  end
+
+  desc "Run tests"
+  lane :test do
+    cocoapods
+
+    run_tests(
+      workspace: "MatrixKit.xcworkspace",
+      scheme: "MatrixKitSample",
+      code_coverage: true,
+      # Test result configuration
+      result_bundle: true,
+      output_directory: "./build/test",
+      open_report: !is_ci?
+    )
+  end
+
+
+  desc "Modify the MatrixKit.podspec locally to point to the related MatrixSDK branch if such one exists,"
+  lane :point_podspec_to_related_branches do
+    current_branch = mx_git_branch
+    UI.message("Current branch: #{current_branch}")
+    if current_branch.start_with?("release/")
+        point_podspec_to_pending_releases
+    else
+        point_podspec_to_same_feature
+    end
+  end
+
   desc "Modify the MatrixKit.podspec locally to point to the latest 'release/*/release' branch of 'MatrixSDK' if such one exists, or to develop otherwise"
   lane :point_podspec_to_pending_releases do
     edit_podspec(branch_pattern: "release/*/release")
@@ -22,7 +61,19 @@ platform :ios do
 
   desc "Modify the MatrixKit.podspec locally to point to the same branch of 'MatrixSDK' as the current one if such one exists, or to develop otherwise"
   lane :point_podspec_to_same_feature do
-    edit_podspec(branch_pattern: git_branch)
+    edit_podspec(branch_pattern: mx_git_branch)
+  end
+
+
+  desc "Modify the Podfile of the sample app locally to point to the related MatrixSDK branch if such one exists,"
+  lane :point_sample_app_to_related_branches do
+    current_branch = mx_git_branch
+    UI.message("Current branch: #{current_branch}")
+    if current_branch.start_with?("release/")
+        point_sample_app_to_pending_releases
+    else
+        point_sample_app_to_same_feature
+    end
   end
 
   desc "Modify the Podfile of the sample app locally to point to the latest 'release/*/release' branch of 'MatrixSDK' if such one exists, or to develop otherwise"
@@ -32,8 +83,9 @@ platform :ios do
 
   desc "Modify the Podfile of the sample app locally to point to the same branch of 'MatrixSDK' as the current one if such one exists, or to develop otherwise"
   lane :point_sample_app_to_same_feature do
-    edit_podfile(branch_pattern: git_branch)
+    edit_podfile(branch_pattern: mx_git_branch)
   end
+
 
   desc "Send code to SonarCloud for analysis"
   lane :sonarcloud do |options|
@@ -56,8 +108,9 @@ platform :ios do
 
     sdk_slug = "matrix-org/matrix-ios-sdk"
     sdk_branch = find_branch(sdk_slug, options[:branch_pattern]) || 'develop'
-    
-    local_podspec_dir = '../local-podspecs/' # current dir is 'fastlane/' hence the '../'
+    UI.message("✏️ Editing MatrixKit.podspec to point MatrixSDK to #{sdk_branch}...")
+
+    local_podspec_dir = '../' # current dir is 'fastlane/' hence the '../'
     FileUtils.mkdir_p(local_podspec_dir)
 
     UI.message("✏️ Making a local copy of MatrixSDK.podspec from the \`#{sdk_branch}\` branch...")
@@ -82,6 +135,19 @@ platform :ios do
     File.write('../Podfile', podfile_content)
   end
 
+  # git_branch can return an empty screen with some CI tools (like GH actions) 
+  # The CI build script needs to define MX_GIT_BRANCH with the right branch.
+  def mx_git_branch
+    mx_git_branch = git_branch
+    if mx_git_branch == ""
+        ensure_env_vars(
+            env_vars: ['MX_GIT_BRANCH']
+          )
+        mx_git_branch = ENV["MX_GIT_BRANCH"]
+    end
+    return mx_git_branch
+  end
+
   # Find the latest branch with the given name pattern in the given repo
   def find_branch(repo_slug, pattern)
     list = `git ls-remote --heads --sort=version:refname https://github.com/#{repo_slug} #{pattern}`
@@ -89,4 +155,25 @@ platform :ios do
         .map { |line| line.sub(%r{[0-9a-f]+\trefs/heads/}, '').chomp }
         .last # Latest ref found, in "version:refname" semantic order
   end
+
+  desc "Returns bundle Cocoapods version"
+  private_lane :cocoapods_version do
+    sh("bundle exec pod --version", log: false)
+  end
+
+  desc "Pod lib lint with podspec parameter"
+  private_lane :custom_pod_lib_lint do |options|
+    puts "Lint pod " << options[:podspec] << " with Cocoapods version " << cocoapods_version
+
+    command = []
+    command << "bundle exec pod lib lint"
+    command << options[:podspec]
+
+    if options[:parameters]
+      command.concat(options[:parameters])
+    end
+
+    sh(command.join(" "))
+  end
+
 end
