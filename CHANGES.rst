@@ -17,7 +17,7 @@ Changes to be released in next version
  * 
     
 🧱 Build
- * 
+ * CI: Introduce GH actions.
 
 Others
  * 
