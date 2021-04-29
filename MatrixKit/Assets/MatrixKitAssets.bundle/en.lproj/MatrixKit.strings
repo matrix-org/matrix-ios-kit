@@ -531,10 +531,9 @@
 // Settings keys 
 
 // call string
-"call_waiting" = "Waiting...";
-"call_connecting" = "Call connecting...";
+"call_connecting" = "Connecting…";
+"call_ringing" = "Ringing…";
 "call_ended" = "Call ended";
-"call_ring" = "Calling...";
 "incoming_video_call" = "Incoming Video Call";
 "incoming_voice_call" = "Incoming Voice Call";
 "call_invite_expired" = "Call Invite Expired";
@@ -547,6 +546,8 @@
 "call_more_actions_audio_use_device" = "Use Device Audio";
 "call_more_actions_transfer" = "Transfer";
 "call_more_actions_dialpad" = "Dial pad";
+"call_voice_with_user" = "Voice call with %@";
+"call_video_with_user" = "Video call with %@";
 
 // unrecognized SSL certificate
 "ssl_trust" = "Trust";

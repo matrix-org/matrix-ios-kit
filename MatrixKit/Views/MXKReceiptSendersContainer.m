@@ -96,6 +96,7 @@ static UIColor* kMoreLabelDefaultcolor;
         
         MXKImageView *imageView = [[MXKImageView alloc] initWithFrame:CGRectMake(xOff, 0, side, side)];
         imageView.defaultBackgroundColor = [UIColor clearColor];
+        imageView.autoresizingMask = UIViewAutoresizingNone;
         
         if (alignment == ReadReceiptAlignmentRight)
         {

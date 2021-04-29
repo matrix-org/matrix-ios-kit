@@ -30,6 +30,8 @@ NSString *const kMXKCallViewControllerWillDisappearNotification = @"kMXKCallView
 NSString *const kMXKCallViewControllerDisappearedNotification = @"kMXKCallViewControllerDisappearedNotification";
 NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewControllerBackToAppNotification";
 
+static const CGFloat kLocalPreviewMargin = 20;
+
 @interface MXKCallViewController ()
 {
     NSTimer *hideOverlayTimer;
@@ -68,7 +70,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
 
 @implementation MXKCallViewController
 @synthesize backgroundImageView;
-@synthesize localPreviewContainerView, localPreviewActivityView, remotePreviewContainerView;
+@synthesize localPreviewContainerView, localPreviewVideoView, localPreviewActivityView, remotePreviewContainerView;
 @synthesize overlayContainerView, callContainerView, callerImageView, callerNameLabel, callStatusLabel;
 @synthesize callToolBar, rejectCallButton, answerCallButton, endCallButton;
 @synthesize callControlContainerView, speakerButton, audioMuteButton, videoMuteButton;
@@ -339,9 +341,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         // Hide camera switch on voice call
         self.cameraSwitchButton.hidden = !call.isVideoCall;
         
-        // Hide pip on voice call
-        self.pipButton.hidden = !call.isVideoCall;
-        
         // Observe call state change
         call.delegate = self;
 
@@ -365,7 +364,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                        self->localPreviewContainerView.hidden = NO;
                        self->remotePreviewContainerView.hidden = NO;
 
-                       call.selfVideoView = self->localPreviewContainerView;
+                       call.selfVideoView = self->localPreviewVideoView;
                        call.remoteVideoView = self->remotePreviewContainerView;
                        [self applyDeviceOrientation:YES];
 
@@ -473,7 +472,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
         peerAvatarURL = mxCall.room.summary.avatar;
     }
     
-    callerNameLabel.text = peerDisplayName;
+    if (mxCall.isVideoCall)
+    {
+        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_video_with_user"], peerDisplayName];
+    }
+    else
+    {
+        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_voice_with_user"], peerDisplayName];
+    }
+    
     if (peerAvatarURL)
     {
         // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
@@ -552,6 +559,11 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     return _onHoldCallContainerTapRecognizer;
 }
 
+- (BOOL)isDisplayingAlert
+{
+    return errorAlert != nil;
+}
+
 #pragma mark - Sounds
 
 - (NSURL *)audioURLWithName:(NSString *)soundName
@@ -587,13 +599,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                    [self->mxCall answer];
                }
            }];
-    }
-    else if (sender == _pipButton)
-    {
-        if ([self.delegate respondsToSelector:@selector(callViewControllerDidTapPiPButton:)])
-        {
-            [self.delegate callViewControllerDidTapPiPButton:self];
-        }
     }
     else if (sender == rejectCallButton || sender == endCallButton)
     {
@@ -831,7 +836,7 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     {
         case MXCallStateFledgling:
             self.isRinging = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_waiting"];;
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
             break;
         case MXCallStateWaitLocalMedia:
             self.isRinging = NO;
@@ -854,7 +859,12 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
                 self.isRinging = YES;
             }
             
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ring"];
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
+            break;
+        }
+        case MXCallStateInviteSent:
+        {
+            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ringing"];
             break;
         }
         case MXCallStateRinging:
@@ -879,7 +889,6 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             break;
         case MXCallStateConnecting:
             self.isRinging = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
             
             // User has accepted the call and we can remove incomingCallView
             if (self.incomingCallView)
@@ -900,13 +909,18 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             self.isRinging = NO;
             [self updateTimeStatusLabel];
 
-            if (call.isVideoCall && call.isConferenceCall)
+            if (call.isVideoCall)
             {
-                // Do not show self view anymore because it is returned by the conference bridge
-                self.localPreviewContainerView.hidden = YES;
+                self.callerImageView.hidden = YES;
+                
+                if (call.isConferenceCall)
+                {
+                    // Do not show self view anymore because it is returned by the conference bridge
+                    self.localPreviewContainerView.hidden = YES;
 
-                // Well, hide does not work. So, shrink the view to nil
-                self.localPreviewContainerView.frame = CGRectMake(0, 0, 0, 0);
+                    // Well, hide does not work. So, shrink the view to nil
+                    self.localPreviewContainerView.frame = CGRectZero;
+                }
             }
             audioMuteButton.enabled = YES;
             videoMuteButton.enabled = YES;
@@ -978,6 +992,10 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
             title = [NSBundle mxk_localizedStringForKey:@"error"];
         }
         NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+        if (!msg)
+        {
+            msg = [NSBundle mxk_localizedStringForKey:@"error_common_message"];
+        }
 
         MXWeakify(self);
         errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
@@ -1174,15 +1192,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     CGPoint previewOrigin = self.localPreviewContainerView.frame.origin;
     
-    if (previewOrigin.x != 20)
+    if (previewOrigin.x != (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - kLocalPreviewMargin))
     {
-        CGFloat posX = (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - 20.0);
+        CGFloat posX = (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - kLocalPreviewMargin);
         _localPreviewContainerViewLeadingConstraint.constant = posX;
     }
     
-    if (previewOrigin.y != 20)
+    if (previewOrigin.y != kLocalPreviewMargin)
     {
-        CGFloat posY = (bounds.size.height - _localPreviewContainerViewHeightConstraint.constant - 20.0);
+        CGFloat posY = (bounds.size.height - _localPreviewContainerViewHeightConstraint.constant - kLocalPreviewMargin);
         _localPreviewContainerViewTopConstraint.constant = posY;
     }
 }
