@@ -30,6 +30,8 @@ NSString *const kMXKCallViewControllerWillDisappearNotification = @"kMXKCallView
 NSString *const kMXKCallViewControllerDisappearedNotification = @"kMXKCallViewControllerDisappearedNotification";
 NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewControllerBackToAppNotification";
 
+static const CGFloat kLocalPreviewMargin = 20;
+
 @interface MXKCallViewController ()
 {
     NSTimer *hideOverlayTimer;
@@ -1190,15 +1192,15 @@ NSString *const kMXKCallViewControllerBackToAppNotification = @"kMXKCallViewCont
     
     CGPoint previewOrigin = self.localPreviewContainerView.frame.origin;
     
-    if (previewOrigin.x != (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - 20.0))
+    if (previewOrigin.x != (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - kLocalPreviewMargin))
     {
-        CGFloat posX = (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - 20.0);
+        CGFloat posX = (bounds.size.width - _localPreviewContainerViewWidthConstraint.constant - kLocalPreviewMargin);
         _localPreviewContainerViewLeadingConstraint.constant = posX;
     }
     
-    if (previewOrigin.y != 20)
+    if (previewOrigin.y != kLocalPreviewMargin)
     {
-        CGFloat posY = (bounds.size.height - _localPreviewContainerViewHeightConstraint.constant - 20.0);
+        CGFloat posY = (bounds.size.height - _localPreviewContainerViewHeightConstraint.constant - kLocalPreviewMargin);
         _localPreviewContainerViewTopConstraint.constant = posY;
     }
 }
