@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKAuthenticationVC: Expose current HTTP Operation (vector-im/element-ios/issues/4276)
 
 🐛 Bugfix
  * 
