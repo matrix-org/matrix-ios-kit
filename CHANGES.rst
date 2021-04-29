@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKEventFormatter: Expose defaultRoomSummaryUpdater ivar as protected.
 
 🐛 Bugfix
  * 
