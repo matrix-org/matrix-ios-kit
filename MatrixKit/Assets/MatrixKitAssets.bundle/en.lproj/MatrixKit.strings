@@ -532,7 +532,7 @@
 
 // call string
 "call_connecting" = "Connecting...";
-"call_ringing" = "Ringing...";
+"call_ringing" = "Ringing…";
 "call_ended" = "Call ended";
 "incoming_video_call" = "Incoming Video Call";
 "incoming_voice_call" = "Incoming Voice Call";
