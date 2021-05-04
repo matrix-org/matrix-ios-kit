@@ -548,6 +548,8 @@
 "call_more_actions_dialpad" = "Dial pad";
 "call_voice_with_user" = "Voice call with %@";
 "call_video_with_user" = "Video call with %@";
+"call_consulting_with_user" = "Consulting with %@";
+"call_transfer_to_user" = "Transfer to %@";
 
 // unrecognized SSL certificate
 "ssl_trust" = "Trust";

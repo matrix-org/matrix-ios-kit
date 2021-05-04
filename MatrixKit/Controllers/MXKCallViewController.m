@@ -132,6 +132,7 @@ static const CGFloat kLocalPreviewMargin = 20;
     self.resumeButton.backgroundColor = [UIColor clearColor];
     self.moreButton.backgroundColor = [UIColor clearColor];
     self.speakerButton.backgroundColor = [UIColor clearColor];
+    self.transferButton.backgroundColor = [UIColor clearColor];
     
     [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateNormal];
     [self.backToAppButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_backtoapp"] forState:UIControlStateHighlighted];
@@ -472,13 +473,20 @@ static const CGFloat kLocalPreviewMargin = 20;
         peerAvatarURL = mxCall.room.summary.avatar;
     }
     
-    if (mxCall.isVideoCall)
+    if (mxCall.isConsulting)
     {
-        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_video_with_user"], peerDisplayName];
+        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_consulting_with_user"], peerDisplayName];
     }
     else
     {
-        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_voice_with_user"], peerDisplayName];
+        if (mxCall.isVideoCall)
+        {
+            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_video_with_user"], peerDisplayName];
+        }
+        else
+        {
+            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_voice_with_user"], peerDisplayName];
+        }
     }
     
     if (peerAvatarURL)
@@ -751,6 +759,20 @@ static const CGFloat kLocalPreviewMargin = 20;
             [_delegate dismissCallViewController:self completion:nil];
         }
     }
+    else if (sender == _transferButton)
+    {
+        //  actually transfer the call without consulting
+        [self.mainSession.callManager transferCall:mxCall.callWithTransferee
+                                                to:mxCall.transferTarget
+                                    withTransferee:mxCall.transferee
+                                      consultFirst:NO
+                                           success:^(NSString * _Nullable newCallId) {
+            
+        }
+                                           failure:^(NSError * _Nullable error) {
+            
+        }];
+    }
     
     [self updateProximityAndSleep];
 }
@@ -829,6 +851,7 @@ static const CGFloat kLocalPreviewMargin = 20;
     _moreButton.enabled = YES;
     _resumeButton.hidden = state != MXCallStateOnHold;
     _pausedIcon.hidden = state != MXCallStateOnHold && state != MXCallStateRemotelyOnHold;
+    _transferButton.hidden = YES;
     
     [localPreviewActivityView stopAnimating];
     
@@ -926,6 +949,10 @@ static const CGFloat kLocalPreviewMargin = 20;
             videoMuteButton.enabled = YES;
             speakerButton.enabled = YES;
             cameraSwitchButton.enabled = YES;
+            if (call.isConsulting)
+            {
+                _transferButton.hidden = NO;
+            }
 
             break;
         case MXCallStateOnHold:
@@ -1014,6 +1041,22 @@ static const CGFloat kLocalPreviewMargin = 20;
         
         // And interrupt the call
         [mxCall hangupWithReason:reason];
+    }
+}
+
+- (void)callConsultingStatusDidChange:(MXCall *)call
+{
+    [self updatePeerInfoDisplay];
+    
+    if (call.isConsulting)
+    {
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_transfer_to_user"], call.transferee.displayname];
+        [_transferButton setTitle:title forState:UIControlStateNormal];
+        _transferButton.hidden = call.state != MXCallStateConnected;
+    }
+    else
+    {
+        _transferButton.hidden = YES;
     }
 }
 

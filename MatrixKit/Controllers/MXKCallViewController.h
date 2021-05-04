@@ -97,6 +97,8 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewHeightConstraint;
 @property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *localPreviewContainerViewWidthConstraint;
 
+@property (weak, nonatomic) IBOutlet UIButton *transferButton;
+
 /**
  The default picture displayed when no picture is available.
  */
