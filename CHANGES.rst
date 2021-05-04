@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKCallViewController: Add transfer button and implement actions.
 
 🐛 Bugfix
  * 
