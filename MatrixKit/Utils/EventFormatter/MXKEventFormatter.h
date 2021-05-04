@@ -70,6 +70,11 @@ typedef enum : NSUInteger {
      The time formatter used to build time string without date information.
      */
     NSDateFormatter *timeFormatter;
+    
+    /**
+     The default room summary updater from the MXSession.
+     */
+    MXRoomSummaryUpdater *defaultRoomSummaryUpdater;
 }
 
 /**
