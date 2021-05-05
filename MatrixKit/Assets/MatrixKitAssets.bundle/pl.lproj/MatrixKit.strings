@@ -2,7 +2,7 @@
 // Login Screen
 "login_create_account" = "Stwórz konto:";
 "login_server_url_placeholder" = "URL (np. https://matrix.org)";
-"login_identity_server_title" = "URL serwera uwierzytelniania:";
+"login_identity_server_title" = "URL serwera tożsamości:";
 "login_password_placeholder" = "Hasło";
 "login_optional_field" = "opcjonalne";
 "login_email_placeholder" = "Adres e-mail";
@@ -237,4 +237,4 @@
 "login_error_do_not_support_login_flows" = "Obecnie nie obsługujemy żadnego lub wszystkich przepływów logowania zdefiniowanych przez ten Serwer Domowy";
 "login_error_no_login_flow" = "Nie udało się pobrać informacji uwierzytelniających z tego serwera domowego";
 "login_email_info" = "Podanie adresu e-mail pozwala innym użytkownikom na znalezienie Ciebie w sieci Matrix oraz pozwala na zresetowanie hasła.";
-"login_identity_server_info" = "Matrix zapewnia serwery uwierzytelniania do śledzenia, które e-maile itp. Należą do których identyfikatorów Matrix. Obecnie istnieje tylko https://matrix.org.";
+"login_identity_server_info" = "Matrix zapewnia serwery tożsamości do śledzenia, które e-maile itp. Należą do których identyfikatorów Matrix. Obecnie istnieje tylko https://matrix.org.";
