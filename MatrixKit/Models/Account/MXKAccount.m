@@ -2019,6 +2019,8 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
     else if (!syncFilter || !mxSession.syncFilterId)
     {
         // Change from no filter with using a filter or vice-versa. So, there is a filter change
+        NSLog(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter. New or old is nil. mxSession.syncFilterId: %@ - syncFilter: %@",
+              mxSession.syncFilterId, syncFilter.JSONDictionary);
         completion(NO);
     }
     else
@@ -2032,7 +2034,11 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
             // Note: We could be more tolerant here
             // We could accept filter hot change if the change is limited to the `limit` filter value
             // But we do not have this requirement yet
-            completion([filterId isEqualToString:self.mxSession.syncFilterId]);
+            BOOL compatible = [filterId isEqualToString:self.mxSession.syncFilterId];
+            NSLog(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter id. New or old is nil. mxSession.syncFilterId: %@ -  store.filterId: %@ - syncFilter: %@",
+                  self.mxSession.syncFilterId, filterId, syncFilter.JSONDictionary);
+            
+            completion(compatible);
 
         } failure:^(NSError * _Nullable error) {
             // Should never happen

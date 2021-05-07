@@ -1,3 +1,33 @@
+Changes in 0.14.11 (2021-05-07)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKEventFormatter: Expose defaultRoomSummaryUpdater ivar as protected.
+ * MXKCallViewController: Add transfer button and implement actions.
+ * MXKAuthenticationVC: Expose current HTTP Operation (vector-im/element-ios/issues/4276).
+ * MXKAccount: Log reasons for incompatible sync filter (vector-im/element-ios/issues/3921).
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * CI: Introduce GH actions.
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.18.11](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.11)).
+
 Changes in 0.14.10 (2021-04-22)
 =================================================
 
