@@ -148,6 +148,11 @@
 @property (nonatomic) id<MXKAuthenticationViewControllerDelegate> delegate;
 
 /**
+ current ongoing MXHTTPOperation. Nil if none.
+ */
+@property (nonatomic, nullable, readonly) MXHTTPOperation *currentHttpOperation;
+
+/**
  Returns the `UINib` object initialized for a `MXKAuthenticationViewController`.
  
  @return The initialized `UINib` object or `nil` if there were errors during initialization

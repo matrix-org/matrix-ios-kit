@@ -34,11 +34,6 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 @interface MXKEventFormatter ()
 {
     /**
-     The default room summary updater from the MXSession.
-     */
-    MXRoomSummaryUpdater *defaultRoomSummaryUpdater;
-
-    /**
      The default CSS converted in DTCoreText object.
      */
     DTCSSStylesheet *dtCSS;

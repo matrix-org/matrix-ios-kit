@@ -1435,6 +1435,11 @@
     }
 }
 
+- (MXHTTPOperation *)currentHttpOperation
+{
+    return mxCurrentOperation;
+}
+
 #pragma mark - Privates
 
 - (NSString *)deviceDisplayName
