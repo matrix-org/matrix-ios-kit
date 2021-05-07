@@ -399,7 +399,7 @@
 "settings_config_user_id" = "Användar-ID: %@";
 // call string
 "call_waiting" = "Väntar…";
-"call_connecting" = "Samtal ansluts…";
+"call_connecting" = "Ansluter…";
 "call_ended" = "Samtal avslutat";
 "call_ring" = "Ringer…";
 "incoming_video_call" = "Inkommande videosamtal";
@@ -456,3 +456,8 @@
 "notice_declined_video_call_by_you" = "Du avslog samtalet";
 "notice_declined_video_call" = "%@ avslog samtalet";
 "resume_call" = "Återuppta";
+"call_transfer_to_user" = "Överför till %@";
+"call_consulting_with_user" = "Rådfrågar %@";
+"call_video_with_user" = "Videosamtal med %@";
+"call_voice_with_user" = "Röstsamtal med %@";
+"call_ringing" = "Ringer…";
