@@ -31,8 +31,9 @@ Changes in 0.14.11 (2021-05-07)
 🙌 Improvements
  * MXKEventFormatter: Expose defaultRoomSummaryUpdater ivar as protected.
  * MXKCallViewController: Add transfer button and implement actions.
- * MXKAuthenticationVC: Expose current HTTP Operation (vector-im/element-ios/issues/4276).
+ * MXKAuthenticationVC: Expose current HTTP Operation (vector-im/element-ios/issues/4276)
  * MXKAccount: Log reasons for incompatible sync filter (vector-im/element-ios/issues/3921).
+ * MXKCallViewController: Handle asserted identity updates.
 
 🐛 Bugfix
  * 

@@ -1060,6 +1060,61 @@ static const CGFloat kLocalPreviewMargin = 20;
     }
 }
 
+- (void)callAssertedIdentityDidChange:(MXCall *)call
+{
+    MXAssertedIdentityModel *assertedIdentity = call.assertedIdentity;
+    
+    if (assertedIdentity)
+    {
+        //  update caller display name and avatar with the asserted identity
+        NSString *peerDisplayName;
+        NSString *peerAvatarURL = assertedIdentity.avatarUrl;
+        
+        if (assertedIdentity.displayname)
+        {
+            peerDisplayName = assertedIdentity.displayname;
+        }
+        else if (assertedIdentity.userId)
+        {
+            peerDisplayName = assertedIdentity.userId;
+        }
+        
+        if (mxCall.isVideoCall)
+        {
+            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_video_with_user"], peerDisplayName];
+        }
+        else
+        {
+            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_voice_with_user"], peerDisplayName];
+        }
+        
+        if (peerAvatarURL)
+        {
+            // Suppose avatar url is a matrix content uri, we use SDK to get the well adapted thumbnail from server
+            callerImageView.mediaFolder = kMXMediaManagerAvatarThumbnailFolder;
+            callerImageView.enableInMemoryCache = YES;
+            [callerImageView setImageURI:peerAvatarURL
+                                withType:nil
+                     andImageOrientation:UIImageOrientationUp
+                           toFitViewSize:callerImageView.frame.size
+                              withMethod:MXThumbnailingMethodCrop
+                            previewImage:self.picturePlaceholder
+                            mediaManager:self.mainSession.mediaManager];
+        }
+        else
+        {
+            callerImageView.image = self.picturePlaceholder;
+        }
+        
+        [updateStatusTimer fire];
+    }
+    else
+    {
+        //  go back to the original display name and avatar
+        [self updatePeerInfoDisplay];
+    }
+}
+
 #pragma mark - Internal
 
 - (void)removeObservers
