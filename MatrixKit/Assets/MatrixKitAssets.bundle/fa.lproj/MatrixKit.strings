@@ -29,7 +29,7 @@
 "incoming_voice_call" = "تماس صوتی ورودی";
 "call_ring" = "در حال تماس...";
 "call_ended" = "مکالمه تلفنی تمام شد";
-"call_connecting" = "تماس در حال اتصال ...";
+"call_connecting" = "در حال اتصال …";
 
 // Settings keys 
 
@@ -539,3 +539,8 @@
 "notice_invalid_attachment" = "پیوست نامعتبر";
 "notice_file_attachment" = "پیوست پرونده";
 "notice_location_attachment" = "پیوست مکان";
+"call_transfer_to_user" = "انتقال به %@";
+"call_consulting_with_user" = "تماس با %@";
+"call_video_with_user" = "تماس تصویری با %@";
+"call_voice_with_user" = "تماس صوتی با %@";
+"call_ringing" = "در حال زنگ خوردن…";
