@@ -362,7 +362,7 @@
 "settings_config_user_id" = "ID utente: %@";
 // call string
 "call_waiting" = "Attendere...";
-"call_connecting" = "In connessione...";
+"call_connecting" = "In connessione…";
 "call_ended" = "Chiamata terminata";
 "call_ring" = "Chiamata in corso...";
 "incoming_video_call" = "Videochiamata in arrivo";
@@ -457,3 +457,8 @@
 "notice_declined_video_call_by_you" = "Hai rifiutato la chiamata";
 "notice_declined_video_call" = "%@ ha rifiutato la chiamata";
 "resume_call" = "Riprendi";
+"call_transfer_to_user" = "Trasferisci a %@";
+"call_consulting_with_user" = "Consultazione con %@";
+"call_video_with_user" = "Videochiamata con %@";
+"call_voice_with_user" = "Telefonata con %@";
+"call_ringing" = "Sta squillando…";
