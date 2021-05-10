@@ -230,7 +230,7 @@
 "resume_call" = "Wznów";
 "reject_call" = "Odrzuć połączenie";
 "answer_call" = "Odbierz połączenie";
-"invite_user" = "Zaproś użytkownika matrix";
+"invite_user" = "Zaproś użytkownika Matrix";
 "set_admin" = "Nadaj uprawnienia Administratora";
 "set_moderator" = "Nadaj uprawnienia Moderatora";
 "login_use_fallback" = "Użyj strony zastępczej";
@@ -399,7 +399,7 @@
 "e2e_export_room_keys" = "Eksportuj klucze pokoju";
 "e2e_passphrase_enter" = "Wprowadź hasło";
 "e2e_import" = "Importuj";
-"e2e_import_prompt" = "Ten proces umożliwia zaimportowanie kluczy szyfrowania, które zostały wcześniej wyeksportowane z innego klienta Matrix. \nBędziesz mógł odszyfrować wszystkie wiadomości, które inny klient mógłby odszyfrować. \n\nPlik eksportu jest chroniony hasłem. Wprowadź hasło, aby odszyfrować plik.";
+"e2e_import_prompt" = "Ten proces umożliwia zaimportowanie kluczy szyfrowania, które zostały wcześniej wyeksportowane z innego klienta Matrix. Będziesz mógł odszyfrować wszystkie wiadomości, które inny klient mógłby odszyfrować. \nPlik eksportu jest chroniony hasłem. Wprowadź hasło, aby odszyfrować plik.";
 
 // E2E import
 "e2e_import_room_keys" = "Importuj klucze pokoju";
