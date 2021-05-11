@@ -355,7 +355,7 @@
 "notification_settings_invite_to_a_new_room" = "Njoftomë kur ftohem në një dhomë të re";
 "notification_settings_people_join_leave_rooms" = "Njoftomë kur vijnë ose ikin persona nga dhoma";
 "notification_settings_receive_a_call" = "Njoftomë kur marr një thirrje";
-"call_connecting" = "Po bëhet lidhja e thirrjes…";
+"call_connecting" = "Po lidhet…";
 "ssl_cert_not_trust" = "Kjo mund të ishte shenjë se dikush po përgjon me dashakeqësi trafikun tuaj, ose se telefoni juaj nuk i beson dëshmisë së furnizuar nga shërbyesi i largët.";
 "ssl_cert_new_account_expl" = "Nëse përgjegjësi i shërbyesit ka thënë se kjo është e pritshme, sigurohuni që shenjat e gishtave më poshtë përputhen me shenjat e gishtave të furnizuara prej tyre.";
 "ssl_unexpected_existing_expl" = "Dëshmia ka ndryshuar nga ajo që qe besuar nga telefoni juaj. Kjo është SHUMË E PAZAKONTË. Këshillohet që TË MOS E PRANONI këtë dëshmi të re.";
@@ -457,3 +457,8 @@
 "call_more_actions_audio_use_device" = "Përdor Audio Pajisjeje";
 "call_more_actions_transfer" = "Shpërngule";
 "call_more_actions_dialpad" = "Tastierë numerike";
+"call_transfer_to_user" = "Shpërngulje te %@";
+"call_consulting_with_user" = "Konsultim me %@";
+"call_video_with_user" = "Thirrje me video me %@";
+"call_voice_with_user" = "Thirrje me zë me %@";
+"call_ringing" = "Po i bihet ziles…";

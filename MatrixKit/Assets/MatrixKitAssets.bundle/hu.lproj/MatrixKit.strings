@@ -349,7 +349,7 @@
 "settings_config_user_id" = "Felhasználói azonosító: %@";
 // call string
 "call_waiting" = "Vár...";
-"call_connecting" = "Kapcsolás folyamatban...";
+"call_connecting" = "Kapcsolás…";
 "call_ended" = "Hívás vége";
 "call_ring" = "Hívás...";
 "incoming_video_call" = "Érkező videó hívás";
@@ -457,3 +457,8 @@
 "notice_declined_video_call_by_you" = "Elutasította a hívást";
 "notice_declined_video_call" = "%@ elutasította a hívást";
 "resume_call" = "Folytatás";
+"call_transfer_to_user" = "Hívásátirányítás ide: %@";
+"call_consulting_with_user" = "Konzultáció vele: %@";
+"call_video_with_user" = "Videóhívás vele: %@";
+"call_voice_with_user" = "Hanghívás vele: %@";
+"call_ringing" = "Hívás…";
