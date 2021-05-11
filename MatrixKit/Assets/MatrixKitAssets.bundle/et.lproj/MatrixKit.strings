@@ -369,7 +369,7 @@
 "settings_config_user_id" = "Kasutajatunnus: %@";
 // call string
 "call_waiting" = "Ootan...";
-"call_connecting" = "Kõne on ühendamisel...";
+"call_connecting" = "Kõne on ühendamisel…";
 "call_ended" = "Kõne lõppes";
 "call_ring" = "Helistan...";
 "incoming_video_call" = "Saabuv videokõne";
@@ -456,3 +456,8 @@
 "notice_declined_video_call_by_you" = "Sina keeldusid kõnest";
 "notice_declined_video_call" = "%@ keeldus kõnest";
 "resume_call" = "Jätka";
+"call_consulting_with_user" = "Pean nõu kasutajaga %@";
+"call_transfer_to_user" = "Suunan kõne kasutajale %@";
+"call_video_with_user" = "Videokõne kasutajaga %@";
+"call_voice_with_user" = "Häälkõne kasutajaga %@";
+"call_ringing" = "Helistan…";
