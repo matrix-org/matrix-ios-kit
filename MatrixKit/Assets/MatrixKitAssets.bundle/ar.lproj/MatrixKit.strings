@@ -539,3 +539,8 @@
 "notice_declined_video_call_by_you" = "أنتَ قَد رَفَضتَ المُكالَمَة";
 "notice_declined_video_call" = "لَقَد رَفضَ %@ المُكالَمَة";
 "resume_call" = "اِستِئنَاف";
+"call_transfer_to_user" = "التَّحويلُ إلَى %@";
+"call_consulting_with_user" = "اِستِشارَة مَعَ %@";
+"call_video_with_user" = "مُكالَمَةٌ مَرئيَّةٌ مَع %@";
+"call_voice_with_user" = "مُكالَمَةٌ صَوتيَّةٌ مَع %@";
+"call_ringing" = "الرَّنِينُ جَارٍ…";
