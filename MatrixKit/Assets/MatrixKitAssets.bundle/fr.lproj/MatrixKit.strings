@@ -337,7 +337,7 @@
 "settings_config_user_id" = "Identifiant utilisateur : %@";
 // call string
 "call_waiting" = "En attente…";
-"call_connecting" = "Appel en cours d’établissement…";
+"call_connecting" = "Connexion…";
 "call_ended" = "Appel terminé";
 "call_ring" = "Appel…";
 "incoming_video_call" = "Appel vidéo entrant";
@@ -457,3 +457,8 @@
 "notice_declined_video_call_by_you" = "Vous avez refusé l’appel";
 "notice_declined_video_call" = "%@ a refusé l’appel";
 "resume_call" = "Reprendre";
+"call_transfer_to_user" = "Transfert à %@";
+"call_consulting_with_user" = "Consultation de %@";
+"call_video_with_user" = "Appel vidéo avec %@";
+"call_voice_with_user" = "Appel audio avec %@";
+"call_ringing" = "Sonnerie…";

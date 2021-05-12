@@ -24,3 +24,12 @@
 "close" = "Закрити";
 "back" = "Назад";
 "view" = "Вигляд";
+"login_server_url_placeholder" = "URL (наприклад, https://matrix.org)";
+
+// Login Screen
+"login_create_account" = "Створіть обліковий запис:";
+/* *********************** */
+/*      iOS specific       */
+/* *********************** */
+
+"matrix" = "Matrix";
