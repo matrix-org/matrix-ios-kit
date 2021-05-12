@@ -393,7 +393,7 @@
 
 // call string
 "call_waiting" = "In afwachting…";
-"call_connecting" = "Oproep verbinden…";
+"call_connecting" = "Verbinden…";
 "call_ended" = "Oproep beëindigd";
 "call_ring" = "Bellen…";
 "incoming_video_call" = "Inkomende video-oproep";
@@ -518,3 +518,8 @@
 "notice_declined_video_call_by_you" = "U heeft de oproep afgewezen";
 "notice_declined_video_call" = "%@ heeft de oproep afgewezen";
 "resume_call" = "Hervatten";
+"call_consulting_with_user" = "In de wacht bij %@";
+"call_transfer_to_user" = "Doorverbinden met %@";
+"call_video_with_user" = "Video-oproep met %@";
+"call_voice_with_user" = "Spraakoproep met %@";
+"call_ringing" = "Bellen…";

@@ -484,3 +484,4 @@
 "resume_call" = "Fortsetzen";
 "call_more_actions_dialpad" = "Ziffernblatt";
 "call_more_actions_audio_use_device" = "Lautsprecher verwenden";
+"call_transfer_to_user" = "Durchstellen zu %@";
