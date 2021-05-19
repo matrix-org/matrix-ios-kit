@@ -1,3 +1,10 @@
 
 
 "room_event_encryption_info_device_verification" = "Verifisering\n";
+"notice_display_name_set" = "%@ satte visningsnavnet til %@";
+"room_no_power_to_create_conference_call" = "Du trenger tillatelse for å invitere til å starte en konferanse i dette rommet";
+"room_error_join_failed_empty_room" = "Det er for øyeblikket ikke mulig å bli med på et tomt rom igjen.";
+"room_event_encryption_verify_message" = "For å verifisere at denne økten er til å stole på, vennligst kontakt eieren ved hjelp av andre måter (f.eks. Personlig eller en telefonsamtale) og spør dem om nøkkelen de ser i brukerinnstillingene for denne økten samsvarer med nøkkelen nedenfor:\n\n\tØkt-navn: %@\n\tØkt-ID: %@\n\tØkt-nøkkel: %@\n\nHvis den stemmer overens, trykk på verifiserings-knappen nedenfor. Hvis den ikke gjør det, er det noen andre som avlytter denne økten, og du vil sannsynligvis trykke på svartelisteknappen i stedet.\n\nI fremtiden vil denne verifiseringsprosessen bli mer sofistikert.";
+"room_event_encryption_info_block" = "Svartelist";
+"device_details_delete_prompt_title" = "Autentifisering";
+"notice_room_power_level_acting_requirement" = "Munimum rollenivået en bruker må ha før utførelse av handling er:";
