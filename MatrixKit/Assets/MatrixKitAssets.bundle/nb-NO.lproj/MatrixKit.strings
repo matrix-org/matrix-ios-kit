@@ -36,7 +36,7 @@
 "login_error_unknown_token" = "Angitt tilgangstoken ble ikke gjenkjent";
 "login_error_forbidden" = "Ugyldig brukernavn/passord";
 "login_error_registration_is_not_supported" = "Registrering støttes ikke for øyeblikket";
-"login_error_resource_limit_exceeded_message_monthly_active_user" = "Denne hjemmeserveren har nådd grensen for aktive brukere månedlig.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Denne hjemmeserveren har nådd grensen for aktive månedlige brukere.";
 "login_error_resource_limit_exceeded_message_default" = "Denne hjemmeserveren har overskredet en av ressursgrensene.";
 "login_error_resource_limit_exceeded_title" = "Ressursgrensen er overskredet";
 "login_desktop_device" = "Desktop";
