@@ -70,7 +70,7 @@
 "login_error_resource_limit_exceeded_contact_button" = "Kontakt administrator";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nKontakt tjenesteadministratoren din for å fortsette å bruke denne tjenesten.";
 "set_default_power_level" = "Tilbakestill tilgangsnivå";
-"start_chat" = "Start chat";
+"start_chat" = "Start samtale";
 "set_admin" = "Velg admin";
 "set_moderator" = "Velg moderator";
 "invite_user" = "Inviter Matrix-bruker";
