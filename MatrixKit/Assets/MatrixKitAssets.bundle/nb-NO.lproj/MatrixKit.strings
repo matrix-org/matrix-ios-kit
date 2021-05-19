@@ -80,3 +80,10 @@
 "mention" = "Nevn";
 "start_video_call" = "Start videoanrop";
 "start_voice_call" = "Start taleanrop";
+"answer_call" = "Svar på samtalen";
+"show_details" = "Vis detaljer";
+"cancel_download" = "Avbryt nedlasting";
+"cancel_upload" = "Avbryt opplasting";
+"select_all" = "Velg alle";
+"resend_message" = "Send meldingen på nytt";
+"reset_to_default" = "Tilbakestill til standard";
