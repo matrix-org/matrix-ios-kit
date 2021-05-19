@@ -73,7 +73,7 @@
 "start_chat" = "Start samtale";
 "set_admin" = "Velg admin";
 "set_moderator" = "Velg moderator";
-"invite_user" = "Inviter Matrix-bruker";
+"invite_user" = "Inviter bruker";
 "capture_media" = "Ta bilde/video";
 "attach_media" = "Legg ved media fra biblioteket";
 "select_account" = "Velg en konto";
