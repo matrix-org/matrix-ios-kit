@@ -33,3 +33,6 @@
 "login_error_no_login_flow" = "Vi kunne ikke hente autentiseringsinformasjon fra denne hjemmeserveren";
 "login_error_title" = "Innlogging feilet";
 "login_email_placeholder" = "E-postadresse";
+"login_error_unknown_token" = "Angitt tilgangstoken/tilgangsnøkkel ble ikke gjenkjent";
+"login_error_forbidden" = "Ugyldig brukernavn/passord";
+"login_error_registration_is_not_supported" = "Registrering støttes ikke for øyeblikket";
