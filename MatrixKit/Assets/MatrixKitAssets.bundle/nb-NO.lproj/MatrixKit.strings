@@ -29,7 +29,7 @@
 "login_display_name_placeholder" = "Visningsnavn (f.eks. Bob Obson)";
 "login_optional_field" = "valgfri";
 "login_password_placeholder" = "Passord";
-"login_error_do_not_support_login_flows" = "Foreløpig støtter vi ikke noen eller alle påloggingsflyter som er definert av denne hjemmeserveren";
+"login_error_do_not_support_login_flows" = "Foreløpig støtter vi ikke påloggingsflytene som er definert for denne hjemmeserveren";
 "login_error_no_login_flow" = "Vi kunne ikke hente autentiseringsinformasjon fra denne hjemmeserveren";
 "login_error_title" = "Innlogging feilet";
 "login_email_placeholder" = "E-postadresse";
