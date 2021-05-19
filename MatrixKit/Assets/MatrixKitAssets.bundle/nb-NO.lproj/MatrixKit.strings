@@ -117,7 +117,7 @@
 //  New
 "notice_room_join_rule_invite" = "%@ endret rommet til kun inviterte.";
 "notice_room_power_level_intro_for_dm" = "Medlemmenes tilgangsnivå er:";
-"notice_room_power_level_event_requirement" = "Minimum rollenivå relatert til hendelser er:";
+"notice_room_power_level_event_requirement" = "Minimum tilgangsnivå relatert til events er:";
 "notice_unsupported_attachment" = "Ikke støttet vedlegg:";
 "notice_invalid_attachment" = "ugyldig vedlegg";
 "notice_file_attachment" = "filvedlegg";
