@@ -23,5 +23,5 @@
 "login_identity_server_title" = "URL til identitetsserver:";
 "login_home_server_info" = "Hjemmeserveren lagrer alle samtalene og kontodataene dine";
 "login_home_server_title" = "Hjemmeserver-URL:";
-"login_identity_server_info" = "Matrix tilbyr identitetsservere for å spore hvilke e-postmeldinger etc. som tilhører hvilke Matrix-IDer. Bare https://matrix.org eksisterer for øyeblikket.";
+"login_identity_server_info" = "Matrix tilbyr identitetsservere for å spore hvilke e-postadresser etc. som tilhører hvilke Matrix-IDer. Bare https://matrix.org eksisterer for øyeblikket.";
 "login_user_id_placeholder" = "Matrix-ID (f.eks. @Bob: matrix.org eller bob)";
