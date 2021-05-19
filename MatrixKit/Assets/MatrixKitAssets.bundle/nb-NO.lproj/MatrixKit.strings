@@ -52,3 +52,20 @@
 "login_error_limit_exceeded" = "Det er sendt for mange forespørsler";
 "login_error_not_json" = "Inneholdt ikke gyldig JSON";
 "login_error_bad_json" = "Feilformatert JSON";
+"set_power_level" = "Bestem rollenivå";
+"submit_code" = "Send inn kode";
+"submit" = "Send inn";
+"sign_up" = "Meld deg på";
+"retry" = "Prøv på nytt";
+"dismiss" = "Ignorer";
+"discard" = "Forkast";
+"continue" = "Fortsett";
+"close" = "Lukk";
+"back" = "Tilbake";
+"abort" = "Avbryt";
+"yes" = "Ja";
+
+// Action
+"no" = "Nei";
+"login_error_resource_limit_exceeded_contact_button" = "Kontakt administrator";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nKontakt tjenesteadministratoren din for å fortsette å bruke denne tjenesten.";
