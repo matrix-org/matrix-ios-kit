@@ -70,3 +70,6 @@
 "login_error_resource_limit_exceeded_contact_button" = "Kontakt administrator";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nKontakt tjenesteadministratoren din for å fortsette å bruke denne tjenesten.";
 "set_default_power_level" = "Tilbakestill rollenivå";
+"start_chat" = "Start chat";
+"set_admin" = "Velg admin";
+"set_moderator" = "Velg moderator";
