@@ -25,3 +25,7 @@
 "login_home_server_title" = "Hjemmeserver-URL:";
 "login_identity_server_info" = "Matrix tilbyr identitetsservere for å spore hvilke e-postadresser etc. som tilhører hvilke Matrix-IDer. Bare https://matrix.org eksisterer for øyeblikket.";
 "login_user_id_placeholder" = "Matrix-ID (f.eks. @Bob: matrix.org eller bob)";
+"login_email_info" = "Angi en e-postadresse slik at andre brukere lettere kan finne deg på Matrix, og vil gi deg en måte å tilbakestille passordet ditt i fremtiden.";
+"login_display_name_placeholder" = "Visningsnavn (f.eks. Bob Obson)";
+"login_optional_field" = "valgfri";
+"login_password_placeholder" = "Passord";
