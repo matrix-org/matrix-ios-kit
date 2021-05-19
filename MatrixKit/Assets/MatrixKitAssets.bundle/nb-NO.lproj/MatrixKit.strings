@@ -2,10 +2,21 @@
 
 "room_event_encryption_info_device_verification" = "Verifisering\n";
 "notice_display_name_set" = "%@ satte visningsnavnet sitt til %@";
-"room_no_power_to_create_conference_call" = "Du trenger tillatelse for å invitere til å starte en konferanse i dette rommet";
+"room_no_power_to_create_conference_call" = "Du trenger tillatelse til å invitere for å starte en konferanse i dette rommet";
 "room_error_join_failed_empty_room" = "Det er for øyeblikket ikke mulig å bli med i et tomt rom igjen.";
 "room_event_encryption_verify_message" = "For å verifisere at denne økten er til å stole på, vennligst kontakt eieren på andre måter (f.eks. personlig eller en telefonsamtale) og spør dem om nøkkelen de ser i brukerinnstillingene for denne økten samsvarer med nøkkelen nedenfor:\n\n\tØkt-navn: %@\n\tØkt-ID: %@\n\tØkt-nøkkel: %@\n\nHvis den stemmer overens, trykk på verifiserings-knappen nedenfor. Hvis den ikke gjør det, er det noen andre som overvåker denne økten, og du vil sannsynligvis trykke på svartelisteknappen i stedet.\n\nI fremtiden vil denne verifiseringsprosessen bli mer sofistikert.";
 "room_event_encryption_info_block" = "Svartelist";
-"device_details_delete_prompt_title" = "Autentifisering";
+"device_details_delete_prompt_title" = "Autentisering";
 "notice_room_power_level_acting_requirement" = "Munimum rollenivået en bruker må ha før utførelse av handling er:";
 "login_prompt_email_token" = "Vennligst angi din e-postbekreftelseskode:";
+"login_server_url_placeholder" = "URL (f.eks. https://matrix.org)";
+
+// Login Screen
+"login_create_account" = "Opprett konto:";
+/* *********************** */
+/*      iOS specific       */
+/* *********************** */
+
+"matrix" = "Matrix";
+"ssl_cert_not_trust" = "Dette kan bety at noen avlytter trafikken din, eller at telefonen ikke stoler på sertifikatet fra den eksterne serveren.";
+"resend" = "Send på ny";
