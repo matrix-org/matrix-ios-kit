@@ -19,4 +19,5 @@
 
 "matrix" = "Matrix";
 "ssl_cert_not_trust" = "Dette kan bety at noen avlytter trafikken din, eller at telefonen ikke stoler på sertifikatet fra den eksterne serveren.";
-"resend" = "Send på ny";
+"resend" = "Send på nytt";
+"login_identity_server_title" = "URL til identitesserver:";
