@@ -69,3 +69,4 @@
 "no" = "Nei";
 "login_error_resource_limit_exceeded_contact_button" = "Kontakt administrator";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nKontakt tjenesteadministratoren din for å fortsette å bruke denne tjenesten.";
+"set_default_power_level" = "Tilbakestill rollenivå";
