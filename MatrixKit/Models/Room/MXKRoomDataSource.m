@@ -2177,23 +2177,26 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     // Add the unsent messages at the end of the conversation
     NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
-    BOOL shouldProcessQueuedEvents = NO;
     
-    for (NSInteger index = 0; index < outgoingMessages.count; index++)
-    {
-        MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+    [self.mxSession decryptEvents:outgoingMessages inTimeline:nil onComplete:^(NSArray<MXEvent *> *failedEvents) {
+        BOOL shouldProcessQueuedEvents = NO;
         
-        if (outgoingMessage.sentState != MXEventSentStateSent)
+        for (NSInteger index = 0; index < outgoingMessages.count; index++)
         {
-            [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-            shouldProcessQueuedEvents = YES;
+            MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+            
+            if (outgoingMessage.sentState != MXEventSentStateSent)
+            {
+                [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+                shouldProcessQueuedEvents = YES;
+            }
         }
-    }
-    
-    if (shouldProcessQueuedEvents)
-    {
-        [self processQueuedEvents:nil];
-    }
+        
+        if (shouldProcessQueuedEvents)
+        {
+            [self processQueuedEvents:nil];
+        }
+    }];
 }
 
 #pragma mark - Bubble collapsing
@@ -3899,12 +3902,6 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 if (![event.unsignedData.relations.replace.eventId isEqualToString:replaceEvent.eventId])
                 {
                     editedEvent = [event editedEventFromReplacementEvent:replaceEvent];
-
-                    // Make sure the edited event is decrypted
-                    if (editedEvent.isEncrypted && !editedEvent.clearEvent)
-                    {
-                        [self.mxSession decryptEvent:editedEvent inTimeline:nil];
-                    }
                 }
                 break;
             }
