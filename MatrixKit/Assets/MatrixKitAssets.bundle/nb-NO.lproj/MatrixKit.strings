@@ -90,7 +90,7 @@
 "reject_call" = "Avvis anrop";
 "end_call" = "Avslutt samtale";
 //  Old
-"notice_room_join_rule" = "Bli med-regelen er: %@";
+"notice_room_join_rule" = "Bli-med regelen er: %@";
 "notice_room_created_for_dm" = "%@ ble med.";
 "notice_room_created" = "%@ opprettet og konfigurerte rommet.";
 "notice_profile_change_redacted" = "%@ oppdaterte profilen sin %@";
