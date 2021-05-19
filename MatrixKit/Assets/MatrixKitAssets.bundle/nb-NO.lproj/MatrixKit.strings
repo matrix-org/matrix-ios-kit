@@ -89,3 +89,20 @@
 "reset_to_default" = "Tilbakestill til standard";
 "reject_call" = "Avvis anrop";
 "end_call" = "Avslutt samtale";
+//  Old
+"notice_room_join_rule" = "Bli med-regelen er: %@";
+"notice_room_created_for_dm" = "%@ ble med.";
+"notice_room_created" = "%@ opprettet og konfigurerte rommet.";
+"notice_profile_change_redacted" = "%@ oppdaterte profilen sin %@";
+"notice_event_redacted_reason" = " [årsak: %@]";
+"notice_event_redacted_by" = " av %@";
+"notice_event_redacted" = "<holdt tilbake%@>";
+"notice_room_topic_removed" = "%@ fjernet emnet";
+"notice_room_name_removed_for_dm" = "%@ fjernet navnet";
+"notice_room_name_removed" = "%@ fjernet romnavnet";
+
+// Events formatter
+"notice_avatar_changed_too" = "(avatar ble også endret)";
+"unignore" = "Opphev ignorering";
+"ignore" = "Ignorer";
+"resume_call" = "Gjenoppta";
