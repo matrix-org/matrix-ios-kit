@@ -116,3 +116,4 @@
 "notice_room_join_rule_invite_for_dm" = "%@ endret til kun inviterte.";
 //  New
 "notice_room_join_rule_invite" = "%@ endret rommet til kun inviterte.";
+"notice_room_power_level_intro_for_dm" = "Medlemmenes rollenivå er:";
