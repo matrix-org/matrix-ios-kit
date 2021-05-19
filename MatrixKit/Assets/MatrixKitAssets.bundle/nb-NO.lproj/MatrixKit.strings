@@ -88,3 +88,4 @@
 "resend_message" = "Send meldingen på nytt";
 "reset_to_default" = "Tilbakestill til standard";
 "reject_call" = "Avvis samtale";
+"end_call" = "Avslutt samtale";
