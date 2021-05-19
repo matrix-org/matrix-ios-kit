@@ -52,7 +52,7 @@
 "login_error_limit_exceeded" = "Det er sendt for mange forespørsler";
 "login_error_not_json" = "Inneholdt ikke gyldig JSON";
 "login_error_bad_json" = "Feilformatert JSON";
-"set_power_level" = "Bestem rollenivå";
+"set_power_level" = "Bestem tilgangsnivå";
 "submit_code" = "Send inn kode";
 "submit" = "Send inn";
 "sign_up" = "Meld deg på";
