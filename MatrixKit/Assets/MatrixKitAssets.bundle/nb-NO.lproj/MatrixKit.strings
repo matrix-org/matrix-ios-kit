@@ -8,3 +8,4 @@
 "room_event_encryption_info_block" = "Svartelist";
 "device_details_delete_prompt_title" = "Autentifisering";
 "notice_room_power_level_acting_requirement" = "Munimum rollenivået en bruker må ha før utførelse av handling er:";
+"login_prompt_email_token" = "Vennligst angi din e-postbekreftelseskode:";
