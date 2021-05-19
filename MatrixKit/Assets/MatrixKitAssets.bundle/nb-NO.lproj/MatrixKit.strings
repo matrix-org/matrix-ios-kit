@@ -106,3 +106,13 @@
 "unignore" = "Opphev ignorering";
 "ignore" = "Ignorer";
 "resume_call" = "Gjenoppta";
+"notice_room_power_level_intro" = "Medlemmenes rollenivå i rommet er:";
+"notice_room_join_rule_public_by_you_for_dm" = "Du gjorde dette offentlig.";
+"notice_room_join_rule_public_by_you" = "Du gjorde rommet offentlig.";
+"notice_room_join_rule_public_for_dm" = "%@ gjorde dette offentlig.";
+"notice_room_join_rule_public" = "%@ gjorde rommet offentlig.";
+"notice_room_join_rule_invite_by_you_for_dm" = "Du endret til kun inviterte.";
+"notice_room_join_rule_invite_by_you" = "Du endret rommet til kun inviterte.";
+"notice_room_join_rule_invite_for_dm" = "%@ endret til kun inviterte.";
+//  New
+"notice_room_join_rule_invite" = "%@ endret rommet til kun inviterte.";
