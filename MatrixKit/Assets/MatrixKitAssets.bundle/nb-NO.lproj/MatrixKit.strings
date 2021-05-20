@@ -520,7 +520,7 @@
 "call_invite_expired" = "Anropsinvitasjon utløpt";
 
 // unrecognized SSL certificate
-"ssl_trust" = "Tillit/stole på";
+"ssl_trust" = "Tillit";
 "call_transfer_to_user" = "Overfør til %@";
 "call_consulting_with_user" = "Rådfører seg med %@";
 "call_video_with_user" = "Videosamtale med %@";
