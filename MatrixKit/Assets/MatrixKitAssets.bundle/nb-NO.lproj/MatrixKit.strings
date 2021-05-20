@@ -270,3 +270,8 @@
 // Search
 "search_no_results" = "Ingen resultater";
 "group_section" = "Grupper";
+"format_time_h" = "h";
+"format_time_m" = "m";
+
+// Time
+"format_time_s" = "s";
