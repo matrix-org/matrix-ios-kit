@@ -516,3 +516,4 @@
 
 // gcm section 
 "settings_config_home_server" = "Hjemmeserver: %@";
+"incoming_voice_call" = "Innkommende taleanrop";
