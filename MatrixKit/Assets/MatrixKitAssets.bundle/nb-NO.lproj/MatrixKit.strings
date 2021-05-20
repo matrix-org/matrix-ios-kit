@@ -351,3 +351,5 @@
 "notice_room_withdraw" = "%@ trakk tilbake invitasjonen til %@";
 "notice_room_ban" = "%@ utestengte %@";
 "notice_room_unban" = "%@ omgjorde utestenging %@";
+"notice_declined_video_call" = "%@ avviste samtalen";
+"notice_ended_video_call" = "%@ avsluttet samtalen";
