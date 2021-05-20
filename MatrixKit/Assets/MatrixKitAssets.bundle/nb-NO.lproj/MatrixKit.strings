@@ -201,3 +201,20 @@
 "room_event_encryption_info_event_unencrypted" = "ukryptert";
 "room_event_encryption_info_event_decryption_error" = "Dekrypteringsfeil\n";
 "account_email_validation_title" = "Venter på verifisering";
+"room_creation_alias_placeholder" = "(f.eks. #foo:eksempel.org)";
+"room_creation_alias_title" = "Romalias:";
+"room_creation_name_placeholder" = "(f.eks. lunsjgruppe)";
+
+// Room creation
+"room_creation_name_title" = "Romnavn:";
+"account_error_push_not_allowed" = "Varsler ikke tillatt";
+"account_error_msisdn_wrong_description" = "Dette ser ikke ut til å være et gyldig telefonnummer";
+"account_error_msisdn_wrong_title" = "Ugyldig telefonnummer";
+"account_error_email_wrong_description" = "Dette ser ikke ut til å være en gyldig e-postadresse";
+"account_error_email_wrong_title" = "Ugyldig e-postadresse";
+"account_error_matrix_session_is_not_opened" = "Matrix-økt er ikke åpnet";
+"account_error_picture_change_failed" = "Endring av bildet feilet";
+"account_error_display_name_change_failed" = "Endring av visningsnavn feilet";
+"account_msisdn_validation_error" = "Kan ikke bekrefte telefonnummeret.";
+"account_msisdn_validation_message" = "Vi har sendt en SMS med en aktiveringskode. Vennligst skriv inn denne koden nedenfor.";
+"account_email_validation_error" = "Kan ikke bekrefte e-postadressen. Sjekk e-posten din og klikk på lenken den inneholder. Når dette er gjort, klikker du på fortsett";
