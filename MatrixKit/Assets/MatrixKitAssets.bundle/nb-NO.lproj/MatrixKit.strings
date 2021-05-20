@@ -447,7 +447,7 @@
 "membership_leave" = "Forlot";
 "membership_invite" = "Invitert";
 "create_account" = "Opprett konto";
-"notification_settings_global_info" = "Varslingsinnstillinger lagres i brukerkontoen din og deles mellom alle klienter som støtter dem (inkludert skrivebordsvarsler).\n\nRegler brukes i rekkefølge; den første regelen som samsvarer definerer resultatet for meldingen.\nSå: Varsler per ord er viktigere enn varsler per rom som er viktigere enn varsler per avsender.\nFor flere regler av samme type prioriteres den første i listen som samsvarer.";
+"notification_settings_global_info" = "Varslingsinnstillinger lagres i brukerkontoen din og deles mellom alle klienter som støtter dem (inkludert skrivebordsvarsler).\n\nRegler brukes i rekkefølge; den første regelen som samsvarer definerer resultatet for meldingen.\nSå: Varsler per ord er viktigere enn varsler per rom som er viktigere enn varsler per avsender.\nVed flere regler av samme type benyttes den første i listen som samsvarer.";
 "notification_settings_enable_notifications_warning" = "Alle varsler er for øyeblikket deaktivert for alle enheter.";
 "notification_settings_enable_notifications" = "Aktiver varsler";
 
