@@ -371,3 +371,13 @@
 "notice_room_third_party_invite_by_you_for_dm" = "Du inviterte %@";
 "notice_room_unban_by_you" = "Du omgjorde utestenging av %@";
 "notice_room_ban_by_you" = "Du stengte ute %@";
+"notice_answered_video_call_by_you" = "Du svarte på samtalen";
+"notice_placed_video_call_by_you" = "Du startet et videoanrop";
+"notice_placed_voice_call_by_you" = "Du startet et taleanrop";
+"notice_room_name_changed_by_you_for_dm" = "Du endret navnet til %@.";
+"notice_room_name_changed_by_you" = "Du endret romnavnet til %@.";
+"notice_topic_changed_by_you" = "Du endret emnet til \"%@\".";
+"notice_display_name_removed_by_you" = "Du fjernet visningsnavnet ditt";
+"notice_display_name_changed_from_by_you" = "Du endret visningsnavnet ditt fra %@ til %@";
+"notice_display_name_set_by_you" = "Du satte visningsnavnet ditt til %@";
+"notice_room_withdraw_by_you" = "Du trakk tilbake invitasjonen til %@";
