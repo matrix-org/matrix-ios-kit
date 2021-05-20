@@ -219,3 +219,10 @@
 "account_msisdn_validation_message" = "Vi har sendt en SMS med en aktiveringskode. Vennligst skriv inn denne koden nedenfor.";
 "account_email_validation_error" = "Kan ikke bekrefte e-postadressen. Sjekk e-posten din og klikk på lenken den inneholder. Når dette er gjort, klikker du på fortsett";
 "account_msisdn_validation_title" = "Venter på verifisering";
+"room_error_join_failed_title" = "Deltakelse i rommet feilet";
+
+// Room
+"room_please_select" = "Vennligst velg et rom";
+"room_creation_participants_placeholder" = "(f.eks. @bob:hjemmeserver1; @john:hjemmeserver2 ...)";
+"room_creation_participants_title" = "Deltakere:";
+"room_creation_alias_placeholder_with_homeserver" = "(f.eks. #foo%@)";
