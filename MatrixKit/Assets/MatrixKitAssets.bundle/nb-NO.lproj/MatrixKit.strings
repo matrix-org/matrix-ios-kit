@@ -303,3 +303,5 @@
 "user_id_title" = "Bruker-ID:";
 "e2e_passphrase_create" = "Opprett passordfrase";
 "e2e_passphrase_not_match" = "Passordfrase må stemme overens";
+"user_id_placeholder" = "eks: @bob: hjemmeserver";
+"network_error_not_reachable" = "Vennligst kontroller nettverkstilkoblingen";
