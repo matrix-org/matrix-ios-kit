@@ -289,3 +289,17 @@
 "e2e_export" = "Eksporter";
 "e2e_passphrase_empty" = "Passordfrase må ikke være tom";
 "e2e_passphrase_confirm" = "Bekreft passordfrase";
+"power_level" = "Rollenivå";
+"public" = "Offentlig";
+"private" = "Privat";
+"default" = "standard";
+"not_supported_yet" = "Støttes ikke ennå";
+"error_common_message" = "En feil oppstod. Prøv igjen senere.";
+"error" = "Feil";
+"unsent" = "Ikke sendt";
+"offline" = "offline";
+
+// Others
+"user_id_title" = "Bruker-ID:";
+"e2e_passphrase_create" = "Opprett passordfrase";
+"e2e_passphrase_not_match" = "Passordfrase må stemme overens";
