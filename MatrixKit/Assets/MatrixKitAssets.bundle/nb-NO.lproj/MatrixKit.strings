@@ -382,3 +382,5 @@
 "notice_display_name_set_by_you" = "Du satte visningsnavnet ditt til %@";
 "notice_room_withdraw_by_you" = "Du trakk tilbake invitasjonen til %@";
 "notice_avatar_url_changed_by_you" = "Du endret din avatar";
+"notice_declined_video_call_by_you" = "Du avviste samtalen";
+"notice_ended_video_call_by_you" = "Du avsluttet samtalen";
