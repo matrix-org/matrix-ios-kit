@@ -305,3 +305,11 @@
 "e2e_passphrase_not_match" = "Passordfrase må stemme overens";
 "user_id_placeholder" = "eks: @bob: hjemmeserver";
 "network_error_not_reachable" = "Vennligst kontroller nettverkstilkoblingen";
+"local_contacts_access_discovery_warning" = "For å finne kontakter som allerede bruker Matrix, kan %@ sende e-postadresser og telefonnumre i adresseboken til den valgte Matrix-identitetsserveren. Der det støttes, blir personlige data indeksert før sending - vennligst sjekk identitetsserverens personvernregler for mer informasjon.";
+"local_contacts_access_discovery_warning_title" = "Finne brukere";
+"local_contacts_access_not_granted" = "Å finne brukere fra lokale kontakter krever tilgang til dine kontakter, men %@ har ikke tillatelse til å bruke dem";
+"microphone_access_not_granted_for_call" = "Samtaler krever tilgang til mikrofonen, men %@ har ikke tillatelse til å bruke den";
+
+// Permissions
+"camera_access_not_granted_for_call" = "Videosamtaler krever tilgang til kameraet, men %@ har ikke tillatelse til å bruke det";
+"ssl_homeserver_url" = "Hjemmeserver-URL:% @";
