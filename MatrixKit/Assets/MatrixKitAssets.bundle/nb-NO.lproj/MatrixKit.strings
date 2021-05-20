@@ -247,7 +247,7 @@
 "room_error_name_edition_not_authorized" = "Du har ikke autorisasjon til å redigere dette romnavnet";
 
 // Groups
-"group_invite_section" = "Inviterer/invitasjoner";
+"group_invite_section" = "Invitasjoner";
 "contact_local_contacts" = "Lokale kontakter";
 
 // Contacts
