@@ -313,3 +313,19 @@
 // Permissions
 "camera_access_not_granted_for_call" = "Videosamtaler krever tilgang til kameraet, men %@ har ikke tillatelse til å bruke det";
 "ssl_homeserver_url" = "Hjemmeserver-URL:% @";
+
+/* -*- 
+   Automatic localization for en
+
+   The following key/value pairs were extracted from the android i18n file:
+    /matrix-sdk/src/main/res/values/strings.xml.
+*/
+
+"notice_room_invite" = "%@ invitert %@";
+"language_picker_default_language" = "Standard (%@)";
+
+// Language picker
+"language_picker_title" = "Velg språk";
+
+// Country picker
+"country_picker_title" = "Velg et land";
