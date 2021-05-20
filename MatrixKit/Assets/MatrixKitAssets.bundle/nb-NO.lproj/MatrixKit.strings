@@ -381,3 +381,4 @@
 "notice_display_name_changed_from_by_you" = "Du endret visningsnavnet ditt fra %@ til %@";
 "notice_display_name_set_by_you" = "Du satte visningsnavnet ditt til %@";
 "notice_room_withdraw_by_you" = "Du trakk tilbake invitasjonen til %@";
+"notice_avatar_url_changed_by_you" = "Du endret din avatar";
