@@ -439,7 +439,7 @@
 "notice_room_name_removed_by_you_for_dm" = "Du fjernet navnet";
 "notice_room_name_removed_by_you" = "Du fjernet romnavnet";
 "notice_conference_call_request_by_you" = "Du ba om en VoIP-konferanse";
-"kick" = "Spark ut";
+"kick" = "Utvis";
 "invite" = "Inviter";
 "num_members_other" = "%@ brukere";
 "num_members_one" = "%@ bruker";
