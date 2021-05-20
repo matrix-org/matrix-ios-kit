@@ -518,3 +518,19 @@
 "settings_config_home_server" = "Hjemmeserver: %@";
 "incoming_voice_call" = "Innkommende taleanrop";
 "call_invite_expired" = "Anropsinvitasjon utløpt";
+
+// unrecognized SSL certificate
+"ssl_trust" = "Tillit/stole på";
+"call_transfer_to_user" = "Overfør til %@";
+"call_consulting_with_user" = "Rådfører seg med %@";
+"call_video_with_user" = "Videosamtale med %@";
+"call_voice_with_user" = "Taleanrop med %@";
+"call_more_actions_dialpad" = "Tastaturet";
+"call_more_actions_transfer" = "Overfør";
+"call_more_actions_audio_use_device" = "Bruk enhetslyd";
+"call_more_actions_audio_use_headset" = "Bruk hodetelefonlyd";
+"call_more_actions_change_audio_device" = "Bytt lydenhet";
+"call_more_actions_unhold" = "Gjenoppta";
+"call_more_actions_hold" = "Sett samtalen på vent";
+"call_holded" = "Du satte samtalen på vent";
+"call_remote_holded" = "%@ satte samtalen på vent";
