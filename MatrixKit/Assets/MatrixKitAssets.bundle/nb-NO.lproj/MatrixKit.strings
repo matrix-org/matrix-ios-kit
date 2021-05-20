@@ -176,3 +176,5 @@
 "room_event_encryption_info_event_fingerprint_key" = "Krevde Ed25519 fingeravtrykknøkkel\n";
 "room_event_encryption_info_event_identity_key" = "Curve25519 identitetsnøkkel\n";
 "room_event_encryption_info_event_user_id" = "Bruker-ID\n";
+"room_event_encryption_info_event_session_id" = "Økt ID\n";
+"room_event_encryption_info_event_algorithm" = "Algoritme\n";
