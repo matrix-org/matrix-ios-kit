@@ -503,7 +503,7 @@
 "notification_settings_suppress_from_bots" = "Blokker meldinger fra roboter";
 "notification_settings_notify_all_other" = "Varsle for alle andre meldinger/rom";
 "notification_settings_by_default" = "Som standard ...";
-"incoming_video_call" = "Innkommende videosamtale";
+"incoming_video_call" = "Innkommende videoanrop";
 "call_ended" = "Samtale avsluttet";
 "call_ringing" = "Ringer…";
 
