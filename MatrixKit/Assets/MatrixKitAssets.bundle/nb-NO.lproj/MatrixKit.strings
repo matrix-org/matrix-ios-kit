@@ -501,3 +501,5 @@
 "notification_settings_per_word_info" = "Ord samsvarer uten å ta hensyn til store eller små bokstaver, og kan inneholde et * jokertegn. Så:\nfoo samsvarer med strengen foo omgitt av ordavgrensere (f.eks. tegnsetting og mellomrom eller start/slutt på linjen).\nfoo* samsvarer med et slikt ord som begynner foo.\n*foo* samsvarer med et hvilket som helst ord som inkluderer de tre bokstavene foo.";
 "notification_settings_per_word_notifications" = "Varsler per ord";
 "notification_settings_suppress_from_bots" = "Demp meldinger fra roboter";
+"notification_settings_notify_all_other" = "Varsle om alle andre meldinger/rom";
+"notification_settings_by_default" = "Som standard ...";
