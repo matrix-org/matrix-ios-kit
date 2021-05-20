@@ -384,7 +384,7 @@
 "notice_avatar_url_changed_by_you" = "Du endret din avatar";
 "notice_declined_video_call_by_you" = "Du avviste anropet";
 "notice_ended_video_call_by_you" = "Du avsluttet samtalen";
-"login" = "Logg inn";
+"login" = "Innlogging";
 "create_room" = "Opprett rom";
 
 // actions 
