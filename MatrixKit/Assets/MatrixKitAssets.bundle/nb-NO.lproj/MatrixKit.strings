@@ -118,3 +118,16 @@
 "notice_room_join_rule_invite" = "%@ endret rommet til kun inviterte.";
 "notice_room_power_level_intro_for_dm" = "Medlemmenes tilgangsnivå er:";
 "notice_room_power_level_event_requirement" = "Minimum rollenivå relatert til hendelser er:";
+"notice_unsupported_attachment" = "Ikke støttet vedlegg:";
+"notice_invalid_attachment" = "ugyldig vedlegg";
+"notice_file_attachment" = "filvedlegg";
+"notice_location_attachment" = "lokasjonsvedlegg";
+"notice_video_attachment" = "videovedlegg";
+"notice_audio_attachment" = "lydvedlegg";
+"notice_image_attachment" = "bildevedlegg";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ slo på ende-til-ende-kryptering (ukjent algoritme %2$@).";
+"notice_encryption_enabled_ok" = "%@ slo på ende-til-ende-kryptering.";
+"notice_encrypted_message" = "Kryptert melding";
+"notice_room_related_groups" = "Gruppene som er tilknyttet dette rommet er: %@";
+"notice_room_aliases_for_dm" = "Aliasene er: %@";
+"notice_room_aliases" = "Rom-aliasene er: %@";
