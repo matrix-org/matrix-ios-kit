@@ -286,6 +286,6 @@
 // E2E export
 "e2e_export_room_keys" = "Eksporter romnøkler";
 "e2e_passphrase_enter" = "Skriv inn passordfrase";
-"e2e_export" = "Eksport/eksporter";
+"e2e_export" = "Eksporter";
 "e2e_passphrase_empty" = "Passordfrase må ikke være tom";
 "e2e_passphrase_confirm" = "Bekreft passordfrase";
