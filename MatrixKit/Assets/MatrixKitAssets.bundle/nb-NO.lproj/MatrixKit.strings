@@ -173,3 +173,6 @@
 "notice_room_history_visible_to_members_for_dm" = "%@ gjorde fremtidige meldinger synlige for alle medlemmer i rommet.";
 "notice_room_history_visible_to_members" = "%@ synliggjorde fremtidig romhistorie for alle medlemmer i rommet.";
 "notice_redaction" = "%@ holdt igjen en hendelse (id: %@)";
+"room_event_encryption_info_event_fingerprint_key" = "Krevde Ed25519 fingeravtrykknøkkel\n";
+"room_event_encryption_info_event_identity_key" = "Curve25519 identitetsnøkkel\n";
+"room_event_encryption_info_event_user_id" = "Bruker-ID\n";
