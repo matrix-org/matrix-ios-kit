@@ -289,7 +289,7 @@
 "e2e_export" = "Eksporter";
 "e2e_passphrase_empty" = "Passordfrase kan ikke være tom";
 "e2e_passphrase_confirm" = "Bekreft passordfrase";
-"power_level" = "Rollenivå";
+"power_level" = "Tilgangsnivå";
 "public" = "Offentlig";
 "private" = "Privat";
 "default" = "standard";
