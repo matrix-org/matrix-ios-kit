@@ -275,7 +275,7 @@
 
 // Time
 "format_time_s" = "s";
-"e2e_import_prompt" = "Denne prosessen lar deg importere krypteringsnøkler som du tidligere hadde eksportert fra en annen Matrix-klient. Du vil da kunne dekryptere alle meldinger som den andre klienten kan dekryptere.\nEksportfilen er beskyttet med en passordfrase. Du bør angi passordet her for å dekryptere filen.";
+"e2e_import_prompt" = "Denne prosessen lar deg importere krypteringsnøkler som du tidligere hadde eksportert fra en annen app. Du vil da kunne dekryptere alle meldinger som den andre klienten kan dekryptere.\nEksportfilen er beskyttet med en passordfrase. Du bør angi passordet her for å dekryptere filen.";
 
 // E2E import
 "e2e_import_room_keys" = "Importer romnøkler";
