@@ -201,7 +201,7 @@
 "room_event_encryption_info_event_unencrypted" = "ukryptert";
 "room_event_encryption_info_event_decryption_error" = "Dekrypteringsfeil\n";
 "account_email_validation_title" = "Venter på verifisering";
-"room_creation_alias_placeholder" = "(f.eks. #foo:eksempel.org)";
+"room_creation_alias_placeholder" = "(f.eks. #foo:example.org)";
 "room_creation_alias_title" = "Romalias:";
 "room_creation_name_placeholder" = "(f.eks. lunsjgruppe)";
 
