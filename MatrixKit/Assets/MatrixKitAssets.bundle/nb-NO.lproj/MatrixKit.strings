@@ -178,3 +178,25 @@
 "room_event_encryption_info_event_user_id" = "Bruker-ID\n";
 "room_event_encryption_info_event_session_id" = "Økt ID\n";
 "room_event_encryption_info_event_algorithm" = "Algoritme\n";
+"account_email_validation_message" = "Sjekk e-posten din og klikk på linken den inneholder. Når dette er gjort, klikker du på fortsett.";
+"account_linked_emails" = "Linkede e-poster";
+"account_link_email" = "Link e-post";
+
+// Account
+"account_save_changes" = "Lagre endringer";
+"room_event_encryption_verify_ok" = "Verifiser";
+"room_event_encryption_verify_title" = "Verifiser økt\n\n";
+"room_event_encryption_info_unblock" = "Fjern svartelisting";
+"room_event_encryption_info_unverify" = "Fjern verifisering";
+"room_event_encryption_info_verify" = "Verifiser...";
+"room_event_encryption_info_device_blocked" = "Svartelistet";
+"room_event_encryption_info_device_not_verified" = "IKKE verifisert";
+"room_event_encryption_info_device_verified" = "Verifisert";
+"room_event_encryption_info_device_fingerprint" = "Ed25519 fingeravtrykk\n";
+"room_event_encryption_info_device_id" = "ID\n";
+"room_event_encryption_info_device_name" = "Offentlig navn\n";
+"room_event_encryption_info_device_unknown" = "ukjent økt\n";
+"room_event_encryption_info_device" = "\nInformasjon om avsenderøkt\n";
+"room_event_encryption_info_event_none" = "ingen";
+"room_event_encryption_info_event_unencrypted" = "ukryptert";
+"room_event_encryption_info_event_decryption_error" = "Dekrypteringsfeil\n";
