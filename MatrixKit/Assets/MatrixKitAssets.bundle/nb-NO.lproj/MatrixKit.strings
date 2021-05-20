@@ -534,3 +534,9 @@
 "call_more_actions_hold" = "Sett samtalen på vent";
 "call_holded" = "Du satte samtalen på vent";
 "call_remote_holded" = "%@ satte samtalen på vent";
+"ssl_unexpected_existing_expl" = "Sertifikatet har endret seg fra et som telefonen din klarerte. Dette er veldig uvanlig. Det anbefales at du IKKE godtar dette nye sertifikatet.";
+"ssl_cert_new_account_expl" = "Hvis serveradministratoren har sagt at dette forventes, må du forsikre deg om at fingeravtrykket nedenfor samsvarer med fingeravtrykket du har fått.";
+"ssl_could_not_verify" = "Kunne ikke bekrefte identiteten til den eksterne serveren.";
+"ssl_fingerprint_hash" = "Fingeravtrykk (%@):";
+"ssl_remain_offline" = "Ignorer";
+"ssl_logout_account" = "Logg ut";
