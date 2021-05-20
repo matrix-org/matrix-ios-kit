@@ -540,3 +540,4 @@
 "ssl_fingerprint_hash" = "Fingeravtrykk (%@):";
 "ssl_remain_offline" = "Ignorer";
 "ssl_logout_account" = "Logg ut";
+"ssl_expected_existing_expl" = "Sertifikatet er endret fra et tidligere klarert til et som ikke er klarert. Serveren kan ha fornyet sertifikatet. Kontakt serveradministratoren for forventet fingeravtrykk.";
