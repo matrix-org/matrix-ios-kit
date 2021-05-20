@@ -336,3 +336,5 @@
 "notice_room_third_party_registered_invite" = "%@ godtok invitasjonen til %@";
 "notice_room_third_party_invite_for_dm" = "%@ inviterte %@";
 "notice_room_third_party_invite" = "%@ sendte en invitasjon til %@ om å bli med i rommet";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ trakk tilbake invitasjonen til %@ om å bli med i rommet";
+"notice_room_third_party_revoked_invite" = "%@ trakk tilbake invitasjonen til %@ om å bli med i rommet";
