@@ -447,3 +447,38 @@
 "membership_leave" = "Forlot";
 "membership_invite" = "Invitert";
 "create_account" = "Opprett konto";
+"notification_settings_global_info" = "Varslingsinnstillinger lagres i brukerkontoen din og deles mellom alle klienter som støtter dem (inkludert skrivebordsvarsler).\n\nRegler brukes i rekkefølge; den første regelen som samsvarer definerer resultatet for meldingen.\nSå: Varsler per ord er viktigere enn varsler per rom som er viktigere enn varsler per avsender.\nFor flere regler av samme type prioriteres den første i listen som samsvarer.";
+"notification_settings_enable_notifications_warning" = "Alle varsler er for øyeblikket deaktivert for alle enheter.";
+"notification_settings_enable_notifications" = "Aktiver varsler";
+
+// Notification settings screen 
+"notification_settings_disable_all" = "Deaktiver alle varsler";
+"settings_title_notifications" = "Varsler";
+
+// Settings screen 
+"settings_title_config" = "Konfigurasjon";
+
+// contacts list screen 
+"invitation_message" = "Jeg vil gjerne chatte med deg med Matrix. Besøk nettstedet https://matrix.org for å få mer informasjon.";
+
+// members list Screen 
+
+// accounts list Screen 
+
+// image size selection 
+
+// invitation members list Screen 
+
+// room creation dialog Screen 
+
+// room info dialog Screen
+
+// room details dialog screen
+"room_details_title" = "Romdetaljer";
+"login_error_must_start_http" = "URL må starte med http[s]://";
+
+// Login Screen 
+"login_error_already_logged_in" = "Allerede logget inn";
+"message_unsaved_changes" = "Endringer er ikke lagret. Hvis du avslutter, forkastes de.";
+"unban" = "Omgjør utestenging";
+"ban" = "Utesteng";
