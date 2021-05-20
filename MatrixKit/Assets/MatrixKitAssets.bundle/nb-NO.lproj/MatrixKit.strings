@@ -168,3 +168,8 @@
 "notice_error_unexpected_event" = "Uventet hendelse";
 "notice_error_unsupported_event" = "Ikke støttet hendelse";
 "notice_feedback" = "Tilbakemeldingshendelse (id: %@): %@";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ synliggjorde fremtidig romhistorie for alle medlemmer i rommet, fra det tidspunktet de ble med.";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ synliggjorde fremtidig romhistorie for alle medlemmer i rommet, fra det punktet de er invitert.";
+"notice_room_history_visible_to_members_for_dm" = "%@ gjorde fremtidige meldinger synlige for alle medlemmer i rommet.";
+"notice_room_history_visible_to_members" = "%@ synliggjorde fremtidig romhistorie for alle medlemmer i rommet.";
+"notice_redaction" = "%@ holdt igjen en hendelse (id: %@)";
