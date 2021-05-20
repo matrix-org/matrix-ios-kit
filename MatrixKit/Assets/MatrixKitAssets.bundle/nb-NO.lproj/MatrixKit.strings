@@ -226,3 +226,22 @@
 "room_creation_participants_placeholder" = "(f.eks. @bob:hjemmeserver1; @john:hjemmeserver2 ...)";
 "room_creation_participants_title" = "Deltakere:";
 "room_creation_alias_placeholder_with_homeserver" = "(f.eks. #foo%@)";
+"room_member_power_level_prompt" = "Du vil ikke kunne angre denne endringen ettersom du gir brukeren samme rollenivå som deg selv.\nEr du sikker?";
+
+// Room members
+"room_member_ignore_prompt" = "Er du sikker på at du vil skjule alle meldinger fra denne brukeren?";
+"message_reply_to_message_to_reply_to_prefix" = "Som svar på";
+"message_reply_to_sender_sent_a_file" = "sendte en fil.";
+"message_reply_to_sender_sent_an_audio_file" = "sendte en lydfil.";
+"message_reply_to_sender_sent_a_video" = "sendte en video.";
+
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "sendte et bilde.";
+"room_no_conference_call_in_encrypted_rooms" = "Konferansesamtaler støttes ikke i krypterte rom";
+"room_left_for_dm" = "Du forlot";
+"room_left" = "Du forlot rommet";
+"room_error_timeline_event_not_found" = "Applikasjonen prøvde å laste inn et bestemt punkt i tidslinjen til dette rommet, men kunne ikke finne det";
+"room_error_timeline_event_not_found_title" = "Kunne ikke laste tidslinjeposisjonen";
+"room_error_cannot_load_timeline" = "Kunne ikke laste tidslinjen";
+"room_error_topic_edition_not_authorized" = "Du har ikke autorisasjon til å redigere dette romemnet";
+"room_error_name_edition_not_authorized" = "Du har ikke autorisasjon til å redigere dette romnavnet";
