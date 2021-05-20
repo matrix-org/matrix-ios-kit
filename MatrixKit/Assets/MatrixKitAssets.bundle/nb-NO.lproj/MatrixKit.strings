@@ -280,3 +280,4 @@
 // E2E import
 "e2e_import_room_keys" = "Importer romnøkler";
 "format_time_d" = "d";
+"e2e_import" = "Import/importer";
