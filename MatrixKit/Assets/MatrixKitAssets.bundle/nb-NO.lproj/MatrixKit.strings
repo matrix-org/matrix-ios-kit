@@ -281,3 +281,8 @@
 "e2e_import_room_keys" = "Importer romnøkler";
 "format_time_d" = "d";
 "e2e_import" = "Import/importer";
+"e2e_export_prompt" = "Denne prosessen lar deg eksportere nøklene for meldinger du har mottatt i krypterte rom til en lokal fil. Du vil da kunne importere filen til en annen Matrix-klient i fremtiden, slik at den klienten også kan dekryptere disse meldingene.\nDen eksporterte filen lar alle som kan lese den dekryptere alle krypterte meldinger du kan se, så du bør passe på å lagre den sikkert.";
+
+// E2E export
+"e2e_export_room_keys" = "Eksporter romnøkler";
+"e2e_passphrase_enter" = "Skriv inn passordfrase";
