@@ -131,7 +131,7 @@
 "notice_room_related_groups" = "Gruppene som er tilknyttet dette rommet er: %@";
 "notice_room_aliases_for_dm" = "Aliasene er: %@";
 "notice_room_aliases" = "Rom-aliasene er: %@";
-"room_event_encryption_info_event" = "Handlingsinformasjon\n";
+"room_event_encryption_info_event" = "Hendelseinformasjon\n";
 
 // Encryption information
 "room_event_encryption_info_title" = "Ende-til-ende-krypteringsinformasjon\n\n";
