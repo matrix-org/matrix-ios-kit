@@ -226,7 +226,7 @@
 "room_creation_participants_placeholder" = "(f.eks. @bob:hjemmeserver1; @john:hjemmeserver2 ...)";
 "room_creation_participants_title" = "Deltakere:";
 "room_creation_alias_placeholder_with_homeserver" = "(f.eks. #foo%@)";
-"room_member_power_level_prompt" = "Du vil ikke kunne angre denne endringen ettersom du gir brukeren samme rollenivå som deg selv.\nEr du sikker?";
+"room_member_power_level_prompt" = "Du vil ikke kunne angre denne endringen ettersom du gir brukeren samme tilgangsnivå som deg selv.\nEr du sikker?";
 
 // Room members
 "room_member_ignore_prompt" = "Er du sikker på at du vil skjule alle meldinger fra denne brukeren?";
