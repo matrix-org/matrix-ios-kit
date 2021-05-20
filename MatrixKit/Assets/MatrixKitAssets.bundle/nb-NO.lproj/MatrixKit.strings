@@ -353,3 +353,11 @@
 "notice_room_unban" = "%@ omgjorde utestenging %@";
 "notice_declined_video_call" = "%@ avviste samtalen";
 "notice_ended_video_call" = "%@ avsluttet samtalen";
+"notice_room_third_party_invite_by_you" = "Du sendte en invitasjon til %@ til å bli med i rommet";
+"notice_room_invite_you" = "%@ inviterte deg";
+
+// Notice Events with "You"
+"notice_room_invite_by_you" = "Du inviterte %@";
+"notice_conference_call_finished" = "VoIP-konferansen avsluttet";
+"notice_conference_call_started" = "VoIP-konferansen startet";
+"notice_conference_call_request" = "%@ ba om en VoIP-konferanse";
