@@ -370,3 +370,4 @@
 "notice_room_third_party_registered_invite_by_you" = "Du godtok invitasjonen til %@";
 "notice_room_third_party_invite_by_you_for_dm" = "Du inviterte %@";
 "notice_room_unban_by_you" = "Du omgjorde utestenging av  %@";
+"notice_room_ban_by_you" = "Du stengte ute %@";
