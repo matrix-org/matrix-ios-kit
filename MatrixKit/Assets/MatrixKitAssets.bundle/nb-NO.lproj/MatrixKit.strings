@@ -503,3 +503,16 @@
 "notification_settings_suppress_from_bots" = "Blokker meldinger fra roboter";
 "notification_settings_notify_all_other" = "Varsle om alle andre meldinger/rom";
 "notification_settings_by_default" = "Som standard ...";
+"incoming_video_call" = "Innkommende videosamtale";
+"call_ended" = "Samtale avsluttet";
+"call_ringing" = "Ringer…";
+
+// Settings keys 
+
+// call string
+"call_connecting" = "Kobler til…";
+"settings_config_user_id" = "Bruker-ID: %@";
+"settings_config_identity_server" = "Identitetsserver: %@";
+
+// gcm section 
+"settings_config_home_server" = "Hjemmeserver: %@";
