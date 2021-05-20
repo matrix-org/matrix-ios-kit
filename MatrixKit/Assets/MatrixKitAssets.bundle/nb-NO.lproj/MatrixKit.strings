@@ -265,3 +265,8 @@
 
 // Attachment
 "attachment_size_prompt" = "Vil du sende som:";
+"search_searching" = "Søk pågår ...";
+
+// Search
+"search_no_results" = "Ingen resultater";
+"group_section" = "Grupper";
