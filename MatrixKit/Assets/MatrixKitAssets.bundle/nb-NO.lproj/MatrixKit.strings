@@ -353,7 +353,7 @@
 "notice_room_unban" = "%@ omgjorde utestenging %@";
 "notice_declined_video_call" = "%@ avviste anropet";
 "notice_ended_video_call" = "%@ avsluttet samtalen";
-"notice_room_third_party_invite_by_you" = "Du sendte en invitasjon til %@ til å bli med i rommet";
+"notice_room_third_party_invite_by_you" = "Du sendte en invitasjon til %@ om å bli med i rommet";
 "notice_room_invite_you" = "%@ inviterte deg";
 
 // Notice Events with "You"
