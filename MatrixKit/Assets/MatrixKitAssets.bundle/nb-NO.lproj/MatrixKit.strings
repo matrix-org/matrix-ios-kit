@@ -39,7 +39,7 @@
 "login_error_resource_limit_exceeded_message_monthly_active_user" = "Denne hjemmeserveren har nådd grensen for aktive månedlige brukere.";
 "login_error_resource_limit_exceeded_message_default" = "Denne hjemmeserveren har overskredet en av ressursgrensene.";
 "login_error_resource_limit_exceeded_title" = "Ressursgrensen er overskredet";
-"login_desktop_device" = "Desktop";
+"login_desktop_device" = "PC";
 "login_tablet_device" = "Nettbrett";
 "login_mobile_device" = "Mobil";
 "login_error_forgot_password_is_not_supported" = "Glemt passord støttes for øyeblikket ikke";
@@ -96,7 +96,7 @@
 "notice_profile_change_redacted" = "%@ oppdaterte profilen sin %@";
 "notice_event_redacted_reason" = " [årsak: %@]";
 "notice_event_redacted_by" = " av %@";
-"notice_event_redacted" = "<holdt tilbake%@>";
+"notice_event_redacted" = "<slettet%@>";
 "notice_room_topic_removed" = "%@ fjernet emnet";
 "notice_room_name_removed_for_dm" = "%@ fjernet navnet";
 "notice_room_name_removed" = "%@ fjernet romnavnet";
