@@ -321,7 +321,7 @@
     /matrix-sdk/src/main/res/values/strings.xml.
 */
 
-"notice_room_invite" = "%@ invitert %@";
+"notice_room_invite" = "%@ inviterte %@";
 "language_picker_default_language" = "Standard (%@)";
 
 // Language picker
