@@ -329,7 +329,7 @@
 
 // Country picker
 "country_picker_title" = "Velg et land";
-"notice_room_kick" = "%@ sparket %@";
+"notice_room_kick" = "%@ utviste %@";
 "notice_room_reject" = "%@ avviste invitasjonen";
 "notice_room_leave" = "%@ forlot";
 "notice_room_join" = "%@ ble med";
