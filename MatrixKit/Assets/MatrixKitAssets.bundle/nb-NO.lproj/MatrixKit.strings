@@ -361,3 +361,11 @@
 "notice_conference_call_finished" = "VoIP-konferansen avsluttet";
 "notice_conference_call_started" = "VoIP-konferansen startet";
 "notice_conference_call_request" = "%@ ba om en VoIP-konferanse";
+"notice_room_kick_by_you" = "Du sparket %@";
+"notice_room_reject_by_you" = "Du avviste invitasjonen";
+"notice_room_leave_by_you" = "Du forlot";
+"notice_room_join_by_you" = "Du ble med";
+"notice_room_third_party_revoked_invite_by_you_for_dm" = "Du tilbakekalte invitasjonen til %@";
+"notice_room_third_party_revoked_invite_by_you" = "Du tilbakekalte invitasjonen til %@ om å bli med i rommet";
+"notice_room_third_party_registered_invite_by_you" = "Du godtok invitasjonen til %@";
+"notice_room_third_party_invite_by_you_for_dm" = "Du inviterte %@";
