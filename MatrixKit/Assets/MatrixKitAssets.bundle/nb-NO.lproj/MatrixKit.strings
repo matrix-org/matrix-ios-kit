@@ -131,3 +131,40 @@
 "notice_room_related_groups" = "Gruppene som er tilknyttet dette rommet er: %@";
 "notice_room_aliases_for_dm" = "Aliasene er: %@";
 "notice_room_aliases" = "Rom-aliasene er: %@";
+"room_event_encryption_info_event" = "Handlingsinformasjon\n";
+
+// Encryption information
+"room_event_encryption_info_title" = "Ende-til-ende-krypteringsinformasjon\n\n";
+"device_details_delete_prompt_message" = "Denne operasjonen krever ekstra godkjenning.\nFor å fortsette, vennligst skriv inn passordet ditt.";
+"device_details_rename_prompt_message" = "En økts offentlige navn er synlig for folk du kommuniserer med";
+"device_details_rename_prompt_title" = "Øktnavn";
+"device_details_last_seen_format" = "%@ @ %@\n";
+"device_details_last_seen" = "Sist sett\n";
+"device_details_identifier" = "ID\n";
+"device_details_name" = "Offentlig navn\n";
+
+// Devices
+"device_details_title" = "Øktinformasjon\n";
+"notification_settings_room_rule_title" = "Rom: '%@'";
+"settings_enter_validation_token_for" = "Angi valideringstoken for %@:";
+"settings_enable_push_notifications" = "Aktiver push-varsler";
+"settings_enable_inapp_notifications" = "Aktiver varsler i appen";
+
+// Settings
+"settings" = "Innstillinger";
+"room_displayname_more_than_two_members" = "%@ og %@ andre";
+"room_displayname_two_members" = "%@ og %@";
+
+// room display name
+"room_displayname_empty_room" = "Tomt rom";
+"notice_in_reply_to" = "Som svar på";
+"notice_sticker" = "klistremerke";
+"notice_crypto_error_unknown_inbound_session_id" = "Avsenderøkten har ikke sendt oss nøklene til denne meldingen.";
+"notice_crypto_unable_to_decrypt" = "** Kan ikke dekryptere: %@ **";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ gjorde fremtidige meldinger synlige for alle, fra de ble med.";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ gjorde fremtidige meldinger synlige for alle, fra de blir invitert.";
+"notice_room_history_visible_to_anyone" = "%@ gjorde fremtidig romhistorie synlig for alle.";
+"notice_error_unknown_event_type" = "Ukjent hendelsestype";
+"notice_error_unexpected_event" = "Uventet hendelse";
+"notice_error_unsupported_event" = "Ikke støttet hendelse";
+"notice_feedback" = "Tilbakemeldingshendelse (id: %@): %@";
