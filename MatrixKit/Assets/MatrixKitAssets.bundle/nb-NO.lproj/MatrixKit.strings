@@ -245,3 +245,23 @@
 "room_error_cannot_load_timeline" = "Kunne ikke laste tidslinjen";
 "room_error_topic_edition_not_authorized" = "Du har ikke autorisasjon til å redigere dette romemnet";
 "room_error_name_edition_not_authorized" = "Du har ikke autorisasjon til å redigere dette romnavnet";
+
+// Groups
+"group_invite_section" = "Inviterer/invitasjoner";
+"contact_local_contacts" = "Lokale kontakter";
+
+// Contacts
+"contact_mx_users" = "Matrix-brukere";
+"attachment_e2e_keys_import" = "Importer...";
+"attachment_e2e_keys_file_prompt" = "Denne filen inneholder krypteringsnøkler eksportert fra en Matrix-klient.\nVil du se filinnholdet eller importere nøklene den inneholder?";
+"attachment_multiselection_original" = "Faktisk størrelse";
+"attachment_multiselection_size_prompt" = "Vil du sende bilder som:";
+"attachment_cancel_upload" = "Avbryte opplastingen?";
+"attachment_cancel_download" = "Avbryte nedlastingen?";
+"attachment_large" = "Stor: %@";
+"attachment_medium" = "Medium: %@";
+"attachment_small" = "Liten: %@";
+"attachment_original" = "Faktisk størrelse: %@";
+
+// Attachment
+"attachment_size_prompt" = "Vil du sende som:";
