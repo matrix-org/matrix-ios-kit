@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKRoomDataSource: Decrypt unsent messages to follow MatrixSDK changes.
 
 🐛 Bugfix
  * 
