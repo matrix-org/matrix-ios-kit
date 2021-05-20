@@ -384,3 +384,58 @@
 "notice_avatar_url_changed_by_you" = "Du endret din avatar";
 "notice_declined_video_call_by_you" = "Du avviste samtalen";
 "notice_ended_video_call_by_you" = "Du avsluttet samtalen";
+"login" = "Logg inn";
+"create_room" = "Opprett rom";
+
+// actions 
+"action_logout" = "Logg ut";
+"view" = "Visning";
+"delete" = "Slett";
+"share" = "Del";
+"redact" = "Fjern";
+"copy" = "Kopier";
+"send" = "Send";
+"leave" = "Forlat";
+"save" = "Lagre";
+"cancel" = "Avbryt";
+
+// Room Screen 
+
+// general errors 
+
+// Home Screen 
+
+// Last seen time 
+
+// call events 
+
+/* -*- 
+   Automatic localization for en
+
+   The following key/value pairs were extracted from the android i18n file:
+    /console/src/main/res/values/strings.xml.
+*/
+
+
+// titles 
+
+// button names 
+"ok" = "OK";
+"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Du gjorde fremtidige meldinger synlige for alle, fra de ble med.";
+"notice_room_history_visible_to_members_from_joined_point_by_you" = "Du gjorde fremtidig romhistorie synlig for alle medlemmer i rommet, fra det tidspunktet de ble med.";
+"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Du gjorde fremtidige meldinger synlige for alle, fra de blir invitert.";
+"notice_room_history_visible_to_members_from_invited_point_by_you" = "Du gjorde fremtidig romhistorie synlig for alle medlemmer i rommet, fra det tidspunktet de er invitert.";
+"notice_room_history_visible_to_members_by_you_for_dm" = "Du gjorde fremtidige meldinger synlige for alle medlemmer i rommet.";
+"notice_room_history_visible_to_members_by_you" = "Du gjorde fremtidig romhistorie synlig for alle medlemmer i rommet.";
+"notice_room_history_visible_to_anyone_by_you" = "Du gjorde fremtidig romhistorie synlig for alle.";
+"notice_redaction_by_you" = "Du fjernet en hendelse (id: %@)";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "Du slo på ende-til-ende-kryptering (ukjent algoritme %@).";
+"notice_encryption_enabled_ok_by_you" = "Du slo på ende-til-ende-kryptering.";
+"notice_room_created_by_you_for_dm" = "Du ble med.";
+"notice_room_created_by_you" = "Du opprettet og konfigurerte rommet.";
+"notice_profile_change_redacted_by_you" = "Du oppdaterte profilen din %@";
+"notice_event_redacted_by_you" = " av deg";
+"notice_room_topic_removed_by_you" = "Du fjernet emnet";
+"notice_room_name_removed_by_you_for_dm" = "Du fjernet navnet";
+"notice_room_name_removed_by_you" = "Du fjernet romnavnet";
+"notice_conference_call_request_by_you" = "Du ba om en VoIP-konferanse";
