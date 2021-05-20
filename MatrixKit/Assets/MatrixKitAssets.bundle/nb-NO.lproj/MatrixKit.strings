@@ -338,3 +338,16 @@
 "notice_room_third_party_invite" = "%@ sendte en invitasjon til %@ om å bli med i rommet";
 "notice_room_third_party_revoked_invite_for_dm" = "%@ trakk tilbake invitasjonen til %@ om å bli med i rommet";
 "notice_room_third_party_revoked_invite" = "%@ trakk tilbake invitasjonen til %@ om å bli med i rommet";
+"notice_answered_video_call" = "%@ svarte på samtalen";
+"notice_placed_video_call" = "%@ startet et videoanrop";
+"notice_placed_voice_call" = "%@ startet et taleanrop";
+"notice_room_name_changed_for_dm" = "%@ endret navnet til %@.";
+"notice_room_name_changed" = "%@ endret romnavnet til %@.";
+"notice_topic_changed" = "%@ endret emnet til \"%@\".";
+"notice_display_name_removed" = "%@ fjernet visningsnavnet";
+"notice_display_name_changed_from" = "%@ endret visningsnavnet fra %@ til %@";
+"notice_avatar_url_changed" = "%@ byttet avatar";
+"notice_room_reason" = ". Grunnen til: %@";
+"notice_room_withdraw" = "%@ trakk tilbake invitasjonen til %@";
+"notice_room_ban" = "%@ utestengte %@";
+"notice_room_unban" = "%@ omgjorde utestenging %@";
