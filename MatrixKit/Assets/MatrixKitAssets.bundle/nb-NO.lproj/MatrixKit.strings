@@ -336,8 +336,8 @@
 "notice_room_third_party_registered_invite" = "%@ godtok invitasjonen til %@";
 "notice_room_third_party_invite_for_dm" = "%@ inviterte %@";
 "notice_room_third_party_invite" = "%@ sendte en invitasjon til %@ om å bli med i rommet";
-"notice_room_third_party_revoked_invite_for_dm" = "%@ trakk tilbake invitasjonen til %@ om å bli med i rommet";
-"notice_room_third_party_revoked_invite" = "%@ trakk tilbake invitasjonen til %@ om å bli med i rommet";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ tilbakekalte invitasjonen til %@ om å bli med i rommet";
+"notice_room_third_party_revoked_invite" = "%@ tilbakekalte invitasjonen til %@ om å bli med i rommet";
 "notice_answered_video_call" = "%@ svarte på anropet";
 "notice_placed_video_call" = "%@ startet et videoanrop";
 "notice_placed_voice_call" = "%@ startet et taleanrop";
@@ -381,7 +381,7 @@
 "notice_display_name_changed_from_by_you" = "Du endret visningsnavnet ditt fra %@ til %@";
 "notice_display_name_set_by_you" = "Du satte visningsnavnet ditt til %@";
 "notice_room_withdraw_by_you" = "Du trakk tilbake invitasjonen til %@";
-"notice_avatar_url_changed_by_you" = "Du endret din avatar";
+"notice_avatar_url_changed_by_you" = "Du byttet avatar";
 "notice_declined_video_call_by_you" = "Du avviste anropet";
 "notice_ended_video_call_by_you" = "Du avsluttet samtalen";
 "login" = "Innlogging";
@@ -531,8 +531,8 @@
 "call_more_actions_audio_use_headset" = "Bruk hodetelefonlyd";
 "call_more_actions_change_audio_device" = "Bytt lydenhet";
 "call_more_actions_unhold" = "Gjenoppta";
-"call_more_actions_hold" = "Sett samtalen på vent";
-"call_holded" = "Du satte samtalen på vent";
+"call_more_actions_hold" = "Hold";
+"call_holded" = "Du holdt samtalen";
 "call_remote_holded" = "%@ satte samtalen på vent";
 "ssl_unexpected_existing_expl" = "Sertifikatet har endret seg fra et som telefonen din klarerte. Dette er VELDIG UVANLIG. Det anbefales derfor at du IKKE godtar dette nye sertifikatet.";
 "ssl_cert_new_account_expl" = "Hvis serveradministratoren har sagt at dette forventes, må du forsikre deg om at fingeravtrykket nedenfor samsvarer med fingeravtrykket du har fått.";
@@ -541,3 +541,4 @@
 "ssl_remain_offline" = "Ignorer";
 "ssl_logout_account" = "Logg ut";
 "ssl_expected_existing_expl" = "Sertifikatet er endret fra et tidligere klarert til et som ikke er klarert. Serveren kan ha fornyet sertifikatet. Kontakt serveradministratoren for forventet fingeravtrykk.";
+"ssl_only_accept" = "Godta KUN sertifikatet hvis serveradministratoren har publisert et fingeravtrykk som samsvarer med det over.";
