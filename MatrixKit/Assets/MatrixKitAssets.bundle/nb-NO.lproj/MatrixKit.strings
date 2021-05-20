@@ -200,3 +200,4 @@
 "room_event_encryption_info_event_none" = "ingen";
 "room_event_encryption_info_event_unencrypted" = "ukryptert";
 "room_event_encryption_info_event_decryption_error" = "Dekrypteringsfeil\n";
+"account_email_validation_title" = "Venter på verifisering";
