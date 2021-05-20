@@ -329,3 +329,10 @@
 
 // Country picker
 "country_picker_title" = "Velg et land";
+"notice_room_kick" = "%@ sparket %@";
+"notice_room_reject" = "%@ avviste invitasjonen";
+"notice_room_leave" = "%@ forlot";
+"notice_room_join" = "%@ ble med";
+"notice_room_third_party_registered_invite" = "%@ godtok invitasjonen til %@";
+"notice_room_third_party_invite_for_dm" = "%@ inviterte %@";
+"notice_room_third_party_invite" = "%@ sendte en invitasjon til %@ om å bli med i rommet";
