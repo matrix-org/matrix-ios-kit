@@ -37,6 +37,7 @@
     if (self)
     {
         mxSession = matrixSession;
+        _passphraseMinLength = 1;
         
         _alertController = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_export_room_keys"] message:[NSBundle mxk_localizedStringForKey:@"e2e_export_prompt"] preferredStyle:UIAlertControllerStyleAlert];
     }
@@ -107,9 +108,9 @@
                                                                NSString *confirmation = textField.text;
 
                                                                // Check they are valid
-                                                               if (password.length == 0 || ![password isEqualToString:confirmation])
+                                                               if (password.length < self.passphraseMinLength || ![password isEqualToString:confirmation])
                                                                {
-                                                                   NSString *error = password.length ? [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_not_match"] : [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_empty"];
+                                                                   NSString *error = password.length < self.passphraseMinLength ? !password.length ? [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_empty"] : [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"e2e_passphrase_too_short"], self.passphraseMinLength] : [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_not_match"];
 
                                                                    UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:error preferredStyle:UIAlertControllerStyleAlert];
 
