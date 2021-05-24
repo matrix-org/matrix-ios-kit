@@ -6,6 +6,7 @@ Changes to be released in next version
 
 🙌 Improvements
  * MXKRoomDataSource: Decrypt unsent messages to follow MatrixSDK changes.
+ * MXKEncryptionKeysExportView: Define a minimum size for the passphrase.
 
 🐛 Bugfix
  * 
