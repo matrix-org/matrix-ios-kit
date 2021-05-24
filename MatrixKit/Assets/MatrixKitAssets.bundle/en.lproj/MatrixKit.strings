@@ -305,7 +305,7 @@
 "e2e_export" = "Export";
 "e2e_passphrase_confirm" = "Confirm passphrase";
 "e2e_passphrase_empty" = "Passphrase must not be empty";
-"e2e_passphrase_too_short" = "Passphrase too short (min %d characters)";
+"e2e_passphrase_too_short" = "Passphrase too short (It must be at a minimum %d characters in length)";
 "e2e_passphrase_not_match" = "Passphrases must match";
 "e2e_passphrase_create" = "Create passphrase";
 

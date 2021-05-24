@@ -110,7 +110,19 @@
                                                                // Check they are valid
                                                                if (password.length < self.passphraseMinLength || ![password isEqualToString:confirmation])
                                                                {
-                                                                   NSString *error = password.length < self.passphraseMinLength ? !password.length ? [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_empty"] : [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"e2e_passphrase_too_short"], self.passphraseMinLength] : [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_not_match"];
+                                                                   NSString *error;
+                                                                   if (!password.length)
+                                                                   {
+                                                                       error = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_empty"];
+                                                                   }
+                                                                   else if (password.length < self.passphraseMinLength)
+                                                                   {
+                                                                       error = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"e2e_passphrase_too_short"], self.passphraseMinLength];
+                                                                   }
+                                                                   else
+                                                                   {
+                                                                       error = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_not_match"];
+                                                                   }
 
                                                                    UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:error preferredStyle:UIAlertControllerStyleAlert];
 
