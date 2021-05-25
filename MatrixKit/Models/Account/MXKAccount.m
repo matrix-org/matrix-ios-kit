@@ -1600,7 +1600,15 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 MXStrongifyAndReturnIfNil(self);
 
                 NSLog(@"[MXKAccount] Initial Sync failed. Error: %@", error);
-                if (self->notifyOpenSessionFailure && error)
+                
+                NSHTTPURLResponse *httpResponse = [MXHTTPOperation urlResponseFromError:error];
+                if (httpResponse && [initialSyncSilentErrorsHTTPStatusCodes containsObject:@(httpResponse.statusCode)])
+                {
+                    //  do not propogate this error to the client
+                    //  the request will be retried or postponed according to the reachability status
+                    NSLog(@"[MXKAccount] Initial sync failure did not propagated");
+                }
+                else if (self->notifyOpenSessionFailure && error)
                 {
                     // Notify MatrixKit user only once
                     self->notifyOpenSessionFailure = NO;
