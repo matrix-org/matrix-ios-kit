@@ -9,7 +9,7 @@ Changes to be released in next version
  * MXKEncryptionKeysExportView: Define a minimum size for the passphrase.
 
 🐛 Bugfix
- * 
+ * MXKAccount: Do not propagate errors for timed out initial sync requests (vector-im/element-ios/issues/4054).
 
 ⚠️ API Changes
  * 
