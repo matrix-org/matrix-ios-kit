@@ -40,6 +40,10 @@ NSString *const kMXKAccountPushKitActivityDidChangeNotification = @"kMXKAccountP
 NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 
 static MXKAccountOnCertificateChange _onCertificateChangeBlock;
+/**
+ HTTP status codes for error cases on initial sync requests, for which errors will not be propagated to the client.
+ */
+static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
 @interface MXKAccount ()
 {
@@ -93,6 +97,17 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 @synthesize userPresence;
 @synthesize userTintColor;
 @synthesize hideUserPresence;
+
++ (void)load
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        initialSyncSilentErrorsHTTPStatusCodes = @[
+            @(504),
+            @(524)
+        ];
+    });
+}
 
 + (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock
 {
