@@ -106,6 +106,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             @(504),
             @(524)
         ];
+        //  TODO: How about 522 and 599?
     });
 }
 
