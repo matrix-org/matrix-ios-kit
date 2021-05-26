@@ -206,7 +206,7 @@
                            } failure:^(NSError *error) {
                                
                                [self removePendingActionMask];
-                               NSLog(@"[MXKRoomMemberDetailsVC] Invite %@ failed", self->_mxRoomMember.userId);
+                               MXLogDebug(@"[MXKRoomMemberDetailsVC] Invite %@ failed", self->_mxRoomMember.userId);
                                // Notify MatrixKit user
                                NSString *myUserId = self.mainSession.myUser.userId;
                                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -225,7 +225,7 @@
                 } failure:^(NSError *error) {
                     
                     [self removePendingActionMask];
-                    NSLog(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", self->mxRoom.roomId);
+                    MXLogDebug(@"[MXKRoomMemberDetailsVC] Leave room %@ failed", self->mxRoom.roomId);
                     // Notify MatrixKit user
                     NSString *myUserId = self.mainSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -250,7 +250,7 @@
                          } failure:^(NSError *error) {
                              
                              [self removePendingActionMask];
-                             NSLog(@"[MXKRoomMemberDetailsVC] Kick %@ failed", self->_mxRoomMember.userId);
+                             MXLogDebug(@"[MXKRoomMemberDetailsVC] Kick %@ failed", self->_mxRoomMember.userId);
                              // Notify MatrixKit user
                              NSString *myUserId = self.mainSession.myUser.userId;
                              [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -270,7 +270,7 @@
                         } failure:^(NSError *error) {
                             
                             [self removePendingActionMask];
-                            NSLog(@"[MXKRoomMemberDetailsVC] Ban %@ failed", self->_mxRoomMember.userId);
+                            MXLogDebug(@"[MXKRoomMemberDetailsVC] Ban %@ failed", self->_mxRoomMember.userId);
                             // Notify MatrixKit user
                             NSString *myUserId = self.mainSession.myUser.userId;
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -289,7 +289,7 @@
                           } failure:^(NSError *error) {
                               
                               [self removePendingActionMask];
-                              NSLog(@"[MXKRoomMemberDetailsVC] Unban %@ failed", self->_mxRoomMember.userId);
+                              MXLogDebug(@"[MXKRoomMemberDetailsVC] Unban %@ failed", self->_mxRoomMember.userId);
                               // Notify MatrixKit user
                               NSString *myUserId = self.mainSession.myUser.userId;
                               [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -334,7 +334,7 @@
                                                                                              MXStrongifyAndReturnIfNil(self);
                                                                                              
                                                                                              [self removePendingActionMask];
-                                                                                             NSLog(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", self.mxRoomMember.userId);
+                                                                                             MXLogDebug(@"[MXKRoomMemberDetailsVC] Ignore %@ failed", self.mxRoomMember.userId);
                                                                                              
                                                                                              // Notify MatrixKit user
                                                                                              NSString *myUserId = self.mainSession.myUser.userId;
@@ -374,7 +374,7 @@
                                                 MXStrongifyAndReturnIfNil(self);
                                                 
                                                 [self removePendingActionMask];
-                                                NSLog(@"[MXKRoomMemberDetailsVC] Unignore %@ failed", self.mxRoomMember.userId);
+                                                MXLogDebug(@"[MXKRoomMemberDetailsVC] Unignore %@ failed", self.mxRoomMember.userId);
 
                                                 // Notify MatrixKit user
                                                 NSString *myUserId = self.mainSession.myUser.userId;
@@ -452,7 +452,7 @@
 
                         } failure:^(NSError *error) {
 
-                            NSLog(@"[MXKRoomMemberDetailsVC] Create room failed");
+                            MXLogDebug(@"[MXKRoomMemberDetailsVC] Create room failed");
                             [self removePendingActionMask];
                             // Notify MatrixKit user
                             NSString *myUserId = self.mainSession.myUser.userId;
@@ -947,7 +947,7 @@
 
                 __strong __typeof(weakSelf)strongSelf = weakSelf;
                 [strongSelf removePendingActionMask];
-                NSLog(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed", strongSelf.mxRoomMember.userId);
+                MXLogDebug(@"[MXKRoomMemberDetailsVC] Set user power (%@) failed", strongSelf.mxRoomMember.userId);
 
                 // Notify MatrixKit user
                 NSString *myUserId = strongSelf.mainSession.myUser.userId;

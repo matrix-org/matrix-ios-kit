@@ -8,6 +8,7 @@ Changes to be released in next version
  * MXKRoomDataSource: Decrypt unsent messages to follow MatrixSDK changes.
  * MXKEncryptionKeysExportView: Define a minimum size for the passphrase.
  * Pod: Update Down to 0.11.0.
+ * Logging: Adopted MXLog throughout (vector-im/element-ios/issues/4351)
 
 🐛 Bugfix
  * MXKAccount: Do not propagate errors for timed out initial sync requests (vector-im/element-ios/issues/4054).

@@ -132,7 +132,7 @@
 {
     if (mxSessionArray.count > 1)
     {
-        NSLog(@"[MXKRecentsDataSource] CAUTION: mxSession property is not relevant in case of multi-sessions (%tu)", mxSessionArray.count);
+        MXLogDebug(@"[MXKRecentsDataSource] CAUTION: mxSession property is not relevant in case of multi-sessions (%tu)", mxSessionArray.count);
     }
     
     // TODO: This property is not well adapted in case of multi-sessions
@@ -632,7 +632,7 @@
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKRecentsDataSource] Failed to leave room (%@) failed", room.roomId);
+            MXLogDebug(@"[MXKRecentsDataSource] Failed to leave room (%@) failed", room.roomId);
             
             // Notify MatrixKit user
             NSString *myUserId = room.mxSession.myUser.userId;
