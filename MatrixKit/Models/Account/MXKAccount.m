@@ -40,6 +40,10 @@ NSString *const kMXKAccountPushKitActivityDidChangeNotification = @"kMXKAccountP
 NSString *const kMXKAccountErrorDomain = @"kMXKAccountErrorDomain";
 
 static MXKAccountOnCertificateChange _onCertificateChangeBlock;
+/**
+ HTTP status codes for error cases on initial sync requests, for which errors will not be propagated to the client.
+ */
+static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
 @interface MXKAccount ()
 {
@@ -93,6 +97,19 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
 @synthesize userPresence;
 @synthesize userTintColor;
 @synthesize hideUserPresence;
+
++ (void)load
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        initialSyncSilentErrorsHTTPStatusCodes = @[
+            @(504),
+            @(522),
+            @(524),
+            @(599)
+        ];
+    });
+}
 
 + (void)registerOnCertificateChangeBlock:(MXKAccountOnCertificateChange)onCertificateChangeBlock
 {
@@ -1585,7 +1602,18 @@ static MXKAccountOnCertificateChange _onCertificateChangeBlock;
                 MXStrongifyAndReturnIfNil(self);
 
                 NSLog(@"[MXKAccount] Initial Sync failed. Error: %@", error);
-                if (self->notifyOpenSessionFailure && error)
+                
+                BOOL isClientTimeout = [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorTimedOut;
+                NSHTTPURLResponse *httpResponse = [MXHTTPOperation urlResponseFromError:error];
+                BOOL isServerTimeout = httpResponse && [initialSyncSilentErrorsHTTPStatusCodes containsObject:@(httpResponse.statusCode)];
+                
+                if (isClientTimeout || isServerTimeout)
+                {
+                    //  do not propogate this error to the client
+                    //  the request will be retried or postponed according to the reachability status
+                    NSLog(@"[MXKAccount] Initial sync failure did not propagated");
+                }
+                else if (self->notifyOpenSessionFailure && error)
                 {
                     // Notify MatrixKit user only once
                     self->notifyOpenSessionFailure = NO;
