@@ -104,9 +104,10 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     dispatch_once(&onceToken, ^{
         initialSyncSilentErrorsHTTPStatusCodes = @[
             @(504),
-            @(524)
+            @(522),
+            @(524),
+            @(599)
         ];
-        //  TODO: How about 522 and 599?
     });
 }
 
