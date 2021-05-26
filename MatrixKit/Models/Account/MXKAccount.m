@@ -1602,8 +1602,11 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
                 NSLog(@"[MXKAccount] Initial Sync failed. Error: %@", error);
                 
+                BOOL isClientTimeout = [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorTimedOut;
                 NSHTTPURLResponse *httpResponse = [MXHTTPOperation urlResponseFromError:error];
-                if (httpResponse && [initialSyncSilentErrorsHTTPStatusCodes containsObject:@(httpResponse.statusCode)])
+                BOOL isServerTimeout = httpResponse && [initialSyncSilentErrorsHTTPStatusCodes containsObject:@(httpResponse.statusCode)];
+                
+                if (isClientTimeout || isServerTimeout)
                 {
                     //  do not propogate this error to the client
                     //  the request will be retried or postponed according to the reachability status
