@@ -2063,9 +2063,11 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             // We could accept filter hot change if the change is limited to the `limit` filter value
             // But we do not have this requirement yet
             BOOL compatible = [filterId isEqualToString:self.mxSession.syncFilterId];
-            NSLog(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter id. New or old is nil. mxSession.syncFilterId: %@ -  store.filterId: %@ - syncFilter: %@",
-                  self.mxSession.syncFilterId, filterId, syncFilter.JSONDictionary);
-            
+            if (!compatible)
+            {
+                NSLog(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter ids. mxSession.syncFilterId: %@ -  store.filterId: %@ - syncFilter: %@",
+                      self.mxSession.syncFilterId, filterId, syncFilter.JSONDictionary);
+            }
             completion(compatible);
 
         } failure:^(NSError * _Nullable error) {
