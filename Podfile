@@ -24,7 +24,7 @@ abstract_target 'MatrixKitSamplePods' do
     pod 'HPGrowingTextView', '~> 1.1'
     pod 'JSQMessagesViewController', '~> 7.3.5'
     pod 'DTCoreText', '~> 1.6.25'
-    pod 'Down', '~> 0.10.0'
+    pod 'Down', '~> 0.11.0'
 
         
     target "MatrixKitSample" do
