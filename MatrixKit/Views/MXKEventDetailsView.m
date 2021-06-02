@@ -181,7 +181,7 @@
                 
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKEventDetailsView] Redact event (%@) failed", self->mxEvent.eventId);
+                MXLogDebug(@"[MXKEventDetailsView] Redact event (%@) failed", self->mxEvent.eventId);
                 
                 // Notify MatrixKit user
                 NSString *myUserId = mxRoom.mxSession.myUser.userId;

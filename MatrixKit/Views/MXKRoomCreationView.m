@@ -262,7 +262,7 @@
         }
         else
         {
-            NSLog(@"[MXKRoomCreationView] Wrong room alias has been set (%@)", _roomAliasTextField.text);
+            MXLogDebug(@"[MXKRoomCreationView] Wrong room alias has been set (%@)", _roomAliasTextField.text);
             alias = nil;
         }
     }
@@ -549,7 +549,7 @@
                                     
                                     self->_createRoomBtn.enabled = YES;
                                     
-                                    NSLog(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed", self->_roomNameTextField.text, self.alias, (self->_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private");
+                                    MXLogDebug(@"[MXKRoomCreationView] Create room (%@ %@ (%@)) failed", self->_roomNameTextField.text, self.alias, (self->_roomVisibilityControl.selectedSegmentIndex == 0) ? @"Public":@"Private");
                                     
                                     // Notify MatrixKit user
                                     NSString *myUserId = selectedSession.myUser.userId;

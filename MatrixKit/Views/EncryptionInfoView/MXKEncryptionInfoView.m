@@ -168,7 +168,7 @@ static NSAttributedString *verticalWhitespace = nil;
                     
                     self->mxCurrentOperation = nil;
 
-                    NSLog(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", self.mxEvent.sender);
+                    MXLogDebug(@"[MXKEncryptionInfoView] Crypto failed to download device info for user: %@", self.mxEvent.sender);
                     
                     // Notify MatrixKit user
                     NSString *myUserId = self.mxSession.myUser.userId;
@@ -441,7 +441,7 @@ static NSAttributedString *verticalWhitespace = nil;
         else
         {
             // Unexpected case
-            NSLog(@"[MXKEncryptionInfoView] Invalid button pressed.");
+            MXLogDebug(@"[MXKEncryptionInfoView] Invalid button pressed.");
             return;
         }
         

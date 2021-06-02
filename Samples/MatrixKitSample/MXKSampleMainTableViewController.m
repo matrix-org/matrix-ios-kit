@@ -850,7 +850,7 @@
 
 - (void)roomMemberListViewController:(MXKRoomMemberListViewController *)roomMemberListViewController didSelectMember:(MXRoomMember*)member
 {
-    NSLog(@"Member (%@) has been selected", member.userId);
+    MXLogDebug(@"Member (%@) has been selected", member.userId);
     
     selectedRoomMember = member;
     
@@ -861,7 +861,7 @@
 
 - (void)authenticationViewController:(MXKAuthenticationViewController *)authenticationViewController didLogWithUserId:(NSString*)userId
 {
-    NSLog(@"New account (%@) has been added", userId);
+    MXLogDebug(@"New account (%@) has been added", userId);
     
     // Go back to the main page
     [self.navigationController popToRootViewControllerAnimated:YES];
@@ -877,7 +877,7 @@
         if (callViewController.presentingViewController)
         {
             BOOL callIsEnded = (callViewController.mxCall.state == MXCallStateEnded);
-            NSLog(@"Call view controller must be dismissed (%d)", callIsEnded);
+            MXLogDebug(@"Call view controller must be dismissed (%d)", callIsEnded);
             
             [callViewController dismissViewControllerAnimated:YES completion:^{
                 
@@ -920,7 +920,7 @@
 - (void)contactListViewController:(MXKContactListViewController *)contactListViewController didSelectContact:(NSString *)contactId
 {
     selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
-    NSLog(@"    -> %@ has been selected", selectedContact.displayName);
+    MXLogDebug(@"    -> %@ has been selected", selectedContact.displayName);
     
     [self performSegueWithIdentifier:@"showMXKContactDetailsViewController" sender:self];
 }
@@ -928,28 +928,28 @@
 - (void)contactListViewController:(MXKContactListViewController *)contactListViewController didTapContactThumbnail:(NSString *)contactId
 {
     selectedContact = [[MXKContactManager sharedManager] contactWithContactID:contactId];
-    NSLog(@"    -> Avatar of %@ has been tapped", selectedContact.displayName);
+    MXLogDebug(@"    -> Avatar of %@ has been tapped", selectedContact.displayName);
 }
 
 #pragma mark - MXKRoomMemberDetailsViewControllerDelegate
 
 - (void)roomMemberDetailsViewController:(MXKRoomMemberDetailsViewController *)roomMemberDetailsViewController startChatWithMemberId:(NSString *)matrixId completion:(void (^)(void))completion
 {
-    NSLog(@"    -> Start chat with %@ is requested", matrixId);
+    MXLogDebug(@"    -> Start chat with %@ is requested", matrixId);
 }
 
 #pragma mark - MXKContactDetailsViewControllerDelegate
 
 - (void)contactDetailsViewController:(MXKContactDetailsViewController *)contactDetailsViewController startChatWithMatrixId:(NSString *)matrixId completion:(void (^)(void))completion
 {
-    NSLog(@"    -> Start chat with %@ is requested", matrixId);
+    MXLogDebug(@"    -> Start chat with %@ is requested", matrixId);
 }
 
 #pragma mark - MXKCountryPickerViewControllerDelegate
 
 - (void)countryPickerViewController:(MXKCountryPickerViewController*)countryPickerViewController didSelectCountry:(NSString*)isoCountryCode
 {
-    NSLog(@"    -> Select %@ country", isoCountryCode);
+    MXLogDebug(@"    -> Select %@ country", isoCountryCode);
     [self.navigationController popViewControllerAnimated:YES];
 }
 

@@ -124,7 +124,7 @@ NSString *const kMXKDirectorServerCellIdentifier = @"kMXKDirectorServerCellIdent
         
         self->request = nil;
         
-        NSLog(@"[MXKDirectoryServersDataSource] Failed to fecth third-party protocols. The HS may be too old to support third party networks");
+        MXLogDebug(@"[MXKDirectoryServersDataSource] Failed to fecth third-party protocols. The HS may be too old to support third party networks");
         
         [self setState:MXKDataSourceStateReady];
     }];

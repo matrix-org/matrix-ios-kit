@@ -705,7 +705,7 @@ andImageOrientation:(UIImageOrientation)orientation
         [self stopActivityIndicator];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
     } failure:^(MXKAttachment *attachment2, NSError *error) {
-        NSLog(@"Unable to fetch image attachment! %@", error);
+        MXLogDebug(@"Unable to fetch image attachment! %@", error);
         MXStrongifyAndReturnIfNil(self);
         
         if (self->currentAttachment != attachment2)

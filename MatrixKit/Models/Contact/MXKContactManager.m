@@ -499,11 +499,11 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 
 - (void)refreshLocalContacts
 {
-    NSLog(@"[MXKContactManager] refreshLocalContacts : Started");
+    MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Started");
     
     if (!self.allowLocalContactsAccess)
     {
-        NSLog(@"[MXKContactManager] refreshLocalContacts : Finished because local contacts access not allowed.");
+        MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Finished because local contacts access not allowed.");
         return;
     }
     
@@ -533,8 +533,8 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
             
             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
             
-            NSLog(@"[MXKContactManager] refreshLocalContacts : Complete");
-            NSLog(@"[MXKContactManager] refreshLocalContacts : Local contacts access denied");
+            MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Complete");
+            MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Local contacts access denied");
         }
         else
         {
@@ -679,8 +679,8 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
                         [self updateMatrixIDsForAllLocalContacts];
                     }
                     
-                    NSLog(@"[MXKContactManager] refreshLocalContacts : Complete");
-                    NSLog(@"[MXKContactManager] refreshLocalContacts : Refresh %tu local contacts in %.0fms", self->localContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+                    MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Complete");
+                    MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Refresh %tu local contacts in %.0fms", self->localContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
                 });
             });
         }
@@ -772,7 +772,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
             };
             
             void (^failure)(NSError *) = ^(NSError *error) {
-                NSLog(@"[MXKContactManager] updateMatrixIDsForLocalContact failed");
+                MXLogDebug(@"[MXKContactManager] updateMatrixIDsForLocalContact failed");
             };
             
             if (self.discoverUsersBoundTo3PIDsBlock)
@@ -890,7 +890,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
             };
             
             void (^failure)(NSError *) = ^(NSError *error) {
-                NSLog(@"[MXKContactManager] updateMatrixIDsForAllLocalContacts failed");
+                MXLogDebug(@"[MXKContactManager] updateMatrixIDsForAllLocalContacts failed");
             };
             
             if (self.discoverUsersBoundTo3PIDsBlock)
@@ -1462,11 +1462,11 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 
 - (void)handleAccountDataDidChangeIdentityServerNotification:(NSNotification*)notification
 {
-    NSLog(@"[MXKContactManager] handleAccountDataDidChangeIdentityServerNotification");
+    MXLogDebug(@"[MXKContactManager] handleAccountDataDidChangeIdentityServerNotification");
     
     if (!self.allowLocalContactsAccess)
     {
-        NSLog(@"[MXKContactManager] handleAccountDataDidChangeIdentityServerNotification. Does nothing because local contacts access not allowed.");
+        MXLogDebug(@"[MXKContactManager] handleAccountDataDidChangeIdentityServerNotification. Does nothing because local contacts access not allowed.");
         return;
     }
 
@@ -1504,7 +1504,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 {
     if (!self.allowLocalContactsAccess)
     {
-        NSLog(@"[MXKContactManager] Ignoring KVO changes, because local contacts access not allowed.");
+        MXLogDebug(@"[MXKContactManager] Ignoring KVO changes, because local contacts access not allowed.");
         return;
     }
     
@@ -1616,7 +1616,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
             }
             else
             {
-                NSLog(@"[MXKContactManager] fetchCachedMatrixContacts: failed to decrypt %@: %@", matrixContactsFile, error);
+                MXLogDebug(@"[MXKContactManager] fetchCachedMatrixContacts: failed to decrypt %@: %@", matrixContactsFile, error);
             }
         }
         @catch (NSException *exception)
@@ -1624,7 +1624,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
         }
     }
     
-    NSLog(@"[MXKContactManager] fetchCachedMatrixContacts : Loaded %tu contacts in %.0fms", matrixContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+    MXLogDebug(@"[MXKContactManager] fetchCachedMatrixContacts : Loaded %tu contacts in %.0fms", matrixContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
     
     return matrixContactByContactID;
 }
@@ -1681,7 +1681,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
             }
             else
             {
-                NSLog(@"[MXKContactManager] loadCachedMatrixIDsDict: failed to decrypt %@: %@", matrixIDsDictFile, error);
+                MXLogDebug(@"[MXKContactManager] loadCachedMatrixIDsDict: failed to decrypt %@: %@", matrixIDsDictFile, error);
             }
         }
         @catch (NSException *exception)
@@ -1748,7 +1748,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
             }
             else
             {
-                NSLog(@"[MXKContactManager] loadCachedLocalContacts: failed to decrypt %@: %@", localContactsFile, error);
+                MXLogDebug(@"[MXKContactManager] loadCachedLocalContacts: failed to decrypt %@: %@", localContactsFile, error);
             }
         }
         @catch (NSException *exception)
@@ -1812,7 +1812,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
             else
             {
                 lastSyncDate = nil;
-                NSLog(@"[MXKContactManager] loadCachedContactBookInfo: failed to decrypt %@: %@", contactsBookInfoFile, error);
+                MXLogDebug(@"[MXKContactManager] loadCachedContactBookInfo: failed to decrypt %@: %@", contactsBookInfoFile, error);
             }
         }
         @catch (NSException *exception)
@@ -1833,7 +1833,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
     }
     else
     {
-        NSLog(@"[MXKContactManager] encryptAndSaveData: failed to encrypt %@", fileName);
+        MXLogDebug(@"[MXKContactManager] encryptAndSaveData: failed to encrypt %@", fileName);
     }
     
     return error == nil;
@@ -1848,7 +1848,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
         {
             MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
             NSData *cipher = [MXAes encrypt:data aesKey:aesKey.key iv:aesKey.iv error:error];
-            NSLog(@"[MXKContactManager] encryptData: encrypted %lu Bytes for %@", cipher.length, fileName);
+            MXLogDebug(@"[MXKContactManager] encryptData: encrypted %lu Bytes for %@", cipher.length, fileName);
             return cipher;
         }
     }
@@ -1857,7 +1857,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
         *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"encryptData failed: %@", exception.reason]}];
     }
     
-    NSLog(@"[MXKContactManager] encryptData: no key method provided for encryption of %@", fileName);
+    MXLogDebug(@"[MXKContactManager] encryptData: no key method provided for encryption of %@", fileName);
     return data;
 }
 
@@ -1870,7 +1870,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
         {
             MXAesKeyData *aesKey = (MXAesKeyData *) keyData;
             NSData *decrypt = [MXAes decrypt:data aesKey:aesKey.key iv:aesKey.iv error:error];
-            NSLog(@"[MXKContactManager] decryptData: decrypted %lu Bytes for %@", decrypt.length, fileName);
+            MXLogDebug(@"[MXKContactManager] decryptData: decrypted %lu Bytes for %@", decrypt.length, fileName);
             return decrypt;
         }
     }
@@ -1879,7 +1879,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
         *error = [NSError errorWithDomain:MXKContactManagerDomain code:MXContactManagerEncryptionDelegateNotReady userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"decryptData failed: %@", exception.reason]}];
     }
     
-    NSLog(@"[MXKContactManager] decryptData: no key method provided for decryption of %@", fileName);
+    MXLogDebug(@"[MXKContactManager] decryptData: no key method provided for decryption of %@", fileName);
     return data;
 }
 
@@ -1895,7 +1895,7 @@ static NSString *contactsBookInfoFile = @"contactsV2";
             error = nil;
             if (![fileManager removeItemAtPath:filePath error:&error])
             {
-                NSLog(@"[MXKContactManager] deleteOldFiles: failed to remove %@", fileName);
+                MXLogDebug(@"[MXKContactManager] deleteOldFiles: failed to remove %@", fileName);
             }
         }
     }

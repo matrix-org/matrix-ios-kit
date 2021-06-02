@@ -1008,7 +1008,7 @@ static const CGFloat kLocalPreviewMargin = 20;
 
 - (void)call:(MXCall *)call didEncounterError:(NSError *)error reason:(MXCallHangupReason)reason
 {
-    NSLog(@"[MXKCallViewController] didEncounterError. mxCall.state: %tu. Stop call due to error: %@", mxCall.state, error);
+    MXLogDebug(@"[MXKCallViewController] didEncounterError. mxCall.state: %tu. Stop call due to error: %@", mxCall.state, error);
 
     if (mxCall.state != MXCallStateEnded)
     {

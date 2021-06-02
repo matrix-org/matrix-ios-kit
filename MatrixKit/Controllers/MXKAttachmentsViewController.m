@@ -761,7 +761,7 @@
                         cell.notificationObserver = nil;
                     }
                     
-                    NSLog(@"[MXKAttachmentsVC] gif download failed");
+                    MXLogDebug(@"[MXKAttachmentsVC] gif download failed");
                     // Notify MatrixKit user
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error];
                 };
@@ -1024,7 +1024,7 @@
                             selectedCell.notificationObserver = nil;
                         }
                         
-                        NSLog(@"[MXKAttachmentsVC] video download failed");
+                        MXLogDebug(@"[MXKAttachmentsVC] video download failed");
                         
                         [pieChartView removeFromSuperview];
                         
@@ -1134,7 +1134,7 @@
     NSError *mediaPlayerError = [notificationUserInfo objectForKey:AVPlayerItemFailedToPlayToEndTimeErrorKey];
     if (mediaPlayerError)
     {
-        NSLog(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
+        MXLogDebug(@"[MXKAttachmentsVC] Playback failed with error description: %@", [mediaPlayerError localizedDescription]);
 
         // Display the navigation bar so that the user can leave this screen
         self.navigationBar.hidden = NO;
