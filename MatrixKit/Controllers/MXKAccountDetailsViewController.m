@@ -432,7 +432,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKAccountDetailsVC] Failed to set displayName");
+            MXLogDebug(@"[MXKAccountDetailsVC] Failed to set displayName");
             if (weakSelf)
             {
                 typeof(self) self = weakSelf;
@@ -502,7 +502,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                  [self saveUserInfo];
              } failure:^(NSError *error)
              {
-                 NSLog(@"[MXKAccountDetailsVC] Failed to upload image");
+                 MXLogDebug(@"[MXKAccountDetailsVC] Failed to upload image");
                  MXStrongifyAndReturnIfNil(self);
                  [self handleErrorDuringPictureSaving:error];
              }];
@@ -524,7 +524,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                      
                                  }
                                  failure:^(NSError *error) {
-                                     NSLog(@"[MXKAccountDetailsVC] Failed to set avatar url");
+                                     MXLogDebug(@"[MXKAccountDetailsVC] Failed to set avatar url");
                                      MXStrongifyAndReturnIfNil(self);
                                      [self handleErrorDuringPictureSaving:error];
                                  }];
@@ -771,7 +771,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                     {
                                                         typeof(self) self = weakSelf;
                                                         
-                                                        NSLog(@"[MXKAccountDetailsVC] Failed to bind email");
+                                                        MXLogDebug(@"[MXKAccountDetailsVC] Failed to bind email");
                                                         
                                                         // Display the same popup again if the error is M_THREEPID_AUTH_FAILED
                                                         MXError *mxError = [[MXError alloc] initWithNSError:error];
@@ -873,7 +873,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
         } failure:^(NSError *error) {
 
-            NSLog(@"[MXKAccountDetailsVC] Failed to request email token");
+            MXLogDebug(@"[MXKAccountDetailsVC] Failed to request email token");
             if (weakSelf)
             {
                 typeof(self) self = weakSelf;

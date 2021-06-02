@@ -132,7 +132,7 @@
 "login_mobile_device" = "移动设备";
 "login_tablet_device" = "平板电脑";
 "login_desktop_device" = "桌面设备";
-"notice_room_related_groups" = "和此聊天室关联的社区是：%@";
+"notice_room_related_groups" = "和此聊天室关联的社群是：%@";
 "room_event_encryption_info_event_session_id" = "会话 ID\n";
 "room_event_encryption_info_event_decryption_error" = "解密错误\n";
 "room_event_encryption_info_event_unencrypted" = "未加密";
@@ -304,7 +304,7 @@
 "notification_settings_sender_hint" = "@user:domain.com";
 // call string
 "call_waiting" = "请等待…";
-"call_connecting" = "通话连接中…";
+"call_connecting" = "连接中…";
 "call_ring" = "正在通话…";
 "room_event_encryption_info_event_algorithm" = "算法\n";
 "room_event_encryption_verify_message" = "为验证此会话是否可信，请通过其他方式（例如当面交换或拨打电话）与其拥有者联系，并询问他们该会话的用户设置中的密钥是否与以下密钥匹配：\n\n\t会话名称：%@\n\t会话 ID：%@\n\t会话密钥：%@\n\n如果匹配，请点击下面的按钮。如果不匹配，那么说明有其他人截取了此会话，您可能想点击黑名单按钮。\n\n未来，这个验证过程将会变得更加精致、巧妙一些。";
@@ -458,3 +458,8 @@
 "notice_display_name_changed_from_by_you" = "你将你的昵称从 %@ 更改为 %@";
 "notice_display_name_removed_by_you" = "你移除了你的昵称";
 "notice_avatar_url_changed_by_you" = "你更换了头像";
+"call_transfer_to_user" = "转接到 %@";
+"call_ringing" = "响铃中…";
+"call_consulting_with_user" = "与 %@ 商量";
+"call_video_with_user" = "与 %@ 进行视频通话";
+"call_voice_with_user" = "与 %@ 进行语音通话";

@@ -228,12 +228,12 @@
     // Send message to the room
     [roomDataSource.room sendTextMessage:text success:^(NSString *eventId)
     {
-        NSLog(@"Succeed to send text message");
+        MXLogDebug(@"Succeed to send text message");
         [self finishSendingMessage];
         button.enabled = YES;
     } failure:^(NSError *error)
     {
-        NSLog(@"Failed to send text message (%@)", error);
+        MXLogDebug(@"Failed to send text message (%@)", error);
         button.enabled = YES;
     }];
 }
@@ -509,17 +509,17 @@
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapAvatarImageView:(UIImageView *)avatarImageView atIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"Tapped avatar!");
+    MXLogDebug(@"Tapped avatar!");
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"Tapped message bubble!");
+    MXLogDebug(@"Tapped message bubble!");
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapCellAtIndexPath:(NSIndexPath *)indexPath touchLocation:(CGPoint)touchLocation
 {
-    NSLog(@"Tapped cell at %@!", NSStringFromCGPoint(touchLocation));
+    MXLogDebug(@"Tapped cell at %@!", NSStringFromCGPoint(touchLocation));
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -568,7 +568,7 @@
         UIImage *selectedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
         if (selectedImage)
         {
-            NSLog(@"An Image has been selected");
+            MXLogDebug(@"An Image has been selected");
             [roomDataSource sendImage:selectedImage success:nil failure:^(NSError *error)
             {
                 // @TODO
@@ -581,7 +581,7 @@
         // Check the selected video, and ignore multiple calls (observed when user pressed several time Choose button)
         if (selectedVideo)
         {
-            NSLog(@"A video has been selected");
+            MXLogDebug(@"A video has been selected");
             // TODO
             //            [roomDataSource.room sendVideo:selectedVideo];
         }

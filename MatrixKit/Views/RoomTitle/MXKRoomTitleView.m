@@ -241,7 +241,7 @@
                     
                     // Revert change
                     textField.text = strongSelf.mxRoom.summary.displayname;
-                    NSLog(@"[MXKRoomTitleView] Rename room failed");
+                    MXLogDebug(@"[MXKRoomTitleView] Rename room failed");
                     // Notify MatrixKit user
                     NSString *myUserId = strongSelf.mxRoom.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
