@@ -24,7 +24,7 @@ platform :ios do
   desc "Lint local MatrixKit podspec"
   lane :lint_local_pod_MatrixKit do
     # MatrixKit.podspec and MatrixKit.pospec are updated or created by the `bundle exec fastlane point_podspec_to_…` lanes supposed to be run beforehand
-    custom_pod_lib_lint(podspec: "../MatrixKit.podspec", parameters: ["--allow-warnings", "--fail-fast", "--configuration=Debug", " --external-podspecs=MatrixSDK.podspec"])
+    custom_pod_lib_lint(podspec: "../MatrixKit.podspec", parameters: ["--allow-warnings", "--fail-fast", "--configuration=Debug", " --external-podspecs=../MatrixSDK.podspec"])
   end
 
   desc "Run tests"
@@ -115,6 +115,9 @@ platform :ios do
 
     UI.message("✏️ Making a local copy of MatrixSDK.podspec from the \`#{sdk_branch}\` branch...")
     sdk_podspec_content = Net::HTTP.get(URI("https://raw.githubusercontent.com/#{sdk_slug}/#{sdk_branch}/MatrixSDK.podspec"))
+    old = ":tag => \"v\#{s.version}\""
+    new = ":branch => \"#{sdk_branch}\""
+    sdk_podspec_content.gsub!(old, new)
     File.write("#{local_podspec_dir}/MatrixSDK.podspec", sdk_podspec_content)
 
     UI.message "✏️ Editing local MatrixKit podspec to remove version constaint on 'MatrixSDK*' dependencies..."

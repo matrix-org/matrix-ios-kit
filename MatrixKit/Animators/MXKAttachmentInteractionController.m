@@ -15,6 +15,7 @@
  */
 
 #import "MXKAttachmentInteractionController.h"
+#import "MXLog.h"
 
 @interface MXKAttachmentInteractionController ()
 
@@ -100,7 +101,7 @@
             break;
             
         default:
-            NSLog(@"UIGestureRecognizerState not handled");
+            MXLogDebug(@"UIGestureRecognizerState not handled");
             break;
     }
 }

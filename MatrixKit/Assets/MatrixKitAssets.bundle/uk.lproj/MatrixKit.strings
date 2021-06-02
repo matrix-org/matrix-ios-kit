@@ -33,3 +33,68 @@
 /* *********************** */
 
 "matrix" = "Matrix";
+
+// Events formatter
+"notice_avatar_changed_too" = "(аватар теж змінено)";
+"unignore" = "Не нехтувати";
+"ignore" = "Нехтувати";
+"resume_call" = "Продовжити";
+"end_call" = "Завершити виклик";
+"reject_call" = "Відхилити виклик";
+"answer_call" = "Відповісти на виклик";
+"show_details" = "Показати подробиці";
+"cancel_download" = "Скасувати завантаження";
+"cancel_upload" = "Скасувати вивантаження";
+"select_all" = "Вибрати всі";
+"resend_message" = "Повторити надсилання повідомлення";
+"reset_to_default" = "Скинути до типових";
+"invite_user" = "Запросити користувача matrix";
+"capture_media" = "Зробити знімок/зафільмувати";
+"attach_media" = "Долучити медіа з бібліотеки";
+"select_account" = "Вибрати обліковий запис";
+"mention" = "Згадати";
+"start_video_call" = "Розпочати відеовиклик";
+"start_voice_call" = "Розпочати голосовий виклик";
+"start_chat" = "Почати бесіду";
+"set_admin" = "Призначити адміністратора";
+"set_moderator" = "Призначити модератора";
+"set_default_power_level" = "Скинути рівень прав";
+"set_power_level" = "Визначити рівень прав";
+"submit_code" = "Надіслати код";
+"dismiss" = "Відхилити";
+"abort" = "Перервати";
+"yes" = "Так";
+
+// Action
+"no" = "Ні";
+"login_error_resource_limit_exceeded_contact_button" = "Зв'язатися з адміністратором";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nЗверніться до адміністратора своєї служби, щоб продовжувати користуватися нею.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Цей домашній сервер досяг свого місячного обмеження активних користувачів.";
+"login_error_resource_limit_exceeded_message_default" = "Цей домашній сервер перевищив одне з обмежень ресурсів.";
+"login_error_resource_limit_exceeded_title" = "Обмеження ресурсів перевищено";
+"login_desktop_device" = "Комп'ютер";
+"login_tablet_device" = "Планшет";
+"login_mobile_device" = "Мобільний";
+"login_error_forgot_password_is_not_supported" = "Відновлення пароля зараз не підтримується";
+"login_use_fallback" = "Застосувати запасну сторінку";
+"login_error_login_email_not_yet" = "Посилання на електронну адресу, на яке ще не клацнули";
+"login_error_user_in_use" = "Це ім'я користувача вже використовується";
+"login_error_limit_exceeded" = "Було надіслано забагато запитів";
+"login_error_not_json" = "Не містить дійсного JSON";
+"login_error_bad_json" = "Неправильний синтаксис JSON";
+"login_error_unknown_token" = "Вказаний ключ доступу не було розпізнано";
+"login_error_forbidden" = "Не правильне ім'я користувача/пароль";
+"login_error_registration_is_not_supported" = "На цей час реєстрація не підтримується";
+"login_error_no_login_flow" = "Не вдалося отримати дані автентифікації з цього домашнього сервера";
+"login_error_title" = "Не вдалося увійти";
+"login_prompt_email_token" = "Введіть ключ підтвердження електронної пошти:";
+"login_email_placeholder" = "Адреса е-пошти";
+"login_email_info" = "Вкажіть адресу електронної пошти, щоб інші користувачі могли легше знаходити вас на Matrix і надання вам можливості відновити пароль у майбутньому.";
+"login_display_name_placeholder" = "Видиме ім'я (наприклад Bob Obson)";
+"login_optional_field" = "необов'язково";
+"login_password_placeholder" = "Пароль";
+"login_user_id_placeholder" = "Ідентифікатор Matrix (наприклад @bob:matrix.org або bob)";
+"login_identity_server_info" = "Matrix забезпечує сервери ідентифікації для відстеження, до яких ідентифікаторів Matrix, які електронні листи належать. Наразі доступно лише для https://matrix.org.";
+"login_identity_server_title" = "URL-адреса сервера ідентифікації:";
+"login_home_server_info" = "Ваш домашній сервер зберігає всі ваші розмови та дані облікового запису";
+"login_home_server_title" = "URL-адреса домашнього сервера:";

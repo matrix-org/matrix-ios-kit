@@ -89,7 +89,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
         
         if (textPattern.length)
         {
-            NSLog(@"[MXKSearchDataSource] searchMessages: %@", textPattern);
+            MXLogDebug(@"[MXKSearchDataSource] searchMessages: %@", textPattern);
             [self doSearch];
         }
         else
@@ -103,7 +103,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
 
 - (void)paginateBack
 {
-    NSLog(@"[MXKSearchDataSource] paginateBack");
+    MXLogDebug(@"[MXKSearchDataSource] paginateBack");
 
     self.state = MXKDataSourceStatePreparing;
     [self doSearch];
@@ -183,7 +183,7 @@ NSString *const kMXKSearchCellDataIdentifier = @"kMXKSearchCellDataIdentifier";
     searchRequest = [self.mxSession.matrixRestClient searchMessagesWithText:_searchText roomEventFilter:_roomEventFilter beforeLimit:0 afterLimit:0 nextBatch:nextBatch success:^(MXSearchRoomEventResults *roomEventResults) {
         MXStrongifyAndReturnIfNil(self);
 
-        NSLog(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", self.searchText, self.roomEventFilter.containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
+        MXLogDebug(@"[MXKSearchDataSource] searchMessages: %@ (%d). Done in %.3fms - Got %tu / %tu messages", self.searchText, self.roomEventFilter.containsURL, [[NSDate date] timeIntervalSinceDate:startDate] * 1000, roomEventResults.results.count, roomEventResults.count);
 
         self->searchRequest = nil;
         self->_serverCount = roomEventResults.count;

@@ -83,7 +83,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         // Check whether the account is enabled. Open a new matrix session if none.
         if (!account.isDisabled && !account.isSoftLogout && !account.mxSession)
         {
-            NSLog(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
+            MXLogDebug(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
             
             id<MXStore> store = [[_storeClass alloc] init];
             [account openSessionWithStore:store];
@@ -95,7 +95,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 {
     NSDate *startDate = [NSDate date];
     
-    NSLog(@"[MXKAccountManager] saveAccounts...");
+    MXLogDebug(@"[MXKAccountManager] saveAccounts...");
     
     NSMutableData *data = [NSMutableData data];
     NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
@@ -108,12 +108,12 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 
     BOOL result = [data writeToFile:[self accountFile] atomically:YES];
 
-    NSLog(@"[MXKAccountManager] saveAccounts. Done (result: %@) in %.0fms", @(result), [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+    MXLogDebug(@"[MXKAccountManager] saveAccounts. Done (result: %@) in %.0fms", @(result), [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
 }
 
 - (void)addAccount:(MXKAccount *)account andOpenSession:(BOOL)openSession
 {
-    NSLog(@"[MXKAccountManager] login (%@)", account.mxCredentials.userId);
+    MXLogDebug(@"[MXKAccountManager] login (%@)", account.mxCredentials.userId);
     
     [mxAccounts addObject:account];
     [self saveAccounts];
@@ -122,7 +122,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
     if (openSession && !account.disabled)
     {
         // Open a new matrix session by default
-        NSLog(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
         
         id<MXStore> store = [[_storeClass alloc] init];
         [account openSessionWithStore:store];
@@ -141,7 +141,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
     sendLogoutRequest:(BOOL)sendLogoutRequest
            completion:(void (^)(void))completion
 {
-    NSLog(@"[MXKAccountManager] logout (%@), send logout request to homeserver: %d", theAccount.mxCredentials.userId, sendLogoutRequest);
+    MXLogDebug(@"[MXKAccountManager] logout (%@), send logout request to homeserver: %d", theAccount.mxCredentials.userId, sendLogoutRequest);
     
     // Close session and clear associated store.
     [theAccount logoutSendingServerRequest:sendLogoutRequest completion:^{
@@ -222,14 +222,14 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 
 - (void)hydrateAccount:(MXKAccount*)account withCredentials:(MXCredentials*)credentials
 {
-    NSLog(@"[MXKAccountManager] hydrateAccount: %@", account.mxCredentials.userId);
+    MXLogDebug(@"[MXKAccountManager] hydrateAccount: %@", account.mxCredentials.userId);
 
     if ([account.mxCredentials.userId isEqualToString:credentials.userId])
     {
         // Restart the account
         [account hydrateWithCredentials:credentials];
 
-        NSLog(@"[MXKAccountManager] hydrateAccount: Open session");
+        MXLogDebug(@"[MXKAccountManager] hydrateAccount: Open session");
 
         id<MXStore> store = [[_storeClass alloc] init];
         [account openSessionWithStore:store];
@@ -240,7 +240,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
     }
     else
     {
-        NSLog(@"[MXKAccountManager] hydrateAccount: Credentials given for another account: %@", credentials.userId);
+        MXLogDebug(@"[MXKAccountManager] hydrateAccount: Credentials given for another account: %@", credentials.userId);
 
         // Logout the old account and create a new one with the new credentials
         [self removeAccount:account sendLogoutRequest:YES completion:nil];
@@ -344,18 +344,18 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         token = nil;
     }
 
-    NSLog(@"[MXKAccountManager][Push] apnsDeviceToken: %@", [MXKTools logForPushToken:token]);
+    MXLogDebug(@"[MXKAccountManager][Push] apnsDeviceToken: %@", [MXKTools logForPushToken:token]);
     return token;
 }
 
 - (void)setApnsDeviceToken:(NSData *)apnsDeviceToken
 {
-    NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: %@", [MXKTools logForPushToken:apnsDeviceToken]);
+    MXLogDebug(@"[MXKAccountManager][Push] setApnsDeviceToken: %@", [MXKTools logForPushToken:apnsDeviceToken]);
 
     NSData *oldToken = self.apnsDeviceToken;
     if (!apnsDeviceToken.length)
     {
-        NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: reset APNS device token");
+        MXLogDebug(@"[MXKAccountManager][Push] setApnsDeviceToken: reset APNS device token");
         
         if (oldToken)
         {
@@ -374,7 +374,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         
         if (!oldToken)
         {
-            NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: set APNS device token");
+            MXLogDebug(@"[MXKAccountManager][Push] setApnsDeviceToken: set APNS device token");
             
             [[NSUserDefaults standardUserDefaults] setObject:apnsDeviceToken forKey:@"apnsDeviceToken"];
 
@@ -386,7 +386,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         }
         else if (![oldToken isEqualToData:apnsDeviceToken])
         {
-            NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: update APNS device token");
+            MXLogDebug(@"[MXKAccountManager][Push] setApnsDeviceToken: update APNS device token");
 
             NSMutableArray<MXKAccount*> *accountsWithAPNSPusher = [NSMutableArray new];
 
@@ -409,18 +409,18 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
             {
                 if ([accountsWithAPNSPusher containsObject:account])
                 {
-                    NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: Resync APNS for %@ account", account.mxCredentials.userId);
+                    MXLogDebug(@"[MXKAccountManager][Push] setApnsDeviceToken: Resync APNS for %@ account", account.mxCredentials.userId);
                     [account enablePushNotifications:YES success:nil failure:nil];
                 }
                 else
                 {
-                    NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: hasPusherForPushNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
+                    MXLogDebug(@"[MXKAccountManager][Push] setApnsDeviceToken: hasPusherForPushNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
                 }
             }
         }
         else
         {
-            NSLog(@"[MXKAccountManager][Push] setApnsDeviceToken: Same token. Nothing to do.");
+            MXLogDebug(@"[MXKAccountManager][Push] setApnsDeviceToken: Same token. Nothing to do.");
         }
     }
 }
@@ -442,12 +442,12 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
         isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
         
-        NSLog(@"[MXKAccountManager][Push] isAPNSAvailable: The user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+        MXLogDebug(@"[MXKAccountManager][Push] isAPNSAvailable: The user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
     }
 
     BOOL isAPNSAvailable = (isRemoteNotificationsAllowed && self.apnsDeviceToken);
 
-    NSLog(@"[MXKAccountManager][Push] isAPNSAvailable: %@", @(isAPNSAvailable));
+    MXLogDebug(@"[MXKAccountManager][Push] isAPNSAvailable: %@", @(isAPNSAvailable));
 
     return isAPNSAvailable;
 }
@@ -462,7 +462,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         token = nil;
     }
 
-    NSLog(@"[MXKAccountManager][Push] pushDeviceToken: %@", [MXKTools logForPushToken:token]);
+    MXLogDebug(@"[MXKAccountManager][Push] pushDeviceToken: %@", [MXKTools logForPushToken:token]);
     return token;
 }
 
@@ -470,18 +470,18 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 {
     NSDictionary *pushOptions = [[NSUserDefaults standardUserDefaults] objectForKey:@"pushOptions"];
 
-    NSLog(@"[MXKAccountManager][Push] pushOptions: %@", pushOptions);
+    MXLogDebug(@"[MXKAccountManager][Push] pushOptions: %@", pushOptions);
     return pushOptions;
 }
 
 - (void)setPushDeviceToken:(NSData *)pushDeviceToken withPushOptions:(NSDictionary *)pushOptions
 {
-    NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: %@ withPushOptions: %@", [MXKTools logForPushToken:pushDeviceToken], pushOptions);
+    MXLogDebug(@"[MXKAccountManager][Push] setPushDeviceToken: %@ withPushOptions: %@", [MXKTools logForPushToken:pushDeviceToken], pushOptions);
 
     NSData *oldToken = self.pushDeviceToken;
     if (!pushDeviceToken.length)
     {
-        NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Reset Push device token");
+        MXLogDebug(@"[MXKAccountManager][Push] setPushDeviceToken: Reset Push device token");
         
         if (oldToken)
         {
@@ -502,7 +502,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         
         if (!oldToken)
         {
-            NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Set Push device token");
+            MXLogDebug(@"[MXKAccountManager][Push] setPushDeviceToken: Set Push device token");
             
             [[NSUserDefaults standardUserDefaults] setObject:pushDeviceToken forKey:@"pushDeviceToken"];
             if (pushOptions)
@@ -522,7 +522,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         }
         else if (![oldToken isEqualToData:pushDeviceToken])
         {
-            NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Update Push device token");
+            MXLogDebug(@"[MXKAccountManager][Push] setPushDeviceToken: Update Push device token");
 
             NSMutableArray<MXKAccount*> *accountsWithPushKitPusher = [NSMutableArray new];
 
@@ -553,18 +553,18 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
             {
                 if ([accountsWithPushKitPusher containsObject:account])
                 {
-                    NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Resync Push for %@ account", account.mxCredentials.userId);
+                    MXLogDebug(@"[MXKAccountManager][Push] setPushDeviceToken: Resync Push for %@ account", account.mxCredentials.userId);
                     [account enablePushKitNotifications:YES success:nil failure:nil];
                 }
                 else
                 {
-                    NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: hasPusherForPushKitNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
+                    MXLogDebug(@"[MXKAccountManager][Push] setPushDeviceToken: hasPusherForPushKitNotifications = NO for %@ account. Do not enable Push", account.mxCredentials.userId);
                 }
             }
         }
         else
         {
-            NSLog(@"[MXKAccountManager][Push] setPushDeviceToken: Same token. Nothing to do.");
+            MXLogDebug(@"[MXKAccountManager][Push] setPushDeviceToken: Same token. Nothing to do.");
         }
     }
 }
@@ -586,12 +586,12 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
         isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
         
-        NSLog(@"[MXKAccountManager][Push] isPushAvailable: The user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
+        MXLogDebug(@"[MXKAccountManager][Push] isPushAvailable: The user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
     }
 
     BOOL isPushAvailable = (isRemoteNotificationsAllowed && self.pushDeviceToken);
 
-    NSLog(@"[MXKAccountManager][Push] isPushAvailable: %@", @(isPushAvailable));
+    MXLogDebug(@"[MXKAccountManager][Push] isPushAvailable: %@", @(isPushAvailable));
     return isPushAvailable;
 }
 
@@ -606,7 +606,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 
 - (void)loadAccounts
 {
-    NSLog(@"[MXKAccountManager] loadAccounts");
+    MXLogDebug(@"[MXKAccountManager] loadAccounts");
 
     NSString *accountFile = [self accountFile];
     if ([[NSFileManager defaultManager] fileExistsAtPath:accountFile])
@@ -626,19 +626,19 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
             if (!mxAccounts && [[MXKeyProvider sharedInstance] isEncryptionAvailableForDataOfType:MXKAccountManagerDataType])
             {
                 // This happens if the V2 file has not been encrypted -> read file content then save encrypted accounts
-                NSLog(@"[MXKAccountManager] loadAccounts. Failed to read decrypted data: reading file data without encryption.");
+                MXLogDebug(@"[MXKAccountManager] loadAccounts. Failed to read decrypted data: reading file data without encryption.");
                 decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:filecontent];
                 mxAccounts = [decoder decodeObjectForKey:@"mxAccounts"];
                 
                 if (mxAccounts)
                 {
-                    NSLog(@"[MXKAccountManager] loadAccounts. saving encrypted accounts");
+                    MXLogDebug(@"[MXKAccountManager] loadAccounts. saving encrypted accounts");
                     [self saveAccounts];
                 }
             }
         }
 
-        NSLog(@"[MXKAccountManager] loadAccounts. %tu accounts loaded in %.0fms", mxAccounts.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+        MXLogDebug(@"[MXKAccountManager] loadAccounts. %tu accounts loaded in %.0fms", mxAccounts.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
     }
     else
     {
@@ -657,7 +657,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
             mxAccounts = [NSMutableArray arrayWithArray:[NSKeyedUnarchiver unarchiveObjectWithData:accountData]];
             [self saveAccounts];
 
-            NSLog(@"[MXKAccountManager] loadAccounts: performed data migration");
+            MXLogDebug(@"[MXKAccountManager] loadAccounts: performed data migration");
 
             // Now that data has been migrated, erase old location of accountData
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMXKAccountsKey];
@@ -668,14 +668,14 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 
     if (!mxAccounts)
     {
-        NSLog(@"[MXKAccountManager] loadAccounts. No accounts");
+        MXLogDebug(@"[MXKAccountManager] loadAccounts. No accounts");
         mxAccounts = [NSMutableArray array];
     }
 }
 
 - (void)forceReloadAccounts
 {
-    NSLog(@"[MXKAccountManager] Force reload existing accounts from local storage");
+    MXLogDebug(@"[MXKAccountManager] Force reload existing accounts from local storage");
     [self loadAccounts];
 }
 
@@ -691,7 +691,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         return cipher;
     }
 
-    NSLog(@"[MXKAccountManager] encryptData: no key method provided for encryption.");
+    MXLogDebug(@"[MXKAccountManager] encryptData: no key method provided for encryption.");
     return data;
 }
 
@@ -707,7 +707,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
         return decrypt;
     }
 
-    NSLog(@"[MXKAccountManager] decryptData: no key method provided for decryption.");
+    MXLogDebug(@"[MXKAccountManager] decryptData: no key method provided for decryption.");
     return data;
 }
 
@@ -720,13 +720,13 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
     {
         if (![fileManager fileExistsAtPath:pathNew])
         {
-            NSLog(@"[MXKAccountManager] migrateAccounts: reading account");
+            MXLogDebug(@"[MXKAccountManager] migrateAccounts: reading account");
             mxAccounts = [NSKeyedUnarchiver unarchiveObjectWithFile:pathOld];
-            NSLog(@"[MXKAccountManager] migrateAccounts: writing to accountV2");
+            MXLogDebug(@"[MXKAccountManager] migrateAccounts: writing to accountV2");
             [self saveAccounts];
         }
         
-        NSLog(@"[MXKAccountManager] migrateAccounts: removing account");
+        MXLogDebug(@"[MXKAccountManager] migrateAccounts: removing account");
         [fileManager removeItemAtPath:pathOld error:nil];
     }
 }

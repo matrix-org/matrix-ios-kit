@@ -251,7 +251,7 @@ static NSAttributedString *verticalWhitespace = nil;
     if (!self.delegate)
     {
         // Ignore
-        NSLog(@"[MXKDeviceView] Rename device failed, delegate is missing");
+        MXLogDebug(@"[MXKDeviceView] Rename device failed, delegate is missing");
         return;
     }
     
@@ -322,7 +322,7 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                    
                                                                    self->mxCurrentOperation = nil;
                                                                    
-                                                                   NSLog(@"[MXKDeviceView] Rename device (%@) failed", self->mxDevice.deviceId);
+                                                                   MXLogDebug(@"[MXKDeviceView] Rename device (%@) failed", self->mxDevice.deviceId);
                                                                    
                                                                    [self.activityIndicator stopAnimating];
                                                                    
@@ -342,7 +342,7 @@ static NSAttributedString *verticalWhitespace = nil;
     if (!self.delegate)
     {
         // Ignore
-        NSLog(@"[MXKDeviceView] Delete device failed, delegate is missing");
+        MXLogDebug(@"[MXKDeviceView] Delete device failed, delegate is missing");
         return;
     }
     
@@ -442,7 +442,7 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                            
                                                                            self->mxCurrentOperation = nil;
                                                                            
-                                                                           NSLog(@"[MXKDeviceView] Delete device (%@) failed", self->mxDevice.deviceId);
+                                                                           MXLogDebug(@"[MXKDeviceView] Delete device (%@) failed", self->mxDevice.deviceId);
                                                                            
                                                                            [self.activityIndicator stopAnimating];
                                                                            
@@ -458,7 +458,7 @@ static NSAttributedString *verticalWhitespace = nil;
         }
         else
         {
-            NSLog(@"[MXKDeviceView] Delete device (%@) failed, auth session flow type is not supported", self->mxDevice.deviceId);
+            MXLogDebug(@"[MXKDeviceView] Delete device (%@) failed, auth session flow type is not supported", self->mxDevice.deviceId);
             [self.activityIndicator stopAnimating];
         }
         
@@ -466,7 +466,7 @@ static NSAttributedString *verticalWhitespace = nil;
         
         self->mxCurrentOperation = nil;
         
-        NSLog(@"[MXKDeviceView] Delete device (%@) failed, unable to get auth session", self->mxDevice.deviceId);
+        MXLogDebug(@"[MXKDeviceView] Delete device (%@) failed, unable to get auth session", self->mxDevice.deviceId);
         [self.activityIndicator stopAnimating];
         
         // Notify MatrixKit user

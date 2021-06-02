@@ -126,7 +126,7 @@ static Class _roomDataSourceClass;
         // Observe UIApplicationDidReceiveMemoryWarningNotification
         UIApplicationDidReceiveMemoryWarningNotificationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
             
-            NSLog(@"[MXKRoomDataSourceManager] %@: Received memory warning.", self);
+            MXLogDebug(@"[MXKRoomDataSourceManager] %@: Received memory warning.", self);
             
             // Reload all data sources (except the current used ones) to reduce memory usage.
             for (MXKRoomDataSource *roomDataSource in self->roomDataSources.allValues)
@@ -221,7 +221,7 @@ static Class _roomDataSourceClass;
     // Check first whether this roomDataSource is well handled by this manager
     if (!roomId || !roomDataSources[roomId])
     {
-        NSLog(@"[MXKRoomDataSourceManager] Failed to close an unknown room id: %@", roomId);
+        MXLogDebug(@"[MXKRoomDataSourceManager] Failed to close an unknown room id: %@", roomId);
         return;
     }
 

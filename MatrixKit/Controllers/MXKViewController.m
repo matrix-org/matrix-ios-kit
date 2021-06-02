@@ -154,7 +154,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 {
     [super viewDidAppear:animated];
 
-    NSLog(@"[MXKViewController] %@ viewDidAppear", self.class);
+    MXLogDebug(@"[MXKViewController] %@ viewDidAppear", self.class);
 
     // Release properly pushed and/or presented view controller
     if (childViewControllers.count)
@@ -186,7 +186,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 {
     [super viewDidDisappear:animated];
 
-    NSLog(@"[MXKViewController] %@ viewDidDisappear", self.class);
+    MXLogDebug(@"[MXKViewController] %@ viewDidDisappear", self.class);
 }
 
 - (void)setEnableBarTintColorStatusChange:(BOOL)enable
@@ -626,7 +626,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 
 - (void)onKeyboardWillShow:(NSNotification *)notif
 {
-    NSLog(@"[MXKViewController] %@ onKeyboardWillShow", self.class);
+    MXLogDebug(@"[MXKViewController] %@ onKeyboardWillShow", self.class);
     
     // Get the keyboard size
     NSValue *rectVal = notif.userInfo[UIKeyboardFrameEndUserInfoKey];
@@ -670,7 +670,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 
 - (void)onKeyboardWillHide:(NSNotification *)notif
 {
-    NSLog(@"[MXKViewController] %@ onKeyboardWillHide", self.class);
+    MXLogDebug(@"[MXKViewController] %@ onKeyboardWillHide", self.class);
     
     // Remove keyboard view
     self.keyboardView = nil;

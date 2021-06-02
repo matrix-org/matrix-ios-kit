@@ -150,12 +150,12 @@
         }
         else
         {
-            NSLog(@"[MXK3PID] requestValidationToken: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
+            MXLogDebug(@"[MXK3PID] requestValidationToken: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
         }
     }
     else
     {
-        NSLog(@"[MXK3PID] Failed to request validation token for 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
+        MXLogDebug(@"[MXK3PID] Failed to request validation token for 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
     }
 }
 
@@ -222,7 +222,7 @@
         }
         else
         {
-            NSLog(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), identity service is not set", self.address, self.medium);
+            MXLogDebug(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), identity service is not set", self.address, self.medium);
             
             if (failure)
             {
@@ -232,7 +232,7 @@
     }
     else
     {
-        NSLog(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
+        MXLogDebug(@"[MXK3PID] Failed to submit validation token for 3PID: %@ (%@), state: %lu", self.address, self.medium, (unsigned long)_validationState);
         
         if (failure)
         {
@@ -303,7 +303,7 @@
     }
     else
     {
-        NSLog(@"[MXK3PID] bindWithUserId: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
+        MXLogDebug(@"[MXK3PID] bindWithUserId: is not supported for this 3PID: %@ (%@)", self.address, self.medium);
     }
 
     // Here the validation process failed

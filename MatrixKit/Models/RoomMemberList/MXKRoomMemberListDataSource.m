@@ -136,7 +136,7 @@ NSString *const kMXKRoomMemberCellIdentifier = @"kMXKRoomMemberCellIdentifier";
             }
             else
             {
-                NSLog(@"[MXKRoomMemberDataSource] The user does not know the room %@", _roomId);
+                MXLogDebug(@"[MXKRoomMemberDataSource] The user does not know the room %@", _roomId);
                 
                 // Update here data source state
                 state = MXKDataSourceStateFailed;

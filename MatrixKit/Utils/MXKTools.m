@@ -357,7 +357,7 @@ static NSRegularExpression *htmlTagsRegex;
     compressionSizes.original.imageSize = image.size;
     compressionSizes.original.fileSize = originalFileSize ? originalFileSize : UIImageJPEGRepresentation(image, 0.9).length;
     
-    NSLog(@"[MXKTools] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
+    MXLogDebug(@"[MXKTools] availableCompressionSizesForImage: %f %f - File size: %tu", compressionSizes.original.imageSize.width, compressionSizes.original.imageSize.height, compressionSizes.original.fileSize);
     
     compressionSizes.actualLargeSize = MXKTOOLS_LARGE_IMAGE_SIZE;
     
@@ -395,17 +395,17 @@ static NSRegularExpression *htmlTagsRegex;
             }
             else
             {
-                NSLog(@"    - too small to fit in %d", MXKTOOLS_LARGE_IMAGE_SIZE);
+                MXLogDebug(@"    - too small to fit in %d", MXKTOOLS_LARGE_IMAGE_SIZE);
             }
         }
         else
         {
-            NSLog(@"    - too small to fit in %d", MXKTOOLS_MEDIUM_IMAGE_SIZE);
+            MXLogDebug(@"    - too small to fit in %d", MXKTOOLS_MEDIUM_IMAGE_SIZE);
         }
     }
     else
     {
-        NSLog(@"    - too small to fit in %d", MXKTOOLS_SMALL_IMAGE_SIZE);
+        MXLogDebug(@"    - too small to fit in %d", MXKTOOLS_SMALL_IMAGE_SIZE);
     }
     
     return compressionSizes;

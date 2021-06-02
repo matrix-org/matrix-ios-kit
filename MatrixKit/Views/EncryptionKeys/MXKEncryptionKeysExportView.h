@@ -30,6 +30,11 @@
 @property (nonatomic, readonly) UIAlertController *alertController;
 
 /**
+ The minimum length of the passphrase. 1 by default.
+ */
+@property (nonatomic) NSUInteger passphraseMinLength;
+
+/**
  Create the `MXKEncryptionKeysExportView` instance.
 
  @param mxSession the mxSession to export keys from.

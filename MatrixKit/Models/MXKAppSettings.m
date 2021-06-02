@@ -88,7 +88,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         [[NSFileManager defaultManager] createDirectoryAtPath:cacheFolder withIntermediateDirectories:YES attributes:nil error:&error];
         if (error)
         {
-            NSLog(@"[MXKAppSettings] cacheFolder: Error: Cannot create MatrixKit folder at %@. Error: %@", cacheFolder, error);
+            MXLogDebug(@"[MXKAppSettings] cacheFolder: Error: Cannot create MatrixKit folder at %@. Error: %@", cacheFolder, error);
         }
     }
 

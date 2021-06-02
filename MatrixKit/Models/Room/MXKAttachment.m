@@ -293,7 +293,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
             NSError *err = [MXEncryptedAttachments decryptAttachment:self->thumbnailFile inputStream:instream outputStream:outstream];
             if (err) {
-                NSLog(@"Error decrypting attachment! %@", err.userInfo);
+                MXLogDebug(@"Error decrypting attachment! %@", err.userInfo);
                 if (onFailure) onFailure(self, err);
                 return;
             }
@@ -401,7 +401,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             NSError *err = [MXEncryptedAttachments decryptAttachment:self->contentFile inputStream:instream outputStream:outstream];
             if (err)
             {
-                NSLog(@"Error decrypting attachment! %@", err.userInfo);
+                MXLogDebug(@"Error decrypting attachment! %@", err.userInfo);
                 return;
             }
             onSuccess([outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]);
