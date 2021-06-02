@@ -389,16 +389,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     // Order them by origin_server_ts
     [internalCellDataArray sortUsingComparator:^NSComparisonResult(id<MXKRecentCellDataStoring> cellData1, id<MXKRecentCellDataStoring> cellData2)
     {
-        NSComparisonResult result = NSOrderedAscending;
-        if (cellData2.lastEvent.originServerTs > cellData1.lastEvent.originServerTs)
-        {
-            result = NSOrderedDescending;
-        }
-        else if (cellData2.lastEvent.originServerTs == cellData1.lastEvent.originServerTs)
-        {
-            result = NSOrderedSame;
-        }
-        return result;
+        return [cellData1.roomSummary.lastMessage compareOriginServerTs:cellData2.roomSummary.lastMessage];
     }];
     
     // Snapshot the cell data array

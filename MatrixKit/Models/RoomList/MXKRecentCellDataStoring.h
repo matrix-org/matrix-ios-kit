@@ -40,11 +40,6 @@
  */
 @property (nonatomic, readonly) MXRoomSummary *roomSummary;
 
-/**
- The last event to display.
- */
-@property (nonatomic, readonly) MXEvent *lastEvent;
-
 @property (nonatomic, readonly) NSString *roomDisplayname;
 @property (nonatomic, readonly) NSString *lastEventTextMessage;
 @property (nonatomic, readonly) NSString *lastEventDate;
