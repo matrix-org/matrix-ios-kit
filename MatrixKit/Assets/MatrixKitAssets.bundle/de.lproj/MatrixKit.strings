@@ -455,7 +455,7 @@
 
 // call string
 "call_waiting" = "Warte...";
-"call_connecting" = "Verbinde Anruf...";
+"call_connecting" = "Verbinden…";
 "call_ended" = "Anruf beendet";
 "call_ring" = "Rufe an...";
 "incoming_video_call" = "Eingehender Videoanruf";
@@ -485,3 +485,6 @@
 "call_more_actions_dialpad" = "Ziffernblatt";
 "call_more_actions_audio_use_device" = "Lautsprecher verwenden";
 "call_transfer_to_user" = "Durchstellen zu %@";
+"call_video_with_user" = "Videoanruf mit %@";
+"call_voice_with_user" = "Sprachanruf mit %@";
+"call_ringing" = "Läuten…";

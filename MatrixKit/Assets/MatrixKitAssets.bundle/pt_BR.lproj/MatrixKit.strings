@@ -1,15 +1,15 @@
 "matrix" = "Matrix";
 // Login Screen
-"login_create_account" = "Criar uma conta:";
-"login_server_url_placeholder" = "Endereço (por exemplo: https://matrix.org)";
-"login_home_server_title" = "Endereço do servidor local:";
+"login_create_account" = "Criar conta:";
+"login_server_url_placeholder" = "URL (por exemplo, https://matrix.org)";
+"login_home_server_title" = "URL de Servidor Local:";
 "login_home_server_info" = "Seu servidor local armazena todas as suas conversas e dados da conta";
-"login_identity_server_title" = "Endereço do servidor de identidade:";
-"login_identity_server_info" = "A Matrix fornece servidores de identidade para permitir a você determinar quais endereços de e-mail, etc. pertencem a quais IDs de usuários Matrix. No momento, existe apenas https://matrix.org.";
-"login_user_id_placeholder" = "ID Matrix (por ex: @bob:matrix.org ou bob)";
+"login_identity_server_title" = "URL de Servidor de Identidade:";
+"login_identity_server_info" = "Matrix fornece servidores de identidade para rastrear quais emails, etc. pertencem a quais IDs Matrix. Somente https://matrix.org existe atualmente.";
+"login_user_id_placeholder" = "ID Matrix (por exemplo, @bob:matrix.org ou bob)";
 "login_password_placeholder" = "Senha";
 "login_optional_field" = "opcional";
-"login_display_name_placeholder" = "Nome e sobrenome (por exemplo: Roberto Silva)";
+"login_display_name_placeholder" = "Nome de Exibição (por exemplo, Roberto Silva)";
 "login_email_info" = "Fornecer um endereço de e-mail permite que outros usuários possam encontrar você com mais facilidade, e dá a você uma forma de redefinir sua senha no futuro.";
 "login_email_placeholder" = "Endereço de e-mail";
 "login_prompt_email_token" = "Por favor, informe o token de validação enviado por e-mail:";
@@ -314,8 +314,8 @@
 "num_members_one" = "%@ usuário";
 "num_members_other" = "%@ usuários";
 "kick" = "Remover da sala";
-"ban" = "Banir da sala";
-"unban" = "Remover banimento";
+"ban" = "Banir";
+"unban" = "Desbanir";
 "message_unsaved_changes" = "Existem alterações não salvas. Ao sair, elas serão descartadas.";
 // Login Screen 
 "login_error_already_logged_in" = "já logado";
@@ -359,7 +359,7 @@
 "settings_config_user_id" = "ID do usuário: %@";
 // call string
 "call_waiting" = "Aguardando...";
-"call_connecting" = "Iniciando chamada...";
+"call_connecting" = "Conectando…";
 "call_ended" = "Chamada encerrada";
 "call_ring" = "Chamando...";
 "incoming_video_call" = "Recebendo chamada de vídeo";
@@ -457,3 +457,6 @@
 "call_more_actions_audio_use_device" = "Usar caixa de som";
 "call_more_actions_audio_use_headset" = "Usar fone de ouvido";
 "call_more_actions_change_audio_device" = "Mudar o dispositivo de áudio";
+"call_video_with_user" = "Chamada de vídeo com %@";
+"call_voice_with_user" = "Chamada de voz com %@";
+"call_ringing" = "Tocando…";

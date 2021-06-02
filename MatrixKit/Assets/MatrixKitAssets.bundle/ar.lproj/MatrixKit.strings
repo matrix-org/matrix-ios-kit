@@ -324,7 +324,7 @@
 "incoming_video_call" = "مُكالَمَةٌ مَرئيَّةٌ وَارِدَة";
 "call_ring" = "تَجري المُكالَمَة…";
 "call_ended" = "اِنتَهَت المُكالَمَة";
-"call_connecting" = "اِتِّصالُ المُكالَمَةِ جارٍ…";
+"call_connecting" = "الاِتِّصالُ جارٍ…";
 
 // Settings keys 
 
