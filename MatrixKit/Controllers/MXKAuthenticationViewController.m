@@ -524,7 +524,7 @@
     // First, fetch the IS advertised by the HS
     if (homeserver)
     {
-        NSLog(@"[MXKAuthenticationVC] checkIdentityServer for homeserver %@", homeserver);
+        MXLogDebug(@"[MXKAuthenticationVC] checkIdentityServer for homeserver %@", homeserver);
 
         autoDiscovery = [[MXAutoDiscovery alloc] initWithUrl:homeserver];
 
@@ -533,7 +533,7 @@
             MXStrongifyAndReturnIfNil(self);
 
             NSString *identityServer = discoveredClientConfig.wellKnown.identityServer.baseUrl;
-            NSLog(@"[MXKAuthenticationVC] checkIdentityServer: Identity server: %@", identityServer);
+            MXLogDebug(@"[MXKAuthenticationVC] checkIdentityServer: Identity server: %@", identityServer);
 
             if (identityServer)
             {
@@ -569,7 +569,7 @@
 
             // No need to report this error to the end user
             // There will be already an error about failing to get the auth flow from the HS
-            NSLog(@"[MXKAuthenticationVC] checkIdentityServer. Error: %@", error);
+            MXLogDebug(@"[MXKAuthenticationVC] checkIdentityServer. Error: %@", error);
 
             self->autoDiscovery = nil;
         }];
@@ -599,13 +599,13 @@
     {
         operation = [mxRestClient supportedMatrixVersions:^(MXMatrixVersions *matrixVersions) {
 
-            NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement: %@", matrixVersions.doesServerRequireIdentityServerParam ? @"YES": @"NO");
+            MXLogDebug(@"[MXKAuthenticationVC] checkIdentityServerRequirement: %@", matrixVersions.doesServerRequireIdentityServerParam ? @"YES": @"NO");
             completion(matrixVersions.doesServerRequireIdentityServerParam);
 
         } failure:^(NSError *error) {
             // No need to report this error to the end user
             // There will be already an error about failing to get the auth flow from the HS
-            NSLog(@"[MXKAuthenticationVC] checkIdentityServerRequirement. Error: %@", error);
+            MXLogDebug(@"[MXKAuthenticationVC] checkIdentityServerRequirement. Error: %@", error);
         }];
     }
 
@@ -664,7 +664,7 @@
         else
         {
             // Not supported for other types
-            NSLog(@"[MXKAuthenticationVC] refreshAuthenticationSession is ignored");
+            MXLogDebug(@"[MXKAuthenticationVC] refreshAuthenticationSession is ignored");
         }
     }
 }
@@ -691,7 +691,7 @@
     else
     {
         // Not supported for other types
-        NSLog(@"[MXKAuthenticationVC] handleAuthenticationSession is ignored");
+        MXLogDebug(@"[MXKAuthenticationVC] handleAuthenticationSession is ignored");
         return;
     }
     
@@ -715,7 +715,7 @@
         // Apply authentication session on inputs view
         if ([authInputsView setAuthSession:authSession withAuthType:_authType] == NO)
         {
-            NSLog(@"[MXKAuthenticationVC] Received authentication settings are not supported");
+            MXLogDebug(@"[MXKAuthenticationVC] Received authentication settings are not supported");
             authInputsView = nil;
         }
         else if (!_softLogoutCredentials)
@@ -723,12 +723,12 @@
             // If all listed flows in this authentication session are not supported we suggest using the fallback page.
             if (authenticationFallback.length && authInputsView.authSession.flows.count == 0)
             {
-                NSLog(@"[MXKAuthenticationVC] No supported flow, suggest using fallback page");
+                MXLogDebug(@"[MXKAuthenticationVC] No supported flow, suggest using fallback page");
                 authInputsView = nil;
             }
             else if (authInputsView.authSession.flows.count != authSession.flows.count)
             {
-                NSLog(@"[MXKAuthenticationVC] The authentication session contains at least one unsupported flow");
+                MXLogDebug(@"[MXKAuthenticationVC] The authentication session contains at least one unsupported flow");
             }
         }
     }
@@ -786,7 +786,7 @@
         {
             _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
         }
-        NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
+        MXLogDebug(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
         if (authenticationFallback.length)
         {
@@ -808,7 +808,7 @@
 {
     if (parameters.count)
     {
-        NSLog(@"[MXKAuthenticationVC] setExternalRegistrationParameters");
+        MXLogDebug(@"[MXKAuthenticationVC] setExternalRegistrationParameters");
         
         // Cancel the current operation if any.
         [self cancel];
@@ -854,7 +854,7 @@
     }
     else
     {
-        NSLog(@"[MXKAuthenticationVC] reset externalRegistrationParameters");
+        MXLogDebug(@"[MXKAuthenticationVC] reset externalRegistrationParameters");
         _externalRegistrationParameters = nil;
         
         // Restore default UI
@@ -864,7 +864,7 @@
 
 - (void)setSoftLogoutCredentials:(MXCredentials *)softLogoutCredentials
 {
-    NSLog(@"[MXKAuthenticationVC] setSoftLogoutCredentials");
+    MXLogDebug(@"[MXKAuthenticationVC] setSoftLogoutCredentials");
 
     // Cancel the current operation if any.
     [self cancel];
@@ -947,7 +947,7 @@
                     }
                     else
                     {
-                        NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                        MXLogDebug(@"[MXKAuthenticationVC] Failed to prepare parameters");
                         [self onFailureDuringAuthRequest:error];
                     }
                     
@@ -987,7 +987,7 @@
                             }
                             else
                             {
-                                NSLog(@"[MXKAuthenticationVC] Registration succeeded");
+                                MXLogDebug(@"[MXKAuthenticationVC] Registration succeeded");
 
                                 // Report the certificate trusted by user (if any)
                                 credentials.allowedCertificate = self->mxRestClient.allowedCertificate;
@@ -1025,7 +1025,7 @@
                                     }
                                     else
                                     {
-                                        NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                                        MXLogDebug(@"[MXKAuthenticationVC] Failed to prepare parameters");
                                         [self onFailureDuringAuthRequest:error];
                                     }
                                     
@@ -1043,7 +1043,7 @@
                             
                             if (isUserNameInUse)
                             {
-                                NSLog(@"[MXKAuthenticationVC] User name is already use");
+                                MXLogDebug(@"[MXKAuthenticationVC] User name is already use");
                                 [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_username_in_use"]}]];
                             }
                             else
@@ -1060,7 +1060,7 @@
                                     }
                                     else
                                     {
-                                        NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                                        MXLogDebug(@"[MXKAuthenticationVC] Failed to prepare parameters");
                                         [self onFailureDuringAuthRequest:error];
                                     }
                                     
@@ -1082,7 +1082,7 @@
                         }
                         else
                         {
-                            NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                            MXLogDebug(@"[MXKAuthenticationVC] Failed to prepare parameters");
                             [self onFailureDuringAuthRequest:error];
                         }
                         
@@ -1090,7 +1090,7 @@
                 }
                 else
                 {
-                    NSLog(@"[MXKAuthenticationVC] User name is missing");
+                    MXLogDebug(@"[MXKAuthenticationVC] User name is missing");
                     [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_invalid_user_name"]}]];
                 }
             }
@@ -1114,7 +1114,7 @@
                         }
                         else
                         {
-                            NSLog(@"[MXKAuthenticationVC] Failed to prepare parameters");
+                            MXLogDebug(@"[MXKAuthenticationVC] Failed to prepare parameters");
                             [self onFailureDuringAuthRequest:error];
                         }
                         
@@ -1154,7 +1154,7 @@
 
 - (void)cancel
 {
-    NSLog(@"[MXKAuthenticationVC] cancel");
+    MXLogDebug(@"[MXKAuthenticationVC] cancel");
     
     // Cancel external registration parameters if any
     _externalRegistrationParameters = nil;
@@ -1191,11 +1191,11 @@
     // Ignore connection cancellation error
     if (([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
     {
-        NSLog(@"[MXKAuthenticationVC] Auth request cancelled");
+        MXLogDebug(@"[MXKAuthenticationVC] Auth request cancelled");
         return;
     }
     
-    NSLog(@"[MXKAuthenticationVC] Auth request failed: %@", error);
+    MXLogDebug(@"[MXKAuthenticationVC] Auth request failed: %@", error);
     
     // Cancel external registration parameters if any
     _externalRegistrationParameters = nil;
@@ -1499,7 +1499,7 @@
         
         _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_forgot_password_is_not_supported"];
         
-        NSLog(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
+        MXLogDebug(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
         _noFlowLabel.hidden = NO;
     }
@@ -1613,7 +1613,7 @@
         }
         else
         {
-            NSLog(@"[MXKAuthenticationVC] Login process succeeded");
+            MXLogDebug(@"[MXKAuthenticationVC] Login process succeeded");
 
             // Report the certificate trusted by user (if any)
             credentials.allowedCertificate = self->mxRestClient.allowedCertificate;
@@ -1655,7 +1655,7 @@
         }
         else
         {
-            NSLog(@"[MXKAuthenticationVC] Registration succeeded");
+            MXLogDebug(@"[MXKAuthenticationVC] Registration succeeded");
 
             // Report the certificate trusted by user (if any)
             credentials.allowedCertificate = self->mxRestClient.allowedCertificate;
@@ -1671,7 +1671,7 @@
         MXError *mxError = [[MXError alloc] initWithNSError:error];
         if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnauthorized])
         {
-            NSLog(@"[MXKAuthenticationVC] Wait for email validation");
+            MXLogDebug(@"[MXKAuthenticationVC] Wait for email validation");
             
             // Postpone a new attempt in 10 sec
             self->registrationTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(registrationTimerFireMethod:) userInfo:parameters repeats:NO];
@@ -1700,14 +1700,14 @@
                         
                         if (parameters)
                         {
-                            NSLog(@"[MXKAuthenticationVC] Pursue registration");
+                            MXLogDebug(@"[MXKAuthenticationVC] Pursue registration");
                             
                             [self->_authenticationActivityIndicator startAnimating];
                             [self registerWithParameters:parameters];
                         }
                         else
                         {
-                            NSLog(@"[MXKAuthenticationVC] Failed to update parameters");
+                            MXLogDebug(@"[MXKAuthenticationVC] Failed to update parameters");
                             
                             [self onFailureDuringAuthRequest:error];
                         }
@@ -1731,7 +1731,7 @@
 {
     if (timer == registrationTimer && timer.isValid)
     {
-        NSLog(@"[MXKAuthenticationVC] Retry registration");
+        MXLogDebug(@"[MXKAuthenticationVC] Retry registration");
         [self registerWithParameters:registrationTimer.userInfo];
     }
 }
@@ -1740,7 +1740,7 @@
 {
     mxCurrentOperation = [mxRestClient resetPasswordWithParameters:parameters success:^() {
         
-        NSLog(@"[MXKAuthenticationVC] Reset password succeeded");
+        MXLogDebug(@"[MXKAuthenticationVC] Reset password succeeded");
         
         self->mxCurrentOperation = nil;
         [self->_authenticationActivityIndicator stopAnimating];
@@ -1758,7 +1758,7 @@
         MXError *mxError = [[MXError alloc] initWithNSError:error];
         if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnauthorized])
         {
-            NSLog(@"[MXKAuthenticationVC] Forgot Password: wait for email validation");
+            MXLogDebug(@"[MXKAuthenticationVC] Forgot Password: wait for email validation");
             
             self->mxCurrentOperation = nil;
             [self->_authenticationActivityIndicator stopAnimating];
@@ -1783,7 +1783,7 @@
         }
         else if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringNotFound])
         {
-            NSLog(@"[MXKAuthenticationVC] Forgot Password: not found");
+            MXLogDebug(@"[MXKAuthenticationVC] Forgot Password: not found");
             
             NSMutableDictionary *userInfo;
             if (error.userInfo)
@@ -1815,11 +1815,11 @@
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
     {
         // Ignore this error
-        NSLog(@"[MXKAuthenticationVC] flows request cancelled");
+        MXLogDebug(@"[MXKAuthenticationVC] flows request cancelled");
         return;
     }
     
-    NSLog(@"[MXKAuthenticationVC] Failed to get %@ flows: %@", (_authType == MXKAuthenticationTypeLogin ? @"Login" : @"Register"), error);
+    MXLogDebug(@"[MXKAuthenticationVC] Failed to get %@ flows: %@", (_authType == MXKAuthenticationTypeLogin ? @"Login" : @"Register"), error);
     
     // Cancel external registration parameters if any
     _externalRegistrationParameters = nil;

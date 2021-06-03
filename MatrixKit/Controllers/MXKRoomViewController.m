@@ -894,7 +894,7 @@
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKRoomVC] Failed to join room (%@)", self->roomDataSource.room.summary.displayname);
+            MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", self->roomDataSource.room.summary.displayname);
             
             self->joinRoomRequest = nil;
             [self stopActivityIndicator];
@@ -965,7 +965,7 @@
 
         void (^failure)(NSError *error) = ^(NSError *error) {
 
-            NSLog(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
+            MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
 
             self->joinRoomRequest = nil;
             [self stopActivityIndicator];
@@ -1153,14 +1153,14 @@
 {
     if (!_roomInputToolbarContainer)
     {
-        NSLog(@"[MXKRoomVC] Set roomInputToolbarViewClass failed: container is missing");
+        MXLogDebug(@"[MXKRoomVC] Set roomInputToolbarViewClass failed: container is missing");
         return;
     }
 
     // Remove potential toolbar
     if (inputToolbarView)
     {
-        NSLog(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView with class %@ to nil", [self.inputToolbarView class]);
+        MXLogDebug(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView with class %@ to nil", [self.inputToolbarView class]);
         
         if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
         {
@@ -1188,7 +1188,7 @@
         // Sanity check: accept only MXKRoomInputToolbarView classes or sub-classes
         NSParameterAssert([roomInputToolbarViewClass isSubclassOfClass:MXKRoomInputToolbarView.class]);
         
-        NSLog(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView to class %@", roomInputToolbarViewClass);
+        MXLogDebug(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView to class %@", roomInputToolbarViewClass);
         
         inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
         
@@ -1234,7 +1234,7 @@
 {
     if (!_roomActivitiesContainer)
     {
-        NSLog(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
+        MXLogDebug(@"[MXKRoomVC] Set RoomActivitiesViewClass failed: container is missing");
         return;
     }
 
@@ -1391,7 +1391,7 @@
                 
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKRoomVC] Set displayName failed");
+                MXLogDebug(@"[MXKRoomVC] Set displayName failed");
                 // Notify MatrixKit user
                 NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1426,7 +1426,7 @@
                 // Do nothing by default when we succeed to join the room
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKRoomVC] Join roomAlias (%@) failed", roomAlias);
+                MXLogDebug(@"[MXKRoomVC] Join roomAlias (%@) failed", roomAlias);
                 // Notify MatrixKit user
                 NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1484,7 +1484,7 @@
 
             } failure:^(NSError *error) {
 
-                NSLog(@"[MXKRoomVC] Part room_alias (%@ / %@) failed", roomIdOrAlias, roomId);
+                MXLogDebug(@"[MXKRoomVC] Part room_alias (%@ / %@) failed", roomIdOrAlias, roomId);
                 // Notify MatrixKit user
                 NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1516,7 +1516,7 @@
                 
             } failure:^(NSError *error) {
 
-                NSLog(@"[MXKRoomVC] Set topic failed");
+                MXLogDebug(@"[MXKRoomVC] Set topic failed");
                 // Notify MatrixKit user
                 NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                 [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1554,7 +1554,7 @@
 
                 } failure:^(NSError *error) {
 
-                    NSLog(@"[MXKRoomVC] Invite user (%@) failed", userId);
+                    MXLogDebug(@"[MXKRoomVC] Invite user (%@) failed", userId);
                     // Notify MatrixKit user
                     NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1589,7 +1589,7 @@
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Kick user (%@) failed", userId);
+                    MXLogDebug(@"[MXKRoomVC] Kick user (%@) failed", userId);
                     // Notify MatrixKit user
                     NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1624,7 +1624,7 @@
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Ban user (%@) failed", userId);
+                    MXLogDebug(@"[MXKRoomVC] Ban user (%@) failed", userId);
                     // Notify MatrixKit user
                     NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1646,7 +1646,7 @@
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Unban user (%@) failed", userId);
+                    MXLogDebug(@"[MXKRoomVC] Unban user (%@) failed", userId);
                     // Notify MatrixKit user
                     NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1682,7 +1682,7 @@
                     
                 } failure:^(NSError *error) {
                     
-                    NSLog(@"[MXKRoomVC] Set user power (%@) failed", userId);
+                    MXLogDebug(@"[MXKRoomVC] Set user power (%@) failed", userId);
                     // Notify MatrixKit user
                     NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1704,7 +1704,7 @@
 
                 } failure:^(NSError *error) {
 
-                    NSLog(@"[MXKRoomVC] Reset user power (%@) failed", userId);
+                    MXLogDebug(@"[MXKRoomVC] Reset user power (%@) failed", userId);
                     // Notify MatrixKit user
                     NSString *myUserId = self->roomDataSource.mxSession.myUser.userId;
                     [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];
@@ -1719,7 +1719,7 @@
         }
         else
         {
-            NSLog(@"[MXKRoomVC] Unrecognised IRC-style command: %@", string);
+            MXLogDebug(@"[MXKRoomVC] Unrecognised IRC-style command: %@", string);
 //            cmdUsage = [NSString stringWithFormat:@"Unrecognised IRC-style command: %@", cmd];
             return NO;
         }
@@ -2180,7 +2180,7 @@
     [roomDataSource sendTextMessage:msgTxt success:nil failure:^(NSError *error)
     {
         // Just log the error. The message will be displayed in red in the room history
-        NSLog(@"[MXKRoomViewController] sendTextMessage failed.");
+        MXLogDebug(@"[MXKRoomViewController] sendTextMessage failed.");
     }];
 }
 
@@ -2248,7 +2248,7 @@
 {
     MXEvent *event = [roomDataSource eventWithEventId:eventId];
     
-    NSLog(@"[MXKRoomViewController] promptUserToResendEvent: %@", event);
+    MXLogDebug(@"[MXKRoomViewController] promptUserToResendEvent: %@", event);
     
     if (event && event.eventType == MXEventTypeRoomMessage)
     {
@@ -2669,15 +2669,15 @@
 
 - (void)dataSource:(MXKDataSource *)dataSource didRecognizeAction:(NSString *)actionIdentifier inCell:(id<MXKCellRendering>)cell userInfo:(NSDictionary *)userInfo
 {
-    NSLog(@"Gesture %@ has been recognized in %@. UserInfo: %@", actionIdentifier, cell, userInfo);
+    MXLogDebug(@"Gesture %@ has been recognized in %@. UserInfo: %@", actionIdentifier, cell, userInfo);
     
     if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnMessageTextView])
     {
-        NSLog(@"    -> A message has been tapped");
+        MXLogDebug(@"    -> A message has been tapped");
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnSenderNameLabel] || [actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAvatarView])
     {
-//        NSLog(@"    -> Name or avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
+//        MXLogDebug(@"    -> Name or avatar of %@ has been tapped", userInfo[kMXKRoomBubbleCellUserIdKey]);
         
         // Add the member display name in text input
         MXRoomMember *selectedRoomMember = [roomDataSource.roomState.members memberWithUserId:userInfo[kMXKRoomBubbleCellUserIdKey]];
@@ -2689,7 +2689,7 @@
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnDateTimeContainer])
     {
         roomDataSource.showBubblesDateTime = !roomDataSource.showBubblesDateTime;
-        NSLog(@"    -> Turn %@ cells date", roomDataSource.showBubblesDateTime ? @"ON" : @"OFF");
+        MXLogDebug(@"    -> Turn %@ cells date", roomDataSource.showBubblesDateTime ? @"ON" : @"OFF");
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellTapOnAttachmentView] && [cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
     {
@@ -2887,7 +2887,7 @@
                                                                    }
                                                                    else
                                                                    {
-                                                                       NSLog(@"[MXKRoomViewController] Copy text failed. Text is nil for room id/event id: %@/%@", selectedComponent.event.roomId, selectedComponent.event.eventId);
+                                                                       MXLogDebug(@"[MXKRoomViewController] Copy text failed. Text is nil for room id/event id: %@/%@", selectedComponent.event.roomId, selectedComponent.event.eventId);
                                                                    }
                                                                }]];
                 
@@ -3150,7 +3150,7 @@
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellLongPressOnAvatarView])
     {
-        NSLog(@"    -> Avatar of %@ has been long pressed", userInfo[kMXKRoomBubbleCellUserIdKey]);
+        MXLogDebug(@"    -> Avatar of %@ has been long pressed", userInfo[kMXKRoomBubbleCellUserIdKey]);
     }
     else if ([actionIdentifier isEqualToString:kMXKRoomBubbleCellUnsentButtonPressed])
     {
@@ -3210,7 +3210,7 @@
     }
     else
     {
-        NSLog(@"[MXKRoomViewController] Selected text copy failed. Selected text is nil");
+        MXLogDebug(@"[MXKRoomViewController] Selected text copy failed. Selected text is nil");
     }
 }
 
@@ -3491,7 +3491,7 @@
     [roomDataSource sendImage:image success:nil failure:^(NSError *error)
     {
         // Nothing to do. The image is marked as unsent in the room history by the datasource
-        NSLog(@"[MXKRoomViewController] sendImage failed.");
+        MXLogDebug(@"[MXKRoomViewController] sendImage failed.");
     }];
 }
 
@@ -3501,7 +3501,7 @@
     [roomDataSource sendImage:imageData mimeType:mimetype success:nil failure:^(NSError *error)
     {
         // Nothing to do. The image is marked as unsent in the room history by the datasource
-        NSLog(@"[MXKRoomViewController] sendImage with mimetype failed.");
+        MXLogDebug(@"[MXKRoomViewController] sendImage with mimetype failed.");
     }];
 }
 
@@ -3511,7 +3511,7 @@
     [roomDataSource sendVideo:videoLocalURL withThumbnail:videoThumbnail success:nil failure:^(NSError *error)
     {
         // Nothing to do. The video is marked as unsent in the room history by the datasource
-        NSLog(@"[MXKRoomViewController] sendVideo failed.");
+        MXLogDebug(@"[MXKRoomViewController] sendVideo failed.");
     }];
 }
 
@@ -3521,7 +3521,7 @@
     [roomDataSource sendFile:fileLocalURL mimeType:mimetype success:nil failure:^(NSError *error)
      {
          // Nothing to do. The file is marked as unsent in the room history by the datasource
-         NSLog(@"[MXKRoomViewController] sendFile failed.");
+         MXLogDebug(@"[MXKRoomViewController] sendFile failed.");
      }];
 }
 
@@ -3607,7 +3607,7 @@
         {
             // This typing event is too old, we will ignore it
             typing = NO;
-            NSLog(@"[MXKRoomVC] Ignore typing event (too old)");
+            MXLogDebug(@"[MXKRoomVC] Ignore typing event (too old)");
         }
     }
     else
@@ -3627,7 +3627,7 @@
                                             self->lastTypingDate = nil;
                                         } failure:^(NSError *error)
     {
-        NSLog(@"[MXKRoomVC] Failed to send typing notification (%d)", typing);
+        MXLogDebug(@"[MXKRoomVC] Failed to send typing notification (%d)", typing);
         
         // Cancel timer (if any)
         [self->typingTimer invalidate];
@@ -3718,7 +3718,7 @@
                 else
                 {
                     // Let's the application do something
-                    NSLog(@"[MXKRoomVC] showAttachmentInCell on an unsent media");
+                    MXLogDebug(@"[MXKRoomVC] showAttachmentInCell on an unsent media");
                 }
             }
             else if (selectedAttachment.type == MXKAttachmentTypeLocation)
@@ -4040,9 +4040,9 @@
 {
     __block NSString *roomId = roomDataSource.roomId;
     [roomDataSource.mxSession.crypto ensureEncryptionInRoom:roomId success:^{
-        NSLog(@"[MXKRoomViewController] Key shared for room: %@", roomId);
+        MXLogDebug(@"[MXKRoomViewController] Key shared for room: %@", roomId);
     } failure:^(NSError *error) {
-        NSLog(@"[MXKRoomViewController] Failed to share key for room %@: %@", roomId, error);
+        MXLogDebug(@"[MXKRoomViewController] Failed to share key for room %@: %@", roomId, error);
     }];
 }
 

@@ -568,7 +568,7 @@
                                                                        
                                                                    } failure:^(NSError *error) {
                                                                        
-                                                                       NSLog(@"[MXKRoomVC] Invite %@ failed", userId);
+                                                                       MXLogDebug(@"[MXKRoomVC] Invite %@ failed", userId);
                                                                        // Notify MatrixKit user
                                                                        NSString *myUserId = self.mainSession.myUser.userId;
                                                                        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKErrorNotification object:error userInfo:myUserId ? @{kMXKErrorUserIdKey: myUserId} : nil];

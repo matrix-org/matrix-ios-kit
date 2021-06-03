@@ -109,7 +109,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
 - (void)refreshGroupsSummary:(void (^)(void))completion
 {
-    NSLog(@"[MXKSessionGroupsDataSource] refreshGroupsSummary");
+    MXLogDebug(@"[MXKSessionGroupsDataSource] refreshGroupsSummary");
     
     __block NSUInteger count = internalCellDataArray.count;
     
@@ -128,7 +128,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
                 
             } failure:^(NSError *error) {
                 
-                NSLog(@"[MXKSessionGroupsDataSource] refreshGroupsSummary: group summary update failed %@", groupData.group.groupId);
+                MXLogDebug(@"[MXKSessionGroupsDataSource] refreshGroupsSummary: group summary update failed %@", groupData.group.groupId);
                 
                 if (completion && !(--count))
                 {
@@ -247,12 +247,12 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
             
             // Force the matrix session to refresh the group summary.
             [self.mxSession updateGroupSummary:group success:nil failure:^(NSError *error) {
-                NSLog(@"[MXKSessionGroupsDataSource] loadData: group summary update failed %@", group.groupId);
+                MXLogDebug(@"[MXKSessionGroupsDataSource] loadData: group summary update failed %@", group.groupId);
             }];
         }
     }
     
-    NSLog(@"[MXKSessionGroupsDataSource] Loaded %tu groups in %.3fms", groups.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+    MXLogDebug(@"[MXKSessionGroupsDataSource] Loaded %tu groups in %.3fms", groups.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
     
     [self sortCellData];
     [self onCellDataChange];
@@ -270,7 +270,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
         }
         else
         {
-            NSLog(@"[MXKSessionGroupsDataSource] didUpdateGroup: Cannot find the changed group for %@ (%@). It is probably not managed by this group data source", group.groupId, group);
+            MXLogDebug(@"[MXKSessionGroupsDataSource] didUpdateGroup: Cannot find the changed group for %@ (%@). It is probably not managed by this group data source", group.groupId, group);
             return;
         }
     }
@@ -288,7 +288,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
         id<MXKGroupCellDataStoring> groupData = [self cellDataWithGroupId:group.groupId];
         if (nil == groupData)
         {
-            NSLog(@"MXKSessionGroupsDataSource] Add new group invite: %@", group.groupId);
+            MXLogDebug(@"MXKSessionGroupsDataSource] Add new group invite: %@", group.groupId);
             
             // Retrieve the MXKCellData class to manage the data
             Class class = [self cellDataClassForCellIdentifier:kMXKGroupCellIdentifier];
@@ -313,12 +313,12 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
         id<MXKGroupCellDataStoring> groupData = [self cellDataWithGroupId:group.groupId];
         if (groupData)
         {
-            NSLog(@"MXKSessionGroupsDataSource] Update joined room: %@", group.groupId);
+            MXLogDebug(@"MXKSessionGroupsDataSource] Update joined room: %@", group.groupId);
             [groupData updateWithGroup:group];
         }
         else
         {
-            NSLog(@"MXKSessionGroupsDataSource] Add new joined invite: %@", group.groupId);
+            MXLogDebug(@"MXKSessionGroupsDataSource] Add new joined invite: %@", group.groupId);
             
             // Retrieve the MXKCellData class to manage the data
             Class class = [self cellDataClassForCellIdentifier:kMXKGroupCellIdentifier];
@@ -349,7 +349,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
     id<MXKGroupCellDataStoring> groupData = [self cellDataWithGroupId:groupId];
     if (groupData)
     {
-        NSLog(@"MXKSessionGroupsDataSource] Remove left group: %@", groupId);
+        MXLogDebug(@"MXKSessionGroupsDataSource] Remove left group: %@", groupId);
         
         [internalCellDataArray removeObject:groupData];
         
@@ -595,7 +595,7 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
             
         } failure:^(NSError *error) {
             
-            NSLog(@"[MXKSessionGroupsDataSource] Failed to leave group (%@)", cellData.group.groupId);
+            MXLogDebug(@"[MXKSessionGroupsDataSource] Failed to leave group (%@)", cellData.group.groupId);
             
             // Notify MatrixKit user
             NSString *myUserId = self.mxSession.myUser.userId;

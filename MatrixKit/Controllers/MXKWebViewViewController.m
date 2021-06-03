@@ -350,7 +350,7 @@ NSString *const kMXKWebViewViewControllerJavaScriptEnableLog =
 {
     if ([message.name isEqualToString:kMXKWebViewViewControllerPostMessageJSLog])
     {
-        NSLog(@"-- JavaScript: %@", message.body);
+        MXLogDebug(@"-- JavaScript: %@", message.body);
     }
 }
 

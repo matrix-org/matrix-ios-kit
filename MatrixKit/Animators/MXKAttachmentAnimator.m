@@ -15,6 +15,7 @@
  */
 
 #import "MXKAttachmentAnimator.h"
+#import "MXLog.h"
 
 @interface MXKAttachmentAnimator ()
 
@@ -44,7 +45,7 @@
     // Sanity check
     if (!image)
     {
-        NSLog(@"[MXKAttachmentAnimator] aspectFitImage failed: image is nil");
+        MXLogDebug(@"[MXKAttachmentAnimator] aspectFitImage failed: image is nil");
         return CGRectZero;
     }
     

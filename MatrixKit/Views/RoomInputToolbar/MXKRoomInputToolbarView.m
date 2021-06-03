@@ -184,7 +184,7 @@
         }
         else
         {
-            NSLog(@"[MXKRoomInputToolbarView] Attach media is not supported");
+            MXLogDebug(@"[MXKRoomInputToolbarView] Attach media is not supported");
         }
         
         // Check whether user invitation is supported
@@ -250,7 +250,7 @@
         }
         else
         {
-            NSLog(@"[MXKRoomInputToolbarView] Invitation is not supported");
+            MXLogDebug(@"[MXKRoomInputToolbarView] Invitation is not supported");
         }
         
         if (optionsListView)
@@ -272,7 +272,7 @@
         }
         else
         {
-            NSLog(@"[MXKRoomInputToolbarView] No option is supported");
+            MXLogDebug(@"[MXKRoomInputToolbarView] No option is supported");
         }
     }
     else if (button == self.rightInputToolbarButton && self.textMessage.length)
@@ -405,7 +405,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             
             if (imageData)
             {
-                NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Got image data");
+                MXLogDebug(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Got image data");
                 
                 UIImage *image = [UIImage imageWithData:imageData];
                 
@@ -420,7 +420,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             }
             else
             {
-                NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Failed to get image data");
+                MXLogDebug(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Failed to get image data");
                 
                 // Notify user
                 NSError *error = info[@"PHImageErrorKey"];
@@ -444,7 +444,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             
             if ([asset isKindOfClass:[AVURLAsset class]])
             {
-                NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Got video data");
+                MXLogDebug(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Got video data");
                 AVURLAsset* urlAsset = (AVURLAsset*)asset;
 
                 NSNumber *size;
@@ -461,7 +461,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
             }
             else
             {
-                NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Failed to get video data");
+                MXLogDebug(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: Failed to get video data");
                 
                 // Notify user
                 NSError *error = info[@"PHImageErrorKey"];
@@ -482,7 +482,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
     else
     {
-        NSLog(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: unexpected media type");
+        MXLogDebug(@"[MXKRoomInputToolbarView] availableCompressionSizesForAsset: unexpected media type");
         onComplete(sizes);
     }
 }
@@ -572,7 +572,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         }
         else
         {
-            NSLog(@"[MXKRoomInputToolbarView] Attach image is not supported");
+            MXLogDebug(@"[MXKRoomInputToolbarView] Attach image is not supported");
         }
     }
 }
@@ -787,7 +787,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
     else
     {
-        NSLog(@"[RoomInputToolbarView] Attach video is not supported");
+        MXLogDebug(@"[RoomInputToolbarView] Attach video is not supported");
     }
 }
 
@@ -937,7 +937,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                     
                     if (imageData)
                     {
-                        NSLog(@"[MXKRoomInputToolbarView] sendSelectedAssets: Got image data");
+                        MXLogDebug(@"[MXKRoomInputToolbarView] sendSelectedAssets: Got image data");
                         
                         CFStringRef uti = (__bridge CFStringRef)dataUTI;
                         NSString *mimeType = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
@@ -946,7 +946,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                     }
                     else
                     {
-                        NSLog(@"[MXKRoomInputToolbarView] sendSelectedAssets: Failed to get image data");
+                        MXLogDebug(@"[MXKRoomInputToolbarView] sendSelectedAssets: Failed to get image data");
                         
                         // Notify user
                         NSError *error = info[@"PHImageErrorKey"];
@@ -968,7 +968,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                     
                     if ([asset isKindOfClass:[AVURLAsset class]])
                     {
-                        NSLog(@"[MXKRoomInputToolbarView] sendSelectedAssets: Got video data");
+                        MXLogDebug(@"[MXKRoomInputToolbarView] sendSelectedAssets: Got video data");
                         AVURLAsset* urlAsset = (AVURLAsset*)asset;
                         
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -979,7 +979,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                     }
                     else
                     {
-                        NSLog(@"[MXKRoomInputToolbarView] sendSelectedAssets: Failed to get video data");
+                        MXLogDebug(@"[MXKRoomInputToolbarView] sendSelectedAssets: Failed to get video data");
                         
                         // Notify user
                         NSError *error = info[@"PHImageErrorKey"];

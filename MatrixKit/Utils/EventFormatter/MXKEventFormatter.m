@@ -338,7 +338,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         // Check whether redacted information is required
         if (_settings.showRedactionsInRoomHistory)
         {
-            NSLog(@"[MXKEventFormatter] Redacted event %@ (%@)", event.description, event.redactedBecause);
+            MXLogDebug(@"[MXKEventFormatter] Redacted event %@ (%@)", event.description, event.redactedBecause);
             
             NSString *redactorId = event.redactedBecause[@"sender"];
             NSString *redactedBy = @"";
@@ -1071,7 +1071,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                            && event.decryptionError.code == MXDecryptingErrorDuplicateMessageIndexCode)
                     {
                         // Hide duplicate message warnings
-                        NSLog(@"[MXKEventFormatter] Warning: Duplicate message with error description %@", event.decryptionError);
+                        MXLogDebug(@"[MXKEventFormatter] Warning: Duplicate message with error description %@", event.decryptionError);
                         displayText = nil;
                     }
                     else
@@ -1281,7 +1281,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         // Check attachment validity
                         if (![self isSupportedAttachment:event])
                         {
-                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                             *error = MXKEventFormatterErrorUnsupported;
                         }
@@ -1291,7 +1291,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_audio_attachment"];
                         if (![self isSupportedAttachment:event])
                         {
-                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                             {
                                 body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
@@ -1308,7 +1308,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_video_attachment"];
                         if (![self isSupportedAttachment:event])
                         {
-                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                             {
                                 body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
@@ -1325,7 +1325,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_location_attachment"];
                         if (![self isSupportedAttachment:event])
                         {
-                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                             {
                                 body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
@@ -1343,7 +1343,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         // Check attachment validity
                         if (![self isSupportedAttachment:event])
                         {
-                            NSLog(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
+                            MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                             *error = MXKEventFormatterErrorUnsupported;
                         }
@@ -1553,7 +1553,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 // Check sticker validity
                 if (![self isSupportedAttachment:event])
                 {
-                    NSLog(@"[MXKEventFormatter] Warning: Unsupported sticker %@", event.description);
+                    MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported sticker %@", event.description);
                     body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
                     *error = MXKEventFormatterErrorUnsupported;
                 }
@@ -1576,7 +1576,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     
     if (!attributedDisplayText)
     {
-        NSLog(@"[MXKEventFormatter] Warning: Unsupported event %@)", event.description);
+        MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported event %@)", event.description);
         if (_settings.showUnsupportedEventsInRoomHistory)
         {
             if (MXKEventFormatterErrorNone == *error)

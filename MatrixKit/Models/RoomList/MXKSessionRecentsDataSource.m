@@ -240,7 +240,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         }
     }
 
-    NSLog(@"[MXKSessionRecentsDataSource] Loaded %tu recents in %.3fms", self.mxSession.rooms.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
+    MXLogDebug(@"[MXKSessionRecentsDataSource] Loaded %tu recents in %.3fms", self.mxSession.rooms.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
 
     // Make sure all rooms have a last message
     [self.mxSession fixRoomsSummariesLastMessage];
@@ -318,7 +318,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         }
         else
         {
-            NSLog(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room summary for %@ (%@). It is probably not managed by this recents data source", roomSummary.roomId, roomSummary);
+            MXLogDebug(@"[MXKSessionRecentsDataSource] didRoomLastMessageChanged: Cannot find the changed room summary for %@ (%@). It is probably not managed by this recents data source", roomSummary.roomId, roomSummary);
         }
     }
     else
@@ -339,7 +339,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         id<MXKRecentCellDataStoring> roomData = [self cellDataWithRoomId:roomId];
         if (nil == roomData)
         {
-            NSLog(@"MXKSessionRecentsDataSource] Add newly joined room: %@", roomId);
+            MXLogDebug(@"MXKSessionRecentsDataSource] Add newly joined room: %@", roomId);
             
             // Retrieve the MXKCellData class to manage the data
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
@@ -370,7 +370,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         
         if (roomData)
         {
-            NSLog(@"MXKSessionRecentsDataSource] Remove left room: %@", roomId);
+            MXLogDebug(@"MXKSessionRecentsDataSource] Remove left room: %@", roomId);
             
             [internalCellDataArray removeObject:roomData];
             

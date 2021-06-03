@@ -183,7 +183,7 @@
                         }
                         else
                         {
-                            NSLog(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of attachment type");
+                            MXLogDebug(@"[MXKRoomBubbleCellData] updateEvent: Warning: Does not support change of attachment type");
                         }
                     }
                 }

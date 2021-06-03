@@ -5,9 +5,34 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Changes in 0.15.0 (2021-06-02)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
  * MXKRoomDataSource: Decrypt unsent messages to follow MatrixSDK changes.
  * MXKEncryptionKeysExportView: Define a minimum size for the passphrase.
  * Pod: Update Down to 0.11.0.
+ * Logging: Adopted MXLog throughout (vector-im/element-ios/issues/4351)
 
 🐛 Bugfix
  * MXKAccount: Do not propagate errors for timed out initial sync requests (vector-im/element-ios/issues/4054).
@@ -23,6 +48,9 @@ Changes to be released in next version
 
 Others
  * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.0)).
 
 Changes in 0.14.12 (2021-05-12)
 =================================================

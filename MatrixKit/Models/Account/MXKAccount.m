@@ -322,7 +322,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 {
     _pushGatewayURL = pushGatewayURL.length ? pushGatewayURL : nil;
 
-    NSLog(@"[MXKAccount][Push] setPushGatewayURL: %@", _pushGatewayURL);
+    MXLogDebug(@"[MXKAccount][Push] setPushGatewayURL: %@", _pushGatewayURL);
     
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
@@ -406,7 +406,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 - (BOOL)pushNotificationServiceIsActive
 {
     BOOL pushNotificationServiceIsActive = ([[MXKAccountManager sharedManager] isAPNSAvailable] && _hasPusherForPushNotifications && mxSession);
-    NSLog(@"[MXKAccount][Push] pushNotificationServiceIsActive: %@", @(pushNotificationServiceIsActive));
+    MXLogDebug(@"[MXKAccount][Push] pushNotificationServiceIsActive: %@", @(pushNotificationServiceIsActive));
 
     return pushNotificationServiceIsActive;
 }
@@ -415,25 +415,25 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                         success:(void (^)(void))success
                         failure:(void (^)(NSError *))failure
 {
-    NSLog(@"[MXKAccount][Push] enablePushNotifications: %@", @(enable));
+    MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: %@", @(enable));
 
     if (enable)
     {
         if ([[MXKAccountManager sharedManager] isAPNSAvailable])
         {
-            NSLog(@"[MXKAccount][Push] enablePushNotifications: Enable Push for %@ account", self.mxCredentials.userId);
+            MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: Enable Push for %@ account", self.mxCredentials.userId);
 
             // Create/restore the pusher
             [self enableAPNSPusher:YES success:^{
 
-                NSLog(@"[MXKAccount][Push] enablePushNotifications: Enable Push: Success");
+                MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: Enable Push: Success");
                 if (success)
                 {
                     success();
                 }
             } failure:^(NSError *error) {
 
-                NSLog(@"[MXKAccount][Push] enablePushNotifications: Enable Push: Error: %@", error);
+                MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: Enable Push: Error: %@", error);
                 if (failure)
                 {
                     failure(error);
@@ -442,7 +442,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         }
         else
         {
-            NSLog(@"[MXKAccount][Push] enablePushNotifications: Error: Cannot enable Push");
+            MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: Error: Cannot enable Push");
 
             NSError *error = [NSError errorWithDomain:kMXKAccountErrorDomain
                                                  code:0
@@ -458,20 +458,20 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (_hasPusherForPushNotifications)
     {
-        NSLog(@"[MXKAccount][Push] enablePushNotifications: Disable APNS for %@ account", self.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: Disable APNS for %@ account", self.mxCredentials.userId);
         
         // Delete the pusher, report the new value only on success.
         [self enableAPNSPusher:NO
                        success:^{
 
-                           NSLog(@"[MXKAccount][Push] enablePushNotifications: Disable Push: Success");
+                           MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: Disable Push: Success");
                            if (success)
                            {
                                success();
                            }
                        } failure:^(NSError *error) {
 
-                           NSLog(@"[MXKAccount][Push] enablePushNotifications: Disable Push: Error: %@", error);
+                           MXLogDebug(@"[MXKAccount][Push] enablePushNotifications: Disable Push: Error: %@", error);
                            if (failure)
                            {
                                failure(error);
@@ -483,7 +483,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 - (BOOL)isPushKitNotificationActive
 {
     BOOL isPushKitNotificationActive = ([[MXKAccountManager sharedManager] isPushAvailable] && _hasPusherForPushKitNotifications && mxSession);
-    NSLog(@"[MXKAccount][Push] isPushKitNotificationActive: %@", @(isPushKitNotificationActive));
+    MXLogDebug(@"[MXKAccount][Push] isPushKitNotificationActive: %@", @(isPushKitNotificationActive));
 
     return isPushKitNotificationActive;
 }
@@ -492,25 +492,25 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                            success:(void (^)(void))success
                            failure:(void (^)(NSError *))failure
 {
-    NSLog(@"[MXKAccount][Push] enablePushKitNotifications: %@", @(enable));
+    MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: %@", @(enable));
 
     if (enable)
     {
         if ([[MXKAccountManager sharedManager] isPushAvailable])
         {
-            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push for %@ account", self.mxCredentials.userId);
+            MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push for %@ account", self.mxCredentials.userId);
 
             // Create/restore the pusher
             [self enablePushKitPusher:YES success:^{
 
-                NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Success");
+                MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Success");
                 if (success)
                 {
                     success();
                 }
             } failure:^(NSError *error) {
 
-                NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Error: %@", error);
+                MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: Enable Push: Error: %@", error);
                 if (failure)
                 {
                     failure(error);
@@ -519,7 +519,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         }
         else
         {
-            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Error: Cannot enable Push");
+            MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: Error: Cannot enable Push");
 
             NSError *error = [NSError errorWithDomain:kMXKAccountErrorDomain
                                                  code:0
@@ -532,19 +532,19 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (_hasPusherForPushKitNotifications)
     {
-        NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push for %@ account", self.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push for %@ account", self.mxCredentials.userId);
 
         // Delete the pusher, report the new value only on success.
         [self enablePushKitPusher:NO success:^{
 
-            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Success");
+            MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Success");
             if (success)
             {
                 success();
             }
         } failure:^(NSError *error) {
 
-            NSLog(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Error: %@", error);
+            MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: Disable Push: Error: %@", error);
             if (failure)
             {
                 failure(error);
@@ -553,7 +553,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else
     {
-        NSLog(@"[MXKAccount][Push] enablePushKitNotifications: PushKit is already disabled for %@", self.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount][Push] enablePushKitNotifications: PushKit is already disabled for %@", self.mxCredentials.userId);
         if (success)
         {
             success();
@@ -563,7 +563,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
 - (void)setEnableInAppNotifications:(BOOL)enableInAppNotifications
 {
-    NSLog(@"[MXKAccount] setEnableInAppNotifications: %@", @(enableInAppNotifications));
+    MXLogDebug(@"[MXKAccount] setEnableInAppNotifications: %@", @(enableInAppNotifications));
 
     _enableInAppNotifications = enableInAppNotifications;
     
@@ -744,7 +744,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         [mxSession.myUser setPresence:userPresence
                      andStatusMessage:statusMessage
                               success:^{
-                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) succeeded", self->mxCredentials.userId, (unsigned long)self->userPresence);
+                                  MXLogDebug(@"[MXKAccount] %@: set user presence (%lu) succeeded", self->mxCredentials.userId, (unsigned long)self->userPresence);
                                   if (completion)
                                   {
                                       completion();
@@ -753,12 +753,12 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                                   [[NSNotificationCenter defaultCenter] postNotificationName:kMXKAccountUserInfoDidChangeNotification object:self->mxCredentials.userId];
                               }
                               failure:^(NSError *error) {
-                                  NSLog(@"[MXKAccount] %@: set user presence (%lu) failed", self->mxCredentials.userId, (unsigned long)self->userPresence);
+                                  MXLogDebug(@"[MXKAccount] %@: set user presence (%lu) failed", self->mxCredentials.userId, (unsigned long)self->userPresence);
                               }];
     }
     else if (hideUserPresence)
     {
-        NSLog(@"[MXKAccount] %@: set user presence is disabled.", mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount] %@: set user presence is disabled.", mxCredentials.userId);
     }
 }
 
@@ -778,7 +778,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     // Sanity check
     if (!mxCredentials || !mxRestClient)
     {
-        NSLog(@"[MXKAccount] Matrix session cannot be created without credentials");
+        MXLogDebug(@"[MXKAccount] Matrix session cannot be created without credentials");
         return;
     }
     
@@ -865,7 +865,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
  */
 - (void)closeSession:(BOOL)clearStore
 {
-    NSLog(@"[MXKAccount] closeSession (%tu)", clearStore);
+    MXLogDebug(@"[MXKAccount] closeSession (%tu)", clearStore);
     
     if (NSCurrentLocaleDidChangeNotificationObserver)
     {
@@ -941,7 +941,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 {
     if (!mxSession)
     {
-        NSLog(@"[MXKAccount] logout: Need to open the closed session to make a logout request");
+        MXLogDebug(@"[MXKAccount] logout: Need to open the closed session to make a logout request");
         id<MXStore> store = [[[MXKAccountManager sharedManager].storeClass alloc] init];
         mxSession = [[MXSession alloc] initWithMatrixRestClient:mxRestClient];
 
@@ -1046,7 +1046,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else
     {
-        NSLog(@"[MXKAccount] hydrateWithCredentials: Error: users ids mismatch: %@ vs %@", credentials.userId, mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount] hydrateWithCredentials: Error: users ids mismatch: %@ vs %@", credentials.userId, mxCredentials.userId);
     }
 }
 
@@ -1115,7 +1115,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 }
             }
             
-            NSLog(@"[MXKAccount] Pause is delayed at the end of sync (current state %tu)", mxSession.state);
+            MXLogDebug(@"[MXKAccount] Pause is delayed at the end of sync (current state %tu)", mxSession.state);
             isPauseRequested = YES;
         }
     }
@@ -1180,18 +1180,18 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 // Refresh the APNS pusher state for this account on this device.
 - (void)refreshAPNSPusher
 {
-    NSLog(@"[MXKAccount][Push] refreshAPNSPusher");
+    MXLogDebug(@"[MXKAccount][Push] refreshAPNSPusher");
 
     // Check the conditions required to run the pusher
     if (self.pushNotificationServiceIsActive)
     {
-        NSLog(@"[MXKAccount][Push] refreshAPNSPusher: Refresh APNS pusher for %@ account", self.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount][Push] refreshAPNSPusher: Refresh APNS pusher for %@ account", self.mxCredentials.userId);
         
         // Create/restore the pusher
         [self enableAPNSPusher:YES
                        success:nil
                        failure:^(NSError *error) {
-                           NSLog(@"[MXKAccount][Push] ;: Error: %@", error);
+                           MXLogDebug(@"[MXKAccount][Push] ;: Error: %@", error);
                        }];
     }
     else if (_hasPusherForPushNotifications)
@@ -1201,13 +1201,13 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             if (mxSession)
             {
                 // Turn off pusher if user denied remote notification.
-                NSLog(@"[MXKAccount][Push] refreshAPNSPusher: Disable APNS pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
+                MXLogDebug(@"[MXKAccount][Push] refreshAPNSPusher: Disable APNS pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
                 [self enableAPNSPusher:NO success:nil failure:nil];
             }
         }
         else
         {
-            NSLog(@"[MXKAccount][Push] refreshAPNSPusher: APNS pusher for %@ account is already disabled. Reset _hasPusherForPushNotifications", self.mxCredentials.userId);
+            MXLogDebug(@"[MXKAccount][Push] refreshAPNSPusher: APNS pusher for %@ account is already disabled. Reset _hasPusherForPushNotifications", self.mxCredentials.userId);
             _hasPusherForPushNotifications = NO;
             [[MXKAccountManager sharedManager] saveAccounts];
         }
@@ -1217,7 +1217,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 // Enable/Disable the APNS pusher for this account on this device on the homeserver.
 - (void)enableAPNSPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
-    NSLog(@"[MXKAccount][Push] enableAPNSPusher: %@", @(enabled));
+    MXLogDebug(@"[MXKAccount][Push] enableAPNSPusher: %@", @(enabled));
 
 #ifdef DEBUG
     NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:@"pusherAppIdDev"];
@@ -1233,7 +1233,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     
     [self enablePusher:enabled appId:appId token:[MXKAccountManager sharedManager].apnsDeviceToken pushData:pushData success:^{
         
-        NSLog(@"[MXKAccount][Push] enableAPNSPusher: Succeeded to update APNS pusher for %@ (%d)", self.mxCredentials.userId, enabled);
+        MXLogDebug(@"[MXKAccount][Push] enableAPNSPusher: Succeeded to update APNS pusher for %@ (%d)", self.mxCredentials.userId, enabled);
 
         self->_hasPusherForPushNotifications = enabled;
         [[MXKAccountManager sharedManager] saveAccounts];
@@ -1254,7 +1254,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             MXError *mxError = [[MXError alloc] initWithNSError:error];
             if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnknown])
             {
-                NSLog(@"[MXKAccount][Push] enableAPNSPusher: APNS was already disabled for %@!", self.mxCredentials.userId);
+                MXLogDebug(@"[MXKAccount][Push] enableAPNSPusher: APNS was already disabled for %@!", self.mxCredentials.userId);
                 
                 // Ignore the error
                 if (success)
@@ -1267,11 +1267,11 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 return;
             }
             
-            NSLog(@"[MXKAccount][Push] enableAPNSPusher: Failed to disable APNS %@! (%@)", self.mxCredentials.userId, error);
+            MXLogDebug(@"[MXKAccount][Push] enableAPNSPusher: Failed to disable APNS %@! (%@)", self.mxCredentials.userId, error);
         }
         else
         {
-            NSLog(@"[MXKAccount][Push] enableAPNSPusher: Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
+            MXLogDebug(@"[MXKAccount][Push] enableAPNSPusher: Failed to send APNS token for %@! (%@)", self.mxCredentials.userId, error);
         }
         
         if (failure)
@@ -1286,24 +1286,24 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 // Refresh the PushKit pusher state for this account on this device.
 - (void)refreshPushKitPusher
 {
-    NSLog(@"[MXKAccount][Push] refreshPushKitPusher");
+    MXLogDebug(@"[MXKAccount][Push] refreshPushKitPusher");
 
     // Check the conditions required to run the pusher
     if (![MXKAppSettings standardAppSettings].allowPushKitPushers)
     {
         // Turn off pusher if PushKit pushers are not allowed
-        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (pushers are not allowed)", self.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (pushers are not allowed)", self.mxCredentials.userId);
         [self enablePushKitPusher:NO success:nil failure:nil];
     }
     else if (self.isPushKitNotificationActive)
     {
-        NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Refresh PushKit pusher for %@ account", self.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount][Push] refreshPushKitPusher: Refresh PushKit pusher for %@ account", self.mxCredentials.userId);
         
         // Create/restore the pusher
         [self enablePushKitPusher:YES
                           success:nil
                           failure:^(NSError *error) {
-                              NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Error: %@", error);
+                              MXLogDebug(@"[MXKAccount][Push] refreshPushKitPusher: Error: %@", error);
                           }];
     }
     else if (_hasPusherForPushKitNotifications)
@@ -1313,13 +1313,13 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             if (mxSession)
             {
                 // Turn off pusher if user denied remote notification.
-                NSLog(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
+                MXLogDebug(@"[MXKAccount][Push] refreshPushKitPusher: Disable PushKit pusher for %@ account (notifications are denied)", self.mxCredentials.userId);
                 [self enablePushKitPusher:NO success:nil failure:nil];
             }
         }
         else
         {
-            NSLog(@"[MXKAccount][Push] refreshPushKitPusher: PushKit pusher for %@ account is already disabled. Reset _hasPusherForPushKitNotifications", self.mxCredentials.userId);
+            MXLogDebug(@"[MXKAccount][Push] refreshPushKitPusher: PushKit pusher for %@ account is already disabled. Reset _hasPusherForPushKitNotifications", self.mxCredentials.userId);
             _hasPusherForPushKitNotifications = NO;
             [[MXKAccountManager sharedManager] saveAccounts];
         }
@@ -1329,12 +1329,12 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 // Enable/Disable the pusher based on PushKit for this account on this device on the homeserver.
 - (void)enablePushKitPusher:(BOOL)enabled success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
-    NSLog(@"[MXKAccount][Push] enablePushKitPusher: %@", @(enabled));
+    MXLogDebug(@"[MXKAccount][Push] enablePushKitPusher: %@", @(enabled));
     
     if (enabled && ![MXKAppSettings standardAppSettings].allowPushKitPushers)
     {
         //  sanity check, if accidently try to enable the pusher
-        NSLog(@"[MXKAccount][Push] enablePushKitPusher: Do not enable it because PushKit pushers not allowed");
+        MXLogDebug(@"[MXKAccount][Push] enablePushKitPusher: Do not enable it because PushKit pushers not allowed");
         if (failure)
         {
             failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
@@ -1363,7 +1363,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     if (!token)
     {
         //  sanity check, if no token there is no point of calling the endpoint
-        NSLog(@"[MXKAccount][Push] enablePushKitPusher: Failed to update PushKit pusher to %@ for %@. (token is missing)", @(enabled), self.mxCredentials.userId);
+        MXLogDebug(@"[MXKAccount][Push] enablePushKitPusher: Failed to update PushKit pusher to %@ for %@. (token is missing)", @(enabled), self.mxCredentials.userId);
         if (failure)
         {
             failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
@@ -1372,7 +1372,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     [self enablePusher:enabled appId:appId token:token pushData:pushData success:^{
         
-        NSLog(@"[MXKAccount][Push] enablePushKitPusher: Succeeded to update PushKit pusher for %@. Enabled: %@. Token: %@", self.mxCredentials.userId, @(enabled), [MXKTools logForPushToken:token]);
+        MXLogDebug(@"[MXKAccount][Push] enablePushKitPusher: Succeeded to update PushKit pusher for %@. Enabled: %@. Token: %@", self.mxCredentials.userId, @(enabled), [MXKTools logForPushToken:token]);
 
         self->_hasPusherForPushKitNotifications = enabled;
         [[MXKAccountManager sharedManager] saveAccounts];
@@ -1393,7 +1393,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             MXError *mxError = [[MXError alloc] initWithNSError:error];
             if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringUnknown])
             {
-                NSLog(@"[MXKAccount][Push] enablePushKitPusher: Push was already disabled for %@!", self.mxCredentials.userId);
+                MXLogDebug(@"[MXKAccount][Push] enablePushKitPusher: Push was already disabled for %@!", self.mxCredentials.userId);
                 
                 // Ignore the error
                 if (success)
@@ -1406,11 +1406,11 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 return;
             }
             
-            NSLog(@"[MXKAccount][Push] enablePushKitPusher: Failed to disable Push %@! (%@)", self.mxCredentials.userId, error);
+            MXLogDebug(@"[MXKAccount][Push] enablePushKitPusher: Failed to disable Push %@! (%@)", self.mxCredentials.userId, error);
         }
         else
         {
-            NSLog(@"[MXKAccount][Push] enablePushKitPusher: Failed to send Push token for %@! (%@)", self.mxCredentials.userId, error);
+            MXLogDebug(@"[MXKAccount][Push] enablePushKitPusher: Failed to send Push token for %@! (%@)", self.mxCredentials.userId, error);
         }
         
         if (failure)
@@ -1424,25 +1424,25 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
 - (void)enablePusher:(BOOL)enabled appId:(NSString*)appId token:(NSData*)token pushData:(NSDictionary*)pushData success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
-    NSLog(@"[MXKAccount][Push] enablePusher: %@", @(enabled));
+    MXLogDebug(@"[MXKAccount][Push] enablePusher: %@", @(enabled));
 
     // Refuse to try & turn push on if we're not logged in, it's nonsensical.
     if (!mxCredentials)
     {
-        NSLog(@"[MXKAccount][Push] enablePusher: Not setting push token because we're not logged in");
+        MXLogDebug(@"[MXKAccount][Push] enablePusher: Not setting push token because we're not logged in");
         return;
     }
     
     // Check whether the Push Gateway URL has been configured.
     if (!self.pushGatewayURL)
     {
-        NSLog(@"[MXKAccount][Push] enablePusher: Not setting pusher because the Push Gateway URL is undefined");
+        MXLogDebug(@"[MXKAccount][Push] enablePusher: Not setting pusher because the Push Gateway URL is undefined");
         return;
     }
     
     if (!appId)
     {
-        NSLog(@"[MXKAccount][Push] enablePusher: Not setting pusher because pusher app id is undefined");
+        MXLogDebug(@"[MXKAccount][Push] enablePusher: Not setting pusher because pusher app id is undefined");
         return;
     }
     
@@ -1462,12 +1462,12 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             unsigned char c = [alphabet characterAtIndex:arc4random() % alphabet.length];
             profileTag = [profileTag stringByAppendingFormat:@"%c", c];
         }
-        NSLog(@"[MXKAccount][Push] enablePusher: Generated fresh profile tag: %@", profileTag);
+        MXLogDebug(@"[MXKAccount][Push] enablePusher: Generated fresh profile tag: %@", profileTag);
         [[NSUserDefaults standardUserDefaults] setValue:profileTag forKey:@"pusherProfileTag"];
     }
     else
     {
-        NSLog(@"[MXKAccount][Push] enablePusher: Using existing profile tag: %@", profileTag);
+        MXLogDebug(@"[MXKAccount][Push] enablePusher: Using existing profile tag: %@", profileTag);
     }
     
     NSObject *kind = enabled ? @"http" : [NSNull null];
@@ -1484,7 +1484,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             break;
         }
     }
-    NSLog(@"[MXKAccount][Push] enablePusher: append flag: %d", append);
+    MXLogDebug(@"[MXKAccount][Push] enablePusher: append flag: %d", append);
     
     MXRestClient *restCli = self.mxRestClient;
     
@@ -1566,7 +1566,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     // Sanity check
     if (!mxSession || (mxSession.state != MXSessionStateStoreDataReady && mxSession.state != MXSessionStateInitialSyncFailed))
     {
-        NSLog(@"[MXKAccount] Initial server sync is applicable only when store data is ready to complete session initialisation");
+        MXLogDebug(@"[MXKAccount] Initial server sync is applicable only when store data is ready to complete session initialisation");
         return;
     }
 
@@ -1583,7 +1583,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             if (!compatible)
             {
                 // Else clear the cache
-                NSLog(@"[MXKAccount] New /sync filter not compatible with previous one. Clear cache");
+                MXLogDebug(@"[MXKAccount] New /sync filter not compatible with previous one. Clear cache");
 
                 [self reload:YES];
                 return;
@@ -1594,14 +1594,14 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             [self.mxSession startWithSyncFilter:syncFilter onServerSyncDone:^{
                 MXStrongifyAndReturnIfNil(self);
 
-                NSLog(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", self->mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:self->openSessionStartDate] * 1000);
+                MXLogDebug(@"[MXKAccount] %@: The session is ready. Matrix SDK session has been started in %0.fms.", self->mxCredentials.userId, [[NSDate date] timeIntervalSinceDate:self->openSessionStartDate] * 1000);
 
                 [self setUserPresence:MXPresenceOnline andStatusMessage:nil completion:nil];
 
             } failure:^(NSError *error) {
                 MXStrongifyAndReturnIfNil(self);
 
-                NSLog(@"[MXKAccount] Initial Sync failed. Error: %@", error);
+                MXLogDebug(@"[MXKAccount] Initial Sync failed. Error: %@", error);
                 
                 BOOL isClientTimeout = [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorTimedOut;
                 NSHTTPURLResponse *httpResponse = [MXHTTPOperation urlResponseFromError:error];
@@ -1611,7 +1611,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 {
                     //  do not propogate this error to the client
                     //  the request will be retried or postponed according to the reachability status
-                    NSLog(@"[MXKAccount] Initial sync failure did not propagated");
+                    MXLogDebug(@"[MXKAccount] Initial sync failure did not propagated");
                 }
                 else if (self->notifyOpenSessionFailure && error)
                 {
@@ -1623,7 +1623,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
                 // Check if it is a network connectivity issue
                 AFNetworkReachabilityManager *networkReachabilityManager = [AFNetworkReachabilityManager sharedManager];
-                NSLog(@"[MXKAccount] Network reachability: %d", networkReachabilityManager.isReachable);
+                MXLogDebug(@"[MXKAccount] Network reachability: %d", networkReachabilityManager.isReachable);
 
                 if (networkReachabilityManager.isReachable)
                 {
@@ -1662,7 +1662,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         // Check if pause has been requested
         if (isPauseRequested)
         {
-            NSLog(@"[MXKAccount] Apply the pending pause.");
+            MXLogDebug(@"[MXKAccount] Apply the pending pause.");
             [self pauseInBackgroundTask];
             return;
         }
@@ -1813,7 +1813,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 {
     if (self.backgroundSyncBgTask.isRunning)
     {
-        NSLog(@"[MXKAccount] The background Sync is cancelled.");
+        MXLogDebug(@"[MXKAccount] The background Sync is cancelled.");
         
         if (mxSession)
         {
@@ -1871,7 +1871,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         // Check conditions before launching background sync
         if (mxSession && mxSession.state == MXSessionStatePaused)
         {
-            NSLog(@"[MXKAccount] starts a background Sync");
+            MXLogDebug(@"[MXKAccount] starts a background Sync");
             
             backgroundSyncDone = success;
             backgroundSyncfails = failure;
@@ -1882,7 +1882,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 
                 MXStrongifyAndReturnIfNil(self);
                 
-                NSLog(@"[MXKAccount] the background Sync fails because of the bg task timeout");
+                MXLogDebug(@"[MXKAccount] the background Sync fails because of the bg task timeout");
                 [self cancelBackgroundSync];
             }];
             
@@ -1899,13 +1899,13 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             [[NSRunLoop mainRunLoop] addTimer:backgroundSyncTimer forMode:NSDefaultRunLoopMode];
             
             [mxSession backgroundSync:timeout success:^{
-                NSLog(@"[MXKAccount] the background Sync succeeds");
+                MXLogDebug(@"[MXKAccount] the background Sync succeeds");
                 [self onBackgroundSyncDone:nil];
                 
             }
                               failure:^(NSError* error) {
                                   
-                                  NSLog(@"[MXKAccount] the background Sync fails");
+                                  MXLogDebug(@"[MXKAccount] the background Sync fails");
                                   [self onBackgroundSyncDone:error];
                                   
                               }
@@ -1914,13 +1914,13 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         }
         else
         {
-            NSLog(@"[MXKAccount] cannot start background Sync (invalid state %tu)", mxSession.state);
+            MXLogDebug(@"[MXKAccount] cannot start background Sync (invalid state %tu)", mxSession.state);
             failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
         }
     }
     else
     {
-        NSLog(@"[MXKAccount] cannot start background Sync");
+        MXLogDebug(@"[MXKAccount] cannot start background Sync");
         failure([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:nil]);
     }
 }
@@ -2074,7 +2074,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     else if (!syncFilter || !mxSession.syncFilterId)
     {
         // Change from no filter with using a filter or vice-versa. So, there is a filter change
-        NSLog(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter. New or old is nil. mxSession.syncFilterId: %@ - syncFilter: %@",
+        MXLogDebug(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter. New or old is nil. mxSession.syncFilterId: %@ - syncFilter: %@",
               mxSession.syncFilterId, syncFilter.JSONDictionary);
         completion(NO);
     }
@@ -2092,7 +2092,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             BOOL compatible = [filterId isEqualToString:self.mxSession.syncFilterId];
             if (!compatible)
             {
-                NSLog(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter ids. mxSession.syncFilterId: %@ -  store.filterId: %@ - syncFilter: %@",
+                MXLogDebug(@"[MXKAccount] checkSyncFilterCompatibility: Incompatible filter ids. mxSession.syncFilterId: %@ -  store.filterId: %@ - syncFilter: %@",
                       self.mxSession.syncFilterId, filterId, syncFilter.JSONDictionary);
             }
             completion(compatible);

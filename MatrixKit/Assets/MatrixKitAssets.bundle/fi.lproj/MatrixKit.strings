@@ -147,3 +147,5 @@
 "account_error_display_name_change_failed" = "Näyttönimen vaihtaminen epäonnistui";
 "account_error_picture_change_failed" = "Kuvan vaihtaminen epäonnistui";
 "ssl_could_not_verify" = "Etäpalvelimen identiteetin vahvistaminen epäonnistui.";
+"login_user_id_placeholder" = "Matrix ID (esim. @matti:matrix.org tai pelkästään matti)";
+"login_identity_server_info" = "Matrix tarjoaa identiteettipalvelimen joka osaa kertaa mikä sähköpostiosoite tai puhelinnumero vastaa mitäkin Matrix ID:tä. Vain https://matrix.org on tällä hetkellä käytettävissä.";
