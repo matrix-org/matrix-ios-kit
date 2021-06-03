@@ -1896,18 +1896,18 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 {
     // We build strings containing the sender displayname (ex: "Bob: Hello!")
     // If a sender changes his displayname, we need to update the lastMessage.
-    MXEvent *lastMessageEvent;
+    MXRoomLastMessage *lastMessage;
     for (MXEvent *event in stateEvents)
     {
         if (event.isUserProfileChange)
         {
-            if (!lastMessageEvent)
+            if (!lastMessage)
             {
                 // Load lastMessageEvent on demand to save I/O
-                lastMessageEvent = summary.lastMessageEvent;
+                lastMessage = summary.lastMessage;
             }
 
-            if ([event.sender isEqualToString:lastMessageEvent.sender])
+            if ([event.sender isEqualToString:lastMessage.sender])
             {
                 // The last message must be recomputed
                 [summary resetLastMessage:nil failure:nil commit:YES];
@@ -1926,7 +1926,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 - (BOOL)session:(MXSession *)session updateRoomSummary:(MXRoomSummary *)summary withLastEvent:(MXEvent *)event eventState:(MXRoomState *)eventState roomState:(MXRoomState *)roomState
 {
     // Use the default updater as first pass
-    MXEvent *currentlastMessageEvent = summary.lastMessageEvent;
+    MXRoomLastMessage *currentlastMessage = summary.lastMessage;
     BOOL updated = [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withLastEvent:event eventState:eventState roomState:roomState];
     if (updated)
     {
@@ -1942,16 +1942,21 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
             updated = NO;
             // Restore the previous lastMessageEvent
-            summary.lastMessageEvent = currentlastMessageEvent;
+            [summary updateLastMessage:currentlastMessage];
         }
         else
         {
-            summary.lastMessageString = lastMessageString;
+            summary.lastMessage.text = lastMessageString;
+            
+            if (summary.lastMessage.others == nil)
+            {
+                summary.lastMessage.others = [NSMutableDictionary dictionary];
+            }
             
             // Store the potential error
-            summary.lastMessageOthers[@"mxkEventFormatterError"] = @(error);
+            summary.lastMessage.others[@"mxkEventFormatterError"] = @(error);
             
-            summary.lastMessageOthers[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
+            summary.lastMessage.others[@"lastEventDate"] = [self dateStringFromEvent:event withTime:YES];
 
             // Check whether the sender name has to be added
             NSString *prefix = nil;
@@ -1972,7 +1977,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             }
 
             // Compute the attribute text message
-            summary.lastMessageAttributedString = [self renderString:summary.lastMessageString withPrefix:prefix forEvent:event];
+            summary.lastMessage.attributedText = [self renderString:summary.lastMessage.text withPrefix:prefix forEvent:event];
         }
     }
     

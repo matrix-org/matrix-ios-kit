@@ -423,7 +423,7 @@
             }
             else
             {
-                while (updatedCellData && (updatedCellData.lastEvent.originServerTs > currentCellData.lastEvent.originServerTs))
+                while (updatedCellData && (updatedCellData.roomSummary.lastMessage.originServerTs > currentCellData.roomSummary.lastMessage.originServerTs))
                 {
                     [interleavedCellDataArray insertObject:updatedCellData atIndex:currentCellIndex++];
                     updatedCellData = [updateRecentsDataSource cellDataAtIndex:updatedCellIndex++];
