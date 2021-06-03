@@ -1769,8 +1769,12 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 
                 if (event)
                 {
+                    if (summary.lastMessage.others == nil)
+                    {
+                        summary.lastMessage.others = [NSMutableDictionary dictionary];
+                    }
                     summary.lastMessage.others[@"lastEventDate"] = [eventFormatter dateStringFromEvent:event withTime:YES];
-                    [mxSession.store storeSummaryForRoom:summary.roomId summary:summary];
+                    [self->mxSession.store storeSummaryForRoom:summary.roomId summary:summary];
                 }
                 
                 dispatch_group_leave(dispatchGroup);
@@ -1782,9 +1786,9 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
             
             // Commit store changes done
-            if ([mxSession.store respondsToSelector:@selector(commit)])
+            if ([self->mxSession.store respondsToSelector:@selector(commit)])
             {
-                [mxSession.store commit];
+                [self->mxSession.store commit];
             }
             
             // Broadcast the change which concerns all the room summaries.

@@ -1948,6 +1948,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         {
             summary.lastMessage.text = lastMessageString;
             
+            if (summary.lastMessage.others == nil)
+            {
+                summary.lastMessage.others = [NSMutableDictionary dictionary];
+            }
+            
             // Store the potential error
             summary.lastMessage.others[@"mxkEventFormatterError"] = @(error);
             
