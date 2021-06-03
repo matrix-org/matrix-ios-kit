@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXRoomSummary: Adapt removal of `lastMessageEvent` property (vector-im/element-ios/issues/4360).
 
 🐛 Bugfix
  * 
