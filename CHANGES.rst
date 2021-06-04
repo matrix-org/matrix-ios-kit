@@ -8,7 +8,7 @@ Changes to be released in next version
  * MXRoomSummary: Adapt removal of `lastMessageEvent` property (vector-im/element-ios/issues/4360).
 
 🐛 Bugfix
- * 
+ * MXKContactField: Fix the issue of downloading avatar
 
 ⚠️ API Changes
  * 
