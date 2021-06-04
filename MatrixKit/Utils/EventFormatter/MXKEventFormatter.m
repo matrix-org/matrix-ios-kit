@@ -1086,7 +1086,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 }
                 else
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_encrypted_message"];
+                    displayText = nil;
                 }
             }
             
