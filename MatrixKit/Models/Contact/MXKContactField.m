@@ -159,13 +159,12 @@
         }
         else
         {
-            NSString *downloadId = [MXMediaManager thumbnailDownloadIdForMatrixContentURI:_matrixAvatarURL inFolder:kMXMediaManagerAvatarThumbnailFolder toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
+            downloadId = [MXMediaManager thumbnailDownloadIdForMatrixContentURI:_matrixAvatarURL inFolder:kMXMediaManagerAvatarThumbnailFolder toFitViewSize:avatarSize withMethod:MXThumbnailingMethodCrop];
             MXMediaLoader* loader = [MXMediaManager existingDownloaderWithIdentifier:downloadId];
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaLoaderStateDidChangeNotification object:loader];
+           
             if (!loader && mediaManager)
             {
-                [mediaManager downloadThumbnailFromMatrixContentURI:_matrixAvatarURL
+                loader = [mediaManager downloadThumbnailFromMatrixContentURI:_matrixAvatarURL
                                                                      withType:nil
                                                                      inFolder:kMXMediaManagerAvatarThumbnailFolder
                                                                 toFitViewSize:avatarSize
@@ -173,6 +172,8 @@
                                                                       success:nil
                                                                       failure:nil];
             }
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXMediaLoaderStateDidChangeNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMediaDownloadEnd:) name:kMXMediaLoaderStateDidChangeNotification object:loader];
         }
     }
 }
