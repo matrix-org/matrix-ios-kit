@@ -1071,7 +1071,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 if (nil == localEcho)
                 {
                     // Process here incoming events, and outgoing events sent from another device.
-                    [self reloadNotifying:NO];
+                    [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
+                    [self processQueuedEvents:nil];
                 }
             }
         }];
