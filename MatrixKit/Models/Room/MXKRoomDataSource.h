@@ -505,6 +505,40 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
           failure:(void (^)(NSError *error))failure;
 
 /**
+ Send an audio file to the room.
+
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+
+ @param audioFileLocalURL the local filesystem path of the audio file to send.
+ @param mimeType the mime type of the file.
+ @param success A block object called when the operation succeeds. It returns
+                the event id of the event generated on the homeserver
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendAudioFile:(NSURL *)audioFileLocalURL
+             mimeType:mimeType
+              success:(void (^)(NSString *))success
+              failure:(void (^)(NSError *))failure;
+
+/**
+ Send a voice message to the room.
+
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+
+ @param audioFileLocalURL the local filesystem path of the audio file to send.
+ @param mimeType the mime type of the file.
+ @param success A block object called when the operation succeeds. It returns
+                the event id of the event generated on the homeserver
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendVoiceMessage:(NSURL *)audioFileLocalURL
+                mimeType:mimeType
+                 success:(void (^)(NSString *))success
+                 failure:(void (^)(NSError *))failure;
+
+/**
  Send a file to the room.
  
  While sending, a fake event will be echoed in the messages list.
