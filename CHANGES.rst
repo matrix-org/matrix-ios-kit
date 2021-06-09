@@ -11,7 +11,7 @@ Changes to be released in next version
  * 
 
 ⚠️ API Changes
- * 
+ * Exposed methods for seding audio files and voice messages (vector-im/element-ios/issues/4090).
 
 🗣 Translations
  * 

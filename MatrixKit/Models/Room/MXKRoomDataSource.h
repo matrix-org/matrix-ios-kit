@@ -528,7 +528,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  Once complete, this local echo will be replaced by the event saved by the homeserver.
 
  @param audioFileLocalURL the local filesystem path of the audio file to send.
- @param mimeType the mime type of the file.
+ @param mimeType (optional) the mime type of the file. Defaults to `audio/ogg`
  @param success A block object called when the operation succeeds. It returns
                 the event id of the event generated on the homeserver
  @param failure A block object called when the operation fails.
