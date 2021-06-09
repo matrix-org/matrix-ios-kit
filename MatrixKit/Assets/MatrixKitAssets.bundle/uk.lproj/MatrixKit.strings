@@ -117,7 +117,7 @@
 "notice_event_redacted_reason" = " [причина: %@]";
 "notice_event_redacted_by" = " від %@";
 "notice_event_redacted" = "<змінено%@>";
-"notice_room_topic_removed" = "%@ видаляє тему";
-"notice_room_name_removed_for_dm" = "%@ видаляє назву";
-"notice_room_name_removed" = "%@ видаляє назву кімнат";
-"login_error_do_not_support_login_flows" = "Наразі ми не підтримуємо один або декілька потоків авторизації, визначених цим домашнім сервером";
+"notice_room_topic_removed" = "%@ вилучає тему";
+"notice_room_name_removed_for_dm" = "%@ вилучає назву";
+"notice_room_name_removed" = "%@ вилучає назву кімнати";
+"login_error_do_not_support_login_flows" = "Наразі ми не підтримуємо один або кілька потоків авторизації, визначених цим домашнім сервером";
