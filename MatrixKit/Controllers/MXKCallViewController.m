@@ -400,9 +400,36 @@ static const CGFloat kLocalPreviewMargin = 20;
     if (mxCallOnHold)
     {
         self.onHoldCallContainerView.hidden = NO;
-        self.peerOnHold = [callOnHold.room.mxSession getOrCreateUser:callOnHold.callerId];
         [self.onHoldCallContainerView addGestureRecognizer:self.onHoldCallContainerTapRecognizer];
         [self.onHoldCallContainerView setUserInteractionEnabled:YES];
+        
+        // Handle peer here
+        if (mxCallOnHold.isIncoming)
+        {
+            self.peerOnHold = [mxCallOnHold.room.mxSession getOrCreateUser:mxCallOnHold.callerId];
+        }
+        else
+        {
+            // For 1:1 call, find the other peer
+            // Else, the room information will be used to display information about the call
+            MXWeakify(self);
+            [mxCallOnHold.room state:^(MXRoomState *roomState) {
+                MXStrongifyAndReturnIfNil(self);
+            
+                MXUser *theMember = nil;
+                NSArray *members = roomState.members.joinedMembers;
+                for (MXUser *member in members)
+                {
+                    if (![member.userId isEqualToString:self->mxCallOnHold.callerId])
+                    {
+                        theMember = member;
+                        break;
+                    }
+                }
+
+                self.peerOnHold = theMember;
+            }];
+        }
     }
     else
     {
