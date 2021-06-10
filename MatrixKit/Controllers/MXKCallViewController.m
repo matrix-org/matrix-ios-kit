@@ -58,6 +58,9 @@ static const CGFloat kLocalPreviewMargin = 20;
     
     // Current alert (if any).
     UIAlertController *currentAlert;
+    
+    //  Current peer display name
+    NSString *peerDisplayName;
 }
 
 @property (nonatomic, assign) Boolean isRinging;
@@ -455,7 +458,6 @@ static const CGFloat kLocalPreviewMargin = 20;
 
 - (void)updatePeerInfoDisplay
 {
-    NSString *peerDisplayName;
     NSString *peerAvatarURL;
     
     if (_peer)
@@ -965,7 +967,7 @@ static const CGFloat kLocalPreviewMargin = 20;
             speakerButton.enabled = NO;
             cameraSwitchButton.enabled = NO;
             _moreButton.enabled = NO;
-            callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], callerNameLabel.text];
+            callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], peerDisplayName];
             
             break;
         case MXCallStateInviteExpired:
@@ -1067,7 +1069,6 @@ static const CGFloat kLocalPreviewMargin = 20;
     if (assertedIdentity)
     {
         //  update caller display name and avatar with the asserted identity
-        NSString *peerDisplayName;
         NSString *peerAvatarURL = assertedIdentity.avatarUrl;
         
         if (assertedIdentity.displayname)

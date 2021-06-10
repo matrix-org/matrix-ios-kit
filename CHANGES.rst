@@ -8,7 +8,7 @@ Changes to be released in next version
  * MXRoomSummary: Adapt removal of `lastMessageEvent` property (vector-im/element-ios/issues/4360).
 
 🐛 Bugfix
- * 
+ * MXKCallViewController: Fix status text of a remotely held call.
 
 ⚠️ API Changes
  * Exposed methods for sending audio files and voice messages (vector-im/element-ios/issues/4090).
