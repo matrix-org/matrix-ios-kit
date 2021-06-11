@@ -1092,7 +1092,7 @@ API_AVAILABLE(ios(10.0)) {
 - (BOOL)isBubbleDataContainsFileAttachment
 {
     return bubbleData.attachment
-    && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio)
+    && (bubbleData.attachment.type == MXKAttachmentTypeFile || bubbleData.attachment.type == MXKAttachmentTypeAudio || bubbleData.attachment.type == MXKAttachmentTypeVoiceMessage)
     && bubbleData.attachment.contentURL
     && bubbleData.attachment.contentInfo;
 }
