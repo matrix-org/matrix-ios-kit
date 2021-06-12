@@ -25,12 +25,12 @@
 "cancel" = "Cancelar";
 "save" = "Salvar";
 "login_error_registration_is_not_supported" = "Registro não é suportado atualmente";
-"login_error_forbidden" = "Nome de usuário/senha inválidos";
+"login_error_forbidden" = "Nome de usuária(o)/senha inválidos";
 "login_error_unknown_token" = "O token de acesso especificado não foi reconhecido";
 "login_error_bad_json" = "JSON malformado";
 "login_error_not_json" = "Não continha JSON válido";
 "login_error_limit_exceeded" = "Requisições demais têm sido enviadas";
-"login_error_user_in_use" = "Este nome de usuário já é usado";
+"login_error_user_in_use" = "Este nome de usuária(o) já é usado";
 "login_desktop_device" = "Desktop";
 // Action
 "no" = "Não";
@@ -73,7 +73,7 @@
 "login_tablet_device" = "Tablet";
 "login_error_resource_limit_exceeded_title" = "Limite de Recursos Excedido";
 "login_error_resource_limit_exceeded_message_default" = "Este servidorcasa tem excedido um de seus limites de recursos.";
-"login_error_resource_limit_exceeded_message_monthly_active_user" = "Este servidor local atingiu seu limite mensal de usuários ativos.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Este servidorcasa tem atingido seu limite de Usuárias(os) Mensalmente Ativos.";
 "login_error_resource_limit_exceeded_message_contact" = "\n\nPor favor contacte seu/sua administrador(a) de serviço para continuar usando este serviço.";
 "login_error_resource_limit_exceeded_contact_button" = "Contactar Administrador(a)";
 // Events formatter
