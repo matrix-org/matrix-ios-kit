@@ -102,10 +102,10 @@
 "notice_location_attachment" = "anexo de local";
 "notice_file_attachment" = "anexo de arquivo";
 "notice_invalid_attachment" = "anexo inválido";
-"notice_unsupported_attachment" = "Anexo não-suportado: %@";
+"notice_unsupported_attachment" = "Anexo insuportado: %@";
 "notice_feedback" = "Evento de feedback (id: %@): %@";
 "notice_redaction" = "%@ redigiu um evento (id: %@)";
-"notice_error_unsupported_event" = "Evento não-suportado";
+"notice_error_unsupported_event" = "Evento insuportado";
 "notice_error_unexpected_event" = "Evento não-esperado";
 "notice_error_unknown_event_type" = "Tipo de evento desconhecido";
 "notice_room_history_visible_to_anyone" = "%@ fez histórico da sala futuro visível para qualquer pessoa.";
