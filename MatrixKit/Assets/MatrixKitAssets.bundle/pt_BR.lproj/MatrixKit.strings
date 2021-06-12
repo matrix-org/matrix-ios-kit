@@ -265,7 +265,7 @@
 "microphone_access_not_granted_for_call" = "Chamadas requerem acesso ao Microfone mas %@ não tem permissão para usá-lo";
 "local_contacts_access_not_granted" = "Descoberta de usuárias(os) desde contatos locais requer acesso a seus contatos mas %@ não tem permissão para usá-los";
 "local_contacts_access_discovery_warning_title" = "Descoberta de usuárias(os)";
-"local_contacts_access_discovery_warning" = "Para descobrir contatos já usando Matrix, %@ pode enviar endereços de email e números de telefone em seu livro de endereços para seu servidor de identidade Matrix escolhido. Onde suportados, dados pessoais são hashados antes do envio - por favor cheque a política de privacidade de seu servidor de identidade para mais detalhes.";
+"local_contacts_access_discovery_warning" = "Para descobrir contatos já usando Matrix, %@ pode enviar endereços de email e números de telefone em seu livro de endereços para seu servidor de identidade Matrix escolhido. Onde suportado, dados pessoais são hashados antes do envio - por favor cheque a política de privacidade de seu servidor de identidade para mais detalhes.";
 // Country picker
 "country_picker_title" = "Escolha um país";
 // Language picker
