@@ -488,3 +488,4 @@
 "room_event_encryption_info_device_verification" = "Weryfikacja\n";
 "room_event_encryption_info_event_none" = "brak";
 "room_event_encryption_info_event_unencrypted" = "niezaszyfrowane";
+"e2e_passphrase_too_short" = "Hasło jest zbyt krótkie (Hasło musi składać się z co najmniej %d znaków)";
