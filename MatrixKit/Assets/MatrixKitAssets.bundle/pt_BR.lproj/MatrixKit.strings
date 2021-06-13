@@ -206,7 +206,7 @@
 "message_reply_to_sender_sent_a_file" = "enviou um arquivo.";
 "message_reply_to_message_to_reply_to_prefix" = "Em resposta a";
 // Room members
-"room_member_ignore_prompt" = "Tem certeza que você quer esconder todas as mensagens desta(e) usuária(o)?";
+"room_member_ignore_prompt" = "Você tem certeza que você quer esconder todas as mensagens desta(e) usuária(o)?";
 "room_member_power_level_prompt" = "Você não vai ser capaz de desfazer esta mudança como você está promovendo a/o usuária(o) para ter o mesmo nível de poder que você mesma(o).\nVocê tem certeza?";
 // Attachment
 "attachment_size_prompt" = "Você quer enviar como:";
