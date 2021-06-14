@@ -2472,7 +2472,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
         
         // Inform the delegate
-        if (self.delegate)
+        if (self.delegate && (self.secondaryRoom ? bubbles.count > 0 : YES))
         {
             [self.delegate dataSource:self didCellChange:nil];
         }
