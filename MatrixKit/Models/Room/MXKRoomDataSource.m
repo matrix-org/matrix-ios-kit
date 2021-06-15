@@ -922,7 +922,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                     }
                 }
 
-                if (nil == localEcho)
+                if (self.secondaryRoom)
+                {
+                    [self reloadNotifying:NO];
+                }
+                else if (nil == localEcho)
                 {
                     // Process here incoming events, and outgoing events sent from another device.
                     [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
@@ -2472,7 +2476,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
         
         // Inform the delegate
-        if (self.delegate)
+        if (self.delegate && (self.secondaryRoom ? bubbles.count > 0 : YES))
         {
             [self.delegate dataSource:self didCellChange:nil];
         }
