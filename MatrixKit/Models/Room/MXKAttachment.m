@@ -193,11 +193,6 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
 
 - (NSString *)getThumbnailMimeType
 {
-    if (thumbnailFile)
-    {
-        return thumbnailFile.mimetype;
-    }
-    
     return _thumbnailInfo[@"mimetype"];
 }
 
@@ -311,6 +306,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         else
         {
             [_mediaManager downloadEncryptedMediaFromMatrixContentFile:thumbnailFile
+                                                              mimeType:_thumbnailMimeType
                                                               inFolder:_eventRoomId
                                                                success:^(NSString *outputFilePath) {
                                                                    decryptAndCache();
@@ -481,6 +477,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             if (_isEncrypted)
             {
                 loader = [_mediaManager downloadEncryptedMediaFromMatrixContentFile:contentFile
+                                                                           mimeType:mimetype
                                                                            inFolder:_eventRoomId];
             }
             else
