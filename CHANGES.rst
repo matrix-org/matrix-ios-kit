@@ -6,6 +6,7 @@ Changes to be released in next version
 
 🙌 Improvements
  * MXRoomSummary: Adapt removal of `lastMessageEvent` property (vector-im/element-ios/issues/4360).
+ * MXKAttachment: Adapt removal of `mimetype` fields (vector-im/element-ios/issues/4303).
 
 🐛 Bugfix
  * MXKCallViewController: Fix status text of a remotely held call.
