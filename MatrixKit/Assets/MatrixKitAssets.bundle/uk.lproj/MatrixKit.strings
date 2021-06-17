@@ -98,3 +98,26 @@
 "login_identity_server_title" = "URL-адреса сервера ідентифікації:";
 "login_home_server_info" = "Ваш домашній сервер зберігає всі ваші розмови та дані облікового запису";
 "login_home_server_title" = "URL-адреса домашнього сервера:";
+"notice_room_power_level_intro_for_dm" = "Рівні доступу учасників:";
+"notice_room_power_level_intro" = "Рівні доступу учасників кімнати:";
+"notice_room_join_rule_public_by_you_for_dm" = "Ви дозволяєте доступ всім.";
+"notice_room_join_rule_public_by_you" = "Ви дозволяєте доступ до кімнати всім.";
+"notice_room_join_rule_public_for_dm" = "%@ дозволяє доступ всім.";
+"notice_room_join_rule_public" = "%@ дозволяє доступ до кімнати всім.";
+"notice_room_join_rule_invite_by_you_for_dm" = "Ви забороняєте доступ всім, окрім запрошених.";
+"notice_room_join_rule_invite_by_you" = "Ви забороняєте доступ до кімнати всім, окрім запрошених.";
+//  New
+"notice_room_join_rule_invite" = "%@ забороняє доступ до кімнати всім, окрім запрошених.";
+"notice_room_join_rule_invite_for_dm" = "%@ забороняє доступ всім, окрім запрошених.";
+//  Old
+"notice_room_join_rule" = "Правило приєднання: %@";
+"notice_room_created_for_dm" = "%@ приєднується.";
+"notice_room_created" = "%@ створює і налаштовує кімнату.";
+"notice_profile_change_redacted" = "%@ оновлює свій профіль %@";
+"notice_event_redacted_reason" = " [причина: %@]";
+"notice_event_redacted_by" = " від %@";
+"notice_event_redacted" = "<змінено%@>";
+"notice_room_topic_removed" = "%@ вилучає тему";
+"notice_room_name_removed_for_dm" = "%@ вилучає назву";
+"notice_room_name_removed" = "%@ вилучає назву кімнати";
+"login_error_do_not_support_login_flows" = "Наразі ми не підтримуємо один або кілька потоків авторизації, визначених цим домашнім сервером";

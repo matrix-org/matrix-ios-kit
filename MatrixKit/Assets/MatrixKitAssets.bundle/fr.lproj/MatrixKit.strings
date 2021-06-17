@@ -462,3 +462,4 @@
 "call_video_with_user" = "Appel vidéo avec %@";
 "call_voice_with_user" = "Appel audio avec %@";
 "call_ringing" = "Sonnerie…";
+"e2e_passphrase_too_short" = "La phrase secrète est trop courte, elle doit compter au moins %d caractères";

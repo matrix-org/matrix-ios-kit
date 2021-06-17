@@ -341,7 +341,7 @@
 "settings_config_identity_server" = "Сървър за самоличност: %@";
 // call string
 "call_waiting" = "Изчакване...";
-"call_connecting" = "Свързване...";
+"call_connecting" = "Свързване…";
 "call_ended" = "Разговорът приключи";
 "call_ring" = "Позвъняване...";
 "incoming_video_call" = "Входящо видео повикване";
@@ -446,3 +446,21 @@
 "notice_room_join_rule_invite" = "%@ направи стаята достъпна само за поканени.";
 "notice_room_created_for_dm" = "%@ се присъедини.";
 "notice_room_name_removed_for_dm" = "%@ премахна името";
+"call_transfer_to_user" = "Прехвърли към %@";
+"call_consulting_with_user" = "Консултация с %@";
+"call_video_with_user" = "Видео разговор с %@";
+"call_voice_with_user" = "Гласов разговор с %@";
+"call_more_actions_dialpad" = "Панел за набиране";
+"call_more_actions_transfer" = "Прехвърляне";
+"call_more_actions_audio_use_headset" = "Използвай звук от слушалките";
+"call_more_actions_audio_use_device" = "Използвай звук от устройството";
+"call_more_actions_change_audio_device" = "Смени аудио устройството";
+"call_more_actions_unhold" = "Възобнови";
+"call_more_actions_hold" = "Задръж";
+"call_holded" = "Задържахте разговора";
+"call_remote_holded" = "%@ задържа разговора";
+"call_ringing" = "Звънене…";
+"notice_declined_video_call_by_you" = "Отказахте разговора";
+"notice_declined_video_call" = "%@ отказа разговора";
+"e2e_passphrase_too_short" = "Паролата е прекалено кратка (трябва да е дълга поне %d символа)";
+"resume_call" = "Възобнови";
