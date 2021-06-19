@@ -462,3 +462,4 @@
 "call_video_with_user" = "Thirrje me video me %@";
 "call_voice_with_user" = "Thirrje me zë me %@";
 "call_ringing" = "Po i bihet ziles…";
+"e2e_passphrase_too_short" = "Frazëkalim shumë i shkurtër (Duhet të jetë e pakta %d shenja i gjatë)";

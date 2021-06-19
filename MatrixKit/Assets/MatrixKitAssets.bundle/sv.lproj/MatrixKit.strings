@@ -461,3 +461,4 @@
 "call_video_with_user" = "Videosamtal med %@";
 "call_voice_with_user" = "Röstsamtal med %@";
 "call_ringing" = "Ringer…";
+"e2e_passphrase_too_short" = "Lösenfras för kort (den måste vara minst %d tecken långt)";

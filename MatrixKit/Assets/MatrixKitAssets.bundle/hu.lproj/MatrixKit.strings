@@ -462,3 +462,4 @@
 "call_video_with_user" = "Videóhívás vele: %@";
 "call_voice_with_user" = "Hanghívás vele: %@";
 "call_ringing" = "Hívás…";
+"e2e_passphrase_too_short" = "A jelmondat túl rövid (legalább %d karakter hosszúnak kell lennie)";

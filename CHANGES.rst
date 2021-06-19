@@ -6,12 +6,19 @@ Changes to be released in next version
 
 🙌 Improvements
  * MXRoomSummary: Adapt removal of `lastMessageEvent` property (vector-im/element-ios/issues/4360).
+ * MXKAttachment: Adapt removal of `mimetype` fields (vector-im/element-ios/issues/4303).
 
 🐛 Bugfix
+
  * MXKContactField: Fix the issue of downloading avatar
 
+ * MXKCallViewController: Fix status text of a remotely held call.
+ * MXKCallViewController: Fix avatar image for outgoing on hold calls.
+ * MXKRoomViewController: Fix virtual timeline issues.
+
+
 ⚠️ API Changes
- * 
+ * Exposed methods for sending audio files and voice messages (vector-im/element-ios/issues/4090).
 
 🗣 Translations
  * 

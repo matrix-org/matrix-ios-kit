@@ -523,3 +523,4 @@
 "call_video_with_user" = "Video-oproep met %@";
 "call_voice_with_user" = "Spraakoproep met %@";
 "call_ringing" = "Bellen…";
+"e2e_passphrase_too_short" = "Wachtwoord is te kort (hij moet minimaal %d tekens lang zijn)";
