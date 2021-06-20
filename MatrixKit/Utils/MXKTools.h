@@ -26,6 +26,9 @@
 #define MXKTOOLS_EVENT_IDENTIFIER_BITWISE 0x08
 #define MXKTOOLS_GROUP_IDENTIFIER_BITWISE 0x10
 
+// Attribute in an NSAttributeString that marks a blockquote block that was in the original HTML string.
+extern NSString *const kMXKToolsBlockquoteMarkAttribute;
+
 /**
  Structure representing an the size of an image and its file size.
  */
