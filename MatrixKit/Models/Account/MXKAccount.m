@@ -1758,20 +1758,43 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         // Update the date and time formatters
         [eventFormatter initDateTimeFormatters];
         
+        dispatch_group_t dispatchGroup = dispatch_group_create();
+        
         for (MXRoomSummary *summary in mxSession.roomsSummaries)
         {
-            summary.lastMessageOthers[@"lastEventDate"] = [eventFormatter dateStringFromEvent:summary.lastMessageEvent withTime:YES];
-            [mxSession.store storeSummaryForRoom:summary.roomId summary:summary];
+            dispatch_group_enter(dispatchGroup);
+            [summary.mxSession eventWithEventId:summary.lastMessage.eventId
+                                         inRoom:summary.roomId
+                                        success:^(MXEvent *event) {
+                
+                if (event)
+                {
+                    if (summary.lastMessage.others == nil)
+                    {
+                        summary.lastMessage.others = [NSMutableDictionary dictionary];
+                    }
+                    summary.lastMessage.others[@"lastEventDate"] = [eventFormatter dateStringFromEvent:event withTime:YES];
+                    [self->mxSession.store storeSummaryForRoom:summary.roomId summary:summary];
+                }
+                
+                dispatch_group_leave(dispatchGroup);
+            } failure:^(NSError *error) {
+                dispatch_group_leave(dispatchGroup);
+            }];
         }
         
-        // Commit store changes done
-        if ([mxSession.store respondsToSelector:@selector(commit)])
-        {
-            [mxSession.store commit];
-        }
-        
-        // Broadcast the change which concerns all the room summaries.
-        [[NSNotificationCenter defaultCenter] postNotificationName:kMXRoomSummaryDidChangeNotification object:nil userInfo:nil];
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+            
+            // Commit store changes done
+            if ([self->mxSession.store respondsToSelector:@selector(commit)])
+            {
+                [self->mxSession.store commit];
+            }
+            
+            // Broadcast the change which concerns all the room summaries.
+            [[NSNotificationCenter defaultCenter] postNotificationName:kMXRoomSummaryDidChangeNotification object:nil userInfo:nil];
+            
+        });
     }
 }
 

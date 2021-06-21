@@ -21,7 +21,7 @@
 #import "MXEvent+MatrixKit.h"
 
 @implementation MXKRecentCellData
-@synthesize roomSummary, recentsDataSource, lastEvent, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
+@synthesize roomSummary, recentsDataSource, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
 
 - (instancetype)initWithRoomSummary:(MXRoomSummary*)theRoomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource
 {
@@ -41,13 +41,10 @@
 - (void)update
 {
     // Keep ref on displayed last event
-    lastEvent = roomSummary.lastMessageEvent;
     roomDisplayname = roomSummary.displayname;
 
-    lastEventTextMessage = roomSummary.lastMessageString;
-    lastEventAttributedTextMessage = roomSummary.lastMessageAttributedString;
-    
-    lastEvent.mxkEventFormatterError = [((NSNumber*)roomSummary.lastMessageOthers[@"mxkEventFormatterError"]) intValue];
+    lastEventTextMessage = roomSummary.lastMessage.text;
+    lastEventAttributedTextMessage = roomSummary.lastMessage.attributedText;
 }
 
 - (void)dealloc
@@ -55,14 +52,13 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:roomSummary];
     roomSummary = nil;
 
-    lastEvent = nil;
     lastEventTextMessage = nil;
     lastEventAttributedTextMessage = nil;
 }
 
 - (NSString*)lastEventDate
 {
-    return (NSString*)roomSummary.lastMessageOthers[@"lastEventDate"];
+    return (NSString*)roomSummary.lastMessage.others[@"lastEventDate"];
 }
 
 - (BOOL)hasUnread

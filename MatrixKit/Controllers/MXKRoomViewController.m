@@ -1770,8 +1770,8 @@
         return (isScrolledToBottom || isScrollingToBottom);
     }
     
-    // Here the table view is not ready
-    return NO;
+    // Consider empty table view as at the bottom
+    return YES;
 }
 
 - (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated

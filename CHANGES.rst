@@ -1,3 +1,35 @@
+Changes in 0.15.1 (2021-06-21)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXRoomSummary: Adapt removal of `lastMessageEvent` property (vector-im/element-ios/issues/4360).
+ * MXKAttachment: Adapt removal of `mimetype` fields (vector-im/element-ios/issues/4303).
+
+🐛 Bugfix
+ * MXKCallViewController: Fix status text of a remotely held call.
+ * MXKCallViewController: Fix avatar image for outgoing on hold calls.
+ * MXKRoomViewController: Fix virtual timeline issues.
+ * MXKEventFormatter: Style blockquotes as blocks, fixing fallback display (#836).
+ * MXKEventFormatter: Fix display of emote replies (vector-im/element-ios/issues/4081).
+
+⚠️ API Changes
+ * Exposed methods for sending audio files and voice messages (vector-im/element-ios/issues/4090).
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.1)).
+
 Changes in 0.15.0 (2021-06-02)
 =================================================
 

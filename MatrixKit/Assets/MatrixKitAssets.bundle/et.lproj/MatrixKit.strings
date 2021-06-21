@@ -461,3 +461,4 @@
 "call_video_with_user" = "Videokõne kasutajaga %@";
 "call_voice_with_user" = "Häälkõne kasutajaga %@";
 "call_ringing" = "Helistan…";
+"e2e_passphrase_too_short" = "Salafraas on liiga lühike (pikkus peaks olema vähemalt %d tähemärki)";
