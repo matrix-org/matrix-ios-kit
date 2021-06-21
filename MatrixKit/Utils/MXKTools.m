@@ -1143,7 +1143,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
 
 + (NSString*)cssToMarkBlockquotes
 {
-    return [NSString stringWithFormat:@"blockquote {background: #%lX;}", (unsigned long)[MXKTools rgbValueWithColor:kMXKToolsBlockquoteMarkColor]];
+    return [NSString stringWithFormat:@"blockquote {background: #%lX; display: block;}", (unsigned long)[MXKTools rgbValueWithColor:kMXKToolsBlockquoteMarkColor]];
 }
 
 + (NSAttributedString*)removeMarkedBlockquotesArtifacts:(NSAttributedString*)attributedString

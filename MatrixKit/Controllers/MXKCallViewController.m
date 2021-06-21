@@ -58,6 +58,9 @@ static const CGFloat kLocalPreviewMargin = 20;
     
     // Current alert (if any).
     UIAlertController *currentAlert;
+    
+    //  Current peer display name
+    NSString *peerDisplayName;
 }
 
 @property (nonatomic, assign) Boolean isRinging;
@@ -397,9 +400,36 @@ static const CGFloat kLocalPreviewMargin = 20;
     if (mxCallOnHold)
     {
         self.onHoldCallContainerView.hidden = NO;
-        self.peerOnHold = [callOnHold.room.mxSession getOrCreateUser:callOnHold.callerId];
         [self.onHoldCallContainerView addGestureRecognizer:self.onHoldCallContainerTapRecognizer];
         [self.onHoldCallContainerView setUserInteractionEnabled:YES];
+        
+        // Handle peer here
+        if (mxCallOnHold.isIncoming)
+        {
+            self.peerOnHold = [mxCallOnHold.room.mxSession getOrCreateUser:mxCallOnHold.callerId];
+        }
+        else
+        {
+            // For 1:1 call, find the other peer
+            // Else, the room information will be used to display information about the call
+            MXWeakify(self);
+            [mxCallOnHold.room state:^(MXRoomState *roomState) {
+                MXStrongifyAndReturnIfNil(self);
+            
+                MXUser *theMember = nil;
+                NSArray *members = roomState.members.joinedMembers;
+                for (MXUser *member in members)
+                {
+                    if (![member.userId isEqualToString:self->mxCallOnHold.callerId])
+                    {
+                        theMember = member;
+                        break;
+                    }
+                }
+
+                self.peerOnHold = theMember;
+            }];
+        }
     }
     else
     {
@@ -455,7 +485,6 @@ static const CGFloat kLocalPreviewMargin = 20;
 
 - (void)updatePeerInfoDisplay
 {
-    NSString *peerDisplayName;
     NSString *peerAvatarURL;
     
     if (_peer)
@@ -965,7 +994,7 @@ static const CGFloat kLocalPreviewMargin = 20;
             speakerButton.enabled = NO;
             cameraSwitchButton.enabled = NO;
             _moreButton.enabled = NO;
-            callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], callerNameLabel.text];
+            callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], peerDisplayName];
             
             break;
         case MXCallStateInviteExpired:
@@ -1067,7 +1096,6 @@ static const CGFloat kLocalPreviewMargin = 20;
     if (assertedIdentity)
     {
         //  update caller display name and avatar with the asserted identity
-        NSString *peerDisplayName;
         NSString *peerAvatarURL = assertedIdentity.avatarUrl;
         
         if (assertedIdentity.displayname)

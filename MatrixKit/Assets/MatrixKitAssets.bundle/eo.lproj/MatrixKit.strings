@@ -220,8 +220,8 @@
 "notice_declined_video_call_by_you" = "Vi rifuzis la vokon";
 "notice_ended_video_call_by_you" = "Vi finis la vokon";
 "notice_answered_video_call_by_you" = "Vi respondis la vokon";
-"notice_placed_video_call_by_you" = "Vi metis vidvokon";
-"notice_placed_voice_call_by_you" = "Vi metis voĉvokon";
+"notice_placed_video_call_by_you" = "Vi ekigis vidvokon";
+"notice_placed_voice_call_by_you" = "Vi ekigis voĉvokon";
 "notice_room_name_changed_by_you_for_dm" = "Vi ŝanĝis la nomon al %@.";
 "notice_room_name_changed_by_you" = "Vi ŝanĝis nomon de la ĉambro al %@.";
 "notice_topic_changed_by_you" = "Vi ŝanĝis la temon al «%@».";
@@ -251,8 +251,8 @@
 "notice_declined_video_call" = "%@ rifuzis la vokon";
 "notice_ended_video_call" = "%@ finis la vokon";
 "notice_answered_video_call" = "%@ respondis la vokon";
-"notice_placed_video_call" = "%@ metis vidvokon";
-"notice_placed_voice_call" = "%@ metis voĉvokon";
+"notice_placed_video_call" = "%@ ekigis vidvokon";
+"notice_placed_voice_call" = "%@ ekigis voĉvokon";
 "notice_room_name_changed_for_dm" = "%@ ŝanĝis la nomon al %@.";
 "notice_room_name_changed" = "%@ ŝanĝis nomon de la ĉambro al %@.";
 "notice_topic_changed" = "%@ ŝanĝis la temon al «%@».";

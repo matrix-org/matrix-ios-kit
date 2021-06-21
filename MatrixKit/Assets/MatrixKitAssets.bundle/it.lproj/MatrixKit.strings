@@ -462,3 +462,4 @@
 "call_video_with_user" = "Videochiamata con %@";
 "call_voice_with_user" = "Telefonata con %@";
 "call_ringing" = "Sta squillando…";
+"e2e_passphrase_too_short" = "Password troppo corta (deve avere almeno %d caratteri)";
