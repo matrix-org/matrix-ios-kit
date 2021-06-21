@@ -12,6 +12,7 @@ Changes to be released in next version
  * MXKCallViewController: Fix status text of a remotely held call.
  * MXKCallViewController: Fix avatar image for outgoing on hold calls.
  * MXKRoomViewController: Fix virtual timeline issues.
+ * MXKEventFormatter: Style blockquotes as blocks, fixing fallback display (#836).
  * MXKEventFormatter: Fix display of emote replies (vector-im/element-ios/issues/4081).
 
 ⚠️ API Changes

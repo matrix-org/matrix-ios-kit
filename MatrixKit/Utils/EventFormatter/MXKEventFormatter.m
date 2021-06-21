@@ -1828,12 +1828,6 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         html = [html stringByReplacingCharactersInRange:inReplyToLinkRange withString:@"#"];
     }
     
-    // <blockquote> content in a reply-to message must be under a <p> child like
-    // other quoted messages. Else it breaks the workaround we use to display
-    // the vertical bar on blockquotes with DTCoreText
-    html = [html stringByReplacingOccurrencesOfString:@"<mx-reply><blockquote>" withString:@"<blockquote><p>"];
-    html = [html stringByReplacingOccurrencesOfString:@"</blockquote></mx-reply>" withString:@"</p></blockquote>"];
-    
     return html;
 }
 
