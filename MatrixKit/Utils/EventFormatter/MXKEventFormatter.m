@@ -1363,17 +1363,38 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     // Build the full emote string after the body message formatting
                     if ([msgtype isEqualToString:kMXMessageTypeEmote])
                     {
+                        __block NSUInteger insertAt = 0;
+
+                        // For replies, look for the end of the parent message
+                        // This helps us insert the emote prefix in the right place
+                        NSDictionary *relatesTo;
+                        MXJSONModelSetDictionary(relatesTo, event.content[@"m.relates_to"]);
+                        if ([relatesTo[@"m.in_reply_to"] isKindOfClass:NSDictionary.class])
+                        {
+                            [attributedDisplayText enumerateAttribute:kMXKToolsBlockquoteMarkAttribute
+                                                              inRange:NSMakeRange(0, attributedDisplayText.length)
+                                                              options:(NSAttributedStringEnumerationReverse)
+                                                           usingBlock:^(id value, NSRange range, BOOL *stop) {
+                                insertAt = range.location;
+                                *stop = YES;
+                            }];
+                        }
+
                         // Always use default font and color for the emote prefix
                         NSString *emotePrefix = [NSString stringWithFormat:@"* %@ ", senderDisplayName];
-                        NSMutableAttributedString *newAttributedDisplayText =
-                        [[NSMutableAttributedString alloc] initWithString:emotePrefix
-                                                               attributes:@{
-                                                                            NSForegroundColorAttributeName: _defaultTextColor,
-                                                                            NSFontAttributeName: _defaultTextFont
-                                                                            }];
+                        NSAttributedString *attributedEmotePrefix =
+                        [[NSAttributedString alloc] initWithString:emotePrefix
+                                                        attributes:@{
+                                                                    NSForegroundColorAttributeName: _defaultTextColor,
+                                                                    NSFontAttributeName: _defaultTextFont
+                                                                    }];
 
-                        // Then, append the styled body message
-                        [newAttributedDisplayText appendAttributedString:attributedDisplayText];
+                        // Then, insert the emote prefix at the start of the message
+                        // (location varies depending on whether it was a reply)
+                        NSMutableAttributedString *newAttributedDisplayText =
+                        [[NSMutableAttributedString alloc] initWithAttributedString:attributedDisplayText];
+                        [newAttributedDisplayText insertAttributedString:attributedEmotePrefix
+                                                                 atIndex:insertAt];
                         attributedDisplayText = newAttributedDisplayText;
                     }
                 }
