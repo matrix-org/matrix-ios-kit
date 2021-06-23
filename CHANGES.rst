@@ -11,7 +11,7 @@ Changes to be released in next version
  * 
 
 ⚠️ API Changes
- * 
+ * MXKAttachment: Added MXKAttachmentTypeVoiceMessage attachment type (vector-im/element-ios/issues/4090).
 
 🗣 Translations
  * 
