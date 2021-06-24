@@ -489,3 +489,4 @@
 "call_voice_with_user" = "Sprachanruf mit %@";
 "call_ringing" = "Läuten…";
 "e2e_passphrase_too_short" = "Passphrase zu kurz (Minimum sind %d Zeichen)";
+"call_consulting_with_user" = "Bei %@ anfragen";
