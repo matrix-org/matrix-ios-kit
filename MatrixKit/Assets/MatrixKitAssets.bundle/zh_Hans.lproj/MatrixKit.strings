@@ -464,3 +464,4 @@
 "call_video_with_user" = "与 %@ 进行视频通话";
 "call_voice_with_user" = "与 %@ 进行语音通话";
 "e2e_passphrase_too_short" = "密码口令太短 (长度至少为 %d 个字符)";
+"microphone_access_not_granted_for_voice_message" = "语音消息需要访问麦克风，但 %@ 无权使用它";
