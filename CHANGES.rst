@@ -1,3 +1,30 @@
+Changes in 0.15.2 (2021-06-24)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * MXKAttachment: Added MXKAttachmentTypeVoiceMessage attachment type (vector-im/element-ios/issues/4090).
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.2)).
+
 Changes in 0.15.1 (2021-06-21)
 =================================================
 
