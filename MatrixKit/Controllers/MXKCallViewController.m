@@ -822,67 +822,58 @@ static const CGFloat kLocalPreviewMargin = 20;
 
 - (void)showAudioDeviceOptions
 {
-    //  create the alert
-    currentAlert = [UIAlertController alertControllerWithTitle:nil
-                                                       message:nil
-                                                preferredStyle:UIAlertControllerStyleActionSheet];
+    NSMutableArray<UIAlertAction *> *actions = [NSMutableArray new];
+    NSArray<MXAudioOutputRoute *> *availableRoutes = mxCall.audioOutputRouter.availableOutputRoutes;
     
-    MXWeakify(self);
-    
-    //  headset action
-    UIAlertAction *headsetAction = [UIAlertAction actionWithTitle:[UIDevice currentDevice].localizedModel
-                                                                style:UIAlertActionStyleDefault
-                                                              handler:^(UIAlertAction * action) {
-        
-        MXStrongifyAndReturnIfNil(self);
-        self->currentAlert = nil;
-        [self->mxCall.audioOutputRouter changeRouteTypeTo:MXAudioOutputRouteTypeBuiltIn];
-        
-    }];
-    
-    //  device action
-    UIAlertAction *deviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_device"]
-                                                                style:UIAlertActionStyleDefault
-                                                              handler:^(UIAlertAction * action) {
-        
-        MXStrongifyAndReturnIfNil(self);
-        self->currentAlert = nil;
-        [self->mxCall.audioOutputRouter changeRouteTypeTo:MXAudioOutputRouteTypeLoudSpeakers];
-        
-    }];
-    
-    [currentAlert addAction:headsetAction];
-    [currentAlert addAction:deviceAction];
-    
-    if (mxCall.audioOutputRouter.isExternalDeviceConnected)
+    for (MXAudioOutputRoute *route in availableRoutes)
     {
-        //  external action
-        UIAlertAction *externalAction = [UIAlertAction actionWithTitle:mxCall.audioOutputRouter.externalDeviceName
-                                                                    style:UIAlertActionStyleDefault
-                                                                  handler:^(UIAlertAction * action) {
+        //  route action
+        NSString *name = route.name;
+        if (route.routeType == MXAudioOutputRouteTypeLoudSpeakers)
+        {
+            name = [NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_device"];
+        }
+        MXWeakify(self);
+        UIAlertAction *routeAction = [UIAlertAction actionWithTitle:name
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
             
             MXStrongifyAndReturnIfNil(self);
             self->currentAlert = nil;
-            [self->mxCall.audioOutputRouter changeRouteTypeTo:MXAudioOutputRouteTypeExternal];
+            [self->mxCall.audioOutputRouter changeCurrentRouteTo:route];
             
         }];
         
-        [currentAlert addAction:externalAction];
+        [actions addObject:routeAction];
     }
     
-    //  add cancel action
-    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                     style:UIAlertActionStyleCancel
-                                                   handler:^(UIAlertAction * action) {
+    if (actions.count > 0)
+    {
+        //  create the alert
+        currentAlert = [UIAlertController alertControllerWithTitle:nil
+                                                           message:nil
+                                                    preferredStyle:UIAlertControllerStyleActionSheet];
         
-        MXStrongifyAndReturnIfNil(self);
-        self->currentAlert = nil;
+        for (UIAlertAction *action in actions)
+        {
+            [currentAlert addAction:action];
+        }
         
-    }]];
-    
-    [currentAlert popoverPresentationController].sourceView = self.moreButton;
-    [currentAlert popoverPresentationController].sourceRect = self.moreButton.bounds;
-    [self presentViewController:currentAlert animated:YES completion:nil];
+        //  add cancel action
+        MXWeakify(self);
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                         style:UIAlertActionStyleCancel
+                                                       handler:^(UIAlertAction * action) {
+            
+            MXStrongifyAndReturnIfNil(self);
+            self->currentAlert = nil;
+            
+        }]];
+        
+        [currentAlert popoverPresentationController].sourceView = self.moreButton;
+        [currentAlert popoverPresentationController].sourceRect = self.moreButton.bounds;
+        [self presentViewController:currentAlert animated:YES completion:nil];
+    }
 }
     
 #pragma mark - DTMF
@@ -1309,13 +1300,15 @@ static const CGFloat kLocalPreviewMargin = 20;
 
 - (void)configureSpeakerButton
 {
-    switch (mxCall.audioOutputRouter.routeType)
+    switch (mxCall.audioOutputRouter.currentRoute.routeType)
     {
         case MXAudioOutputRouteTypeBuiltIn:
             self.speakerButton.selected = NO;
             break;
         case MXAudioOutputRouteTypeLoudSpeakers:
-        case MXAudioOutputRouteTypeExternal:
+        case MXAudioOutputRouteTypeExternalWired:
+        case MXAudioOutputRouteTypeExternalBluetooth:
+        case MXAudioOutputRouteTypeExternalCar:
             self.speakerButton.selected = YES;
             break;
     }
