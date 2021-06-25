@@ -17,7 +17,7 @@
 
 #import "MXKCallViewController.h"
 
-@import MatrixSDK.MXMediaManager;
+@import MatrixSDK;
 
 #import "MXKAppSettings.h"
 #import "MXKSoundPlayer.h"
@@ -345,6 +345,9 @@ static const CGFloat kLocalPreviewMargin = 20;
         // Hide camera switch on voice call
         self.cameraSwitchButton.hidden = !call.isVideoCall;
         
+        _moreButtonForVideo.hidden = !call.isVideoCall;
+        _moreButtonForVoice.hidden = call.isVideoCall;
+        
         // Observe call state change
         call.delegate = self;
 
@@ -601,6 +604,15 @@ static const CGFloat kLocalPreviewMargin = 20;
     return errorAlert != nil;
 }
 
+- (UIButton *)moreButton
+{
+    if (mxCall.isVideoCall)
+    {
+        return _moreButtonForVideo;
+    }
+    return _moreButtonForVoice;
+}
+
 #pragma mark - Sounds
 
 - (NSURL *)audioURLWithName:(NSString *)soundName
@@ -662,7 +674,7 @@ static const CGFloat kLocalPreviewMargin = 20;
     {
         [mxCall hold:NO];
     }
-    else if (sender == _moreButton)
+    else if (sender == self.moreButton)
     {
         [currentAlert dismissViewControllerAnimated:NO completion:nil];
         
@@ -670,18 +682,21 @@ static const CGFloat kLocalPreviewMargin = 20;
         
         NSMutableArray<UIAlertAction *> *actions = [NSMutableArray arrayWithCapacity:4];
         
-        //  audio device action
-        UIAlertAction *audioDeviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_change_audio_device"]
-                                                                    style:UIAlertActionStyleDefault
-                                                                  handler:^(UIAlertAction * action) {
+        if (self.speakerButton == nil)
+        {
+            //  audio device action
+            UIAlertAction *audioDeviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_change_audio_device"]
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * action) {
+                
+                MXStrongifyAndReturnIfNil(self);
+                self->currentAlert = nil;
+                [self showAudioDeviceOptions];
+                
+            }];
             
-            MXStrongifyAndReturnIfNil(self);
-            self->currentAlert = nil;
-            [self showAudioDeviceOptions];
-            
-        }];
-        
-        [actions addObject:audioDeviceAction];
+            [actions addObject:audioDeviceAction];
+        }
         
         //  check the call can be up/downgraded
         
@@ -757,15 +772,14 @@ static const CGFloat kLocalPreviewMargin = 20;
                 
             }]];
             
-            [currentAlert popoverPresentationController].sourceView = _moreButton;
-            [currentAlert popoverPresentationController].sourceRect = _moreButton.bounds;
+            [currentAlert popoverPresentationController].sourceView = self.moreButton;
+            [currentAlert popoverPresentationController].sourceRect = self.moreButton.bounds;
             [self presentViewController:currentAlert animated:YES completion:nil];
         }
     }
     else if (sender == speakerButton)
     {
-        mxCall.audioToSpeaker = !mxCall.audioToSpeaker;
-        speakerButton.selected = mxCall.audioToSpeaker;
+        [self showAudioDeviceOptions];
     }
     else if (sender == cameraSwitchButton)
     {
@@ -816,13 +830,13 @@ static const CGFloat kLocalPreviewMargin = 20;
     MXWeakify(self);
     
     //  headset action
-    UIAlertAction *headsetAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_headset"]
+    UIAlertAction *headsetAction = [UIAlertAction actionWithTitle:[UIDevice currentDevice].localizedModel
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * action) {
         
         MXStrongifyAndReturnIfNil(self);
         self->currentAlert = nil;
-        self->mxCall.audioToSpeaker = NO;
+        [self->mxCall.audioOutputRouter changeRouteTypeTo:MXAudioOutputRouteTypeBuiltIn];
         
     }];
     
@@ -833,12 +847,28 @@ static const CGFloat kLocalPreviewMargin = 20;
         
         MXStrongifyAndReturnIfNil(self);
         self->currentAlert = nil;
-        self->mxCall.audioToSpeaker = YES;
+        [self->mxCall.audioOutputRouter changeRouteTypeTo:MXAudioOutputRouteTypeLoudSpeakers];
         
     }];
     
     [currentAlert addAction:headsetAction];
     [currentAlert addAction:deviceAction];
+    
+    if (mxCall.audioOutputRouter.isExternalDeviceConnected)
+    {
+        //  external action
+        UIAlertAction *externalAction = [UIAlertAction actionWithTitle:mxCall.audioOutputRouter.externalDeviceName
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
+            
+            MXStrongifyAndReturnIfNil(self);
+            self->currentAlert = nil;
+            [self->mxCall.audioOutputRouter changeRouteTypeTo:MXAudioOutputRouteTypeExternal];
+            
+        }];
+        
+        [currentAlert addAction:externalAction];
+    }
     
     //  add cancel action
     [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
@@ -850,8 +880,8 @@ static const CGFloat kLocalPreviewMargin = 20;
         
     }]];
     
-    [currentAlert popoverPresentationController].sourceView = _moreButton;
-    [currentAlert popoverPresentationController].sourceRect = _moreButton.bounds;
+    [currentAlert popoverPresentationController].sourceView = self.moreButton;
+    [currentAlert popoverPresentationController].sourceRect = self.moreButton.bounds;
     [self presentViewController:currentAlert animated:YES completion:nil];
 }
     
@@ -877,7 +907,7 @@ static const CGFloat kLocalPreviewMargin = 20;
     endCallButton.hidden = NO;
     rejectCallButton.hidden = YES;
     answerCallButton.hidden = YES;
-    _moreButton.enabled = YES;
+    self.moreButton.enabled = YES;
     _resumeButton.hidden = state != MXCallStateOnHold;
     _pausedIcon.hidden = state != MXCallStateOnHold && state != MXCallStateRemotelyOnHold;
     _transferButton.hidden = YES;
@@ -892,7 +922,7 @@ static const CGFloat kLocalPreviewMargin = 20;
             break;
         case MXCallStateWaitLocalMedia:
             self.isRinging = NO;
-            speakerButton.selected = call.audioToSpeaker;
+            [self configureSpeakerButton];
             [localPreviewActivityView startAnimating];
             
             // Try to show a special view for incoming view
@@ -921,7 +951,7 @@ static const CGFloat kLocalPreviewMargin = 20;
         }
         case MXCallStateRinging:
             self.isRinging = YES;
-            speakerButton.selected = call.audioToSpeaker;
+            [self configureSpeakerButton];
             if (call.isVideoCall)
             {
                 callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_video_call"];
@@ -993,7 +1023,7 @@ static const CGFloat kLocalPreviewMargin = 20;
             videoMuteButton.enabled = NO;
             speakerButton.enabled = NO;
             cameraSwitchButton.enabled = NO;
-            _moreButton.enabled = NO;
+            self.moreButton.enabled = NO;
             callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], peerDisplayName];
             
             break;
@@ -1143,6 +1173,16 @@ static const CGFloat kLocalPreviewMargin = 20;
     }
 }
 
+- (void)callAudioOutputRouteTypeDidChange:(MXCall *)call
+{
+    [self configureSpeakerButton];
+}
+
+- (void)callAvailableAudioOutputsDidChange:(MXCall *)call
+{
+    
+}
+
 #pragma mark - Internal
 
 - (void)removeObservers
@@ -1266,6 +1306,20 @@ static const CGFloat kLocalPreviewMargin = 20;
 }
 
 #pragma mark - UI methods
+
+- (void)configureSpeakerButton
+{
+    switch (mxCall.audioOutputRouter.routeType)
+    {
+        case MXAudioOutputRouteTypeBuiltIn:
+            self.speakerButton.selected = NO;
+            break;
+        case MXAudioOutputRouteTypeLoudSpeakers:
+        case MXAudioOutputRouteTypeExternal:
+            self.speakerButton.selected = YES;
+            break;
+    }
+}
 
 - (void)configureIncomingCallViewIfRequiredWith:(MXCall *)call
 {

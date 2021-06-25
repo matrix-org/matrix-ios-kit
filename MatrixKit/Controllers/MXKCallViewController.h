@@ -87,7 +87,8 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
 @property (weak, nonatomic) IBOutlet UIButton *speakerButton;
 @property (weak, nonatomic) IBOutlet UIButton *audioMuteButton;
 @property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
-@property (weak, nonatomic) IBOutlet UIButton *moreButton;
+@property (weak, nonatomic) IBOutlet UIButton *moreButtonForVoice;
+@property (weak, nonatomic) IBOutlet UIButton *moreButtonForVideo;
 
 @property (weak, nonatomic) IBOutlet UIButton *backToAppButton;
 @property (weak, nonatomic) IBOutlet UIButton *cameraSwitchButton;
@@ -214,6 +215,16 @@ extern NSString *const kMXKCallViewControllerBackToAppNotification;
  Action registered on the event 'UIControlEventTouchUpInside' for each UIButton instance.
  */
 - (IBAction)onButtonPressed:(id)sender;
+
+/**
+ Default implementation presents an action sheet with proper options. Override to change the user interface.
+ */
+- (void)showAudioDeviceOptions;
+
+/**
+ Default implementation makes the button selected for loud speakers and external device options, non-selected for built-in device.
+ */
+- (void)configureSpeakerButton;
 
 #pragma mark - DTMF
 
