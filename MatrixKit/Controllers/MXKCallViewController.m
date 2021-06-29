@@ -823,13 +823,13 @@ static const CGFloat kLocalPreviewMargin = 20;
 - (void)showAudioDeviceOptions
 {
     NSMutableArray<UIAlertAction *> *actions = [NSMutableArray new];
-    NSArray<MXAudioOutputRoute *> *availableRoutes = mxCall.audioOutputRouter.availableOutputRoutes;
+    NSArray<MXiOSAudioOutputRoute *> *availableRoutes = mxCall.audioOutputRouter.availableOutputRoutes;
     
-    for (MXAudioOutputRoute *route in availableRoutes)
+    for (MXiOSAudioOutputRoute *route in availableRoutes)
     {
         //  route action
         NSString *name = route.name;
-        if (route.routeType == MXAudioOutputRouteTypeLoudSpeakers)
+        if (route.routeType == MXiOSAudioOutputRouteTypeLoudSpeakers)
         {
             name = [NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_device"];
         }
@@ -1302,13 +1302,13 @@ static const CGFloat kLocalPreviewMargin = 20;
 {
     switch (mxCall.audioOutputRouter.currentRoute.routeType)
     {
-        case MXAudioOutputRouteTypeBuiltIn:
+        case MXiOSAudioOutputRouteTypeBuiltIn:
             self.speakerButton.selected = NO;
             break;
-        case MXAudioOutputRouteTypeLoudSpeakers:
-        case MXAudioOutputRouteTypeExternalWired:
-        case MXAudioOutputRouteTypeExternalBluetooth:
-        case MXAudioOutputRouteTypeExternalCar:
+        case MXiOSAudioOutputRouteTypeLoudSpeakers:
+        case MXiOSAudioOutputRouteTypeExternalWired:
+        case MXiOSAudioOutputRouteTypeExternalBluetooth:
+        case MXiOSAudioOutputRouteTypeExternalCar:
             self.speakerButton.selected = YES;
             break;
     }
