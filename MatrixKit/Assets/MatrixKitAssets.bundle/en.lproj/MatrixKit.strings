@@ -545,8 +545,7 @@
 "call_more_actions_hold" = "Hold";
 "call_more_actions_unhold" = "Resume";
 "call_more_actions_change_audio_device" = "Change Audio Device";
-"call_more_actions_audio_use_headset" = "Use Headset Audio";
-"call_more_actions_audio_use_device" = "Use Device Audio";
+"call_more_actions_audio_use_device" = "Device Speaker";
 "call_more_actions_transfer" = "Transfer";
 "call_more_actions_dialpad" = "Dial pad";
 "call_voice_with_user" = "Voice call with %@";

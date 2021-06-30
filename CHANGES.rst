@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKCallViewController: Adapt new audio routing APIs.
 
 🐛 Bugfix
  * 

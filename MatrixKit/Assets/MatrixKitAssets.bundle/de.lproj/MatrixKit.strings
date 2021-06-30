@@ -490,3 +490,4 @@
 "call_ringing" = "Läuten…";
 "e2e_passphrase_too_short" = "Passphrase zu kurz (Minimum sind %d Zeichen)";
 "call_consulting_with_user" = "Bei %@ anfragen";
+"microphone_access_not_granted_for_voice_message" = "%@ fehlt die Berechtigung, für Sprachnachrichten auf das Mikrofon zuzugreifen";
