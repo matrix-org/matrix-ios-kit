@@ -444,9 +444,14 @@
                 {
                     allHomeserverNotReachable = NO;
                     
-                    if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
-                    {
-                        isActivityInProgress = YES;
+                    switch (mxSession.state) {
+                        case MXSessionStateInitialised:
+                        case MXSessionStateProcessingLocalCache:
+                        case MXSessionStateSyncInProgress:
+                            isActivityInProgress = YES;
+                            break;
+                        default:
+                            break;
                     }
                 }
                 
@@ -535,9 +540,14 @@
     BOOL isActivityInProgress = NO;
     for (MXSession *mxSession in mxSessionArray)
     {
-        if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
-        {
-            isActivityInProgress = YES;
+        switch (mxSession.state) {
+            case MXSessionStateInitialised:
+            case MXSessionStateProcessingLocalCache:
+            case MXSessionStateSyncInProgress:
+                isActivityInProgress = YES;
+                break;
+            default:
+                break;
         }
     }
     if (!isActivityInProgress)

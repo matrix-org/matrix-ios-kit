@@ -461,9 +461,14 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
                 {
                     allHomeserverNotReachable = NO;
                     
-                    if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
-                    {
-                        isActivityInProgress = YES;
+                    switch (mxSession.state) {
+                        case MXSessionStateInitialised:
+                        case MXSessionStateProcessingLocalCache:
+                        case MXSessionStateSyncInProgress:
+                            isActivityInProgress = YES;
+                            break;
+                        default:
+                            break;
                     }
                 }
                 
@@ -548,9 +553,14 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
     BOOL isActivityInProgress = NO;
     for (MXSession *mxSession in mxSessionArray)
     {
-        if (mxSession.state == MXSessionStateSyncInProgress || mxSession.state == MXSessionStateInitialised)
-        {
-            isActivityInProgress = YES;
+        switch (mxSession.state) {
+            case MXSessionStateInitialised:
+            case MXSessionStateProcessingLocalCache:
+            case MXSessionStateSyncInProgress:
+                isActivityInProgress = YES;
+                break;
+            default:
+                break;
         }
     }
     if (!isActivityInProgress)

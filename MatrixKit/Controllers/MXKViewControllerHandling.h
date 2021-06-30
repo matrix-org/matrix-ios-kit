@@ -76,7 +76,7 @@
 /**
  Activity indicator view.
  By default this activity indicator is centered inside the view controller view. It is automatically
- start on the following matrix session states: `MXSessionStateInitialised` and `MXSessionStateSyncInProgress`.
+ start on the following matrix session states: `MXSessionStateInitialised` and `MXSessionStateSyncInProgress` and `MXSessionStateProcessingLocalCache`.
  It is stopped on other states.
  Set nil to disable activity indicator animation.
  */
@@ -131,7 +131,7 @@
  This method is called to refresh the display when the view controller will appear too.
  
  By default view controller appearance is updated according to the state of associated sessions:
- - starts activity indicator as soon as at least one session state is `MXSessionStateInitialised` or `MXSessionStateSyncInProgress`.
+ - starts activity indicator as soon as at least one session state is `MXSessionStateInitialised` or `MXSessionStateSyncInProgress` or `MXSessionStateProcessingLocalCache`.
  - switches in red the navigation bar tintColor when all sessions are in `MXSessionStateHomeserverNotReachable` state.
  - switches in orange the navigation bar tintColor when at least one session is in `MXSessionStateHomeserverNotReachable` state.
  
