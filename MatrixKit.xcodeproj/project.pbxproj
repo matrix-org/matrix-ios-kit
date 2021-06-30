@@ -78,6 +78,8 @@
 		B1668AC021072F93002B14F1 /* MXKSlashCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */; };
 		CE14CA661E80122600E329A3 /* MXKAttachmentAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */; };
 		CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */; };
+		EC1848D2268CB37600865E16 /* MXSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC1848D1268CB37600865E16 /* MXSession.swift */; };
+		EC1848D3268CB72500865E16 /* MXSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC1848D1268CB37600865E16 /* MXSession.swift */; };
 		EC6DC7BB24F9562600B6C40F /* MarkdownToHTMLRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6DC7BA24F9562600B6C40F /* MarkdownToHTMLRenderer.swift */; };
 		EC9010C825308312004DC138 /* MXKPasteboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9010C725308312004DC138 /* MXKPasteboardManager.swift */; };
 		F0026B661C91EED1001D2C04 /* MXKWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0026B651C91EED1001D2C04 /* MXKWebViewViewController.m */; };
@@ -408,6 +410,7 @@
 		CE14CA641E80122600E329A3 /* MXKAttachmentInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKAttachmentInteractionController.h; sourceTree = "<group>"; };
 		CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKAttachmentInteractionController.m; sourceTree = "<group>"; };
 		E5AB7F3690B214D676BB9B72 /* Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
+		EC1848D1268CB37600865E16 /* MXSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXSession.swift; sourceTree = "<group>"; };
 		EC6DC7BA24F9562600B6C40F /* MarkdownToHTMLRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownToHTMLRenderer.swift; sourceTree = "<group>"; };
 		EC9010C725308312004DC138 /* MXKPasteboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKPasteboardManager.swift; sourceTree = "<group>"; };
 		EC9010C92530875E004DC138 /* MXKSwiftHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKSwiftHeader.h; sourceTree = "<group>"; };
@@ -1329,6 +1332,7 @@
 				32B046712101EB5E002A24A1 /* MXRoom+Sync.m */,
 				B12C56F02396D75500FAC6DE /* UITextView+MatrixKit.h */,
 				B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */,
+				EC1848D1268CB37600865E16 /* MXSession.swift */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -1859,6 +1863,7 @@
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
 				A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */,
 				328E410424CB135100DC4490 /* MatrixKitVersion.m in Sources */,
+				EC1848D3268CB72500865E16 /* MXSession.swift in Sources */,
 				B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */,
 				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
 				A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */,
@@ -2017,6 +2022,7 @@
 				F0CF98E11B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSwitch.m in Sources */,
 				F01439451F067929006E5D8C /* MXKReadReceiptTableViewCell.m in Sources */,
 				F02528961C1092D300E1FE1B /* MXKCollectionViewCell.m in Sources */,
+				EC1848D2268CB37600865E16 /* MXSession.swift in Sources */,
 				F0F148A61AB08F48005F5D4A /* MXKSampleJSQRoomDataSource.m in Sources */,
 				F096A3BF1B0B3DAA00AF1357 /* MXKAccountDetailsViewController.m in Sources */,
 				B1668AC021072F93002B14F1 /* MXKSlashCommands.m in Sources */,
