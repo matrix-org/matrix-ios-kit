@@ -6,6 +6,7 @@ Changes to be released in next version
 
 🙌 Improvements
  * MXKCallViewController: Adapt new audio routing APIs.
+ * MXKAuthenticationViewController: Add authentication indicator container outlet (vector-im/element-ios/issues/4485).
 
 🐛 Bugfix
  * 
