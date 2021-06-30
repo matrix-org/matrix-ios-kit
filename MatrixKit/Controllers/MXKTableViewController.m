@@ -19,6 +19,7 @@
 
 #import "UIViewController+MatrixKit.h"
 #import "UIScrollView+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 @interface MXKTableViewController ()
 {
@@ -443,16 +444,7 @@
                 else
                 {
                     allHomeserverNotReachable = NO;
-                    
-                    switch (mxSession.state) {
-                        case MXSessionStateInitialised:
-                        case MXSessionStateProcessingLocalCache:
-                        case MXSessionStateSyncInProgress:
-                            isActivityInProgress = YES;
-                            break;
-                        default:
-                            break;
-                    }
+                    isActivityInProgress = mxSession.shouldShowActivityIndicator;
                 }
                 
                 index ++;
@@ -540,14 +532,9 @@
     BOOL isActivityInProgress = NO;
     for (MXSession *mxSession in mxSessionArray)
     {
-        switch (mxSession.state) {
-            case MXSessionStateInitialised:
-            case MXSessionStateProcessingLocalCache:
-            case MXSessionStateSyncInProgress:
-                isActivityInProgress = YES;
-                break;
-            default:
-                break;
+        if (mxSession.shouldShowActivityIndicator)
+        {
+            isActivityInProgress = YES;
         }
     }
     if (!isActivityInProgress)

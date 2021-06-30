@@ -18,6 +18,7 @@
 #import "MXKViewController.h"
 
 #import "UIViewController+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 
@@ -460,16 +461,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
                 else
                 {
                     allHomeserverNotReachable = NO;
-                    
-                    switch (mxSession.state) {
-                        case MXSessionStateInitialised:
-                        case MXSessionStateProcessingLocalCache:
-                        case MXSessionStateSyncInProgress:
-                            isActivityInProgress = YES;
-                            break;
-                        default:
-                            break;
-                    }
+                    isActivityInProgress = mxSession.shouldShowActivityIndicator;
                 }
                 
                 index++;
@@ -553,14 +545,9 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
     BOOL isActivityInProgress = NO;
     for (MXSession *mxSession in mxSessionArray)
     {
-        switch (mxSession.state) {
-            case MXSessionStateInitialised:
-            case MXSessionStateProcessingLocalCache:
-            case MXSessionStateSyncInProgress:
-                isActivityInProgress = YES;
-                break;
-            default:
-                break;
+        if (mxSession.shouldShowActivityIndicator)
+        {
+            isActivityInProgress = YES;
         }
     }
     if (!isActivityInProgress)
