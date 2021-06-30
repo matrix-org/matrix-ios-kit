@@ -463,3 +463,4 @@
 "call_voice_with_user" = "Appel audio avec %@";
 "call_ringing" = "Sonnerie…";
 "e2e_passphrase_too_short" = "La phrase secrète est trop courte, elle doit compter au moins %d caractères";
+"microphone_access_not_granted_for_voice_message" = "Pour les messages vocaux, l’accès au microphone est indispensable mais %@ n’a pas les permissions nécessaires";
