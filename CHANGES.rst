@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKViewControllerHandling: Use processing local cache session state to show an activity indicator.
 
 🐛 Bugfix
  * 
