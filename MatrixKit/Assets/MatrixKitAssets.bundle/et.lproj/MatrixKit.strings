@@ -446,7 +446,7 @@
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Sina määrasid, et jututoa tulevane ajalugu on nähtav kõikidele selle liikmetele nende liitumise hetkest.";
 "call_more_actions_dialpad" = "Numbriklahvistik";
 "call_more_actions_transfer" = "Suuna kõne edasi";
-"call_more_actions_audio_use_device" = "Kasuta seadme kõlarit ja mikrofoni";
+"call_more_actions_audio_use_device" = "Kasuta seadme kõlarit";
 "call_more_actions_audio_use_headset" = "Kasuta kõrvaklappe";
 "call_more_actions_change_audio_device" = "Muuda heliseadet";
 "call_more_actions_unhold" = "Jätka";
