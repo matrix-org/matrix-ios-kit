@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -27,7 +27,8 @@
                 <outlet property="localPreviewContainerViewTopConstraint" destination="3kN-Qi-Klq" id="zT0-lf-noP"/>
                 <outlet property="localPreviewContainerViewWidthConstraint" destination="gyu-kv-SLy" id="h6P-sv-f69"/>
                 <outlet property="localPreviewVideoView" destination="Y9q-YD-ke6" id="X9G-e6-lDE"/>
-                <outlet property="moreButton" destination="XCC-Xd-83F" id="81o-Fc-RfE"/>
+                <outlet property="moreButtonForVideo" destination="XCC-Xd-83F" id="exV-fE-Fcs"/>
+                <outlet property="moreButtonForVoice" destination="gp0-z0-MpD" id="Ksf-ku-aCv"/>
                 <outlet property="onHoldCallContainerView" destination="gYL-ur-SUZ" id="sWc-c5-84F"/>
                 <outlet property="overlayContainerView" destination="JAR-tn-sGN" id="09u-3G-1UA"/>
                 <outlet property="rejectCallButton" destination="cst-tR-uHV" id="Ust-PL-R6A"/>
@@ -153,7 +154,7 @@
                             <rect key="frame" x="0.0" y="329" width="375" height="55"/>
                             <subviews>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxP-zM-kfT" userLabel="Audio Mute Btn">
-                                    <rect key="frame" x="16" y="0.0" width="74" height="55"/>
+                                    <rect key="frame" x="16" y="0.0" width="56" height="55"/>
                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="-69" minY="61" maxX="0.0" maxY="0.0"/>
@@ -169,7 +170,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QWZ-Xg-1VM" userLabel="Video Mute Btn">
-                                    <rect key="frame" x="106" y="0.0" width="73.5" height="55"/>
+                                    <rect key="frame" x="88" y="0.0" width="55.5" height="55"/>
                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="-69" minY="61" maxX="0.0" maxY="0.0"/>
@@ -185,7 +186,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UHM-u9-ODN" userLabel="Speaker Btn">
-                                    <rect key="frame" x="195.5" y="0.0" width="74" height="55"/>
+                                    <rect key="frame" x="159.5" y="0.0" width="56" height="55"/>
                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                                     <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="4" maxY="0.0"/>
@@ -201,8 +202,8 @@
                                         <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="9Jd-Wv-foD"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XCC-Xd-83F" userLabel="More Btn">
-                                    <rect key="frame" x="285.5" y="0.0" width="73.5" height="55"/>
+                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XCC-Xd-83F" userLabel="More Btn Video">
+                                    <rect key="frame" x="231.5" y="0.0" width="55.5" height="55"/>
                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="-69" minY="61" maxX="0.0" maxY="0.0"/>
@@ -217,17 +218,37 @@
                                         <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="eev-cq-bkD"/>
                                     </connections>
                                 </button>
+                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gp0-z0-MpD" userLabel="More Btn Voice">
+                                    <rect key="frame" x="303" y="0.0" width="56" height="55"/>
+                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
+                                    <inset key="titleEdgeInsets" minX="-69" minY="61" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal">
+                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="highlighted">
+                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="onButtonPressed:" destination="-1" eventType="touchUpInside" id="lJr-dI-K66"/>
+                                    </connections>
+                                </button>
                             </subviews>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstItem="XCC-Xd-83F" firstAttribute="leading" secondItem="UHM-u9-ODN" secondAttribute="trailing" constant="16" id="4qI-5H-xme"/>
                                 <constraint firstItem="UHM-u9-ODN" firstAttribute="leading" secondItem="QWZ-Xg-1VM" secondAttribute="trailing" constant="16" id="4vU-TE-eHI"/>
+                                <constraint firstItem="gp0-z0-MpD" firstAttribute="width" secondItem="fxP-zM-kfT" secondAttribute="width" id="65z-cx-uPN"/>
+                                <constraint firstItem="gp0-z0-MpD" firstAttribute="top" secondItem="nk9-Un-LVP" secondAttribute="top" id="6Hn-cf-yrt"/>
                                 <constraint firstItem="UHM-u9-ODN" firstAttribute="top" secondItem="nk9-Un-LVP" secondAttribute="top" id="9WM-jp-uJ2"/>
                                 <constraint firstAttribute="bottom" secondItem="XCC-Xd-83F" secondAttribute="bottom" id="Mmc-f0-E3b"/>
                                 <constraint firstItem="UHM-u9-ODN" firstAttribute="width" secondItem="fxP-zM-kfT" secondAttribute="width" id="QT2-3D-Rea"/>
                                 <constraint firstAttribute="bottom" secondItem="fxP-zM-kfT" secondAttribute="bottom" id="Qly-U3-yZz"/>
+                                <constraint firstAttribute="trailing" secondItem="gp0-z0-MpD" secondAttribute="trailing" constant="16" id="QnE-37-ZsF"/>
                                 <constraint firstItem="QWZ-Xg-1VM" firstAttribute="leading" secondItem="fxP-zM-kfT" secondAttribute="trailing" constant="16" id="Tfa-tC-stW"/>
-                                <constraint firstAttribute="trailing" secondItem="XCC-Xd-83F" secondAttribute="trailing" constant="16" id="d90-Gj-Ulf"/>
+                                <constraint firstItem="gp0-z0-MpD" firstAttribute="leading" secondItem="XCC-Xd-83F" secondAttribute="trailing" constant="16" id="VFm-PI-KyK"/>
+                                <constraint firstAttribute="bottom" secondItem="gp0-z0-MpD" secondAttribute="bottom" id="Y8l-mj-pQv"/>
                                 <constraint firstItem="XCC-Xd-83F" firstAttribute="top" secondItem="nk9-Un-LVP" secondAttribute="top" id="daf-rp-QYh"/>
                                 <constraint firstItem="XCC-Xd-83F" firstAttribute="width" secondItem="fxP-zM-kfT" secondAttribute="width" id="dfm-XQ-cI6"/>
                                 <constraint firstAttribute="height" constant="55" id="eS5-qj-HTc"/>
