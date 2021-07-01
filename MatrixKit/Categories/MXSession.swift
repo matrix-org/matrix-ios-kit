@@ -23,7 +23,7 @@ extension MXSession {
     /// Flag to indicate whether the session is in a suitable state to show some activity indicators on UI.
     var shouldShowActivityIndicator: Bool {
         switch state {
-        case .initialised, .processingLocalCache, .syncInProgress:
+        case .initialised, .processingBackgroundSyncCache, .syncInProgress:
             return true
         default:
             return false
