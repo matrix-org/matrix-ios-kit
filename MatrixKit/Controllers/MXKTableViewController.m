@@ -19,7 +19,7 @@
 
 #import "UIViewController+MatrixKit.h"
 #import "UIScrollView+MatrixKit.h"
-#import "MXKSwiftHeader.h"
+#import "MXSession+MatrixKit.h"
 
 @interface MXKTableViewController ()
 {

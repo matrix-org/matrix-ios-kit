@@ -18,7 +18,7 @@
 #import "MXKViewController.h"
 
 #import "UIViewController+MatrixKit.h"
-#import "MXKSwiftHeader.h"
+#import "MXSession+MatrixKit.h"
 
 const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 

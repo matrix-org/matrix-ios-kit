@@ -14,20 +14,15 @@
 // limitations under the License.
 //
 
-import Foundation
-import MatrixSDK
+#import <MatrixSDK/MatrixSDK.h>
 
-@objc
-extension MXSession {
-    
-    /// Flag to indicate whether the session is in a suitable state to show some activity indicators on UI.
-    var shouldShowActivityIndicator: Bool {
-        switch state {
-        case .initialised, .processingBackgroundSyncCache, .syncInProgress:
-            return true
-        default:
-            return false
-        }
-    }
-    
-}
+NS_ASSUME_NONNULL_BEGIN
+
+@interface MXSession (MatrixKit)
+
+/// Flag to indicate whether the session is in a suitable state to show some activity indicators on UI.
+@property (nonatomic, readonly) BOOL shouldShowActivityIndicator;
+
+@end
+
+NS_ASSUME_NONNULL_END
