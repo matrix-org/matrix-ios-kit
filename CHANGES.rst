@@ -22,6 +22,34 @@ Changes to be released in next version
 Others
  * 
 
+Changes in 0.15.3 (2021-06-30)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKCallViewController: Adapt new audio routing APIs.
+ * MXKAuthenticationViewController: Add authentication indicator container outlet (vector-im/element-ios/issues/4485).
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.3)).
+
 Changes in 0.15.2 (2021-06-24)
 =================================================
 

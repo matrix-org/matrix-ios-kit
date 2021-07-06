@@ -89,6 +89,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *authSwitchButton;
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *authenticationActivityIndicator;
+@property (weak, nonatomic) IBOutlet UIView *authenticationActivityIndicatorContainerView;
 @property (weak, nonatomic) IBOutlet UILabel *noFlowLabel;
 @property (weak, nonatomic) IBOutlet UIButton *retryButton;
 
