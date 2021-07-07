@@ -97,7 +97,9 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             }
             else if ([msgtype isEqualToString:kMXMessageTypeAudio])
             {
-                if (eventContent[kMXMessageTypeVoiceMessage]) {
+                if (eventContent[kMXMessageTypeVoiceMessage] ||
+                    eventContent[kMXMessageTypeVoiceMessageMSC2516] ||
+                    eventContent[kMXMessageTypeVoiceMessageMSC3245]) {
                     _type = MXKAttachmentTypeVoiceMessage;
                 } else {
                     _type = MXKAttachmentTypeAudio;

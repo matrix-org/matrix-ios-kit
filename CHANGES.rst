@@ -5,6 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
+ * MXKAttachment: Add support for all voice message types (vector-im/element-ios/issues/4094).
  * MXKViewControllerHandling: Use processing local cache session state to show an activity indicator.
 
 🐛 Bugfix
