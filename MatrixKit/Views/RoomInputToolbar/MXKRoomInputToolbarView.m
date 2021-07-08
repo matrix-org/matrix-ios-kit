@@ -767,8 +767,15 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     // Check condition before saving this media in user's library
     if (_enableAutoSaving && !isPhotoLibraryAsset)
     {
-        // FIXME: Get the asset's URL if it came from the camera
-//        [MXMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
+        if ([selectedVideo isKindOfClass:[AVURLAsset class]])
+        {
+            AVURLAsset *urlAsset = (AVURLAsset*)selectedVideo;
+            [MXMediaManager saveMediaToPhotosLibrary:[urlAsset URL] isImage:NO success:nil failure:nil];
+        }
+        else
+        {
+            MXLogError(@"[RoomInputToolbarView] Unable to save video, incorrect asset type.")
+        }
     }
     
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
