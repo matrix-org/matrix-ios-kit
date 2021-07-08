@@ -1851,11 +1851,11 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
-- (void)sendVideo:(NSURL *)videoLocalURL withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+- (void)sendVideo:(AVAsset *)videoAsset withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
     
-    [_room sendVideo:videoLocalURL withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
+    [_room sendVideo:videoAsset withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {

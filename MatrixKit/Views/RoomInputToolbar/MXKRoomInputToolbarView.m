@@ -762,19 +762,19 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 }
 
-- (void)sendSelectedVideo:(NSURL*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset
+- (void)sendSelectedVideo:(AVAsset*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset
 {
     // Check condition before saving this media in user's library
     if (_enableAutoSaving && !isPhotoLibraryAsset)
     {
-        [MXMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
+        // FIXME: Get the asset's URL if it came from the camera
+//        [MXMediaManager saveMediaToPhotosLibrary:selectedVideo isImage:NO success:nil failure:nil];
     }
     
     if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
     {
         // Retrieve the video frame at 1 sec to define the video thumbnail
-        AVURLAsset *urlAsset = [[AVURLAsset alloc] initWithURL:selectedVideo options:nil];
-        AVAssetImageGenerator *assetImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:urlAsset];
+        AVAssetImageGenerator *assetImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:selectedVideo];
         assetImageGenerator.appliesPreferredTrackTransform = YES;
         CMTime time = CMTimeMake(1, 1);
         CGImageRef imageRef = [assetImageGenerator copyCGImageAtTime:time actualTime:NULL error:nil];

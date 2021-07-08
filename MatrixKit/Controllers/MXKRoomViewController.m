@@ -3505,10 +3505,10 @@
     }];
 }
 
-- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(AVAsset*)videoAsset withThumbnail:(UIImage*)videoThumbnail
 {
     // Let the datasource send it and manage the local echo
-    [roomDataSource sendVideo:videoLocalURL withThumbnail:videoThumbnail success:nil failure:^(NSError *error)
+    [roomDataSource sendVideo:videoAsset withThumbnail:videoThumbnail success:nil failure:^(NSError *error)
     {
         // Nothing to do. The video is marked as unsent in the room history by the datasource
         MXLogDebug(@"[MXKRoomViewController] sendVideo failed.");
