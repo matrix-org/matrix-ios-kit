@@ -11,7 +11,7 @@ Changes to be released in next version
  * 
 
 ⚠️ API Changes
- * 
+ * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: `sendVideo` methods now take an `AVAsset` instead of an `NSURL`.
 
 🗣 Translations
  * 
