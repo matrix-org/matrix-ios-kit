@@ -1855,7 +1855,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 {
     __block MXEvent *localEchoEvent = nil;
     
-    [_room sendVideo:videoAsset withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
+    [_room sendVideoAsset:videoAsset withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
