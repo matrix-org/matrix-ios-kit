@@ -762,7 +762,13 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     }
 }
 
-- (void)sendSelectedVideo:(AVAsset*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset
+- (void)sendSelectedVideo:(NSURL*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset
+{
+    AVURLAsset *videoAsset = [AVURLAsset assetWithURL:selectedVideo];
+    [self sendSelectedVideoAsset:videoAsset isPhotoLibraryAsset:isPhotoLibraryAsset];
+}
+
+- (void)sendSelectedVideoAsset:(AVAsset*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset
 {
     // Check condition before saving this media in user's library
     if (_enableAutoSaving && !isPhotoLibraryAsset)
@@ -778,7 +784,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         }
     }
     
-    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideo:withThumbnail:)])
+    if ([self.delegate respondsToSelector:@selector(roomInputToolbarView:sendVideoAsset:withThumbnail:)])
     {
         // Retrieve the video frame at 1 sec to define the video thumbnail
         AVAssetImageGenerator *assetImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:selectedVideo];
@@ -790,7 +796,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         UIImage* videoThumbnail = [[UIImage alloc] initWithCGImage:imageRef];
         CFRelease(imageRef);
         
-        [self.delegate roomInputToolbarView:self sendVideo:selectedVideo withThumbnail:videoThumbnail];
+        [self.delegate roomInputToolbarView:self sendVideoAsset:selectedVideo withThumbnail:videoThumbnail];
     }
     else
     {
