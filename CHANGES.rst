@@ -6,12 +6,13 @@ Changes to be released in next version
 
 🙌 Improvements
  * MXKAttachment: Add support for all voice message types (vector-im/element-ios/issues/4094).
+ * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: Add methods to send videos as `AVAsset` objects (vector-im/element-ios/issues/4483).
 
 🐛 Bugfix
  * 
 
 ⚠️ API Changes
- * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: `sendVideo` methods now take an `AVAsset` instead of an `NSURL`  (vector-im/element-ios/issues/4483).
+ *
 
 🗣 Translations
  * 
