@@ -12,7 +12,7 @@ Changes to be released in next version
  * 
 
 ⚠️ API Changes
- *
+ * 
 
 🗣 Translations
  * 
