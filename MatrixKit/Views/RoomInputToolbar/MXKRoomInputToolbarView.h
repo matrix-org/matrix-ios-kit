@@ -119,6 +119,15 @@ typedef enum : NSUInteger
 - (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideo:(NSURL*)videoLocalURL withThumbnail:(UIImage*)videoThumbnail;
 
 /**
+ Tells the delegate that the user wants to send a video.
+ 
+ @param toolbarView the room input toolbar view.
+ @param videoAsset the AVAsset that represents the video to send.
+ @param videoThumbnail the UIImage hosting a video thumbnail.
+ */
+- (void)roomInputToolbarView:(MXKRoomInputToolbarView*)toolbarView sendVideoAsset:(AVAsset*)videoAsset withThumbnail:(UIImage*)videoThumbnail;
+
+/**
  Tells the delegate that the user wants to send a file.
  
  @param toolbarView the room input toolbar view.
@@ -279,6 +288,15 @@ typedef enum : NSUInteger
  @param isPhotoLibraryAsset tell whether the video has been selected from user's photos library.
  */
 - (void)sendSelectedVideo:(NSURL*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset;
+
+/**
+ Handle video attachment.
+ Save the video in user's photos library when 'isPhotoLibraryAsset' flag is NO and auto saving is enabled.
+ 
+ @param selectedVideo an AVAsset that represents the video to send.
+ @param isPhotoLibraryAsset tell whether the video has been selected from user's photos library.
+ */
+- (void)sendSelectedVideoAsset:(AVAsset*)selectedVideo isPhotoLibraryAsset:(BOOL)isPhotoLibraryAsset;
 
 /**
  Handle multiple media attachments according to the compression mode.

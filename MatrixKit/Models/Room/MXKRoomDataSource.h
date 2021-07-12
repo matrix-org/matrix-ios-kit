@@ -488,7 +488,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 - (void)sendImage:(NSData*)imageData mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure;
 
 /**
- Send an video to the room.
+ Send a video to the room.
 
  While sending, a fake event will be echoed in the messages list.
  Once complete, this local echo will be replaced by the event saved by the homeserver.
@@ -503,6 +503,23 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
     withThumbnail:(UIImage*)videoThumbnail
           success:(void (^)(NSString *eventId))success
           failure:(void (^)(NSError *error))failure;
+
+/**
+ Send a video to the room.
+
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+
+ @param videoAsset the AVAsset that represents the video to send.
+ @param videoThumbnail the UIImage hosting a video thumbnail.
+ @param success A block object called when the operation succeeds. It returns
+                the event id of the event generated on the homeserver
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendVideoAsset:(AVAsset*)videoAsset
+         withThumbnail:(UIImage*)videoThumbnail
+               success:(void (^)(NSString *eventId))success
+               failure:(void (^)(NSError *error))failure;
 
 /**
  Send an audio file to the room.
