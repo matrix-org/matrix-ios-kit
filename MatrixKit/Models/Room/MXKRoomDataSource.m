@@ -1885,11 +1885,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
-- (void)sendVoiceMessage:(NSURL *)audioFileLocalURL mimeType:mimeType success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+- (void)sendVoiceMessage:(NSURL *)audioFileLocalURL
+                mimeType:mimeType
+                duration:(NSTimeInterval)duration
+                 samples:(NSArray<NSNumber *> *)samples
+                 success:(void (^)(NSString *))success
+                 failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
     
-    [_room sendVoiceMessage:audioFileLocalURL mimeType:mimeType localEcho:&localEchoEvent success:success failure:failure keepActualFilename:YES];
+    [_room sendVoiceMessage:audioFileLocalURL mimeType:mimeType duration:duration samples:samples localEcho:&localEchoEvent success:success failure:failure keepActualFilename:YES];
     
     if (localEchoEvent)
     {

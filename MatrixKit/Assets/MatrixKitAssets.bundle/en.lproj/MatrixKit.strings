@@ -255,6 +255,7 @@
 "message_reply_to_sender_sent_an_image" = "sent an image.";
 "message_reply_to_sender_sent_a_video" = "sent a video.";
 "message_reply_to_sender_sent_an_audio_file" = "sent an audio file.";
+"message_reply_to_sender_sent_a_voice_message" = "sent a voice message.";
 "message_reply_to_sender_sent_a_file" = "sent a file.";
 "message_reply_to_message_to_reply_to_prefix" = "In reply to";
 
