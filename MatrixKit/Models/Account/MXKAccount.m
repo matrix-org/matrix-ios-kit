@@ -2123,7 +2123,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 }
 
 
-#pragma mark - Identity Server updates
+#pragma mark - Identity server updates
 
 - (void)registerAccountDataDidChangeIdentityServerNotification
 {
@@ -2148,7 +2148,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 }
 
 
-#pragma mark - Identity Server Access Token updates
+#pragma mark - Identity server Access Token updates
 
 - (void)identityService:(MXIdentityService *)identityService didUpdateAccessToken:(NSString *)accessToken
 {

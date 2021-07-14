@@ -1453,7 +1453,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 }
 
 
-#pragma mark - Identity Server updates
+#pragma mark - Identity server updates
 
 - (void)registerAccountDataDidChangeIdentityServerNotification
 {
