@@ -58,6 +58,11 @@
 @interface MXKRoomViewController () <MXKPreviewViewControllerDelegate>
 {
     /**
+     YES once the view has appeared
+     */
+    BOOL hasAppearedOnce;
+    
+    /**
      YES if scrolling to bottom is in progress
      */
     BOOL isScrollingToBottom;
@@ -373,6 +378,11 @@
         // Retrieve the potential message partially typed during last room display.
         // Note: We have to wait for viewDidAppear before updating growingTextView (viewWillAppear is too early)
         inputToolbarView.textMessage = roomDataSource.partialTextMessage;
+    }
+    
+    if (!hasAppearedOnce)
+    {
+        hasAppearedOnce = YES;
     }
 }
 
@@ -1770,8 +1780,10 @@
         return (isScrolledToBottom || isScrollingToBottom);
     }
     
-    // Consider empty table view as at the bottom
-    return YES;
+    // Consider empty table view as at the bottom. Only do this after it has appeared.
+    // Returning YES here before the view has appeared allows calls to scrollBubblesTableViewToBottomAnimated
+    // before the view knows its final size, sometimes resulting in a slight offset (#4524).
+    return hasAppearedOnce;
 }
 
 - (void)scrollBubblesTableViewToBottomAnimated:(BOOL)animated
