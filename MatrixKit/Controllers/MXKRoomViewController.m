@@ -1782,7 +1782,7 @@
     
     // Consider empty table view as at the bottom. Only do this after it has appeared.
     // Returning YES here before the view has appeared allows calls to scrollBubblesTableViewToBottomAnimated
-    // before the view knows its final size, sometimes resulting in a slight offset (#4524).
+    // before the view knows its final size, resulting in a position offset the second time a room is shown (#4524).
     return hasAppearedOnce;
 }
 

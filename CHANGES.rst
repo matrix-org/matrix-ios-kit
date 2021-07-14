@@ -10,7 +10,7 @@ Changes to be released in next version
  * MXKSendReplyEventStringLocalizations: Added senderSentAVoiceMessage property
 
 🐛 Bugfix
- * 
+ * MXKRoomViewController: Fix initial timeline position when viewing a room for the second time.
 
 ⚠️ API Changes
  * MXRoomDataSource: Added duration and sample parameters on the sendVoiceMessage method (vector-im/element-ios/issues/4090)
