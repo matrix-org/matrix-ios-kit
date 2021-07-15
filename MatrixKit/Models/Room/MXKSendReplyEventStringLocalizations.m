@@ -28,6 +28,7 @@
         _senderSentAnImage = [NSBundle mxk_localizedStringForKey:@"message_reply_to_sender_sent_an_image"];
         _senderSentAVideo = [NSBundle mxk_localizedStringForKey:@"message_reply_to_sender_sent_a_video"];
         _senderSentAnAudioFile = [NSBundle mxk_localizedStringForKey:@"message_reply_to_sender_sent_an_audio_file"];
+        _senderSentAVoiceMessage = [NSBundle mxk_localizedStringForKey:@"message_reply_to_sender_sent_a_voice_message"];
         _senderSentAFile = [NSBundle mxk_localizedStringForKey:@"message_reply_to_sender_sent_a_file"];
         _messageToReplyToPrefix = [NSBundle mxk_localizedStringForKey:@"message_reply_to_message_to_reply_to_prefix"];                
     }

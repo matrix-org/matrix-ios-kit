@@ -95,13 +95,13 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             {
                 _type = MXKAttachmentTypeImage;
             }
+            else if (event.isVoiceMessage)
+            {
+                _type = MXKAttachmentTypeVoiceMessage;
+            }
             else if ([msgtype isEqualToString:kMXMessageTypeAudio])
             {
-                if (eventContent[kMXMessageTypeVoiceMessage]) {
-                    _type = MXKAttachmentTypeVoiceMessage;
-                } else {
-                    _type = MXKAttachmentTypeAudio;
-                }
+                _type = MXKAttachmentTypeAudio;
             }
             else if ([msgtype isEqualToString:kMXMessageTypeVideo])
             {

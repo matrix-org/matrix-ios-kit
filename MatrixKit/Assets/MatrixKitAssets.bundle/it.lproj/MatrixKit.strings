@@ -447,7 +447,7 @@
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Hai reso visibili i messaggi futuri a chiunque, dal momento dell'entrata.";
 "call_more_actions_dialpad" = "Tastierino numerico";
 "call_more_actions_transfer" = "Trasferisci";
-"call_more_actions_audio_use_device" = "Usa audio da dispositivo";
+"call_more_actions_audio_use_device" = "Altoparlante dispositivo";
 "call_more_actions_audio_use_headset" = "Usa audio da cuffie";
 "call_more_actions_change_audio_device" = "Cambia dispositivo audio";
 "call_more_actions_unhold" = "Riprendi";
