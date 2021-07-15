@@ -483,7 +483,7 @@
 "notice_declined_video_call" = "%@ hat den Anruf abgelehnt";
 "resume_call" = "Fortsetzen";
 "call_more_actions_dialpad" = "Ziffernblatt";
-"call_more_actions_audio_use_device" = "Lautsprecher verwenden";
+"call_more_actions_audio_use_device" = "Lautsprecher";
 "call_transfer_to_user" = "Durchstellen zu %@";
 "call_video_with_user" = "Videoanruf mit %@";
 "call_voice_with_user" = "Sprachanruf mit %@";

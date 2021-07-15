@@ -437,7 +437,7 @@
 "notice_room_third_party_revoked_invite_by_you_for_dm" = "你撤回了对 %@ 的邀请";
 "call_more_actions_dialpad" = "拨号键盘";
 "call_more_actions_transfer" = "转移";
-"call_more_actions_audio_use_device" = "使用设备音频";
+"call_more_actions_audio_use_device" = "设备扬声器";
 "call_more_actions_audio_use_headset" = "使用耳机音频";
 "call_more_actions_change_audio_device" = "更改音频设备";
 "call_more_actions_unhold" = "继续";

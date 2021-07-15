@@ -488,7 +488,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 - (void)sendImage:(NSData*)imageData mimeType:(NSString*)mimetype success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure;
 
 /**
- Send an video to the room.
+ Send a video to the room.
 
  While sending, a fake event will be echoed in the messages list.
  Once complete, this local echo will be replaced by the event saved by the homeserver.
@@ -503,6 +503,23 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
     withThumbnail:(UIImage*)videoThumbnail
           success:(void (^)(NSString *eventId))success
           failure:(void (^)(NSError *error))failure;
+
+/**
+ Send a video to the room.
+
+ While sending, a fake event will be echoed in the messages list.
+ Once complete, this local echo will be replaced by the event saved by the homeserver.
+
+ @param videoAsset the AVAsset that represents the video to send.
+ @param videoThumbnail the UIImage hosting a video thumbnail.
+ @param success A block object called when the operation succeeds. It returns
+                the event id of the event generated on the homeserver
+ @param failure A block object called when the operation fails.
+ */
+- (void)sendVideoAsset:(AVAsset*)videoAsset
+         withThumbnail:(UIImage*)videoThumbnail
+               success:(void (^)(NSString *eventId))success
+               failure:(void (^)(NSError *error))failure;
 
 /**
  Send an audio file to the room.
@@ -529,12 +546,16 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
  @param audioFileLocalURL the local filesystem path of the audio file to send.
  @param mimeType (optional) the mime type of the file. Defaults to `audio/ogg`
+ @param duration the length of the voice message in milliseconds
+ @param samples an array of floating point values normalized to [0, 1], boxed within NSNumbers
  @param success A block object called when the operation succeeds. It returns
                 the event id of the event generated on the homeserver
  @param failure A block object called when the operation fails.
  */
 - (void)sendVoiceMessage:(NSURL *)audioFileLocalURL
                 mimeType:mimeType
+                duration:(NSTimeInterval)duration
+                 samples:(NSArray<NSNumber *> *)samples
                  success:(void (^)(NSString *))success
                  failure:(void (^)(NSError *))failure;
 
