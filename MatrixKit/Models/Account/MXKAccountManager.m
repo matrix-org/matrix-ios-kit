@@ -428,19 +428,15 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 - (BOOL)isAPNSAvailable
 {
     // [UIApplication isRegisteredForRemoteNotifications] tells whether your app can receive
-    // remote notifications or not. However receiving remote notifications does not mean it
-    // will also display them to the user.
-    // To check whether the user allowed or denied remote notification or in fact changed
-    // the notifications permissions later in iOS setting, we have to call
-    // [UIApplication currentUserNotificationSettings].
+    // remote notifications or not. Receiving remote notifications does not mean it will
+    // also display them to the user as they may have notifications set to deliver quietly.
     
     BOOL isRemoteNotificationsAllowed = NO;
     
     UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
     if (sharedApplication)
     {
-        UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
-        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
+        isRemoteNotificationsAllowed = [sharedApplication isRegisteredForRemoteNotifications];
         
         MXLogDebug(@"[MXKAccountManager][Push] isAPNSAvailable: The user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
     }
@@ -572,19 +568,15 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 - (BOOL)isPushAvailable
 {
     // [UIApplication isRegisteredForRemoteNotifications] tells whether your app can receive
-    // remote notifications or not. However receiving remote notifications does not mean it
-    // will also display them to the user.
-    // To check whether the user allowed or denied remote notification or in fact changed
-    // the notifications permissions later in iOS setting, we have to call
-    // [UIApplication currentUserNotificationSettings].
+    // remote notifications or not. Receiving remote notifications does not mean it will
+    // also display them to the user as they may have notifications set to deliver quietly.
     
     BOOL isRemoteNotificationsAllowed = NO;
     
     UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
     if (sharedApplication)
     {
-        UIUserNotificationSettings *settings = [sharedApplication currentUserNotificationSettings];
-        isRemoteNotificationsAllowed = (settings.types != UIUserNotificationTypeNone);
+        isRemoteNotificationsAllowed = [sharedApplication isRegisteredForRemoteNotifications];
         
         MXLogDebug(@"[MXKAccountManager][Push] isPushAvailable: The user %@ remote notification", (isRemoteNotificationsAllowed ? @"allowed" : @"denied"));
     }
