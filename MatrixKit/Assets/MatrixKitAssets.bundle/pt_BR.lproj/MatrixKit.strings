@@ -454,7 +454,7 @@
 "notice_declined_video_call" = "%@ declinou a chamada";
 "resume_call" = "Retomar";
 "call_more_actions_transfer" = "Transferir";
-"call_more_actions_audio_use_device" = "Usar Áudio de Dispositivo";
+"call_more_actions_audio_use_device" = "Falante de Dispositivo";
 "call_more_actions_audio_use_headset" = "Usar Áudio de Auscultador";
 "call_more_actions_change_audio_device" = "Mudar Dispositivo de Áudio";
 "call_video_with_user" = "Chamada de vídeo com %@";

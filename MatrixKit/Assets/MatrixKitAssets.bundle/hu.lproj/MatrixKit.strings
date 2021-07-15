@@ -447,7 +447,7 @@
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "A jövőbeni üzeneteket láthatóvá tetted mindenki számára a belépésük pillanatától.";
 "call_more_actions_dialpad" = "Tárcsázó számlap";
 "call_more_actions_transfer" = "Átadás";
-"call_more_actions_audio_use_device" = "Hangeszköz használata";
+"call_more_actions_audio_use_device" = "Eszköz hangszóró";
 "call_more_actions_audio_use_headset" = "Fejhallgató használata";
 "call_more_actions_change_audio_device" = "Hang eszköz megváltoztatása";
 "call_more_actions_unhold" = "Folytatás";
