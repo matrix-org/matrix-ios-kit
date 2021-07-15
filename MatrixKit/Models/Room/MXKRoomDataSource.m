@@ -44,6 +44,15 @@ NSString *const kMXKRoomDataSourceFailToLoadTimelinePosition = @"kMXKRoomDataSou
 NSString *const kMXKRoomDataSourceTimelineError = @"kMXKRoomDataSourceTimelineError";
 NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTimelineErrorErrorKey";
 
+NSString * const MXKRoomDataSourceErrorDomain = @"kMXKRoomDataSourceErrorDomain";
+
+typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
+    MXKRoomDataSourceErrorResendGeneric = 10001,
+    MXKRoomDataSourceErrorResendInvalidMessageType = 10002,
+    MXKRoomDataSourceErrorResendInvalidLocalFilePath = 10003,
+};
+
+
 @interface MXKRoomDataSource ()
 {
     /**
@@ -1959,7 +1968,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId. EventId: %@", event.eventId);
+    MXLogInfo(@"[MXKRoomDataSource] resendEventWithEventId. EventId: %@", event.eventId);
     
     // Check first whether the event is encrypted
     if ([event.wireType isEqualToString:kMXEventTypeStringRoomEncrypted])
@@ -2011,13 +2020,48 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 }
                 else
                 {
-                    MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                    failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendGeneric userInfo:nil]);
+                    MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
                 }
             }
             else
             {
                 // Resend the Matrix event by reusing the existing echo
                 [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
+            }
+        }
+        else if ([msgType isEqualToString:kMXMessageTypeAudio])
+        {
+            // Check whether the sending failed while uploading the data.
+            // If the content url corresponds to a upload id, the upload was not complete.
+            NSString *contentURL = event.content[@"url"];
+            if (!contentURL || ![contentURL hasPrefix:kMXMediaUploadIdPrefix])
+            {
+                // Resend the Matrix event by reusing the existing echo
+                [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
+                return;
+            }
+            
+            NSString *mimetype = event.content[@"info"][@"mimetype"];
+            NSString *localFilePath = [MXMediaManager cachePathForMatrixContentURI:contentURL andType:mimetype inFolder:_roomId];
+            NSURL *localFileURL = [NSURL URLWithString:localFilePath];
+            
+            if (![NSFileManager.defaultManager fileExistsAtPath:localFilePath]) {
+                failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidLocalFilePath userInfo:nil]);
+                MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend voice message, invalid file path.");
+                return;
+            }
+            
+            // Remove the local echo.
+            [self removeEventWithEventId:eventId];
+            
+            if (event.isVoiceMessage) {
+                NSNumber *duration = event.content[kMXMessageContentKeyExtensibleAudio][kMXMessageContentKeyExtensibleAudioDuration];
+                NSArray<NSNumber *> *samples = event.content[kMXMessageContentKeyExtensibleAudio][kMXMessageContentKeyExtensibleAudioWaveform];
+                
+                [self sendVoiceMessage:localFileURL mimeType:mimetype duration:duration.doubleValue samples:samples success:success failure:failure];
+            } else {
+                [self sendAudioFile:localFileURL mimeType:mimetype success:success failure:failure];
             }
         }
         else if ([msgType isEqualToString:kMXMessageTypeVideo])
@@ -2029,6 +2073,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 // TODO: Support resend on attached video when upload has been failed.
                 MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend attached video (upload was not complete)");
+                failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
             }
             else
             {
@@ -2062,7 +2107,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 }
                 else
                 {
-                    MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                    failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendGeneric userInfo:nil]);
+                    MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
                 }
             }
             else
@@ -2073,12 +2119,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
         else
         {
-            MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+            failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
+            MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
         }
     }
     else
     {
-        MXLogDebug(@"[MXKRoomDataSource] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", event.type);
+        failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
+        MXLogWarning(@"[MXKRoomDataSource] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", event.type);
     }
 }
 
