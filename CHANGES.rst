@@ -5,6 +5,30 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Changes in 0.15.4 (2021-07-15)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
  * MXKAttachment: Add support for all voice message types (vector-im/element-ios/issues/4094).
  * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: Add methods to send videos as `AVAsset` objects (vector-im/element-ios/issues/4483).
  * MXKSendReplyEventStringLocalizations: Added senderSentAVoiceMessage property
@@ -24,6 +48,9 @@ Changes to be released in next version
 
 Others
  * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.4)).
 
 Changes in 0.15.3 (2021-06-30)
 =================================================
