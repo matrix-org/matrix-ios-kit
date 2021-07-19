@@ -26,7 +26,7 @@
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
 "login_home_server_title" = "Homeserver URL:";
 "login_home_server_info" = "Your homeserver stores all your conversations and account data";
-"login_identity_server_title" = "Identity Server URL:";
+"login_identity_server_title" = "Identity server URL:";
 "login_identity_server_info" = "Matrix provides identity servers to track which emails etc. belong to which Matrix IDs. Only https://matrix.org currently exists.";
 "login_user_id_placeholder" = "Matrix ID (e.g. @bob:matrix.org or bob)";
 "login_password_placeholder" = "Password";
@@ -36,8 +36,8 @@
 "login_email_placeholder" = "Email address";
 "login_prompt_email_token" = "Please enter your email validation token:";
 "login_error_title" = "Login Failed";
-"login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
-"login_error_do_not_support_login_flows" = "Currently we do not support any or all login flows defined by this Home Server";
+"login_error_no_login_flow" = "We failed to retrieve authentication information from this homeserver";
+"login_error_do_not_support_login_flows" = "Currently we do not support any or all login flows defined by this homeserver";
 "login_error_registration_is_not_supported" = "Registration is not currently supported";
 "login_error_forbidden" = "Invalid username/password";
 "login_error_unknown_token" = "The access token specified was not recognised";
