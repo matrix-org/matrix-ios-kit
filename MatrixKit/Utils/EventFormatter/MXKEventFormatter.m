@@ -2004,6 +2004,10 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     return [defaultRoomSummaryUpdater session:session updateRoomSummary:summary withServerRoomSummary:serverRoomSummary roomState:roomState];
 }
 
+- (BOOL)session:(MXSession *)session updateRoomSummaryLocalUnreadEventCount:(MXRoomSummary *)summary withTypeIn:(NSArray *)types
+{
+    return [defaultRoomSummaryUpdater session:session updateRoomSummaryLocalUnreadEventCount:summary withTypeIn:types];
+}
 
 #pragma mark - Conversion private methods
 
