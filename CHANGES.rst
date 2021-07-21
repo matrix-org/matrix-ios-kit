@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKEventFormatter: Update MXRoomSummaryUpdating conformance for MXRoomSummary.localUnreadEventCount caching (vector-im/element-ios/issues/4585).
 
 🐛 Bugfix
  * 
