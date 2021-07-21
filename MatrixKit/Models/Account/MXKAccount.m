@@ -622,7 +622,8 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
 - (NSMutableDictionary<NSString *, id<NSCoding>> *)others
 {
-    if(_others == nil) {
+    if(_others == nil) 
+    {
         _others = [NSMutableDictionary dictionary];
     }
     
