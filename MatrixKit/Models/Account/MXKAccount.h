@@ -149,6 +149,11 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
 @property (nonatomic, readonly) BOOL pushNotificationServiceIsActive;
 
 /**
+ Transient information storage.
+ */
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, id<NSCoding>> *others;
+
+/**
  Enable Push notification based on Apple Push Notification Service (APNS).
 
  This method creates or removes a pusher on the homeserver.

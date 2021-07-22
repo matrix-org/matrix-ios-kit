@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXKAccount: added generic `others` storage dictionary (vector-im/element-ios/issues/4578)
 
 🐛 Bugfix
  * 
