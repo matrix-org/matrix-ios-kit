@@ -463,3 +463,4 @@
 "call_ringing" = "Helistan…";
 "e2e_passphrase_too_short" = "Salafraas on liiga lühike (pikkus peaks olema vähemalt %d tähemärki)";
 "microphone_access_not_granted_for_voice_message" = "Häälsõnumite salvestamiseks on vajalik ligipääs mikrofonile, kuid %@'l pole selleks õigusi";
+"message_reply_to_sender_sent_a_voice_message" = "saatis häälsõnumi.";
