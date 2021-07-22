@@ -554,7 +554,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 - (void)sendVoiceMessage:(NSURL *)audioFileLocalURL
                 mimeType:mimeType
-                duration:(NSTimeInterval)duration
+                duration:(NSUInteger)duration
                  samples:(NSArray<NSNumber *> *)samples
                  success:(void (^)(NSString *))success
                  failure:(void (^)(NSError *))failure;

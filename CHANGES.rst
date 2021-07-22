@@ -5,12 +5,64 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * MXKAttachment: Add support for all voice message types (vector-im/element-ios/issues/4094).
- * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: Add methods to send videos as `AVAsset` objects (vector-im/element-ios/issues/4483).
- * MXKSendReplyEventStringLocalizations: Added senderSentAVoiceMessage property
+ * MXKAccount: added generic `others` storage dictionary (vector-im/element-ios/issues/4578)
 
 🐛 Bugfix
  * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Changes in 0.15.5 (2021-07-22)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * 
+
+🐛 Bugfix
+ * 
+
+⚠️ API Changes
+ * 
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
+ * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.5)).
+
+Changes in 0.15.4 (2021-07-15)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAttachment: Add support for all voice message types (vector-im/element-ios/issues/4094).
+ * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: Add methods to send videos as `AVAsset` objects (vector-im/element-ios/issues/4483).
+ * MXKSendReplyEventStringLocalizations: Added senderSentAVoiceMessage property
+ * MXKRoomDataSource: Retrying failed audio and voice messages
+
+🐛 Bugfix
+ * MXKRoomDataSource: Calling completion blocks for unsupported or failed message retries
 
 ⚠️ API Changes
  * MXRoomDataSource: Added duration and sample parameters on the sendVoiceMessage method (vector-im/element-ios/issues/4090)
@@ -23,6 +75,9 @@ Changes to be released in next version
 
 Others
  * 
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.4)).
 
 Changes in 0.15.3 (2021-06-30)
 =================================================

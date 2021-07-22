@@ -447,7 +447,7 @@
 "notice_room_name_removed_for_dm" = "%@ a supprimé le nom";
 "call_more_actions_dialpad" = "Pavé de numérotation";
 "call_more_actions_transfer" = "Transférer";
-"call_more_actions_audio_use_device" = "Utiliser l’audio de l’appareil";
+"call_more_actions_audio_use_device" = "Haut parleur de l’appareil";
 "call_more_actions_audio_use_headset" = "Utiliser les écouteurs";
 "call_more_actions_change_audio_device" = "Changer de périphérique audio";
 "call_more_actions_unhold" = "Reprendre";
@@ -464,3 +464,4 @@
 "call_ringing" = "Sonnerie…";
 "e2e_passphrase_too_short" = "La phrase secrète est trop courte, elle doit compter au moins %d caractères";
 "microphone_access_not_granted_for_voice_message" = "Pour les messages vocaux, l’accès au microphone est indispensable mais %@ n’a pas les permissions nécessaires";
+"message_reply_to_sender_sent_a_voice_message" = "envoyer un message vocal.";
