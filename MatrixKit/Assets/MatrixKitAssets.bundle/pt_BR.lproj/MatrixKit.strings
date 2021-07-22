@@ -464,3 +464,4 @@
 "call_consulting_with_user" = "Consultando com %@";
 "e2e_passphrase_too_short" = "Frasepasse curta demais (Ela deve ser a um mínimo %d caracteres em comprimento)";
 "microphone_access_not_granted_for_voice_message" = "Mensagens de voz requerem acesso ao Microfone mas %@ não tem permissão para usá-lo";
+"message_reply_to_sender_sent_a_voice_message" = "enviou uma mensagem de voz.";

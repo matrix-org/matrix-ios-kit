@@ -464,3 +464,4 @@
 "call_ringing" = "Sta squillando…";
 "e2e_passphrase_too_short" = "Password troppo corta (deve avere almeno %d caratteri)";
 "microphone_access_not_granted_for_voice_message" = "I messaggi vocali hanno bisogno dell'accesso al microfono, ma %@ non ha il permesso di usarlo";
+"message_reply_to_sender_sent_a_voice_message" = "inviato un messaggio vocale.";
