@@ -296,7 +296,7 @@
 "notice_room_join" = "%@ betrat den Raum";
 "notice_room_leave" = "%@ hat den Raum verlassen";
 "notice_room_reject" = "%@ lehnte die Einladung ab";
-"notice_room_kick" = "%@ kickte %@";
+"notice_room_kick" = "%@ hat %@ entfernt";
 "notice_room_unban" = "%@ entsperrte %@";
 "notice_room_ban" = "%@ sperrte %@";
 "notice_room_withdraw" = "%@ hat %@s Einladung zurückgezogen";
@@ -326,7 +326,7 @@
 "notice_room_join_by_you" = "Du bist beigetreten";
 "notice_room_leave_by_you" = "Du bist ausgetreten";
 "notice_room_reject_by_you" = "Du hast die Einladung abgelehnt";
-"notice_room_kick_by_you" = "Du hast %@ gekickt";
+"notice_room_kick_by_you" = "Du hast %@ entfernt";
 "notice_room_unban_by_you" = "Du hast %@ entbannt";
 "notice_room_ban_by_you" = "Du hast %@ gebannt";
 "notice_room_withdraw_by_you" = "Du hast die Einladung von %@ zurückgenommen";
@@ -395,7 +395,7 @@
 "num_members_one" = "%@ Benutzer";
 "num_members_other" = "%@ Benutzer";
 "invite" = "Einladen";
-"kick" = "Kicken";
+"kick" = "Entfernen";
 "ban" = "Sperren";
 "unban" = "Entsperren";
 "message_unsaved_changes" = "Es gibt nicht gespeicherte Änderungen. Verlassen wird diese verwerfen.";
@@ -491,3 +491,4 @@
 "e2e_passphrase_too_short" = "Passphrase zu kurz (Minimum sind %d Zeichen)";
 "call_consulting_with_user" = "Bei %@ anfragen";
 "microphone_access_not_granted_for_voice_message" = "%@ fehlt die Berechtigung, für Sprachnachrichten auf das Mikrofon zuzugreifen";
+"message_reply_to_sender_sent_a_voice_message" = "hat eine Sprachnachricht gesendet.";
