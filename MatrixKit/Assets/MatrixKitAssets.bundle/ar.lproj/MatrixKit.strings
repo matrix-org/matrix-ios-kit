@@ -529,7 +529,7 @@
 "network_error_not_reachable" = "يُرجَى التَّحَقُّق مِن اِتِّصالَكَ بِالشَبَكَة";
 "call_more_actions_dialpad" = "لَوحَةُ الاِتِّصَال";
 "call_more_actions_transfer" = "النَّقل";
-"call_more_actions_audio_use_device" = "اِستِخدامُ صَوتَ الجِهَاز";
+"call_more_actions_audio_use_device" = "مُكَبِّر صَوت الجِّهَاز";
 "call_more_actions_audio_use_headset" = "اِستِخدامُ صَوتَ سمَّاعَةِ الرَّأس";
 "call_more_actions_change_audio_device" = "تَغيِيرُ جِهَازِ الصَوت";
 "call_more_actions_unhold" = "الاِستِئنَاف";
@@ -545,3 +545,5 @@
 "call_voice_with_user" = "مُكالَمَةٌ صَوتيَّةٌ مَع %@";
 "call_ringing" = "الرَّنِينُ جَارٍ…";
 "e2e_passphrase_too_short" = "عِبارَة المُرُور قَصِيرَةٌ جِدًا (يَجِبُ ألَّا يَقِلَّ طُولهَا عَن %d أحرف)";
+"microphone_access_not_granted_for_voice_message" = "الرَسائِلُ الصَوتيَّةُ تتطَلَبُ الوصُولَ إلَى المِيكرُوفُون لَكِنَ %@ ليسَ لَديهِ إذنٌ لِاستِخدَامِه";
+"message_reply_to_sender_sent_a_voice_message" = "أرسَلَ رِسَالَةً صَوتيَّة.";
