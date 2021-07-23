@@ -17,6 +17,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <Contacts/Contacts.h>
 
 #import <MatrixSDK/MatrixSDK.h>
 
