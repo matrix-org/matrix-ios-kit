@@ -18,7 +18,7 @@
 #import "MXKTools.h"
 
 @import MatrixSDK;
-@import AddressBook;
+@import Contacts;
 @import libPhoneNumber_iOS;
 @import DTCoreText;
 
@@ -796,34 +796,23 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
              completionHandler:(void (^)(BOOL granted))handler
 {
     // Check if the application is allowed to list the contacts
-    ABAuthorizationStatus cbStatus = ABAddressBookGetAuthorizationStatus();
-    if (cbStatus == kABAuthorizationStatusAuthorized)
+    CNAuthorizationStatus authStatus = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+    if (authStatus == CNAuthorizationStatusAuthorized)
     {
         handler(YES);
     }
-    else if (cbStatus == kABAuthorizationStatusNotDetermined)
+    else if (authStatus == CNAuthorizationStatusNotDetermined)
     {
         // Request address book access
-        ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
-        if (ab)
-        {
-            ABAddressBookRequestAccessWithCompletion(ab, ^(bool granted, CFErrorRef error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-
-                    handler(granted);
-
-                });
+        [[CNContactStore new] requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                handler(granted);
+                
             });
-
-            CFRelease(ab);
-        }
-        else
-        {
-            // No phonebook
-            handler(YES);
-        }
+        }];
     }
-    else if (cbStatus == kABAuthorizationStatusDenied && viewController && manualChangeMessage)
+    else if (authStatus == CNAuthorizationStatusDenied && viewController && manualChangeMessage)
     {
         // Access not granted to the local contacts
         // Display manualChangeMessage
