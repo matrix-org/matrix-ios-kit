@@ -9,6 +9,7 @@ Changes to be released in next version
 
 🐛 Bugfix
  * MXKRoomDataSource: Safe access to `bubbles` array on pagination (vector-im/element-ios/issues/4605).
+ * MXKRoomViewController: Fix initial timeline position when viewing a room for the second time.
 
 ⚠️ API Changes
  * 
