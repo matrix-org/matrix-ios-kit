@@ -76,7 +76,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     
     // Background sync management
     MXOnBackgroundSyncDone backgroundSyncDone;
-    MXOnBackgroundSyncFail backgroundSyncfails;
+    MXOnBackgroundSyncFail backgroundSyncFails;
     NSTimer* backgroundSyncTimer;
 
     // Observe UIApplicationSignificantTimeChangeNotification to refresh MXRoomSummaries on time formatting change.
@@ -88,6 +88,8 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
 @property (nonatomic, strong) id<MXBackgroundTask> backgroundTask;
 @property (nonatomic, strong) id<MXBackgroundTask> backgroundSyncBgTask;
+
+@property (nonatomic, strong) NSMutableDictionary<NSString *, id<NSCoding>> *others;
 
 @end
 
@@ -225,6 +227,8 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         
         _showDecryptedContentInNotifications = [coder decodeBoolForKey:@"showDecryptedContentInNotifications"];
         
+        _others = [coder decodeObjectForKey:@"others"];
+        
         // Refresh device information
         [self loadDeviceInformation:nil failure:nil];
     }
@@ -284,6 +288,8 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
     
     [coder encodeBool:_showDecryptedContentInNotifications forKey:@"showDecryptedContentInNotifications"];
+    
+    [coder encodeObject:_others forKey:@"others"];
 }
 
 #pragma mark - Properties
@@ -612,6 +618,16 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
+}
+
+- (NSMutableDictionary<NSString *, id<NSCoding>> *)others
+{
+    if(_others == nil) 
+    {
+        _others = [NSMutableDictionary dictionary];
+    }
+    
+    return _others;
 }
 
 #pragma mark - Matrix user's profile
@@ -1835,9 +1851,9 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         backgroundSyncTimer = nil;
     }
     
-    if (backgroundSyncfails && error)
+    if (backgroundSyncFails && error)
     {
-        backgroundSyncfails(error);
+        backgroundSyncFails(error);
     }
     
     if (backgroundSyncDone && !error)
@@ -1846,7 +1862,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     
     backgroundSyncDone = nil;
-    backgroundSyncfails = nil;
+    backgroundSyncFails = nil;
     
     // End background task
     if (self.backgroundSyncBgTask.isRunning)
@@ -1874,7 +1890,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
             MXLogDebug(@"[MXKAccount] starts a background Sync");
             
             backgroundSyncDone = success;
-            backgroundSyncfails = failure;
+            backgroundSyncFails = failure;
             
             MXWeakify(self);
             
