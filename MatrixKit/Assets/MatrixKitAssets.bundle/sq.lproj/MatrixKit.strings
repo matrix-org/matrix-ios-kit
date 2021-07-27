@@ -464,3 +464,4 @@
 "call_ringing" = "Po i bihet ziles…";
 "e2e_passphrase_too_short" = "Frazëkalim shumë i shkurtër (Duhet të jetë e pakta %d shenja i gjatë)";
 "microphone_access_not_granted_for_voice_message" = "Mesazhet zanorë lypin përdorim të Mikrofonit, por %@ s’ka leje përdorimi të tij";
+"message_reply_to_sender_sent_a_voice_message" = "dërgoi një mesazh zanor.";

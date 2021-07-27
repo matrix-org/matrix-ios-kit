@@ -525,3 +525,4 @@
 "call_ringing" = "Bellen…";
 "e2e_passphrase_too_short" = "Wachtwoord is te kort (hij moet minimaal %d tekens lang zijn)";
 "microphone_access_not_granted_for_voice_message" = "Spraakberichten vereisen toegang tot de Microfoon maar %@ heeft geen toestemming om het te gebruiken";
+"message_reply_to_sender_sent_a_voice_message" = "heeft een spraakbericht gestuurd.";
