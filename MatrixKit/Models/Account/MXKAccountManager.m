@@ -428,8 +428,8 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 - (BOOL)isAPNSAvailable
 {
     // [UIApplication isRegisteredForRemoteNotifications] tells whether your app can receive
-    // remote notifications or not. Receiving remote notifications does not mean it will
-    // also display them to the user as they may have notifications set to deliver quietly.
+    // remote notifications or not. Receiving remote notifications does not guarantee it will
+    // display them to the user as they may have notifications set to deliver quietly.
     
     BOOL isRemoteNotificationsAllowed = NO;
     
@@ -568,8 +568,8 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
 - (BOOL)isPushAvailable
 {
     // [UIApplication isRegisteredForRemoteNotifications] tells whether your app can receive
-    // remote notifications or not. Receiving remote notifications does not mean it will
-    // also display them to the user as they may have notifications set to deliver quietly.
+    // remote notifications or not. Receiving remote notifications does not guarantee it will
+    // display them to the user as they may have notifications set to deliver quietly.
     
     BOOL isRemoteNotificationsAllowed = NO;
     
