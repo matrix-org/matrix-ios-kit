@@ -79,16 +79,16 @@
                    @"v": @"v1",
                    @"hashes": @{
                            @"sha256": @"LYG/orOViuFwovJpv2YMLSsmVKwLt7pY3f8SYM7KU5E"
-                           },
+                   },
                    @"key": @{
                            @"kty": @"oct",
                            @"key_ops": @[@"encrypt",@"decrypt"],
                            @"k": @"__________________________________________8",
                            @"alg": @"A256CTR"
-                           },
+                   },
                    @"iv": @"/////////////////////w"
-                   }, @"YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ"]
-     ];
+             }, @"YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ"]
+        ];
     
     for (NSArray *vector in testVectors) {
         NSString *inputCiphertext = vector[0];
@@ -99,13 +99,15 @@
         NSInputStream *inputStream = [NSInputStream inputStreamWithData:ctData];
         NSOutputStream *outputStream = [NSOutputStream outputStreamToMemory];
         
-        NSError *err = [MXEncryptedAttachments decryptAttachment:inputInfo inputStream:inputStream outputStream:outputStream];
-        XCTAssertNil(err);
-        NSData *gotData = [outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
-        
-        NSData *wantData = [[NSData alloc] initWithBase64EncodedString:[MXBase64Tools padBase64:want] options:0];
-        
-        XCTAssertEqualObjects(wantData, gotData, "Decrypted data did not match expectation.");
+        [MXEncryptedAttachments decryptAttachment:inputInfo inputStream:inputStream outputStream:outputStream success:^{
+            NSData *gotData = [outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
+            
+            NSData *wantData = [[NSData alloc] initWithBase64EncodedString:[MXBase64Tools padBase64:want] options:0];
+            
+            XCTAssertEqualObjects(wantData, gotData, "Decrypted data did not match expectation.");
+        } failure:^(NSError *error) {
+            XCTFail();
+        }];
     }
 }
 

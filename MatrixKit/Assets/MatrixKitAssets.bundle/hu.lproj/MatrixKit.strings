@@ -464,3 +464,4 @@
 "call_ringing" = "Hívás…";
 "e2e_passphrase_too_short" = "A jelmondat túl rövid (legalább %d karakter hosszúnak kell lennie)";
 "microphone_access_not_granted_for_voice_message" = "Ha hangüzenetekhez a mikrofonhoz szükséges a hozzáférés, de %@ nem rendelkezik a használatához szükséges engedéllyel";
+"message_reply_to_sender_sent_a_voice_message" = "hang üzenet elküldve.";
