@@ -12,7 +12,7 @@ Changes to be released in next version
  * MXKRoomViewController: Fix initial timeline position when viewing a room for the second time.
 
 ⚠️ API Changes
- * 
+ * MXKAccountManager: `isAPNSAvailable` and `isPushAvailable` now only indicate the availability of notifications and not their visibility as well.
 
 🗣 Translations
  * 
