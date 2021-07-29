@@ -1,4 +1,4 @@
-Changes to be released in next version
+Changes in 0.15.6 (2021-07-29)
 =================================================
 
 ✨ Features
@@ -22,6 +22,9 @@ Changes to be released in next version
 
 Others
  * Separated CI jobs into individual actions
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.6)).
 
 Changes in 0.15.5 (2021-07-22)
 =================================================
