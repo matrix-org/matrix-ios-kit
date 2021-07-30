@@ -21,6 +21,7 @@
 #import "MXKCellData.h"
 
 @class MXKSessionRecentsDataSource;
+@class MXSpaceChildInfo;
 
 /**
  `MXKRecentCellDataStoring` defines a protocol a class must conform in order to store recent cell data
@@ -39,6 +40,10 @@
  The `MXRoomSummary` instance of the room for the recent displayed by the cell.
  */
 @property (nonatomic, readonly) MXRoomSummary *roomSummary;
+/**
+ The `MXSpaceChildInfo` instance of the room for the recent displayed by the cell.
+ */
+@property (nonatomic, readonly) MXSpaceChildInfo *spaceChildInfo;
 
 @property (nonatomic, readonly) NSString *roomDisplayname;
 @property (nonatomic, readonly) NSString *lastEventTextMessage;
@@ -58,6 +63,15 @@
  @return the newly created instance.
  */
 - (instancetype)initWithRoomSummary:(MXRoomSummary*)roomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource;
+
+/**
+ Create a new `MXKCellData` object for a new recent cell.
+
+ @param spaceChildInfo the `MXSpaceChildInfo` object that has data about the room.
+ @param recentListDataSource the `MXKSessionRecentsDataSource` object that will use this instance.
+ @return the newly created instance.
+ */
+- (instancetype)initWithSpaceChildInfo:(MXSpaceChildInfo*)spaceChildInfo andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource;
 
 /**
  The `MXKSessionRecentsDataSource` object calls this method when it detects a change in the room.

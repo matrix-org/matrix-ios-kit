@@ -45,7 +45,17 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
      Do not react on every summary change
      */
     MXThrottler *roomSummaryChangeThrottler;
+    
+    /**
+     Last received suggested rooms per space ID
+     */
+    NSMutableDictionary<NSString*, NSArray<MXSpaceChildInfo *> *> *lastSuggestedRooms;
 }
+
+/**
+ Additional suggestedRooms related to the current selected Space
+ */
+@property (nonatomic, strong) NSArray<MXSpaceChildInfo *> *suggestedRooms;
 
 @end
 
@@ -60,6 +70,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         
         internalCellDataArray = [NSMutableArray array];
         filteredCellDataArray = nil;
+        
+        lastSuggestedRooms = [NSMutableDictionary new];
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
@@ -83,6 +95,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     cellDataArray = nil;
     internalCellDataArray = nil;
     filteredCellDataArray = nil;
+    lastSuggestedRooms = nil;
     
     searchPatternsList = nil;
     
@@ -114,6 +127,26 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     }
     
     _currentSpace = currentSpace;
+    
+    self.suggestedRooms = _currentSpace ? lastSuggestedRooms[_currentSpace.spaceId] : nil;
+    
+    if (self.currentSpace)
+    {
+        MXWeakify(self);
+        [self.mxSession.spaceService getSpaceChildrenForSpaceWithId:self.currentSpace.spaceId suggestedOnly:YES limit:5 success:^(MXSpaceChildrenSummary * _Nonnull childrenSummary) {
+            MXLogDebug(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId %@: %ld found", self.currentSpace.spaceId, childrenSummary.childInfos.count);
+            MXStrongifyAndReturnIfNil(self);
+            self->lastSuggestedRooms[currentSpace.spaceId] = childrenSummary.childInfos;
+            self.suggestedRooms = childrenSummary.childInfos;
+        } failure:^(NSError * _Nonnull error) {
+            MXLogError(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId failed with error: %@", error);
+        }];
+    }
+}
+
+-(void)setSuggestedRooms:(NSArray<MXSpaceChildInfo *> *)suggestedRooms
+{
+    _suggestedRooms = suggestedRooms;
     [self loadData];
 }
 
@@ -252,6 +285,15 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
                     [internalCellDataArray addObject:cellData];
                 }
             }
+        }
+    }
+    
+    for (MXSpaceChildInfo *childInfo in _suggestedRooms)
+    {
+        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithSpaceChildInfo:childInfo andRecentListDataSource:self];
+        if (cellData)
+        {
+            [internalCellDataArray addObject:cellData];
         }
     }
 

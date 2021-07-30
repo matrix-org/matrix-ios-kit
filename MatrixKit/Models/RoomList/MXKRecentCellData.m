@@ -19,9 +19,10 @@
 
 #import "MXKSessionRecentsDataSource.h"
 #import "MXEvent+MatrixKit.h"
+#import <MatrixSDK/MatrixSDK-Swift.h>
 
 @implementation MXKRecentCellData
-@synthesize roomSummary, recentsDataSource, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
+@synthesize roomSummary, spaceChildInfo, recentsDataSource, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
 
 - (instancetype)initWithRoomSummary:(MXRoomSummary*)theRoomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource
 {
@@ -38,19 +39,36 @@
     return self;
 }
 
+- (instancetype)initWithSpaceChildInfo:(MXSpaceChildInfo*)theSpaceChildInfo andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource
+{
+    self = [self init];
+    if (self)
+    {
+        spaceChildInfo = theSpaceChildInfo;
+        recentsDataSource = recentListDataSource;
+
+        [self update];
+    }
+    return self;
+}
+
 - (void)update
 {
     // Keep ref on displayed last event
-    roomDisplayname = roomSummary.displayname;
+    roomDisplayname = spaceChildInfo ? spaceChildInfo.name : roomSummary.displayname;
 
-    lastEventTextMessage = roomSummary.lastMessage.text;
-    lastEventAttributedTextMessage = roomSummary.lastMessage.attributedText;
+    lastEventTextMessage = spaceChildInfo ? spaceChildInfo.topic : roomSummary.lastMessage.text;
+    lastEventAttributedTextMessage = spaceChildInfo ? nil : roomSummary.lastMessage.attributedText;
 }
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:roomSummary];
+    if (roomSummary)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:roomSummary];
+    }
     roomSummary = nil;
+    spaceChildInfo = nil;
 
     lastEventTextMessage = nil;
     lastEventAttributedTextMessage = nil;
