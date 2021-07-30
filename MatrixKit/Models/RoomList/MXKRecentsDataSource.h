@@ -57,6 +57,8 @@
  */
 @property (nonatomic, readonly) NSArray* searchPatternsList;
 
+@property (nonatomic, strong) MXSpace *currentSpace;
+
 #pragma mark - Configuration
 
 /**
