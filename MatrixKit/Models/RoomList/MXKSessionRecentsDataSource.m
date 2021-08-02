@@ -18,6 +18,7 @@
 #import "MXKSessionRecentsDataSource.h"
 
 #import "MXKRoomDataSourceManager.h"
+#import <MatrixSDK/MatrixSDK-Swift.h>
 
 #pragma mark - Constant definitions
 NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
@@ -103,6 +104,17 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             [self sortCellDataAndNotifyChanges];
         }
     }
+}
+
+- (void)setCurrentSpace:(MXSpace *)currentSpace
+{
+    if (_currentSpace == currentSpace)
+    {
+        return;
+    }
+    
+    _currentSpace = currentSpace;
+    [self loadData];
 }
 
 #pragma mark -
@@ -235,7 +247,10 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
-                [internalCellDataArray addObject:cellData];
+                if (self.currentSpace == nil || [self.mxSession.spaceService isRoomWithId:roomSummary.roomId descendantOf:self.currentSpace.spaceId])
+                {
+                    [internalCellDataArray addObject:cellData];
+                }
             }
         }
     }
