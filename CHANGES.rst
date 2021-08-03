@@ -36,7 +36,7 @@ Changes in 0.15.6 (2021-07-29)
  * MXKRoomViewController: Fix initial timeline position when viewing a room for the second time.
 
 ⚠️ API Changes
- * 
+ * MXKAccountManager: `isAPNSAvailable` and `isPushAvailable` now only indicate the availability of notifications and not their visibility as well (vector-im/element-ios/issues/2368).
 
 🗣 Translations
  * 
