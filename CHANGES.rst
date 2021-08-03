@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * MXKAccount: added generic `others` storage dictionary (vector-im/element-ios/issues/4578)
+ * 
 
 🐛 Bugfix
  * 
@@ -20,7 +20,35 @@ Changes to be released in next version
  * 
 
 Others
+ * 
+
+Changes in 0.15.6 (2021-07-29)
+=================================================
+
+✨ Features
+ * 
+
+🙌 Improvements
+ * MXKAccount: added generic `others` storage dictionary (vector-im/element-ios/issues/4578)
+
+🐛 Bugfix
+ * MXKRoomDataSource: Safe access to `bubbles` array on pagination (vector-im/element-ios/issues/4605).
+ * MXKRoomViewController: Fix initial timeline position when viewing a room for the second time.
+
+⚠️ API Changes
+ * MXKAccountManager: `isAPNSAvailable` and `isPushAvailable` now only indicate the availability of notifications and not their visibility as well (vector-im/element-ios/issues/2368).
+
+🗣 Translations
+ * 
+    
+🧱 Build
+ * 
+
+Others
  * Separated CI jobs into individual actions
+
+Improvements:
+ * Upgrade MatrixSDK version ([v0.19.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.6)).
 
 Changes in 0.15.5 (2021-07-22)
 =================================================

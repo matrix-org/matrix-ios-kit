@@ -70,7 +70,7 @@ extern NSString *const MXKAccountManagerDataType;
 @property (nonatomic, copy) NSData *apnsDeviceToken;
 
 /**
- The APNS status: YES when app is registered for remote notif, and devive token is known.
+ The APNS status: YES when app is registered for remote notif, and device token is known.
  */
 @property (nonatomic) BOOL isAPNSAvailable;
 
