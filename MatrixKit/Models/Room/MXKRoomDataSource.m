@@ -1607,45 +1607,48 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     CGFloat minMessageHeight = CGFLOAT_MAX;
     CGFloat bubblesTotalHeight = 0;
 
-    // Check whether data has been aldready loaded
-    if (bubbles.count)
+    @synchronized(bubbles)
     {
-        NSUInteger eventsCount = 0;
-        for (NSInteger i = bubbles.count - 1; i >= 0; i--)
+        // Check whether data has been aldready loaded
+        if (bubbles.count)
         {
-            id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
-            eventsCount += bubbleData.events.count;
-            
-            CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
-            // Sanity check
-            if (bubbleHeight)
+            NSUInteger eventsCount = 0;
+            for (NSInteger i = bubbles.count - 1; i >= 0; i--)
             {
-                bubblesTotalHeight += bubbleHeight;
-
-                if (bubblesTotalHeight > rect.size.height)
-                {
-                    // No need to compute more cells heights, there are enough to fill the rect
-                    MXLogDebug(@"[MXKRoomDataSource] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", bubbles.count - i, eventsCount);
-                    break;
-                }
+                id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
+                eventsCount += bubbleData.events.count;
                 
-                // Compute the minimal height an event takes
-                minMessageHeight = MIN(minMessageHeight, bubbleHeight / bubbleData.events.count);
+                CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
+                // Sanity check
+                if (bubbleHeight)
+                {
+                    bubblesTotalHeight += bubbleHeight;
+
+                    if (bubblesTotalHeight > rect.size.height)
+                    {
+                        // No need to compute more cells heights, there are enough to fill the rect
+                        MXLogDebug(@"[MXKRoomDataSource] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", bubbles.count - i, eventsCount);
+                        break;
+                    }
+                    
+                    // Compute the minimal height an event takes
+                    minMessageHeight = MIN(minMessageHeight, bubbleHeight / bubbleData.events.count);
+                }
             }
         }
-    }
-    else if (minRequestMessagesCount && [self canPaginate:direction])
-    {
-        MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
-        // Give a chance to load data from the store before doing homeserver requests
-        // Reuse minRequestMessagesCount because we need to provide a number.
-        [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
+        else if (minRequestMessagesCount && [self canPaginate:direction])
+        {
+            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
+            // Give a chance to load data from the store before doing homeserver requests
+            // Reuse minRequestMessagesCount because we need to provide a number.
+            [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
 
-            // Then retry
-            [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
+                // Then retry
+                [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
 
-        } failure:failure];
-        return;
+            } failure:failure];
+            return;
+        }
     }
     
     // Is there enough cells to cover all the requested height?
