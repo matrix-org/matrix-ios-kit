@@ -44,7 +44,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @synthesize syncWithLazyLoadOfRoomMembers;
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
 @synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
-@synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
+@synthesize syncLocalContacts, syncLocalContactsPermissionRequested, syncLocalContactsPermissionOpenedSystemSettings, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 @synthesize enableCallKit;
 @synthesize sharedUserDefaults;
@@ -561,6 +561,30 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     else
     {
         syncLocalContactsPermissionRequested = theSyncLocalContactsPermissionRequested;
+    }
+}
+
+- (BOOL)syncLocalContactsPermissionOpenedSystemSettings
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"syncLocalContactsPermissionOpenedSystemSettings"];
+    }
+    else
+    {
+        return syncLocalContactsPermissionOpenedSystemSettings;
+    }
+}
+
+- (void)setSyncLocalContactsPermissionOpenedSystemSettings:(BOOL)theSyncLocalContactsPermissionOpenedSystemSettings
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:theSyncLocalContactsPermissionOpenedSystemSettings forKey:@"syncLocalContactsPermissionOpenedSystemSettings"];
+    }
+    else
+    {
+        syncLocalContactsPermissionOpenedSystemSettings = theSyncLocalContactsPermissionOpenedSystemSettings;
     }
 }
 

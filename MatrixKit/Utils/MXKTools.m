@@ -23,6 +23,7 @@
 @import DTCoreText;
 
 #import "NSBundle+MatrixKit.h"
+#import "MXKAppSettings.h"
 
 #pragma mark - Constants definitions
 
@@ -795,6 +796,14 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
      showPopUpInViewController:(UIViewController *)viewController
              completionHandler:(void (^)(BOOL granted))handler
 {
+    [self checkAccessForContacts:nil           withManualChangeMessage:manualChangeMessage showPopUpInViewController:viewController completionHandler:handler];
+}
+
++ (void)checkAccessForContacts:(NSString *)manualChangeTitle
+       withManualChangeMessage:(NSString *)manualChangeMessage
+     showPopUpInViewController:(UIViewController *)viewController
+             completionHandler:(void (^)(BOOL granted))handler
+{
     // Check if the application is allowed to list the contacts
     CNAuthorizationStatus authStatus = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (authStatus == CNAuthorizationStatusAuthorized)
@@ -816,32 +825,36 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     {
         // Access not granted to the local contacts
         // Display manualChangeMessage
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:manualChangeTitle message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-        // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
-        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-        if (sharedApplication && UIApplicationOpenSettingsURLString)
-        {
-            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction * action) {
-                                                        
-                                                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                                                        [sharedApplication performSelector:@selector(openURL:) withObject:url];
-                                                        
-                                                        // Note: it does not worth to check if the user changes the permission
-                                                        // because iOS restarts the app in case of change of app privacy settings
-                                                        handler(NO);
-                                                        
-                                                    }]];
-        }
-        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
                                                     
                                                     handler(NO);
                                                     
                                                 }]];
+        
+        // Add a shortcut to the app settings (This requires the shared application instance)
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication)
+        {
+            UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                                                                       [MXKAppSettings standardAppSettings].syncLocalContactsPermissionOpenedSystemSettings = YES;
+                                                                       
+                                                                       NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                                                                       [sharedApplication performSelector:@selector(openURL:) withObject:url];
+                                                                       
+                                                                       // Note: it does not worth to check if the user changes the permission
+                                                                       // because iOS restarts the app in case of change of app privacy settings
+                                                                       handler(NO);
+                                                                    }];
+            
+            [alert addAction: settingsAction];
+            alert.preferredAction = settingsAction;
+        }
         
         [viewController presentViewController:alert animated:YES completion:nil];
     }
