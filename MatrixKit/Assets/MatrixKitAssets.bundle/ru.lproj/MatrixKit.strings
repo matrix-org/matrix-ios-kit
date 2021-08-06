@@ -458,7 +458,7 @@
 "notice_declined_video_call" = "%@ отменил(а) этот вызов";
 "resume_call" = "Возобновить";
 "call_transfer_to_user" = "Передача с %@";
-"call_consulting_with_user" = "Запрос с %@";
+"call_consulting_with_user" = "Общение с %@";
 "call_video_with_user" = "Видеовызов с %@";
 "call_voice_with_user" = "Голосовой вызов с %@";
 "call_ringing" = "Звонок…";
