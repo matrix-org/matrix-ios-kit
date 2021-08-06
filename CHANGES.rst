@@ -5,7 +5,7 @@ Changes to be released in next version
  * 
 
 🙌 Improvements
- * 
+ * MXCollectionViewCell: Reduced disk access when creating cells by caching UINib objects.
 
 🐛 Bugfix
  * 

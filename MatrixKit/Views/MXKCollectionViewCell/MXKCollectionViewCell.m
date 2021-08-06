@@ -21,14 +21,28 @@
 
 + (UINib *)nib
 {
-    // Check whether a nib file is available
-    NSBundle *mainBundle = [NSBundle bundleForClass:self.class];
-    NSString *path = [mainBundle pathForResource:NSStringFromClass([self class]) ofType:@"nib"];
-    if (path)
+    NSParameterAssert(NSThread.isMainThread);
+
+    // Nib cache lives forever. UINibs release resources on demand. Null means there is no nib.
+    static NSMutableDictionary<Class, id> *nibs;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        nibs = [[NSMutableDictionary alloc] init];
+    });
+
+    id result = nibs[(id)self];
+    if (!result)
     {
-        return [UINib nibWithNibName:NSStringFromClass([self class]) bundle:mainBundle];
+        NSString *className = NSStringFromClass(self);
+        NSBundle *bundle = [NSBundle bundleForClass:self];
+        NSString *path = [bundle pathForResource:className ofType:@"nib"];
+        if (path)
+        {
+            result = [UINib nibWithNibName:className bundle:bundle];
+        }
+        nibs[(id)self] = result ?: [NSNull null];
     }
-    return nil;
+    return result == [NSNull null] ? nil : result;
 }
 
 + (NSString*)defaultReuseIdentifier
@@ -53,9 +67,10 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
     // Check whether a xib is defined
-    if ([[self class] nib])
+    UINib *nib = [self.class nib];
+    if (nib)
     {
-        self = [[[self class] nib] instantiateWithOwner:nil options:nil].firstObject;
+        self = [nib instantiateWithOwner:nil options:nil].firstObject;
         self.frame = frame;
     }
     else
