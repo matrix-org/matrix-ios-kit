@@ -1,0 +1,1 @@
+Notifications: Use NOTIFICATION localisation key instead of MESSAGE for the default payload's content.
