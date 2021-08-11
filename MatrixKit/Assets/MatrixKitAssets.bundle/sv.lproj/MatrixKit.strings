@@ -463,3 +463,4 @@
 "call_ringing" = "Ringer…";
 "e2e_passphrase_too_short" = "Lösenfras för kort (den måste vara minst %d tecken långt)";
 "microphone_access_not_granted_for_voice_message" = "Röstmeddelanden kräver åtkomst till mikrofonen, men %@ har inte behörighet att använda den";
+"message_reply_to_sender_sent_a_voice_message" = "skickade ett röstmeddelande.";
