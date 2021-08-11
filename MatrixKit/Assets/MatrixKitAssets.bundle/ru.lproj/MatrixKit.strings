@@ -447,7 +447,7 @@
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Вы сделали будущие сообщения видимыми для всех с момента их присоединения.";
 "call_more_actions_dialpad" = "Панель набора номера";
 "call_more_actions_transfer" = "Перевод";
-"call_more_actions_audio_use_device" = "Использовать звук с устройства";
+"call_more_actions_audio_use_device" = "Динамик устройства";
 "call_more_actions_audio_use_headset" = "Использовать звук гарнитуры";
 "call_more_actions_change_audio_device" = "Сменить аудиоустройство";
 "call_more_actions_unhold" = "Возобновить";
@@ -457,3 +457,11 @@
 "notice_declined_video_call_by_you" = "Вы отменили вызов";
 "notice_declined_video_call" = "%@ отменил(а) этот вызов";
 "resume_call" = "Возобновить";
+"call_transfer_to_user" = "Передача с %@";
+"call_consulting_with_user" = "Общение с %@";
+"call_video_with_user" = "Видеовызов с %@";
+"call_voice_with_user" = "Голосовой вызов с %@";
+"call_ringing" = "Звонок…";
+"microphone_access_not_granted_for_voice_message" = "Голосовые сообщения требуют доступа к микрофону, но у %@ нет разрешения на его использование";
+"e2e_passphrase_too_short" = "Слишком короткая парольная фраза (Длина парольной фразы должна быть не менее %d символов)";
+"message_reply_to_sender_sent_a_voice_message" = "отправил голосовое сообщение.";
