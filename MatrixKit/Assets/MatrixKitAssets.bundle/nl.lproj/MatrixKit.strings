@@ -353,7 +353,7 @@
 // room info dialog Screen
 
 // room details dialog screen
-"room_details_title" = "Gespreksdetails";
+"room_details_title" = "Kamerdetails";
 // contacts list screen 
 "invitation_message" = "Ik wil graag praten via Matrix. Bezoek de website https://matrix.org voor meer informatie.";
 // Settings screen 
