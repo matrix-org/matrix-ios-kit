@@ -1,3 +1,14 @@
+## Changes in 0.15.7 (2021-08-11)
+
+🧱 Build
+
+- CHANGES.md: Use towncrier to manage the change log. More info in [CONTRIBUTING](CONTRIBUTING.md#changelog). ([#4393](https://github.com/vector-im/element-ios/issues/4393))
+
+📄 Documentation
+
+- Convert CHANGES and CONTRIBUTING to MarkDown. ([#4393](https://github.com/vector-im/element-ios/issues/4393))
+
+
 ## Changes in 0.15.6 (2021-07-29)
 
 🙌 Improvements
