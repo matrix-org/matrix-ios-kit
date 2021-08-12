@@ -120,6 +120,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         httpsLinkScheme = @"https";
         
         _allowPushKitPushers = NO;
+        _notificationBodyLocalizationKey = @"MESSAGE";
         enableCallKit = YES;
         
         eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
