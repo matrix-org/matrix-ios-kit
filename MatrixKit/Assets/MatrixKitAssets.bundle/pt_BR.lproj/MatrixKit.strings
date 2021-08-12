@@ -122,8 +122,8 @@
 "room_displayname_more_than_two_members" = "%@ e %@ outros";
 // Settings
 "settings" = "Configurações";
-"settings_enable_inapp_notifications" = "Ativar notificações Em-App";
-"settings_enable_push_notifications" = "Ativar notificações push";
+"settings_enable_inapp_notifications" = "Habilitar notificações Em-App";
+"settings_enable_push_notifications" = "Habilitar notificações push";
 "settings_enter_validation_token_for" = "Entrar token de validação para %@:";
 "notification_settings_room_rule_title" = "Sala: '%@'";
 // Devices
@@ -328,9 +328,9 @@
 "settings_title_config" = "Configuração";
 "settings_title_notifications" = "Notificações";
 // Notification settings screen 
-"notification_settings_disable_all" = "Desativar todas as notificações";
-"notification_settings_enable_notifications" = "Ativar notificações";
-"notification_settings_enable_notifications_warning" = "Todas as notificações estão atualmente desativadas para todos os dispositivos.";
+"notification_settings_disable_all" = "Desabilitar todas as notificações";
+"notification_settings_enable_notifications" = "Habilitar notificações";
+"notification_settings_enable_notifications_warning" = "Todas as notificações estão atualmente desabilitadas para todos os dispositivos.";
 "notification_settings_global_info" = "Configurações de notificação são salvas em sua conta de usuária(o) e são compartilhadas entre todos os clientes que as suportam (incluindo notificações de desktop).\n\nRegras são aplicadas em ordem; a primeira regra que corresponde define o resultado da mensagem.\nEntão: Notificações per-palavra são mais importantes que notificações per-sala que são mais importantes que notificações per-enviador(a).\nPara múltiplas regras do mesmo tipo, a primeira na lista que corresponde leva prioridade.";
 "notification_settings_per_word_notifications" = "Notificações per-palavra";
 "notification_settings_per_word_info" = "Palavras correspondem insensivelmente a maiúsculas e minúsculas, e podem incluir um wildcard *. Então:\nfoo corresponde a string foo rodeado por delimitadores de palavras (e.g., pontuação e whitespace ou início/fim de linha).\nfoo* corresponde a qualquer palavra que começa foo.\n*foo* corresponde a qualquer palavra que inclui as 3 letras foo.";
@@ -362,8 +362,8 @@
 "call_connecting" = "Conectando…";
 "call_ended" = "Chamada terminada";
 "call_ring" = "Chamando...";
-"incoming_video_call" = "Chamada de Vídeo Recebendo";
-"incoming_voice_call" = "Chamada de Voz Recebendo";
+"incoming_video_call" = "Chamada de Vídeo Entrante";
+"incoming_voice_call" = "Chamada de Voz Entrante";
 "call_invite_expired" = "Convite de Chamada Expirado";
 // unrecognized SSL certificate
 "ssl_trust" = "Confiar";
@@ -454,7 +454,7 @@
 "notice_declined_video_call" = "%@ declinou a chamada";
 "resume_call" = "Retomar";
 "call_more_actions_transfer" = "Transferir";
-"call_more_actions_audio_use_device" = "Usar Áudio de Dispositivo";
+"call_more_actions_audio_use_device" = "Falante de Dispositivo";
 "call_more_actions_audio_use_headset" = "Usar Áudio de Auscultador";
 "call_more_actions_change_audio_device" = "Mudar Dispositivo de Áudio";
 "call_video_with_user" = "Chamada de vídeo com %@";
@@ -464,3 +464,4 @@
 "call_consulting_with_user" = "Consultando com %@";
 "e2e_passphrase_too_short" = "Frasepasse curta demais (Ela deve ser a um mínimo %d caracteres em comprimento)";
 "microphone_access_not_granted_for_voice_message" = "Mensagens de voz requerem acesso ao Microfone mas %@ não tem permissão para usá-lo";
+"message_reply_to_sender_sent_a_voice_message" = "enviou uma mensagem de voz.";

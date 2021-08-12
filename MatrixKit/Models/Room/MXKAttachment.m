@@ -95,15 +95,13 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             {
                 _type = MXKAttachmentTypeImage;
             }
+            else if (event.isVoiceMessage)
+            {
+                _type = MXKAttachmentTypeVoiceMessage;
+            }
             else if ([msgtype isEqualToString:kMXMessageTypeAudio])
             {
-                if (eventContent[kMXMessageTypeVoiceMessage] ||
-                    eventContent[kMXMessageTypeVoiceMessageMSC2516] ||
-                    eventContent[kMXMessageTypeVoiceMessageMSC3245]) {
-                    _type = MXKAttachmentTypeVoiceMessage;
-                } else {
-                    _type = MXKAttachmentTypeAudio;
-                }
+                _type = MXKAttachmentTypeAudio;
             }
             else if ([msgtype isEqualToString:kMXMessageTypeVideo])
             {
@@ -292,17 +290,18 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             MXStrongifyAndReturnIfNil(self);
             NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:self.thumbnailCachePath];
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
-            NSError *err = [MXEncryptedAttachments decryptAttachment:self->thumbnailFile inputStream:instream outputStream:outstream];
-            if (err) {
-                MXLogDebug(@"Error decrypting attachment! %@", err.userInfo);
-                if (onFailure) onFailure(self, err);
-                return;
-            }
-            
-            UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
-            // Save this image to in-memory cache.
-            [MXMediaManager cacheImage:img withCachePath:self.thumbnailCachePath];
-            onSuccess(self, img);
+            [MXEncryptedAttachments decryptAttachment:self->thumbnailFile inputStream:instream outputStream:outstream success:^{
+                UIImage *img = [UIImage imageWithData:[outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]];
+                // Save this image to in-memory cache.
+                [MXMediaManager cacheImage:img withCachePath:self.thumbnailCachePath];
+                onSuccess(self, img);
+            } failure:^(NSError *err) {
+                if (err) {
+                    MXLogDebug(@"Error decrypting attachment! %@", err.userInfo);
+                    if (onFailure) onFailure(self, err);
+                    return;
+                }
+            }];
         };
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:_thumbnailCachePath])
@@ -400,13 +399,15 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
             // decrypt the encrypted file
             NSInputStream *instream = [[NSInputStream alloc] initWithFileAtPath:self.cacheFilePath];
             NSOutputStream *outstream = [[NSOutputStream alloc] initToMemory];
-            NSError *err = [MXEncryptedAttachments decryptAttachment:self->contentFile inputStream:instream outputStream:outstream];
-            if (err)
-            {
-                MXLogDebug(@"Error decrypting attachment! %@", err.userInfo);
-                return;
-            }
-            onSuccess([outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]);
+            [MXEncryptedAttachments decryptAttachment:self->contentFile inputStream:instream outputStream:outstream success:^{
+                onSuccess([outstream propertyForKey:NSStreamDataWrittenToMemoryStreamKey]);
+            } failure:^(NSError *err) {
+                if (err)
+                {
+                    MXLogDebug(@"Error decrypting attachment! %@", err.userInfo);
+                    return;
+                }
+            }];
         }
         else
         {
@@ -430,12 +431,14 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:self.cacheFilePath];
         NSOutputStream *outStream = [NSOutputStream outputStreamToFileAtPath:tempPath append:NO];
         
-        NSError *err = [MXEncryptedAttachments decryptAttachment:self->contentFile inputStream:inStream outputStream:outStream];
-        if (err) {
-            if (onFailure) onFailure(err);
-            return;
-        }
-        onSuccess(tempPath);
+        [MXEncryptedAttachments decryptAttachment:self->contentFile inputStream:inStream outputStream:outStream success:^{
+            onSuccess(tempPath);
+        } failure:^(NSError *err) {
+            if (err) {
+                if (onFailure) onFailure(err);
+                return;
+            }
+        }];
     } failure:onFailure];
 }
 

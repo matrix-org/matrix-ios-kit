@@ -353,7 +353,7 @@
 // room info dialog Screen
 
 // room details dialog screen
-"room_details_title" = "Gespreksdetails";
+"room_details_title" = "Kamerdetails";
 // contacts list screen 
 "invitation_message" = "Ik wil graag praten via Matrix. Bezoek de website https://matrix.org voor meer informatie.";
 // Settings screen 
@@ -508,7 +508,7 @@
 "notice_room_join_rule_invite_for_dm" = "%@ heeft dit gesprek alleen op uitnodiging gemaakt.";
 "call_more_actions_dialpad" = "Kiestoetsen";
 "call_more_actions_transfer" = "Doorschakelen";
-"call_more_actions_audio_use_device" = "Audio-apparaat gebruiken";
+"call_more_actions_audio_use_device" = "Ingebouwde Luidspreker";
 "call_more_actions_audio_use_headset" = "Audio-koptelefoon gebruiken";
 "call_more_actions_change_audio_device" = "Audio-apparaat wisselen";
 "call_more_actions_unhold" = "Hervatten";
@@ -524,3 +524,5 @@
 "call_voice_with_user" = "Spraakoproep met %@";
 "call_ringing" = "Bellen…";
 "e2e_passphrase_too_short" = "Wachtwoord is te kort (hij moet minimaal %d tekens lang zijn)";
+"microphone_access_not_granted_for_voice_message" = "Spraakberichten vereisen toegang tot de Microfoon maar %@ heeft geen toestemming om het te gebruiken";
+"message_reply_to_sender_sent_a_voice_message" = "heeft een spraakbericht gestuurd.";

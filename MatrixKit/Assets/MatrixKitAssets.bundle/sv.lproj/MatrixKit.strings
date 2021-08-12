@@ -446,7 +446,7 @@
 "notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Du gjorde framtida meddelanden synliga för alla från när de gick med.";
 "call_more_actions_dialpad" = "Knappsats";
 "call_more_actions_transfer" = "Överför";
-"call_more_actions_audio_use_device" = "Använd enhetsljud";
+"call_more_actions_audio_use_device" = "Enhetshögtalare";
 "call_more_actions_audio_use_headset" = "Använd headsetljud";
 "call_more_actions_change_audio_device" = "Byt ljudenhet";
 "call_more_actions_unhold" = "Återuppta";
@@ -463,3 +463,4 @@
 "call_ringing" = "Ringer…";
 "e2e_passphrase_too_short" = "Lösenfras för kort (den måste vara minst %d tecken långt)";
 "microphone_access_not_granted_for_voice_message" = "Röstmeddelanden kräver åtkomst till mikrofonen, men %@ har inte behörighet att använda den";
+"message_reply_to_sender_sent_a_voice_message" = "skickade ett röstmeddelande.";

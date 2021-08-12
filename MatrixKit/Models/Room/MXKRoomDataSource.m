@@ -44,6 +44,15 @@ NSString *const kMXKRoomDataSourceFailToLoadTimelinePosition = @"kMXKRoomDataSou
 NSString *const kMXKRoomDataSourceTimelineError = @"kMXKRoomDataSourceTimelineError";
 NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTimelineErrorErrorKey";
 
+NSString * const MXKRoomDataSourceErrorDomain = @"kMXKRoomDataSourceErrorDomain";
+
+typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
+    MXKRoomDataSourceErrorResendGeneric = 10001,
+    MXKRoomDataSourceErrorResendInvalidMessageType = 10002,
+    MXKRoomDataSourceErrorResendInvalidLocalFilePath = 10003,
+};
+
+
 @interface MXKRoomDataSource ()
 {
     /**
@@ -1598,45 +1607,48 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     CGFloat minMessageHeight = CGFLOAT_MAX;
     CGFloat bubblesTotalHeight = 0;
 
-    // Check whether data has been aldready loaded
-    if (bubbles.count)
+    @synchronized(bubbles)
     {
-        NSUInteger eventsCount = 0;
-        for (NSInteger i = bubbles.count - 1; i >= 0; i--)
+        // Check whether data has been aldready loaded
+        if (bubbles.count)
         {
-            id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
-            eventsCount += bubbleData.events.count;
-            
-            CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
-            // Sanity check
-            if (bubbleHeight)
+            NSUInteger eventsCount = 0;
+            for (NSInteger i = bubbles.count - 1; i >= 0; i--)
             {
-                bubblesTotalHeight += bubbleHeight;
-
-                if (bubblesTotalHeight > rect.size.height)
-                {
-                    // No need to compute more cells heights, there are enough to fill the rect
-                    MXLogDebug(@"[MXKRoomDataSource] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", bubbles.count - i, eventsCount);
-                    break;
-                }
+                id<MXKRoomBubbleCellDataStoring> bubbleData = bubbles[i];
+                eventsCount += bubbleData.events.count;
                 
-                // Compute the minimal height an event takes
-                minMessageHeight = MIN(minMessageHeight, bubbleHeight / bubbleData.events.count);
+                CGFloat bubbleHeight = [self cellHeightAtIndex:i withMaximumWidth:rect.size.width];
+                // Sanity check
+                if (bubbleHeight)
+                {
+                    bubblesTotalHeight += bubbleHeight;
+
+                    if (bubblesTotalHeight > rect.size.height)
+                    {
+                        // No need to compute more cells heights, there are enough to fill the rect
+                        MXLogDebug(@"[MXKRoomDataSource] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", bubbles.count - i, eventsCount);
+                        break;
+                    }
+                    
+                    // Compute the minimal height an event takes
+                    minMessageHeight = MIN(minMessageHeight, bubbleHeight / bubbleData.events.count);
+                }
             }
         }
-    }
-    else if (minRequestMessagesCount && [self canPaginate:direction])
-    {
-        MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
-        // Give a chance to load data from the store before doing homeserver requests
-        // Reuse minRequestMessagesCount because we need to provide a number.
-        [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
+        else if (minRequestMessagesCount && [self canPaginate:direction])
+        {
+            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
+            // Give a chance to load data from the store before doing homeserver requests
+            // Reuse minRequestMessagesCount because we need to provide a number.
+            [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
 
-            // Then retry
-            [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
+                // Then retry
+                [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
 
-        } failure:failure];
-        return;
+            } failure:failure];
+            return;
+        }
     }
     
     // Is there enough cells to cover all the requested height?
@@ -1853,9 +1865,15 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
 
 - (void)sendVideo:(NSURL *)videoLocalURL withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
+    AVURLAsset *videoAsset = [AVURLAsset assetWithURL:videoLocalURL];
+    [self sendVideoAsset:videoAsset withThumbnail:videoThumbnail success:success failure:failure];
+}
+
+- (void)sendVideoAsset:(AVAsset *)videoAsset withThumbnail:(UIImage *)videoThumbnail success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
     __block MXEvent *localEchoEvent = nil;
     
-    [_room sendVideo:videoLocalURL withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
+    [_room sendVideoAsset:videoAsset withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
@@ -1879,11 +1897,16 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
     }
 }
 
-- (void)sendVoiceMessage:(NSURL *)audioFileLocalURL mimeType:mimeType success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+- (void)sendVoiceMessage:(NSURL *)audioFileLocalURL
+                mimeType:mimeType
+                duration:(NSUInteger)duration
+                 samples:(NSArray<NSNumber *> *)samples
+                 success:(void (^)(NSString *))success
+                 failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
     
-    [_room sendVoiceMessage:audioFileLocalURL mimeType:mimeType localEcho:&localEchoEvent success:success failure:failure keepActualFilename:YES];
+    [_room sendVoiceMessage:audioFileLocalURL mimeType:mimeType duration:duration samples:samples localEcho:&localEchoEvent success:success failure:failure keepActualFilename:YES];
     
     if (localEchoEvent)
     {
@@ -1948,7 +1971,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         return;
     }
     
-    MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId. EventId: %@", event.eventId);
+    MXLogInfo(@"[MXKRoomDataSource] resendEventWithEventId. EventId: %@", event.eventId);
     
     // Check first whether the event is encrypted
     if ([event.wireType isEqualToString:kMXEventTypeStringRoomEncrypted])
@@ -2000,13 +2023,48 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 }
                 else
                 {
-                    MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                    failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendGeneric userInfo:nil]);
+                    MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
                 }
             }
             else
             {
                 // Resend the Matrix event by reusing the existing echo
                 [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
+            }
+        }
+        else if ([msgType isEqualToString:kMXMessageTypeAudio])
+        {
+            // Check whether the sending failed while uploading the data.
+            // If the content url corresponds to a upload id, the upload was not complete.
+            NSString *contentURL = event.content[@"url"];
+            if (!contentURL || ![contentURL hasPrefix:kMXMediaUploadIdPrefix])
+            {
+                // Resend the Matrix event by reusing the existing echo
+                [_room sendMessageWithContent:event.content localEcho:&event success:success failure:failure];
+                return;
+            }
+            
+            NSString *mimetype = event.content[@"info"][@"mimetype"];
+            NSString *localFilePath = [MXMediaManager cachePathForMatrixContentURI:contentURL andType:mimetype inFolder:_roomId];
+            NSURL *localFileURL = [NSURL URLWithString:localFilePath];
+            
+            if (![NSFileManager.defaultManager fileExistsAtPath:localFilePath]) {
+                failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidLocalFilePath userInfo:nil]);
+                MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend voice message, invalid file path.");
+                return;
+            }
+            
+            // Remove the local echo.
+            [self removeEventWithEventId:eventId];
+            
+            if (event.isVoiceMessage) {
+                NSNumber *duration = event.content[kMXMessageContentKeyExtensibleAudio][kMXMessageContentKeyExtensibleAudioDuration];
+                NSArray<NSNumber *> *samples = event.content[kMXMessageContentKeyExtensibleAudio][kMXMessageContentKeyExtensibleAudioWaveform];
+                
+                [self sendVoiceMessage:localFileURL mimeType:mimetype duration:duration.doubleValue samples:samples success:success failure:failure];
+            } else {
+                [self sendAudioFile:localFileURL mimeType:mimetype success:success failure:failure];
             }
         }
         else if ([msgType isEqualToString:kMXMessageTypeVideo])
@@ -2018,6 +2076,7 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
             {
                 // TODO: Support resend on attached video when upload has been failed.
                 MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend attached video (upload was not complete)");
+                failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
             }
             else
             {
@@ -2051,7 +2110,8 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
                 }
                 else
                 {
-                    MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                    failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendGeneric userInfo:nil]);
+                    MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
                 }
             }
             else
@@ -2062,12 +2122,14 @@ NSString *const kMXKRoomDataSourceTimelineErrorErrorKey = @"kMXKRoomDataSourceTi
         }
         else
         {
-            MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+            failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
+            MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
         }
     }
     else
     {
-        MXLogDebug(@"[MXKRoomDataSource] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", event.type);
+        failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
+        MXLogWarning(@"[MXKRoomDataSource] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", event.type);
     }
 }
 
