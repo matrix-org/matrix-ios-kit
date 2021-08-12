@@ -1627,7 +1627,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 
                 if (isClientTimeout || isServerTimeout)
                 {
-                    //  do not propogate this error to the client
+                    //  do not propagate this error to the client
                     //  the request will be retried or postponed according to the reachability status
                     MXLogDebug(@"[MXKAccount] Initial sync failure did not propagated");
                 }
@@ -1670,6 +1670,56 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 }
             }];
         }];
+    }];
+}
+
+- (void)attemptDeviceDehydrationWithKeyData:(NSData *)keyData
+                                    success:(void (^)(void))success
+                                    failure:(void (^)(NSError *error))failure
+{
+    [self attemptDeviceDehydrationWithKeyData:keyData retry:YES success:success failure:failure];
+}
+
+- (void)attemptDeviceDehydrationWithKeyData:(NSData *)keyData
+                                      retry:(BOOL)retry
+                                    success:(void (^)(void))success
+                                    failure:(void (^)(NSError *error))failure
+{
+    if (keyData == nil)
+    {
+        MXLogWarning(@"[MXKAccount] attemptDeviceDehydrationWithRetry: no key provided for device dehydration");
+        
+        if (failure)
+        {
+            failure(nil);
+        }
+        
+        return;
+    }
+    
+    MXLogDebug(@"[MXKAccount] attemptDeviceDehydrationWithRetry: starting device dehydration");
+    [[MXKAccountManager sharedManager].dehydrationService dehydrateDeviceWithMatrixRestClient:mxRestClient crypto:mxSession.crypto dehydrationKey:keyData success:^(NSString *deviceId) {
+        MXLogDebug(@"[MXKAccount] attemptDeviceDehydrationWithRetry: device successfully dehydrated");
+        
+        if (success)
+        {
+            success();
+        }
+    } failure:^(NSError *error) {
+        if (retry)
+        {
+            [self attemptDeviceDehydrationWithKeyData:keyData retry:NO success:success failure:failure];
+            MXLogError(@"[MXKAccount] attemptDeviceDehydrationWithRetry: device dehydration failed due to error: %@. Retrying.", error);
+        }
+        else
+        {
+            MXLogError(@"[MXKAccount] attemptDeviceDehydrationWithRetry: device dehydration failed due to error: %@", error);
+            
+            if (failure)
+            {
+                failure(error);
+            }
+        }
     }];
 }
 
