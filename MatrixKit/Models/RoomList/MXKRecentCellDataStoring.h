@@ -41,7 +41,7 @@
  */
 @property (nonatomic, readonly) MXRoomSummary *roomSummary;
 /**
- The `MXSpaceChildInfo` instance of the room for the recent displayed by the cell.
+ In case of suggested rooms we store the `MXSpaceChildInfo` instance of the room
  */
 @property (nonatomic, readonly) MXSpaceChildInfo *spaceChildInfo;
 
@@ -53,6 +53,7 @@
 @property (nonatomic, readonly) NSUInteger notificationCount;
 @property (nonatomic, readonly) NSUInteger highlightCount;
 @property (nonatomic, readonly) NSString *notificationCountStringValue;
+@property (nonatomic, readonly) BOOL isSuggestedRoom;
 
 #pragma mark - Public methods
 /**

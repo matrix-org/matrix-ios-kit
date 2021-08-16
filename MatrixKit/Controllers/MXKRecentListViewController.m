@@ -470,7 +470,7 @@
                 if ([cellData conformsToProtocol:@protocol(MXKRecentCellDataStoring)])
                 {
                     id<MXKRecentCellDataStoring> recentCellData = (id<MXKRecentCellDataStoring>)cellData;
-                    if (recentCellData.spaceChildInfo)
+                    if (recentCellData.isSuggestedRoom)
                     {
                         [_delegate recentListViewController:self didSelectSuggestedRoom:recentCellData.spaceChildInfo];
                     }

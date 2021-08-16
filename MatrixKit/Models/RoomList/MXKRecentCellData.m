@@ -109,4 +109,10 @@
     return [NSString stringWithFormat:@"%@ %@: %@ - %@", super.description, self.roomSummary.roomId, self.roomDisplayname, self.lastEventTextMessage];
 }
 
+- (BOOL)isSuggestedRoom
+{
+    // As off now, we only store MXSpaceChildInfo in case of suggested rooms
+    return self.spaceChildInfo != nil;
+}
+
 @end
