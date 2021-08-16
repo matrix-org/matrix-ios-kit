@@ -266,19 +266,21 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     }
     
     //  ensure event with id 'initialEventId' exists in the session store
-    if ([mxSession.store eventExistsWithEventId:initialEventId inRoom:roomDataSource.roomId])
-    {
-        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
-    }
-    else
-    {
-        //  give a chance for the specific event to be existent, for only one sync
-        //  use kMXSessionDidSyncNotification here instead of MXSessionStateRunning, because session does not send this state update if it's already in this state
-        __block id syncObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionDidSyncNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
-            [[NSNotificationCenter defaultCenter] removeObserver:syncObserver];
+    [mxSession.store eventExistsWithEventId:initialEventId inRoom:roomDataSource.roomId completion:^(BOOL eventExists) {
+        if (eventExists)
+        {
             [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
-        }];
-    }
+        }
+        else
+        {
+            //  give a chance for the specific event to be existent, for only one sync
+            //  use kMXSessionDidSyncNotification here instead of MXSessionStateRunning, because session does not send this state update if it's already in this state
+            __block id syncObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionDidSyncNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+                [[NSNotificationCenter defaultCenter] removeObserver:syncObserver];
+                [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
+            }];
+        }
+    }]
 }
 
 + (void)finalizeRoomDataSource:(MXKRoomDataSource*)roomDataSource onComplete:(void (^)(id roomDataSource))onComplete
