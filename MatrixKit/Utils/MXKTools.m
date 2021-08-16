@@ -706,6 +706,55 @@ static NSMutableDictionary* backgroundByImageNameDict;
     return bgColor;
 }
 
+#pragma mark - Video Conversion
+
++ (UIAlertController*)videoConversionPromptForVideoAsset:(AVAsset *)videoAsset
+                                           withCompletion:(void (^)(NSString * _Nullable presetName))completion
+{
+    UIAlertController *compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    CGSize naturalSize = [videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize;
+    
+    // Provide 480p as the baseline preset.
+    [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], @"480p"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+        // Call the completion with 480p preset.
+        completion(AVAssetExportPreset640x480);
+    }]];
+    
+    // Allow 720p when the video exceeds 480p.
+    if (naturalSize.height > 480)
+    {
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], @"720p"]
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+            // Call the completion with 720p preset.
+            completion(AVAssetExportPreset1280x720);
+        }]];
+    }
+    
+    // Allow 1080p when the video exceeds 720p.
+    if (naturalSize.height > 720)
+    {
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], @"1080p"]
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+            // Call the completion with 1080p preset.
+            completion(AVAssetExportPreset1920x1080);
+        }]];
+    }
+    
+    [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+        // Cancelled. Call the completion with nil.
+        completion(nil);
+    }]];
+    
+    return compressionPrompt;
+}
+
 #pragma mark - App permissions
 
 + (void)checkAccessForMediaType:(NSString *)mediaType

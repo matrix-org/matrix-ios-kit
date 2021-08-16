@@ -599,7 +599,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         return;
     }
 
-    // Get availabe sizes for this image
+    // Get available sizes for this image
     UIImage *image = [UIImage imageWithData:imageData];
     MXKImageCompressionSizes compressionSizes = [MXKTools availableCompressionSizesForImage:image originalFileSize:imageData.length];
 
