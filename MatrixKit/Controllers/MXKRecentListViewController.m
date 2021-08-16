@@ -21,6 +21,7 @@
 
 #import "MXKInterleavedRecentsDataSource.h"
 #import "MXKInterleavedRecentTableViewCell.h"
+#import <MatrixSDK/MatrixSDK-Swift.h>
 
 #import "UIScrollView+MatrixKit.h"
 
@@ -469,7 +470,14 @@
                 if ([cellData conformsToProtocol:@protocol(MXKRecentCellDataStoring)])
                 {
                     id<MXKRecentCellDataStoring> recentCellData = (id<MXKRecentCellDataStoring>)cellData;
-                    [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.roomSummary.room.mxSession];
+                    if (recentCellData.isSuggestedRoom)
+                    {
+                        [_delegate recentListViewController:self didSelectSuggestedRoom:recentCellData.spaceChildInfo];
+                    }
+                    else
+                    {
+                        [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.roomSummary.mxSession];
+                    }
                 }
             }
         }
