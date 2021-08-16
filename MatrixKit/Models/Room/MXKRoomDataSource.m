@@ -876,14 +876,14 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     return attachments;
 }
 
-- (NSString *)partialTextMessage
+- (void)partialTextMessageWithCompletion:(void (^)(NSString *))completion
 {
-    return _room.partialTextMessage;
+    [_room partialTextMessageWithCompletion:completion];
 }
 
 - (void)setPartialTextMessage:(NSString *)partialTextMessage
 {
-    _room.partialTextMessage = partialTextMessage;
+    [_room setPartialTextMessage:partialTextMessage];
 }
 
 - (void)refreshEventListeners:(NSArray *)liveEventTypesFilterForMessages

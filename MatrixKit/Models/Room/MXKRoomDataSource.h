@@ -167,7 +167,9 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 /**
  The current text message partially typed in text input (use nil to reset it).
  */
-@property (nonatomic) NSString *partialTextMessage;
+- (void)partialTextMessageWithCompletion:(void(^)(NSString*))completion;
+
+- (void)setPartialTextMessage:(NSString *)partialTextMessage;
 
 #pragma mark - Configuration
 /**
