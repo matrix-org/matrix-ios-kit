@@ -280,7 +280,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
             }];
         }
-    }]
+    }];
 }
 
 + (void)finalizeRoomDataSource:(MXKRoomDataSource*)roomDataSource onComplete:(void (^)(id roomDataSource))onComplete

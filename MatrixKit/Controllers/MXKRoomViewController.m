@@ -2534,20 +2534,31 @@
                         // Indicate to the homeserver that the user has read this event.
                         
                         // Check whether the read marker must be updated.
-                        BOOL updateReadMarker = _updateRoomReadMarker;
+                        dispatch_group_t dispatchGroup = dispatch_group_create();
+                        
+                        __block BOOL updateReadMarker = _updateRoomReadMarker;
                         if (updateReadMarker && roomDataSource.room.accountData.readMarkerEventId)
                         {
-                            MXEvent *currentReadMarkerEvent = [roomDataSource.mxSession.store eventWithEventId:roomDataSource.room.accountData.readMarkerEventId inRoom:roomDataSource.roomId];
-                            if (!currentReadMarkerEvent)
-                            {
-                                currentReadMarkerEvent = [roomDataSource eventWithEventId:roomDataSource.room.accountData.readMarkerEventId];
-                            }
-                            
-                            // Update the read marker only if the current event is available, and the new event is posterior to it.
-                            updateReadMarker = (currentReadMarkerEvent && (currentReadMarkerEvent.originServerTs <= component.event.originServerTs));
+                            dispatch_group_enter(dispatchGroup);
+                            [roomDataSource.mxSession.store eventWithEventId:roomDataSource.room.accountData.readMarkerEventId
+                                                                      inRoom:roomDataSource.roomId
+                                                                  completion:^(MXEvent * _Nullable currentReadMarkerEvent2) {
+                                MXEvent *currentReadMarkerEvent = currentReadMarkerEvent2;
+                                if (!currentReadMarkerEvent)
+                                {
+                                    currentReadMarkerEvent = [self->roomDataSource eventWithEventId:roomDataSource.room.accountData.readMarkerEventId];
+                                }
+                                
+                                // Update the read marker only if the current event is available, and the new event is posterior to it.
+                                updateReadMarker = (currentReadMarkerEvent && (currentReadMarkerEvent.originServerTs <= component.event.originServerTs));
+                                
+                                dispatch_group_leave(dispatchGroup);
+                            }];
                         }
                         
-                        [roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:updateReadMarker];
+                        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+                            [self->roomDataSource.room acknowledgeEvent:component.event andUpdateReadMarker:updateReadMarker];
+                        });
                     }
                     break;
                 }
