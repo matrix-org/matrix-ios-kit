@@ -3843,30 +3843,34 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
     MXKRoomBubbleCellData *roomBubbleCellData = (MXKRoomBubbleCellData*)cellData;
 
-    MXAggregatedReactions *aggregatedReactions = [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId inRoom:self.roomId].aggregatedReactionsWithNonZeroCount;
-    
-    if (self.showOnlySingleEmojiReactions)
-    {
-        aggregatedReactions = aggregatedReactions.aggregatedReactionsWithSingleEmoji;
-    }
-    
-    if (aggregatedReactions)
-    {
-        if (!roomBubbleCellData.reactions)
+    [self.mxSession.aggregations aggregatedReactionsOnEvent:eventId
+                                                     inRoom:self.roomId
+                                                 completion:^(MXAggregatedReactions * _Nullable aggregatedReactions2) {
+        MXAggregatedReactions * aggregatedReactions = aggregatedReactions2.aggregatedReactionsWithNonZeroCount;
+        
+        if (self.showOnlySingleEmojiReactions)
         {
-            roomBubbleCellData.reactions = [NSMutableDictionary dictionary];
+            aggregatedReactions = aggregatedReactions.aggregatedReactionsWithSingleEmoji;
+        }
+        
+        if (aggregatedReactions)
+        {
+            if (!roomBubbleCellData.reactions)
+            {
+                roomBubbleCellData.reactions = [NSMutableDictionary dictionary];
+            }
+
+            roomBubbleCellData.reactions[eventId] = aggregatedReactions;
+        }
+        else
+        {
+            // unreaction
+            roomBubbleCellData.reactions[eventId] = nil;
         }
 
-        roomBubbleCellData.reactions[eventId] = aggregatedReactions;
-    }
-    else
-    {
-        // unreaction
-        roomBubbleCellData.reactions[eventId] = nil;
-    }
-
-    // Recompute the text message layout
-    roomBubbleCellData.attributedTextMessage = nil;
+        // Recompute the text message layout
+        roomBubbleCellData.attributedTextMessage = nil;
+    }];
 }
 
 - (BOOL)canReactToEventWithId:(NSString*)eventId
