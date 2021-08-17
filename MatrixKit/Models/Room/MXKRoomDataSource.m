@@ -1450,86 +1450,23 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         return;
     }
     
-    if (NO == [self canPaginate:direction])
-    {
-        MXLogDebug(@"[MXKRoomDataSource] paginate: No more events to paginate");
-        if (success)
+    [self canPaginate:direction completion:^(BOOL canPaginate) {
+        if (!canPaginate)
         {
-            success(0);
+            MXLogDebug(@"[MXKRoomDataSource] paginate: No more events to paginate");
+            if (success)
+            {
+                success(0);
+            }
+            return;
         }
-    }
-    
-    __block NSUInteger addedCellNb = 0;
-    __block NSMutableArray<NSError*> *operationErrors = [NSMutableArray arrayWithCapacity:2];
-    dispatch_group_t dispatchGroup = dispatch_group_create();
-    
-    // Define a new listener for this pagination
-    paginationListener = [_timeline listenToEventsOfTypes:(_filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages) onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
-        
-        if (direction2 == direction)
-        {
-            [self queueEventForProcessing:event withRoomState:roomState direction:direction];
-        }
-        
-    }];
-    
-    // Keep a local reference to this listener.
-    id localPaginationListenerRef = paginationListener;
-    
-    dispatch_group_enter(dispatchGroup);
-    // Launch the pagination
-    
-    MXWeakify(self);
-    paginationRequest = [_timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
-        
-        MXStrongifyAndReturnIfNil(self);
-        
-        // Everything went well, remove the listener
-        self->paginationRequest = nil;
-        [self.timeline removeListener:self->paginationListener];
-        self->paginationListener = nil;
-        
-        // Once done, process retrieved events
-        [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
-            
-            addedCellNb += (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
-            dispatch_group_leave(dispatchGroup);
-            
-        }];
-        
-    } failure:^(NSError *error) {
-        
-        MXLogDebug(@"[MXKRoomDataSource] paginateBackMessages fails");
-        
-        MXStrongifyAndReturnIfNil(self);
-        
-        // Something wrong happened or the request was cancelled.
-        // Check whether the request is the actual one before removing listener and handling the retrieved events.
-        if (localPaginationListenerRef == self->paginationListener)
-        {
-            self->paginationRequest = nil;
-            [self.timeline removeListener:self->paginationListener];
-            self->paginationListener = nil;
-            
-            // Process at least events retrieved from store
-            [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
-                
-                [operationErrors addObject:error];
-                if (addedHistoryCellNb)
-                {
-                    addedCellNb += addedHistoryCellNb;
-                }
-                dispatch_group_leave(dispatchGroup);
 
-            }];
-        }
+        __block NSUInteger addedCellNb = 0;
+        __block NSMutableArray<NSError*> *operationErrors = [NSMutableArray arrayWithCapacity:2];
+        dispatch_group_t dispatchGroup = dispatch_group_create();
         
-    }];
-    
-    if (_secondaryTimeline)
-    {
         // Define a new listener for this pagination
-        secondaryPaginationListener = [_secondaryTimeline listenToEventsOfTypes:_secondaryRoomEventTypes onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+        self->paginationListener = [self.timeline listenToEventsOfTypes:(self.filterMessagesWithURL ? @[kMXEventTypeStringRoomMessage] : [MXKAppSettings standardAppSettings].allEventTypesForMessages) onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
             
             if (direction2 == direction)
             {
@@ -1539,26 +1476,27 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         }];
         
         // Keep a local reference to this listener.
-        id localPaginationListenerRef = secondaryPaginationListener;
+        id localPaginationListenerRef = self->paginationListener;
         
         dispatch_group_enter(dispatchGroup);
         // Launch the pagination
+        
         MXWeakify(self);
-        secondaryPaginationRequest = [_secondaryTimeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
+        self->paginationRequest = [self.timeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
             
             MXStrongifyAndReturnIfNil(self);
             
             // Everything went well, remove the listener
-            self->secondaryPaginationRequest = nil;
-            [self.secondaryTimeline removeListener:self->secondaryPaginationListener];
-            self->secondaryPaginationListener = nil;
+            self->paginationRequest = nil;
+            [self.timeline removeListener:self->paginationListener];
+            self->paginationListener = nil;
             
             // Once done, process retrieved events
             [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
                 
                 addedCellNb += (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
                 dispatch_group_leave(dispatchGroup);
-
+                
             }];
             
         } failure:^(NSError *error) {
@@ -1569,11 +1507,11 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             
             // Something wrong happened or the request was cancelled.
             // Check whether the request is the actual one before removing listener and handling the retrieved events.
-            if (localPaginationListenerRef == self->secondaryPaginationListener)
+            if (localPaginationListenerRef == self->paginationListener)
             {
-                self->secondaryPaginationRequest = nil;
-                [self.secondaryTimeline removeListener:self->secondaryPaginationListener];
-                self->secondaryPaginationListener = nil;
+                self->paginationRequest = nil;
+                [self.timeline removeListener:self->paginationListener];
+                self->paginationListener = nil;
                 
                 // Process at least events retrieved from store
                 [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
@@ -1589,24 +1527,89 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             }
             
         }];
-    }
-    
-    dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
-        if (operationErrors.count)
+        
+        if (self.secondaryTimeline)
         {
-            if (failure)
-            {
-                failure(operationErrors.firstObject);
-            }
+            // Define a new listener for this pagination
+            self->secondaryPaginationListener = [self.secondaryTimeline listenToEventsOfTypes:self.secondaryRoomEventTypes onEvent:^(MXEvent *event, MXTimelineDirection direction2, MXRoomState *roomState) {
+                
+                if (direction2 == direction)
+                {
+                    [self queueEventForProcessing:event withRoomState:roomState direction:direction];
+                }
+                
+            }];
+            
+            // Keep a local reference to this listener.
+            id localPaginationListenerRef = self->secondaryPaginationListener;
+            
+            dispatch_group_enter(dispatchGroup);
+            // Launch the pagination
+            MXWeakify(self);
+            self->secondaryPaginationRequest = [self.secondaryTimeline paginate:numItems direction:direction onlyFromStore:onlyFromStore complete:^{
+                
+                MXStrongifyAndReturnIfNil(self);
+                
+                // Everything went well, remove the listener
+                self->secondaryPaginationRequest = nil;
+                [self.secondaryTimeline removeListener:self->secondaryPaginationListener];
+                self->secondaryPaginationListener = nil;
+                
+                // Once done, process retrieved events
+                [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+                    
+                    addedCellNb += (direction == MXTimelineDirectionBackwards) ? addedHistoryCellNb : addedLiveCellNb;
+                    dispatch_group_leave(dispatchGroup);
+
+                }];
+                
+            } failure:^(NSError *error) {
+                
+                MXLogDebug(@"[MXKRoomDataSource] paginateBackMessages fails");
+                
+                MXStrongifyAndReturnIfNil(self);
+                
+                // Something wrong happened or the request was cancelled.
+                // Check whether the request is the actual one before removing listener and handling the retrieved events.
+                if (localPaginationListenerRef == self->secondaryPaginationListener)
+                {
+                    self->secondaryPaginationRequest = nil;
+                    [self.secondaryTimeline removeListener:self->secondaryPaginationListener];
+                    self->secondaryPaginationListener = nil;
+                    
+                    // Process at least events retrieved from store
+                    [self processQueuedEvents:^(NSUInteger addedHistoryCellNb, NSUInteger addedLiveCellNb) {
+                        
+                        [operationErrors addObject:error];
+                        if (addedHistoryCellNb)
+                        {
+                            addedCellNb += addedHistoryCellNb;
+                        }
+                        dispatch_group_leave(dispatchGroup);
+
+                    }];
+                }
+                
+            }];
         }
-        else
-        {
-            if (success)
+        
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+            if (operationErrors.count)
             {
-                success(addedCellNb);
+                if (failure)
+                {
+                    failure(operationErrors.firstObject);
+                }
             }
-        }
-    });
+            else
+            {
+                if (success)
+                {
+                    success(addedCellNb);
+                }
+            }
+        });
+    }];
 }
 
 - (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)(void))success failure:(void (^)(NSError *error))failure
@@ -1627,8 +1630,11 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     }
 
     // Get the total height of cells already loaded in memory
-    CGFloat minMessageHeight = CGFLOAT_MAX;
+    __block CGFloat minMessageHeight = CGFLOAT_MAX;
+    __block BOOL shouldReturn = NO;
     CGFloat bubblesTotalHeight = 0;
+    
+    dispatch_group_t dispatchGroup = dispatch_group_create();
 
     @synchronized(bubbles)
     {
@@ -1659,63 +1665,79 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 }
             }
         }
-        else if (minRequestMessagesCount && [self canPaginate:direction])
+        else if (minRequestMessagesCount)
         {
-            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
-            // Give a chance to load data from the store before doing homeserver requests
-            // Reuse minRequestMessagesCount because we need to provide a number.
-            [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
+            dispatch_group_enter(dispatchGroup);
+            [self canPaginate:direction completion:^(BOOL canPaginate) {
+                if (canPaginate)
+                {
+                    MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
+                    // Give a chance to load data from the store before doing homeserver requests
+                    // Reuse minRequestMessagesCount because we need to provide a number.
+                    [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
 
-                // Then retry
-                [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
+                        // Then retry
+                        [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
 
-            } failure:failure];
-            return;
+                    } failure:failure];
+                    shouldReturn = YES;
+                }
+                dispatch_group_leave(dispatchGroup);
+            }];
         }
     }
     
-    // Is there enough cells to cover all the requested height?
-    if (bubblesTotalHeight < rect.size.height)
-    {
-        // No. Paginate to get more messages
-        if ([self canPaginate:direction])
+    dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (shouldReturn)
         {
-            // Bound the minimal height to 44
-            minMessageHeight = MIN(minMessageHeight, 44);
-            
-            // Load messages to cover the remaining height
-            // Use an extra of 50% to manage unsupported/unexpected/redated events
-            NSUInteger messagesToLoad = ceil((rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5);
+            return;
+        }
+        
+        // Is there enough cells to cover all the requested height?
+        if (bubblesTotalHeight < rect.size.height)
+        {
+            // No. Paginate to get more messages
+            [self canPaginate:direction completion:^(BOOL canPaginate) {
+                if (canPaginate)
+                {
+                    // Bound the minimal height to 44
+                    minMessageHeight = MIN(minMessageHeight, 44);
+                    
+                    // Load messages to cover the remaining height
+                    // Use an extra of 50% to manage unsupported/unexpected/redated events
+                    NSUInteger messagesToLoad = ceil((rect.size.height - bubblesTotalHeight) / minMessageHeight * 1.5);
 
-            // It does not worth to make a pagination request for only 1 message.
-            // So, use minRequestMessagesCount
-            messagesToLoad = MAX(messagesToLoad, minRequestMessagesCount);
-            
-            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
-            [self paginate:messagesToLoad direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
-                
-                [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
-                
-            } failure:failure];
+                    // It does not worth to make a pagination request for only 1 message.
+                    // So, use minRequestMessagesCount
+                    messagesToLoad = MAX(messagesToLoad, minRequestMessagesCount);
+                    
+                    MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
+                    [self paginate:messagesToLoad direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+                        
+                        [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
+                        
+                    } failure:failure];
+                }
+                else
+                {
+                    
+                    MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: No more events to paginate");
+                    if (success)
+                    {
+                        success();
+                    }
+                }
+            }];
         }
         else
         {
-            
-            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: No more events to paginate");
+            // Yes. Nothing to do
             if (success)
             {
                 success();
             }
         }
-    }
-    else
-    {
-        // Yes. Nothing to do
-        if (success)
-        {
-            success();
-        }
-    }
+    });
 }
 
 
@@ -2846,29 +2868,55 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     }
 }
 
-- (BOOL)canPaginate:(MXTimelineDirection)direction
+- (void)canPaginate:(MXTimelineDirection)direction
+         completion:(void (^)(BOOL))completion
 {
+    dispatch_group_t dispatchGroup = dispatch_group_create();
+    
+    __block BOOL canPaginateTimeline;
+    __block BOOL canPaginateSecondaryTimeline;
+    
+    dispatch_group_enter(dispatchGroup);
+    [_timeline canPaginate:direction completion:^(BOOL canPaginateTimeline2) {
+        canPaginateTimeline = canPaginateTimeline2;
+        dispatch_group_leave(dispatchGroup);
+    }];
+    
     if (_secondaryTimeline)
     {
-        if (![_timeline canPaginate:direction] && ![_secondaryTimeline canPaginate:direction])
-        {
-            return NO;
-        }
-    }
-    else
-    {
-        if (![_timeline canPaginate:direction])
-        {
-            return NO;
-        }
+        dispatch_group_enter(dispatchGroup);
+        [self.secondaryTimeline canPaginate:direction completion:^(BOOL canPaginateSecondaryTimeline2) {
+            canPaginateSecondaryTimeline = canPaginateSecondaryTimeline2;
+            dispatch_group_leave(dispatchGroup);
+        }];
     }
     
-    if (direction == MXTimelineDirectionBackwards && self.shouldStopBackPagination)
-    {
-        return NO;
-    }
-    
-    return YES;
+    dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (self.secondaryTimeline)
+        {
+            if (!canPaginateTimeline && !canPaginateSecondaryTimeline)
+            {
+                completion(NO);
+                return;
+            }
+        }
+        else
+        {
+            if (!canPaginateTimeline)
+            {
+                completion(NO);
+                return;
+            }
+        }
+        
+        if (direction == MXTimelineDirectionBackwards && self.shouldStopBackPagination)
+        {
+            completion(NO);
+            return;
+        }
+        
+        completion(YES);
+    });
 }
 
 // Check for undecryptable messages that were sent while the user was not in the room.

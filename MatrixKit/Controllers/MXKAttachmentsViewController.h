@@ -107,9 +107,11 @@ limitations under the License.
  
  @param attachmentsViewController the attachments view controller.
  @param eventId the event identifier of the current first attachment.
- @return a boolean which tells whether some new attachments may be added or not.
+ @param completion Completion block containing a boolean which tells whether some new attachments may be added or not.
  */
-- (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId;
+- (void)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController
+         paginateAttachmentBefore:(NSString*)eventId
+                       completion:(void (^)(BOOL))completion;
 
 @optional
 

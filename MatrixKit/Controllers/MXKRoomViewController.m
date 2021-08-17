@@ -2011,180 +2011,193 @@
 - (void)triggerPagination:(NSUInteger)limit direction:(MXTimelineDirection)direction
 {
     // Paginate only if possible
-    if (isPaginationInProgress || roomDataSource.state != MXKDataSourceStateReady || NO == [roomDataSource.timeline canPaginate:direction])
+    if (isPaginationInProgress || roomDataSource.state != MXKDataSourceStateReady)
     {
         return;
     }
     
-    // Store the current height of the first bubble (if any)
-    backPaginationSavedFirstBubbleHeight = 0;
-    if (direction == MXTimelineDirectionBackwards && [roomDataSource tableView:_bubblesTableView numberOfRowsInSection:0])
-    {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        backPaginationSavedFirstBubbleHeight = [self tableView:_bubblesTableView heightForRowAtIndexPath:indexPath];
-    }
-    
-    isPaginationInProgress = YES;
-    
-    // Trigger pagination
-    [roomDataSource paginate:limit direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+    [roomDataSource.timeline canPaginate:direction completion:^(BOOL canPaginate) {
+        if (!canPaginate)
+        {
+            return;
+        }
         
-        // We will adjust the vertical offset in order to unchange the current display (pagination should be inconspicuous)
-        CGFloat verticalOffset = 0;
-
-        if (direction == MXTimelineDirectionBackwards)
+        // Store the current height of the first bubble (if any)
+        self->backPaginationSavedFirstBubbleHeight = 0;
+        if (direction == MXTimelineDirectionBackwards && [self->roomDataSource tableView:self.bubblesTableView numberOfRowsInSection:0])
         {
-            // Compute the cumulative height of the added messages
-            for (NSUInteger index = 0; index < addedCellNumber; index++)
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            self->backPaginationSavedFirstBubbleHeight = [self tableView:self.bubblesTableView heightForRowAtIndexPath:indexPath];
+        }
+        
+        self->isPaginationInProgress = YES;
+        
+        // Trigger pagination
+        [self->roomDataSource paginate:limit direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+            
+            // We will adjust the vertical offset in order to unchange the current display (pagination should be inconspicuous)
+            CGFloat verticalOffset = 0;
+
+            if (direction == MXTimelineDirectionBackwards)
             {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                verticalOffset += [self tableView:self->_bubblesTableView heightForRowAtIndexPath:indexPath];
+                // Compute the cumulative height of the added messages
+                for (NSUInteger index = 0; index < addedCellNumber; index++)
+                {
+                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                    verticalOffset += [self tableView:self->_bubblesTableView heightForRowAtIndexPath:indexPath];
+                }
+
+                // Add delta of the height of the previous first cell (if any)
+                if (addedCellNumber < [self->roomDataSource tableView:self->_bubblesTableView numberOfRowsInSection:0])
+                {
+                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
+                    verticalOffset += ([self tableView:self->_bubblesTableView heightForRowAtIndexPath:indexPath] - self->backPaginationSavedFirstBubbleHeight);
+                }
+
+                self->_bubblesTableView.tableHeaderView = self->backPaginationActivityView = nil;
+            }
+            else
+            {
+                self->_bubblesTableView.tableFooterView = self->reconnectingView = nil;
             }
 
-            // Add delta of the height of the previous first cell (if any)
-            if (addedCellNumber < [self->roomDataSource tableView:self->_bubblesTableView numberOfRowsInSection:0])
+            // Trigger a full table reload. We could not only insert new cells related to pagination,
+            // because some other changes may have been ignored during pagination (see[dataSource:didCellChange:]).
+            self.bubbleTableViewDisplayInTransition = YES;
+
+            // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
+            [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
+            [self.bubblesTableView setScrollEnabled:NO];
+
+            CGPoint contentOffset = self.bubblesTableView.contentOffset;
+
+            BOOL hasBeenScrolledToBottom = [self reloadBubblesTable:NO];
+
+            if (direction == MXTimelineDirectionBackwards)
             {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:addedCellNumber inSection:0];
-                verticalOffset += ([self tableView:self->_bubblesTableView heightForRowAtIndexPath:indexPath] - self->backPaginationSavedFirstBubbleHeight);
+                // Backwards pagination adds cells at the top of the tableview content.
+                // Vertical content offset needs to be updated (except if the table has been scrolled to bottom)
+                if ((!hasBeenScrolledToBottom && verticalOffset > 0) || direction == MXTimelineDirectionForwards)
+                {
+                    // Adjust vertical offset in order to compensate scrolling
+                    contentOffset.y += verticalOffset;
+                    [self setBubbleTableViewContentOffset:contentOffset animated:NO];
+                }
             }
-
-            self->_bubblesTableView.tableHeaderView = self->backPaginationActivityView = nil;
-        }
-        else
-        {
-            self->_bubblesTableView.tableFooterView = self->reconnectingView = nil;
-        }
-
-        // Trigger a full table reload. We could not only insert new cells related to pagination,
-        // because some other changes may have been ignored during pagination (see[dataSource:didCellChange:]).
-        self.bubbleTableViewDisplayInTransition = YES;
-
-        // Disable temporarily scrolling and hide the scroll indicator during refresh to prevent flickering
-        [self.bubblesTableView setShowsVerticalScrollIndicator:NO];
-        [self.bubblesTableView setScrollEnabled:NO];
-
-        CGPoint contentOffset = self.bubblesTableView.contentOffset;
-
-        BOOL hasBeenScrolledToBottom = [self reloadBubblesTable:NO];
-
-        if (direction == MXTimelineDirectionBackwards)
-        {
-            // Backwards pagination adds cells at the top of the tableview content.
-            // Vertical content offset needs to be updated (except if the table has been scrolled to bottom)
-            if ((!hasBeenScrolledToBottom && verticalOffset > 0) || direction == MXTimelineDirectionForwards)
+            else
             {
-                // Adjust vertical offset in order to compensate scrolling
-                contentOffset.y += verticalOffset;
                 [self setBubbleTableViewContentOffset:contentOffset animated:NO];
             }
-        }
-        else
-        {
-            [self setBubbleTableViewContentOffset:contentOffset animated:NO];
-        }
 
-        // Restore scrolling and the scroll indicator
-        [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
-        [self.bubblesTableView setScrollEnabled:YES];
+            // Restore scrolling and the scroll indicator
+            [self.bubblesTableView setShowsVerticalScrollIndicator:YES];
+            [self.bubblesTableView setScrollEnabled:YES];
 
-        self.bubbleTableViewDisplayInTransition = NO;
-        self->isPaginationInProgress = NO;
+            self.bubbleTableViewDisplayInTransition = NO;
+            self->isPaginationInProgress = NO;
 
-        // Force the update of the current visual position
-        // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
-        if (direction == MXTimelineDirectionBackwards)
-        {
-            [self updateCurrentEventIdAtTableBottom:NO];
-        }
+            // Force the update of the current visual position
+            // Else there is a scroll jump on incoming message (see https://github.com/vector-im/vector-ios/issues/79)
+            if (direction == MXTimelineDirectionBackwards)
+            {
+                [self updateCurrentEventIdAtTableBottom:NO];
+            }
 
-    } failure:^(NSError *error) {
-        
-        self.bubbleTableViewDisplayInTransition = YES;
-        
-        // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
-        self->isPaginationInProgress = NO;
-        self->_bubblesTableView.tableHeaderView = self->backPaginationActivityView = nil;
-        
-        [self reloadBubblesTable:NO];
-        
-        self.bubbleTableViewDisplayInTransition = NO;
-        
+        } failure:^(NSError *error) {
+            
+            self.bubbleTableViewDisplayInTransition = YES;
+            
+            // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
+            self->isPaginationInProgress = NO;
+            self->_bubblesTableView.tableHeaderView = self->backPaginationActivityView = nil;
+            
+            [self reloadBubblesTable:NO];
+            
+            self.bubbleTableViewDisplayInTransition = NO;
+            
+        }];
     }];
 }
 
 - (void)triggerAttachmentBackPagination:(NSString*)eventId
 {
     // Paginate only if possible
-    if (NO == [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] && self.attachmentsViewer)
-    {
-        return;
-    }
-    
-    isPaginationInProgress = YES;
-    
-    // Trigger back pagination to find previous attachments
-    [roomDataSource paginate:_paginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
-        
-        // Check whether attachments viewer is still visible
-        if (self.attachmentsViewer)
+    [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards completion:^(BOOL canPaginate) {
+        if (NO == canPaginate && self.attachmentsViewer)
         {
-            // Check whether some older attachments have been added.
-            // Note: the stickers are excluded from the attachments list returned by the room datasource.
-            BOOL isDone = NO;
-            NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
-            if (attachmentsWithThumbnail.count)
-            {
-                MXKAttachment *attachment = attachmentsWithThumbnail.firstObject;
-                isDone = ![attachment.eventId isEqualToString:eventId];
-            }
+            return;
+        }
+        
+        self->isPaginationInProgress = YES;
+        
+        // Trigger back pagination to find previous attachments
+        [self->roomDataSource paginate:self.paginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
             
-            // Check whether pagination is still available
-            self.attachmentsViewer.complete = ([self->roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
-            
-            if (isDone || self.attachmentsViewer.complete)
+            // Check whether attachments viewer is still visible
+            if (self.attachmentsViewer)
             {
-                // Refresh the current attachments list.
-                [self.attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+                // Check whether some older attachments have been added.
+                // Note: the stickers are excluded from the attachments list returned by the room datasource.
+                BOOL isDone = NO;
+                NSArray *attachmentsWithThumbnail = self.roomDataSource.attachmentsWithThumbnail;
+                if (attachmentsWithThumbnail.count)
+                {
+                    MXKAttachment *attachment = attachmentsWithThumbnail.firstObject;
+                    isDone = ![attachment.eventId isEqualToString:eventId];
+                }
                 
+                // Check whether pagination is still available
+                [self->roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards completion:^(BOOL canPaginate2) {
+                    self.attachmentsViewer.complete = canPaginate2 == NO;
+                    
+                    if (isDone || self.attachmentsViewer.complete)
+                    {
+                        // Refresh the current attachments list.
+                        [self.attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:nil];
+                        
+                        // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
+                        // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+                        self.bubbleTableViewDisplayInTransition = YES;
+                        self->isPaginationInProgress = NO;
+                        [self reloadBubblesTable:YES];
+                        self.bubbleTableViewDisplayInTransition = NO;
+                        
+                        // Done
+                        return;
+                    }
+                    
+                    // Here a new back pagination is required
+                    [self triggerAttachmentBackPagination:eventId];
+                }];
+            }
+            else
+            {
                 // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
                 // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
                 self.bubbleTableViewDisplayInTransition = YES;
                 self->isPaginationInProgress = NO;
                 [self reloadBubblesTable:YES];
                 self.bubbleTableViewDisplayInTransition = NO;
-                
-                // Done
-                return;
             }
             
-            // Here a new back pagination is required
-            [self triggerAttachmentBackPagination:eventId];
-        }
-        else
-        {
-            // Trigger a full table reload without scrolling. We could not only insert new cells related to back pagination,
-            // because some other changes may have been ignored during back pagination (see[dataSource:didCellChange:]).
+        } failure:^(NSError *error) {
+            
+            // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
             self.bubbleTableViewDisplayInTransition = YES;
             self->isPaginationInProgress = NO;
             [self reloadBubblesTable:YES];
             self.bubbleTableViewDisplayInTransition = NO;
-        }
-        
-    } failure:^(NSError *error) {
-        
-        // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
-        self.bubbleTableViewDisplayInTransition = YES;
-        self->isPaginationInProgress = NO;
-        [self reloadBubblesTable:YES];
-        self.bubbleTableViewDisplayInTransition = NO;
-        
-        if (self.attachmentsViewer)
-        {
-            // Force attachments update to cancel potential loading wheel
-            [self.attachmentsViewer displayAttachments:self.attachmentsViewer.attachments focusOn:nil];
-        }
-        
+            
+            if (self.attachmentsViewer)
+            {
+                // Force attachments update to cancel potential loading wheel
+                [self.attachmentsViewer displayAttachments:self.attachmentsViewer.attachments focusOn:nil];
+            }
+            
+        }];
     }];
+    
+    
 }
 
 #pragma mark - Post messages
@@ -3718,34 +3731,36 @@
                     }
                     
                     attachmentsViewer.delegate = self;
-                    attachmentsViewer.complete = ([roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards] == NO);
-                    attachmentsViewer.hidesBottomBarWhenPushed = YES;
-                    [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.eventId];
-                    
-                    // Keep here the image view used to display the attachment in the selected cell.
-                    // Note: Only `MXKRoomBubbleTableViewCell` and `MXKSearchTableViewCell` are supported for the moment.
-                    if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
-                    {
-                        self.openedAttachmentImageView = ((MXKRoomBubbleTableViewCell *)cell).attachmentView.imageView;
-                    }
-                    else if ([cell isKindOfClass:MXKSearchTableViewCell.class])
-                    {
-                        self.openedAttachmentImageView = ((MXKSearchTableViewCell *)cell).attachmentImageView.imageView;
-                    }
-                    
-                    self.openedAttachmentEventId = selectedAttachment.eventId;
-                    
-                    // "Initializing" closedAttachmentEventId so it is equal to openedAttachmentEventId at the beginning
-                    self.closedAttachmentEventId = self.openedAttachmentEventId;
+                    [roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards completion:^(BOOL canPaginate) {
+                        attachmentsViewer.complete = canPaginate == NO;
+                        attachmentsViewer.hidesBottomBarWhenPushed = YES;
+                        [attachmentsViewer displayAttachments:attachmentsWithThumbnail focusOn:selectedAttachment.eventId];
+                        
+                        // Keep here the image view used to display the attachment in the selected cell.
+                        // Note: Only `MXKRoomBubbleTableViewCell` and `MXKSearchTableViewCell` are supported for the moment.
+                        if ([cell isKindOfClass:MXKRoomBubbleTableViewCell.class])
+                        {
+                            self.openedAttachmentImageView = ((MXKRoomBubbleTableViewCell *)cell).attachmentView.imageView;
+                        }
+                        else if ([cell isKindOfClass:MXKSearchTableViewCell.class])
+                        {
+                            self.openedAttachmentImageView = ((MXKSearchTableViewCell *)cell).attachmentImageView.imageView;
+                        }
+                        
+                        self.openedAttachmentEventId = selectedAttachment.eventId;
+                        
+                        // "Initializing" closedAttachmentEventId so it is equal to openedAttachmentEventId at the beginning
+                        self.closedAttachmentEventId = self.openedAttachmentEventId;
 
-                    if (@available(iOS 13.0, *))
-                    {
-                        attachmentsViewer.modalPresentationStyle = UIModalPresentationFullScreen;
-                    }
-                    
-                    [self presentViewController:attachmentsViewer animated:YES completion:nil];
-                    
-                    self.attachmentsViewer = attachmentsViewer;
+                        if (@available(iOS 13.0, *))
+                        {
+                            attachmentsViewer.modalPresentationStyle = UIModalPresentationFullScreen;
+                        }
+                        
+                        [self presentViewController:attachmentsViewer animated:YES completion:nil];
+                        
+                        self.attachmentsViewer = attachmentsViewer;
+                    }];
                 }
                 else
                 {
@@ -3875,11 +3890,13 @@
 
 #pragma mark - MXKAttachmentsViewControllerDelegate
 
-- (BOOL)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController paginateAttachmentBefore:(NSString*)eventId
+- (void)attachmentsViewController:(MXKAttachmentsViewController*)attachmentsViewController
+         paginateAttachmentBefore:(NSString*)eventId
+                       completion:(void (^)(BOOL))completion
 {
     [self triggerAttachmentBackPagination:eventId];
     
-    return [self.roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards];
+    [self.roomDataSource.timeline canPaginate:MXTimelineDirectionBackwards completion:completion];
 }
 
 - (void)displayedNewAttachmentWithEventId:(NSString *)eventId {

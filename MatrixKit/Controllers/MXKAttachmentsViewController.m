@@ -1109,7 +1109,11 @@
         if (isBackPaginationInProgress)
         {
             MXKAttachment *attachment = self.attachments.firstObject;
-            self.complete = ![self.delegate attachmentsViewController:self paginateAttachmentBefore:attachment.eventId];
+            [self.delegate attachmentsViewController:self
+                            paginateAttachmentBefore:attachment.eventId
+                                          completion:^(BOOL canPaginate) {
+                self.complete = canPaginate;
+            }];
         }
         else
         {
