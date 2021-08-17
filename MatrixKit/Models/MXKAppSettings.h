@@ -212,8 +212,9 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
  This key will be translated and displayed for APNS notifications as the body
  content, unless it is modified locally by a Notification Service Extension.
  
- The default value for this setting is "MESSAGE". Updating it after MXKAccount
- has called `enableAPNSPusher:success:failure:` will have no effect.
+ The default value for this setting is "MESSAGE". Changes are *not* persisted.
+ Updating the value after MXKAccount has called `enableAPNSPusher:success:failure:`
+ will have no effect.
  */
 @property (nonatomic) NSString *notificationBodyLocalizationKey;
 
