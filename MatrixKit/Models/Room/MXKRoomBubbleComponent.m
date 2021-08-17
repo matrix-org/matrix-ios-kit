@@ -107,7 +107,8 @@
     {
         if (event.isLocalEvent
             || event.isState
-            || event.contentHasBeenEdited)    // Local echo for an edit is clear but uses a true event id, the one of the edited event
+            || event.contentHasBeenEdited               // Local echo for an edit is clear but uses a true event id, the one of the edited event
+            || event.eventType == MXEventTypeReaction)  // Reaction events are unencrypted - without this, the cell data containing the sent reaction is misaligned
         {
             shouldShowWarningBadge = NO;
         }
