@@ -1,1 +1,1 @@
-MXKRoomBubbleComponent: Ignore reaction events when computing whether to show a warning badge (fixes misaligned messages in the timeline).
+MXKRoomBubbleComponent: Only consider messages and attachments when computing whether to show a warning badge (fixes misaligned messages in the timeline).

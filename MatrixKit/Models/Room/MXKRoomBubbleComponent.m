@@ -105,16 +105,19 @@
     
     if (!event.isEncrypted)
     {
-        if (event.isLocalEvent
-            || event.isState
-            || event.contentHasBeenEdited               // Local echo for an edit is clear but uses a true event id, the one of the edited event
-            || event.eventType == MXEventTypeReaction)  // Reaction events are unencrypted - without this, the cell data containing the sent reaction is misaligned
+        // Not all events are encrypted (e.g. reactions/redactions) and we only have encrypted cell subclasses for messages and attachments.
+        if (event.eventType == MXEventTypeRoomMessage || event.isMediaAttachment)
         {
-            shouldShowWarningBadge = NO;
-        }
-        else
-        {
-            shouldShowWarningBadge = YES;
+            if (event.isLocalEvent
+                || event.isState
+                || event.contentHasBeenEdited)    // Local echo for an edit is clear but uses a true event id, the one of the edited event
+            {
+                shouldShowWarningBadge = NO;
+            }
+            else
+            {
+                shouldShowWarningBadge = YES;
+            }
         }
     }
     else if (event.decryptionError)
