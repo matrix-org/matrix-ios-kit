@@ -449,24 +449,24 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     if (bubbleCount > maxBubbleNb)
     {
         // Do nothing if some local echoes are in progress.
-        NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
-        
-        for (NSInteger index = 0; index < outgoingMessages.count; index++)
-        {
-            MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
-            
-            if (outgoingMessage.sentState == MXEventSentStateSending ||
-                outgoingMessage.sentState == MXEventSentStatePreparing ||
-                outgoingMessage.sentState == MXEventSentStateEncrypting ||
-                outgoingMessage.sentState == MXEventSentStateUploading)
+        [_room outgoingMessagesWithCompletion:^(NSArray<MXEvent *> * outgoingMessages) {
+            for (NSInteger index = 0; index < outgoingMessages.count; index++)
             {
-                MXLogDebug(@"[MXKRoomDataSource] cancel limitMemoryUsage because some messages are being sent");
-                return;
+                MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+                
+                if (outgoingMessage.sentState == MXEventSentStateSending ||
+                    outgoingMessage.sentState == MXEventSentStatePreparing ||
+                    outgoingMessage.sentState == MXEventSentStateEncrypting ||
+                    outgoingMessage.sentState == MXEventSentStateUploading)
+                {
+                    MXLogDebug(@"[MXKRoomDataSource] cancel limitMemoryUsage because some messages are being sent");
+                    return;
+                }
             }
-        }
 
-        // Reset the room data source (return in initial state: minimum memory usage).
-        [self reload];
+            // Reset the room data source (return in initial state: minimum memory usage).
+            [self reload];
+        }];
     }
 }
 
@@ -910,37 +910,53 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             if (MXTimelineDirectionForwards == direction)
             {
                 // Check for local echo suppression
-                MXEvent *localEcho;
-                if (self.room.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUser.userId])
+                __block MXEvent *localEcho;
+                dispatch_group_t dispatchGroup = dispatch_group_create();
+                if ([event.sender isEqualToString:self.mxSession.myUser.userId])
                 {
-                    localEcho = [self.room pendingLocalEchoRelatedToEvent:event];
-                    if (localEcho)
-                    {
-                        // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
-                        if (localEcho.originServerTs != kMXUndefinedTimestamp)
+                    dispatch_group_enter(dispatchGroup);
+                    [self.room outgoingMessagesWithCompletion:^(NSArray<MXEvent *> * outgoingMessages) {
+                        if (outgoingMessages.count)
                         {
-                            // Replace the local echo by the true event sent by the homeserver
-                            [self replaceEvent:localEcho withEvent:event];
+                            [self.room pendingLocalEchoRelatedToEvent:event completion:^(MXEvent * localEcho2) {
+                                localEcho = localEcho2;
+                                if (localEcho)
+                                {
+                                    // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
+                                    if (localEcho.originServerTs != kMXUndefinedTimestamp)
+                                    {
+                                        // Replace the local echo by the true event sent by the homeserver
+                                        [self replaceEvent:localEcho withEvent:event];
+                                    }
+                                    else
+                                    {
+                                        // Remove the local echo, and process independently the true event.
+                                        [self replaceEvent:localEcho withEvent:nil];
+                                        localEcho = nil;
+                                    }
+                                }
+                                dispatch_group_leave(dispatchGroup);
+                            }];
                         }
                         else
                         {
-                            // Remove the local echo, and process independently the true event.
-                            [self replaceEvent:localEcho withEvent:nil];
-                            localEcho = nil;
+                            dispatch_group_leave(dispatchGroup);
                         }
-                    }
+                    }];
                 }
 
-                if (self.secondaryRoom)
-                {
-                    [self reloadNotifying:NO];
-                }
-                else if (nil == localEcho)
-                {
-                    // Process here incoming events, and outgoing events sent from another device.
-                    [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
-                    [self processQueuedEvents:nil];
-                }
+                dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+                    if (self.secondaryRoom)
+                    {
+                        [self reloadNotifying:NO];
+                    }
+                    else if (nil == localEcho)
+                    {
+                        // Process here incoming events, and outgoing events sent from another device.
+                        [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
+                        [self processQueuedEvents:nil];
+                    }
+                });
             }
         }];
 
@@ -1060,33 +1076,50 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             if (MXTimelineDirectionForwards == direction)
             {
                 // Check for local echo suppression
-                MXEvent *localEcho;
-                if (self.secondaryRoom.outgoingMessages.count && [event.sender isEqualToString:self.mxSession.myUserId])
+                __block MXEvent *localEcho;
+                
+                dispatch_group_t dispatchGroup = dispatch_group_create();
+                
+                if ([event.sender isEqualToString:self.mxSession.myUserId])
                 {
-                    localEcho = [self.secondaryRoom pendingLocalEchoRelatedToEvent:event];
-                    if (localEcho)
-                    {
-                        // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
-                        if (localEcho.originServerTs != kMXUndefinedTimestamp)
+                    dispatch_group_enter(dispatchGroup);
+                    [self.secondaryRoom outgoingMessagesWithCompletion:^(NSArray<MXEvent *> * outgoingMessages) {
+                        if (outgoingMessages.count)
                         {
-                            // Replace the local echo by the true event sent by the homeserver
-                            [self replaceEvent:localEcho withEvent:event];
+                            [self.secondaryRoom pendingLocalEchoRelatedToEvent:event completion:^(MXEvent * localEcho) {
+                                if (localEcho)
+                                {
+                                    // Check whether the local echo has a timestamp (in this case, it is replaced with the actual event).
+                                    if (localEcho.originServerTs != kMXUndefinedTimestamp)
+                                    {
+                                        // Replace the local echo by the true event sent by the homeserver
+                                        [self replaceEvent:localEcho withEvent:event];
+                                    }
+                                    else
+                                    {
+                                        // Remove the local echo, and process independently the true event.
+                                        [self replaceEvent:localEcho withEvent:nil];
+                                        localEcho = nil;
+                                    }
+                                }
+                                dispatch_group_leave(dispatchGroup);
+                            }];
                         }
                         else
                         {
-                            // Remove the local echo, and process independently the true event.
-                            [self replaceEvent:localEcho withEvent:nil];
-                            localEcho = nil;
+                            dispatch_group_leave(dispatchGroup);
                         }
-                    }
+                    }];
                 }
 
-                if (nil == localEcho)
-                {
-                    // Process here incoming events, and outgoing events sent from another device.
-                    [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
-                    [self processQueuedEvents:nil];
-                }
+                dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+                    if (nil == localEcho)
+                    {
+                        // Process here incoming events, and outgoing events sent from another device.
+                        [self queueEventForProcessing:event withRoomState:roomState direction:MXTimelineDirectionForwards];
+                        [self processQueuedEvents:nil];
+                    }
+                });
             }
         }];
 
@@ -2272,26 +2305,26 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (void)handleUnsentMessages
 {
     // Add the unsent messages at the end of the conversation
-    NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
-    
-    [self.mxSession decryptEvents:outgoingMessages inTimeline:nil onComplete:^(NSArray<MXEvent *> *failedEvents) {
-        BOOL shouldProcessQueuedEvents = NO;
-        
-        for (NSInteger index = 0; index < outgoingMessages.count; index++)
-        {
-            MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+    [_room outgoingMessagesWithCompletion:^(NSArray<MXEvent *> * outgoingMessages) {
+        [self.mxSession decryptEvents:outgoingMessages inTimeline:nil onComplete:^(NSArray<MXEvent *> *failedEvents) {
+            BOOL shouldProcessQueuedEvents = NO;
             
-            if (outgoingMessage.sentState != MXEventSentStateSent)
+            for (NSInteger index = 0; index < outgoingMessages.count; index++)
             {
-                [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-                shouldProcessQueuedEvents = YES;
+                MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
+                
+                if (outgoingMessage.sentState != MXEventSentStateSent)
+                {
+                    [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
+                    shouldProcessQueuedEvents = YES;
+                }
             }
-        }
-        
-        if (shouldProcessQueuedEvents)
-        {
-            [self processQueuedEvents:nil];
-        }
+            
+            if (shouldProcessQueuedEvents)
+            {
+                [self processQueuedEvents:nil];
+            }
+        }];
     }];
 }
 
