@@ -202,10 +202,21 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
  */
 @property (nonatomic) UIColor *presenceColorForOfflineUser;
 
-#pragma mark - Push
+#pragma mark - Notifications
 
 /// Flag to allow PushKit pushers or not. Default value is `NO`.
 @property (nonatomic, assign) BOOL allowPushKitPushers;
+
+/**
+ A localization key used when registering the default notification payload.
+ This key will be translated and displayed for APNS notifications as the body
+ content, unless it is modified locally by a Notification Service Extension.
+ 
+ The default value for this setting is "MESSAGE". Changes are *not* persisted.
+ Updating the value after MXKAccount has called `enableAPNSPusher:success:failure:`
+ will have no effect.
+ */
+@property (nonatomic) NSString *notificationBodyLocalizationKey;
 
 #pragma mark - Calls
 
