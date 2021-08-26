@@ -245,7 +245,7 @@
 "call_voice_with_user" = "Połączenie głosowe z %@";
 "call_more_actions_dialpad" = "Klawiatura numeryczna";
 "call_more_actions_transfer" = "Transferuj";
-"call_more_actions_audio_use_device" = "Użyj wyjścia audio urządzenia";
+"call_more_actions_audio_use_device" = "Wyjście audio";
 "call_more_actions_audio_use_headset" = "Użyj zestawu głosowego";
 "call_more_actions_change_audio_device" = "Zmień urządzenie dźwiękowe";
 "call_more_actions_unhold" = "Wznów";

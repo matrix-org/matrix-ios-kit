@@ -96,42 +96,51 @@
 
 - (BOOL)shouldShowWarningBadgeForEvent:(MXEvent*)event roomState:(MXRoomState*)roomState session:(MXSession*)session
 {
+    // Warning badges are unnecessary in unencrypted rooms
     if (!roomState.isEncrypted)
     {
         return NO;
     }
     
-    BOOL shouldShowWarningBadge = NO;
+    // Not all events are encrypted (e.g. state/reactions/redactions) and we only have encrypted cell subclasses for messages and attachments.
+    if (event.eventType != MXEventTypeRoomMessage && !event.isMediaAttachment)
+    {
+        return NO;
+    }
     
+    // Always show a warning badge if there was a decryption error.
+    if (event.decryptionError)
+    {
+        return YES;
+    }
+    
+    // Unencrypted message events should show a warning unless they're pending local echoes
     if (!event.isEncrypted)
     {
         if (event.isLocalEvent
-            || event.isState
             || event.contentHasBeenEdited)    // Local echo for an edit is clear but uses a true event id, the one of the edited event
         {
-            shouldShowWarningBadge = NO;
+            return NO;
         }
-        else
-        {
-            shouldShowWarningBadge = YES;
-        }
+            
+        return YES;
     }
-    else if (event.decryptionError)
-    {
-        shouldShowWarningBadge = YES;
-    }
-    else if (event.sender)
+    
+    // The encryption is in a good state.
+    // Only show a warning badge if there are trust issues.
+    if (event.sender)
     {
         MXUserTrustLevel *userTrustLevel = [session.crypto trustLevelForUser:event.sender];
         MXDeviceInfo *deviceInfo = [session.crypto eventDeviceInfo:event];
         
         if (userTrustLevel.isVerified && !deviceInfo.trustLevel.isVerified)
         {
-            shouldShowWarningBadge = YES;
+            return YES;
         }
     }
     
-    return shouldShowWarningBadge;
+    // Everything was fine
+    return NO;
 }
 
 @end

@@ -1,3 +1,16 @@
+## Changes in 0.15.8 (2021-08-26)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.19.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.8)).
+- Notifications: Add notificationBodyLocalizationKey to MXKAppSettings to customise the default notification payload. ([#4132](https://github.com/vector-im/element-ios/issues/4132))
+
+🐛 Bugfixes
+
+- MXKViewControllerHandling: Use processing local cache session state to show an activity indicator. ([#4471](https://github.com/vector-im/element-ios/issues/4471))
+- MXKRoomBubbleComponent: Only consider messages and attachments when computing whether to show a warning badge (fixes misaligned messages in the timeline). ([#4510](https://github.com/vector-im/element-ios/issues/4510))
+
+
 ## Changes in 0.15.7 (2021-08-11)
 
 🙌 Improvements
