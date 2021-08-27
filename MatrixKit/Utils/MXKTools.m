@@ -23,6 +23,7 @@
 @import DTCoreText;
 
 #import "NSBundle+MatrixKit.h"
+#import <MatrixSDK/MXTools.h>
 
 #pragma mark - Constants definitions
 
@@ -718,8 +719,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
     CGSize naturalSize = [videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize;
     
     // Provide 480p as the baseline preset.
-    #warning video file size not implemented.
-    NSString *fileSizeString = @"";
+    NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset640x480];
     NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small_with_resolution"], @"480p", fileSizeString];
     [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                           style:UIAlertActionStyleDefault
@@ -731,7 +731,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
     // Allow 720p when the video exceeds 480p.
     if (naturalSize.height > 480)
     {
-        NSString *fileSizeString = @"";
+        NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset1280x720];
         NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium_with_resolution"], @"720p", fileSizeString];
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
@@ -744,7 +744,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
     // Allow 1080p when the video exceeds 720p.
     if (naturalSize.height > 720)
     {
-        NSString *fileSizeString = @"";
+        NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset1920x1080];
         NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large_with_resolution"], @"1080p", fileSizeString];
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
@@ -762,6 +762,14 @@ static NSMutableDictionary* backgroundByImageNameDict;
     }]];
     
     return compressionPrompt;
+}
+
++ (NSString *)estimatedFileSizeStringForVideoAsset:(AVAsset *)videoAsset withPresetName:(NSString *)presetName
+{
+    AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:videoAsset presetName:presetName];
+    exportSession.timeRange = CMTimeRangeMake(kCMTimeZero, videoAsset.duration);
+    
+    return [MXTools fileSizeToString:exportSession.estimatedOutputFileLength];
 }
 
 #pragma mark - App permissions

@@ -271,9 +271,9 @@
 "attachment_small" = "Small (~%@)";
 "attachment_medium" = "Medium (~%@)";
 "attachment_large" = "Large (~%@)";
-"attachment_small_with_resolution" = "Small %@ (%@)";
-"attachment_medium_with_resolution" = "Medium %@ (%@)";
-"attachment_large_with_resolution" = "Large %@ (%@)";
+"attachment_small_with_resolution" = "Small %@ (~%@)";
+"attachment_medium_with_resolution" = "Medium %@ (~%@)";
+"attachment_large_with_resolution" = "Large %@ (~%@)";
 "attachment_cancel_download" = "Cancel the download?";
 "attachment_cancel_upload" = "Cancel the upload?";
 "attachment_multiselection_size_prompt" = "Do you want to send images as:";
