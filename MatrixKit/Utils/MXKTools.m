@@ -711,12 +711,17 @@ static NSMutableDictionary* backgroundByImageNameDict;
 + (UIAlertController*)videoConversionPromptForVideoAsset:(AVAsset *)videoAsset
                                            withCompletion:(void (^)(NSString * _Nullable presetName))completion
 {
-    UIAlertController *compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_title"]
+                                                                               message:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_message"]
+                                                                        preferredStyle:UIAlertControllerStyleActionSheet];
     
     CGSize naturalSize = [videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize;
     
     // Provide 480p as the baseline preset.
-    [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], @"480p"]
+    #warning video file size not implemented.
+    NSString *fileSizeString = @"";
+    NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small_with_resolution"], @"480p", fileSizeString];
+    [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
         // Call the completion with 480p preset.
@@ -726,7 +731,9 @@ static NSMutableDictionary* backgroundByImageNameDict;
     // Allow 720p when the video exceeds 480p.
     if (naturalSize.height > 480)
     {
-        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], @"720p"]
+        NSString *fileSizeString = @"";
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium_with_resolution"], @"720p", fileSizeString];
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction * action) {
             // Call the completion with 720p preset.
@@ -737,7 +744,9 @@ static NSMutableDictionary* backgroundByImageNameDict;
     // Allow 1080p when the video exceeds 720p.
     if (naturalSize.height > 720)
     {
-        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], @"1080p"]
+        NSString *fileSizeString = @"";
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large_with_resolution"], @"1080p", fileSizeString];
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction * action) {
             // Call the completion with 1080p preset.
@@ -746,7 +755,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
     }
     
     [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                          style:UIAlertActionStyleDefault
+                                                          style:UIAlertActionStyleCancel
                                                         handler:^(UIAlertAction * action) {
         // Cancelled. Call the completion with nil.
         completion(nil);

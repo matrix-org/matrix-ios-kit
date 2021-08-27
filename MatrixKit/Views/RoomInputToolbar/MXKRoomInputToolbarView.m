@@ -609,13 +609,15 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     {
         __weak typeof(self) weakSelf = self;
         
-        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_title"]
+                                                                message:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_message"]
+                                                         preferredStyle:UIAlertControllerStyleActionSheet];
         
         if (compressionSizes.small.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.small.fileSize round:NO], (int)compressionSizes.small.imageSize.width, (int)compressionSizes.small.imageSize.height];
+            NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.small.fileSize];
 
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], resolution];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], fileSizeString];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -637,9 +639,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.medium.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.medium.fileSize round:NO], (int)compressionSizes.medium.imageSize.width, (int)compressionSizes.medium.imageSize.height];
+            NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.medium.fileSize];
 
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], resolution];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], fileSizeString];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -661,9 +663,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         
         if (compressionSizes.large.fileSize)
         {
-            NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.large.fileSize round:NO], (int)compressionSizes.large.imageSize.width, (int)compressionSizes.large.imageSize.height];
+            NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.large.fileSize];
 
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], resolution];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], fileSizeString];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -683,9 +685,9 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                                 }]];
         }
         
-        NSString *resolution = [NSString stringWithFormat:@"%@ (%d x %d)", [MXTools fileSizeToString:compressionSizes.original.fileSize round:NO], (int)compressionSizes.original.imageSize.width, (int)compressionSizes.original.imageSize.height];
+        NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.original.fileSize];
 
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], resolution];
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], fileSizeString];
         
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
@@ -704,7 +706,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                             }]];
         
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                              style:UIAlertActionStyleDefault
+                                                              style:UIAlertActionStyleCancel
                                                             handler:^(UIAlertAction * action) {
                                                                 
                                                                 if (weakSelf)
@@ -836,13 +838,15 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         && (fileSizes.small || fileSizes.medium || fileSizes.large))
     {
         // Ask the user for the compression value
-        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_multiselection_size_prompt"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_title"]
+                                                                message:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_message"]
+                                                         preferredStyle:UIAlertControllerStyleActionSheet];
         
         __weak typeof(self) weakSelf = self;
 
         if (fileSizes.small)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXTools fileSizeToString:fileSizes.small round:NO]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXTools fileSizeToString:fileSizes.small]];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -862,7 +866,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.medium)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXTools fileSizeToString:fileSizes.medium round:NO]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXTools fileSizeToString:fileSizes.medium]];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -882,7 +886,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.large)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXTools fileSizeToString:fileSizes.large round:NO]];
+            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXTools fileSizeToString:fileSizes.large]];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -900,7 +904,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                                 }]];
         }
 
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXTools fileSizeToString:fileSizes.original round:NO]];
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXTools fileSizeToString:fileSizes.original]];
         
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
@@ -918,7 +922,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                             }]];
         
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
-                                                              style:UIAlertActionStyleDefault
+                                                              style:UIAlertActionStyleCancel
                                                             handler:^(UIAlertAction * action) {
                                                                 
                                                                 if (weakSelf)
