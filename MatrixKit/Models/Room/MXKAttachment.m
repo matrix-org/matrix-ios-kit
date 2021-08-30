@@ -32,6 +32,7 @@ static const int kThumbnailWidth = 320;
 static const int kThumbnailHeight = 240;
 
 NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
+NSString *const kMXKAttachmentFileNameBase = @"attatchment";
 
 @interface MXKAttachment ()
 {
@@ -447,7 +448,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     // create a file with an appropriate extension because iOS detects based on file extension
     // all over the place
     NSString *ext = [MXTools fileExtensionFromContentType:mimetype];
-    NSString *filenameTemplate = [NSString stringWithFormat:@"attatchment.XXXXXX%@", ext];
+    NSString *filenameTemplate = [NSString stringWithFormat:@"%@.XXXXXX%@", kMXKAttachmentFileNameBase, ext];
     NSString *template = [NSTemporaryDirectory() stringByAppendingPathComponent:filenameTemplate];
     
     const char *templateCstr = [template fileSystemRepresentation];
@@ -467,6 +468,25 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
     return tempPath;
 }
 
++ (void)clearCache
+{
+    NSString *temporaryDirectoryPath = NSTemporaryDirectory();
+    NSDirectoryEnumerator<NSString *> *enumerator = [NSFileManager.defaultManager enumeratorAtPath:temporaryDirectoryPath];
+    
+    NSString *filePath;
+    while (filePath = [enumerator nextObject]) {
+        if(![filePath containsString:kMXKAttachmentFileNameBase]) {
+            continue;
+        }
+        
+        NSError *error;
+        BOOL result = [NSFileManager.defaultManager removeItemAtPath:[temporaryDirectoryPath stringByAppendingPathComponent:filePath] error:&error];
+        if (!result && error) {
+            MXLogError(@"[MXKAttachment] Failed deleting temporary file with error: %@", error);
+        }
+    }
+}
+
 - (void)prepare:(void (^)(void))onAttachmentReady failure:(void (^)(NSError *error))onFailure
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:_cacheFilePath])
@@ -474,7 +494,7 @@ NSString *const kMXKAttachmentErrorDomain = @"kMXKAttachmentErrorDomain";
         // Done
         if (onAttachmentReady)
         {
-            onAttachmentReady ();
+            onAttachmentReady();
         }
     }
     else
