@@ -3537,21 +3537,36 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 {
     if (self.showBubbleReceipts)
     {
-        [self.room getEventReceipts:eventId sorted:YES completion:^(NSArray<MXReceiptData *> * _Nonnull readReceipts) {
-            if (readReceipts.count)
-            {
-                NSInteger cellDataIndex = [cellDatas indexOfObject:cellData];
-                if (cellDataIndex != NSNotFound)
+        if (self.room)
+        {
+            [self.room getEventReceipts:eventId sorted:YES completion:^(NSArray<MXReceiptData *> * _Nonnull readReceipts) {
+                if (readReceipts.count)
                 {
-                    [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex];
+                    NSInteger cellDataIndex = [cellDatas indexOfObject:cellData];
+                    if (cellDataIndex != NSNotFound)
+                    {
+                        [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex];
+                    }
                 }
-            }
-            
-            if (completion)
-            {
+                
+                if (completion)
+                {
+                    completion();
+                }
+            }];
+        }
+        else if (completion)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
                 completion();
-            }
-        }];
+            });
+        }
+    }
+    else if (completion)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion();
+        });
     }
 }
 
