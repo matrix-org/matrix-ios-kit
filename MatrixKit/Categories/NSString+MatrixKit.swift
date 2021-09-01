@@ -18,18 +18,6 @@ import Foundation
 import MatrixSDK.MXLog
 
 extension NSString {
-    /// Check if the string contains a URL.
-    /// - Returns: True if the string contains at least one URL, otherwise false.
-    @objc func mxk_containsURL() -> Bool {
-        guard let linkDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
-            MXLog.debug("[NSString+URLDetector]: Unable to create link detector.")
-            return false
-        }
-        
-        // return true if there is at least one match
-        return linkDetector.numberOfMatches(in: self as String, options: [], range: NSRange(location: 0, length: self.length)) > 0
-    }
-    
     /// Gets the first URL contained in the string.
     /// - Returns: A URL if detected, otherwise nil.
     @objc func mxk_firstURLDetected() -> NSURL? {
@@ -38,13 +26,33 @@ extension NSString {
             return nil
         }
         
-        // find the first match, otherwise return nil
-        guard let match = linkDetector.firstMatch(in: self as String, options: [], range: NSRange(location: 0, length: self.length)) else {
-            return nil
+        var detectedURL: NSURL?
+        
+        // enumerate all urls that were found in the string to ensure
+        // detection of a valid link if there are invalid links preceding it
+        linkDetector.enumerateMatches(in: self as String,
+                                      options: [],
+                                      range: NSRange(location: 0, length: self.length)) { match, flags, stop in
+            guard let match = match else { return }
+            
+            // check if the match is a valid url
+            let urlString = self.substring(with: match.range)
+            guard let url = NSURL(string: urlString) else { return }
+            
+            // ensure the match is a web link
+            guard let scheme = url.scheme?.lowercased(),
+                  scheme == "https" || scheme == "http"
+            else { return }
+            
+            // discard any matrix.to links
+            guard let host = url.host?.lowercased(),
+                  host != "matrix.to"
+            else { return }
+            
+            detectedURL = url
+            stop.pointee = true
         }
         
-        // create a url and return it.
-        let urlString = self.substring(with: match.range)
-        return NSURL(string: urlString)
+        return detectedURL
     }
 }

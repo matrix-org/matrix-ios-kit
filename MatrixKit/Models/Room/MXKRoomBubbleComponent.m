@@ -125,22 +125,6 @@
         return;
     }
     
-    // The following checks could be done in the preview manager once
-    // previews are hidden until successfully loaded.
-    NSString *lowercasedScheme = [url.scheme lowercaseString];
-    
-    if (!([lowercasedScheme isEqualToString:@"https"] || [lowercasedScheme isEqualToString:@"http"]))
-    {
-        self.link = nil;
-        return;
-    }
-    
-    if ([[url.host lowercaseString] isEqualToString:@"matrix.to"])
-    {
-        self.link = nil;
-        return;
-    }
-    
     self.link = url;
 }
 
