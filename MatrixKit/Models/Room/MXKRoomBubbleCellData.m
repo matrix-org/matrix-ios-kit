@@ -490,7 +490,7 @@
         CGSize size = [selectedTextView sizeThatFits:selectedTextView.frame.size];
 
         // Manage the case where a string attribute has a single paragraph with a left indent
-        // In this case, [UITextViex sizeThatFits] ignores the indent and return the width
+        // In this case, [UITextView sizeThatFits] ignores the indent and return the width
         // of the text only.
         // So, add this indent afterwards
         NSRange textRange = NSMakeRange(0, attributedText.length);
@@ -585,6 +585,21 @@
         }
     }
     return hasAttributedTextMessage;
+}
+
+- (BOOL)hasLink
+{
+    @synchronized (bubbleComponents) {
+        for (MXKRoomBubbleComponent *component in bubbleComponents)
+        {
+            if (component.link)
+            {
+                return YES;
+            }
+        }
+    }
+    
+    return NO;
 }
 
 - (MXKRoomBubbleComponentDisplayFix)displayFix

@@ -17,6 +17,7 @@
 #import "MXKRoomBubbleComponent.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 @implementation MXKRoomBubbleComponent
 
@@ -59,6 +60,8 @@
         }
         
         _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:(MXRoomState*)roomState session:session];
+        
+        [self updateLink];
     }
     return self;
 }
@@ -81,6 +84,7 @@
 
     MXKEventFormatterError error;
     _attributedTextMessage = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
+    [self updateLink];
     
     _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:roomState session:session];
 }
@@ -92,6 +96,52 @@
         _textMessage = _attributedTextMessage.string;
     }
     return _textMessage;
+}
+
+- (void)updateLink
+{
+    // Only get URLs for unencrypted, un-redacted message events that are text, notice or emote.
+    if (self.event.eventType != MXEventTypeRoomMessage || self.event.isEncrypted || [self.event isRedactedEvent])
+    {
+        self.link = nil;
+        return;
+    }
+    
+    NSString *messageType = self.event.content[@"msgtype"];
+    
+    if (!messageType || !([messageType isEqualToString:kMXMessageTypeText] || [messageType isEqualToString:kMXMessageTypeNotice] || [messageType isEqualToString:kMXMessageTypeEmote]))
+    {
+        self.link = nil;
+        return;
+    }
+    
+    // By parsing _textMessage, reply text will be formatted.
+    // Find the first url and make sure it's https or http.
+    NSURL *url = [self.textMessage mxk_firstURLDetected];
+    
+    if (!url)
+    {
+        self.link = nil;
+        return;
+    }
+    
+    // The following checks could be done in the preview manager once
+    // previews are hidden until successfully loaded.
+    NSString *lowercasedScheme = [url.scheme lowercaseString];
+    
+    if (!([lowercasedScheme isEqualToString:@"https"] || [lowercasedScheme isEqualToString:@"http"]))
+    {
+        self.link = nil;
+        return;
+    }
+    
+    if ([[url.host lowercaseString] isEqualToString:@"matrix.to"])
+    {
+        self.link = nil;
+        return;
+    }
+    
+    self.link = url;
 }
 
 - (BOOL)shouldShowWarningBadgeForEvent:(MXEvent*)event roomState:(MXRoomState*)roomState session:(MXSession*)session
