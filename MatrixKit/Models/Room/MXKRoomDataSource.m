@@ -2240,6 +2240,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 }
             }
         }
+        
+        dispatch_group_t dispatchGroup = dispatch_group_create();
 
         // Update cell data we have received a read receipt for
         NSArray *readEventIds = receiptEvent.readReceiptEventIds;
@@ -2250,12 +2252,15 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             {
                 @synchronized(self->bubbles)
                 {
-                    [self addReadReceiptsForEvent:eventId inCellDatas:self->bubbles startingAtCellData:cellData];
+                    dispatch_group_enter(dispatchGroup);
+                    [self addReadReceiptsForEvent:eventId inCellDatas:self->bubbles startingAtCellData:cellData completion:^{
+                        dispatch_group_leave(dispatchGroup);
+                    }];
                 }
             }
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
             if (self.delegate)
             {
                 [self.delegate dataSource:self didCellChange:nil];
@@ -3001,6 +3006,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         NSUInteger serverSyncEventCount = 0;
         NSUInteger addedHistoryCellCount = 0;
         NSUInteger addedLiveCellCount = 0;
+        
+        dispatch_group_t dispatchGroup = dispatch_group_create();
 
         // Lock on `eventsToProcessSnapshot` to suspend reload or destroy during the process.
         @synchronized(self->eventsToProcessSnapshot)
@@ -3399,7 +3406,10 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 {
                     @autoreleasepool
                     {
-                        [self addReadReceiptsForEvent:queuedEvent.event.eventId inCellDatas:self->bubblesSnapshot startingAtCellData:self->eventIdToBubbleMap[queuedEvent.event.eventId]];
+                        dispatch_group_enter(dispatchGroup);
+                        [self addReadReceiptsForEvent:queuedEvent.event.eventId inCellDatas:self->bubblesSnapshot startingAtCellData:self->eventIdToBubbleMap[queuedEvent.event.eventId] completion:^{
+                            dispatch_group_leave(dispatchGroup);
+                        }];
                     }
                 }
 
@@ -3462,12 +3472,12 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             self->eventsToProcessSnapshot = nil;
         }
         
-        // Check whether some events have been processed
-        if (self->bubblesSnapshot)
-        {
-            // Updated data can be displayed now
-            // Block MXKRoomDataSource.processingQueue while the processing is finalised on the main thread
-            dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+            // Check whether some events have been processed
+            if (self->bubblesSnapshot)
+            {
+                // Updated data can be displayed now
+                // Block MXKRoomDataSource.processingQueue while the processing is finalised on the main thread
 
                 // Check whether self has not been reloaded or destroyed
                 if (self.state == MXKDataSourceStateReady && self->bubblesSnapshot)
@@ -3501,18 +3511,16 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 {
                     onComplete(addedHistoryCellCount, addedLiveCellCount);
                 }
-            });
-        }
-        else
-        {
-            // No new event has been added, we just inform about the end if requested.
-            if (onComplete)
-            {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    onComplete(0, 0);
-                });
             }
-        }
+            else
+            {
+                // No new event has been added, we just inform about the end if requested.
+                if (onComplete)
+                {
+                    onComplete(0, 0);
+                }
+            }
+        });
     });
 }
 
@@ -3525,19 +3533,40 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
  @param cellDatas the working array of cell datas.
  @param cellData the original cell data the event belongs to.
  */
-- (void)addReadReceiptsForEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas startingAtCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
+- (void)addReadReceiptsForEvent:(NSString*)eventId inCellDatas:(NSArray<id<MXKRoomBubbleCellDataStoring>>*)cellDatas startingAtCellData:(id<MXKRoomBubbleCellDataStoring>)cellData completion:(void (^)(void))completion
 {
     if (self.showBubbleReceipts)
     {
-        NSArray<MXReceiptData*> *readReceipts = [self.room getEventReceipts:eventId sorted:YES];
-        if (readReceipts.count)
+        if (self.room)
         {
-            NSInteger cellDataIndex = [cellDatas indexOfObject:cellData];
-            if (cellDataIndex != NSNotFound)
-            {
-                [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex];
-            }
+            [self.room getEventReceipts:eventId sorted:YES completion:^(NSArray<MXReceiptData *> * _Nonnull readReceipts) {
+                if (readReceipts.count)
+                {
+                    NSInteger cellDataIndex = [cellDatas indexOfObject:cellData];
+                    if (cellDataIndex != NSNotFound)
+                    {
+                        [self addReadReceipts:readReceipts forEvent:eventId inCellDatas:cellDatas atCellDataIndex:cellDataIndex];
+                    }
+                }
+                
+                if (completion)
+                {
+                    completion();
+                }
+            }];
         }
+        else if (completion)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion();
+            });
+        }
+    }
+    else if (completion)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion();
+        });
     }
 }
 
