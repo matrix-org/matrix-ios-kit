@@ -150,9 +150,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 {
     [super viewDidAppear:animated];
     
-    if (@available(iOS 11.0, *)) {
-        self.navigationItem.hidesSearchBarWhenScrolling = YES;
-    }
+    self.navigationItem.hidesSearchBarWhenScrolling = YES;
 }
 
 #pragma mark - Private
@@ -164,14 +162,12 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     searchController.dimsBackgroundDuringPresentation = NO;
     searchController.hidesNavigationBarDuringPresentation = NO;
     searchController.searchResultsUpdater = self;
-            
-    if (@available(iOS 11.0, *)) {
-        // Search bar is hidden for the moment, uncomment following line to enable it.
-        // TODO: Enable it once we have enough translations to fill pages and pages
-//        self.navigationItem.searchController = searchController;
-        // Make the search bar visible on first view appearance
-        self.navigationItem.hidesSearchBarWhenScrolling = NO;
-    }
+    
+    // Search bar is hidden for the moment, uncomment following line to enable it.
+    // TODO: Enable it once we have enough translations to fill pages and pages
+    //        self.navigationItem.searchController = searchController;
+    // Make the search bar visible on first view appearance
+    self.navigationItem.hidesSearchBarWhenScrolling = NO;
     
     self.definesPresentationContext = YES;
     

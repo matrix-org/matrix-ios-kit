@@ -22,8 +22,6 @@
 #import "MXKInterleavedRecentsDataSource.h"
 #import "MXKInterleavedRecentTableViewCell.h"
 
-#import "UIScrollView+MatrixKit.h"
-
 @interface MXKRecentListViewController ()
 {
     /**
@@ -511,7 +509,7 @@
 {
     if (scrollView == _recentsTableView)
     {
-        if (scrollView.contentOffset.y + scrollView.mxk_adjustedContentInset.top == 0)
+        if (scrollView.contentOffset.y + scrollView.adjustedContentInset.top == 0)
         {
             [self managePullToKick:scrollView];
         }
@@ -605,7 +603,7 @@
     if (!reconnectingView)
     {
         // detect if the user scrolls over the tableview top
-        restartConnection = (scrollView.contentOffset.y + scrollView.mxk_adjustedContentInset.top < -128);
+        restartConnection = (scrollView.contentOffset.y + scrollView.adjustedContentInset.top < -128);
         
         if (restartConnection)
         {
