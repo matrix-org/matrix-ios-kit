@@ -18,7 +18,6 @@
 #import "MXKTableViewController.h"
 
 #import "UIViewController+MatrixKit.h"
-#import "UIScrollView+MatrixKit.h"
 #import "MXSession+MatrixKit.h"
 
 @interface MXKTableViewController ()
@@ -509,7 +508,7 @@
     {
         // Keep centering the loading wheel
         CGPoint center = self.view.center;
-        center.y +=  self.tableView.contentOffset.y - self.tableView.mxk_adjustedContentInset.top;
+        center.y +=  self.tableView.contentOffset.y - self.tableView.adjustedContentInset.top;
         activityIndicator.center = center;
         [self.view bringSubviewToFront:activityIndicator];
         

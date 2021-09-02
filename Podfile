@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '9.0'
+platform :ios, '12.1'
 
 # Use frameforks to allow usage of pod written in Swift (like PiwikTracker)
 use_frameworks!
@@ -8,7 +8,7 @@ abstract_target 'MatrixKitSamplePods' do
     
     # Different flavours of pods to Matrix SDK
     # The tagged version on which this version of MatrixKit has been built
-    pod 'MatrixSDK', '= 0.19.7'
+    pod 'MatrixSDK', '= 0.19.8'
     
     # The lastest release available on the CocoaPods repository
     #pod 'MatrixSDK'
