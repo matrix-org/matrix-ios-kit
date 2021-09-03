@@ -43,7 +43,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @implementation MXKAppSettings
 @synthesize syncWithLazyLoadOfRoomMembers;
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
-@synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
+@synthesize enableBubbleComponentLinkDetection, showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 @synthesize enableCallKit;
@@ -118,6 +118,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        enableBubbleComponentLinkDetection = NO;
         
         _allowPushKitPushers = NO;
         _notificationBodyLocalizationKey = @"MESSAGE";
@@ -208,6 +209,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpLinkScheme"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpsLinkScheme"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableBubbleComponentLinkDetection"];
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
 	}
@@ -462,6 +464,30 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     else
     {
         httpsLinkScheme = stringValue;
+    }
+}
+
+- (BOOL)enableBubbleComponentLinkDetection
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        return [NSUserDefaults.standardUserDefaults boolForKey:@"enableBubbleComponentLinkDetection"];
+    }
+    else
+    {
+        return enableBubbleComponentLinkDetection;
+    }
+}
+
+- (void)setEnableBubbleComponentLinkDetection:(BOOL)storeLinksInBubbleComponents
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [NSUserDefaults.standardUserDefaults setBool:storeLinksInBubbleComponents forKey:@"enableBubbleComponentLinkDetection"];
+    }
+    else
+    {
+        enableBubbleComponentLinkDetection = storeLinksInBubbleComponents;
     }
 }
 

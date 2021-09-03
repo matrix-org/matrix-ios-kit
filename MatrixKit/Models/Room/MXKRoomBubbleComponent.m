@@ -100,6 +100,12 @@
 
 - (void)updateLink
 {
+    // Ensure link detection has been enabled
+    if (!MXKAppSettings.standardAppSettings.enableBubbleComponentLinkDetection)
+    {
+        return;
+    }
+    
     // Only get URLs for unencrypted, un-redacted message events that are text, notice or emote.
     if (self.event.eventType != MXEventTypeRoomMessage || self.event.isEncrypted || [self.event isRedactedEvent])
     {

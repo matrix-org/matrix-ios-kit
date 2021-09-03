@@ -104,6 +104,14 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
 @property (nonatomic) NSString *httpsLinkScheme;
 
 /**
+ Whether a bubble component should detect the first link in its event's body, storing it in the `link` property.
+ 
+ This boolean value is defined in shared settings object with the key: `enableBubbleComponentLinkDetection`.
+ Return NO if no value is defined.
+ */
+@property (nonatomic) BOOL enableBubbleComponentLinkDetection;
+
+/**
  Indicate to hide un-decryptable events before joining the room. Default is `NO`.
  */
 @property (nonatomic) BOOL hidePreJoinedUndecryptableEvents;
