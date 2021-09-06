@@ -1070,7 +1070,7 @@ static BOOL _disableLongPressGestureOnEvent;
 }
 
 - (BOOL)shouldInteractWithURL:(NSURL *)URL urlItemInteraction:(UITextItemInteraction)urlItemInteraction associatedEvent:(MXEvent*)associatedEvent
-{
+API_AVAILABLE(ios(10.0)) {
     return [self shouldInteractWithURL:URL urlItemInteractionValue:@(urlItemInteraction) associatedEvent:associatedEvent];
 }
 
@@ -1340,7 +1340,16 @@ static NSMutableDictionary *childClasses;
             // If a link has been touched warn delegate immediately.
             if (tappedUrl)
             {
-                [self shouldInteractWithURL:tappedUrl urlItemInteraction:UITextItemInteractionInvokeDefaultAction associatedEvent:tappedEvent];
+                // Send default URL interaction `UITextItemInteractionInvokeDefaultAction` for a quick tap as received by UITextViewDelegate method `- (BOOL)textView:shouldInteractWithURL:inRange:interaction:` for a tap.
+                if (@available(iOS 10.0, *))
+                {
+                    [self shouldInteractWithURL:tappedUrl urlItemInteraction:UITextItemInteractionInvokeDefaultAction associatedEvent:tappedEvent];
+                }
+                else
+                {
+                    // Use UITextItemInteractionInvokeDefaultAction raw value for iOS 9
+                    [self shouldInteractWithURL:tappedUrl urlItemInteractionValue:@(0) associatedEvent:tappedEvent];
+                }
             }
             else
             {
@@ -1481,7 +1490,7 @@ static NSMutableDictionary *childClasses;
 
 #pragma mark - UITextView delegate
 
-- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction API_AVAILABLE(ios(10.0))
 {
     BOOL shouldInteractWithURL = YES;
     

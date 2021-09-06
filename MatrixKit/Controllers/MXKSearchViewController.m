@@ -19,6 +19,7 @@
 #import "MXKSearchTableViewCell.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "UIScrollView+MatrixKit.h"
 
 @interface MXKSearchViewController ()
 {
@@ -417,10 +418,10 @@
 {
     if (_searchTableView.contentSize.height)
     {
-        CGFloat visibleHeight = _searchTableView.frame.size.height - _searchTableView.adjustedContentInset.top - _searchTableView.adjustedContentInset.bottom;
+        CGFloat visibleHeight = _searchTableView.frame.size.height - _searchTableView.mxk_adjustedContentInset.top - _searchTableView.mxk_adjustedContentInset.bottom;
         if (visibleHeight < _searchTableView.contentSize.height)
         {
-            CGFloat wantedOffsetY = _searchTableView.contentSize.height - visibleHeight - _searchTableView.adjustedContentInset.top;
+            CGFloat wantedOffsetY = _searchTableView.contentSize.height - visibleHeight - _searchTableView.mxk_adjustedContentInset.top;
             CGFloat currentOffsetY = _searchTableView.contentOffset.y;
             if (wantedOffsetY != currentOffsetY)
             {
@@ -429,7 +430,7 @@
         }
         else
         {
-            _searchTableView.contentOffset = CGPointMake(0, - _searchTableView.adjustedContentInset.top);
+            _searchTableView.contentOffset = CGPointMake(0, - _searchTableView.mxk_adjustedContentInset.top);
         }
     }
 }
