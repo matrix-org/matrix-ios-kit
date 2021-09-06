@@ -73,7 +73,7 @@
 
     if (_event.isRedactedEvent)
     {
-        // Do not use the live room state for redacted events as they occured in the past
+        // Do not use the live room state for redacted events as they occurred in the past
         // Note: as we don't have valid room state in this case, userId will be used as display name
         roomState = nil;
     }
@@ -109,7 +109,7 @@
     // Only get URLs for unencrypted, un-redacted message events that are text, notice or emote.
     if (self.event.eventType != MXEventTypeRoomMessage || self.event.isEncrypted || [self.event isRedactedEvent])
     {
-        self.link = nil;
+        self.link = nil;    // Ensure there's no link for a redacted event
         return;
     }
     
@@ -117,13 +117,13 @@
     
     if (!messageType || !([messageType isEqualToString:kMXMessageTypeText] || [messageType isEqualToString:kMXMessageTypeNotice] || [messageType isEqualToString:kMXMessageTypeEmote]))
     {
-        self.link = nil;
         return;
     }
     
-    // By parsing _textMessage, reply text will be formatted.
-    // Find the first url and make sure it's https or http.
-    NSURL *url = [self.textMessage mxk_firstURLDetected];
+    // Detect links in the attributed string which gets updated when the message is edited.
+    // Restrict detection to the unquoted string so links are only found in the sender's message.
+    NSString *body = [self.attributedTextMessage mxk_unquotedString];
+    NSURL *url = [body mxk_firstURLDetected];
     
     if (!url)
     {

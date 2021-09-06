@@ -166,7 +166,7 @@
                                 [[NSFileManager defaultManager] removeItemAtPath:attachment.thumbnailCachePath error:nil];
                             }
                             
-                            // Update the current attachmnet description
+                            // Update the current attachment description
                             attachment = updatedAttachment;
                             
                             if (attachment.type == MXKAttachmentTypeImage)
