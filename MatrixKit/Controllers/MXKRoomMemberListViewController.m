@@ -23,6 +23,7 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "UIScrollView+MatrixKit.h"
 
 @interface MXKRoomMemberListViewController ()
 {
@@ -378,7 +379,7 @@
 
 - (void)scrollToTop:(BOOL)animated
 {
-    [self.membersTableView setContentOffset:CGPointMake(-self.membersTableView.adjustedContentInset.left, -self.membersTableView.adjustedContentInset.top) animated:animated];
+    [self.membersTableView setContentOffset:CGPointMake(-self.membersTableView.mxk_adjustedContentInset.left, -self.membersTableView.mxk_adjustedContentInset.top) animated:animated];
 }
 
 #pragma mark - MXKDataSourceDelegate

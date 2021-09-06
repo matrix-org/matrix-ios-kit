@@ -117,7 +117,9 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
 {
     [super viewDidAppear:animated];
     
-    self.navigationItem.hidesSearchBarWhenScrolling = YES;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.hidesSearchBarWhenScrolling = YES;
+    }
 }
 
 #pragma mark - 
@@ -154,10 +156,12 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
     searchController.dimsBackgroundDuringPresentation = NO;
     searchController.hidesNavigationBarDuringPresentation = NO;
     searchController.searchResultsUpdater = self;
-    
-    self.navigationItem.searchController = searchController;
-    // Make the search bar visible on first view appearance
-    self.navigationItem.hidesSearchBarWhenScrolling = NO;
+            
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = searchController;
+        // Make the search bar visible on first view appearance
+        self.navigationItem.hidesSearchBarWhenScrolling = NO;
+    }
     
     self.definesPresentationContext = YES;
     
