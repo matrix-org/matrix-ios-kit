@@ -17,7 +17,7 @@
 import Foundation
 import MatrixSDK.MXLog
 
-extension NSString {
+public extension NSString {
     /// Gets the first URL contained in the string.
     /// - Returns: A URL if detected, otherwise nil.
     @objc func mxk_firstURLDetected() -> NSURL? {

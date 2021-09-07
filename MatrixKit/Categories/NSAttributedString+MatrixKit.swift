@@ -16,7 +16,7 @@
 
 import Foundation
 
-extension NSAttributedString {
+public extension NSAttributedString {
     /// Returns a string created by joining all ranges of the attributed string that don't have
     /// the `kMXKToolsBlockquoteMarkAttribute` attribute.
     @objc func mxk_unquotedString() -> NSString? {
