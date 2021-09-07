@@ -15,6 +15,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
 #define MXKTOOLS_LARGE_IMAGE_SIZE    1024
 #define MXKTOOLS_MEDIUM_IMAGE_SIZE   768
@@ -280,6 +281,15 @@ typedef struct
  @return the pattern color which can be used to define the background color of a view in order to display the provided image as its background.
  */
 + (UIColor*)convertImageToPatternColor:(NSString*)reourceName backgroundColor:(UIColor*)backgroundColor patternSize:(CGSize)patternSize resourceSize:(CGSize)resourceSize;
+
+#pragma mark - Video conversion
+/**
+Creates a `UIAlertController` with appropriate `AVAssetExportPreset` choices for the video passed in.
+ @param videoAsset The video to generate the choices for.
+ @param completion The block called when a preset has been chosen. `presetName` will contain the preset name or `nil` if cancelled.
+*/
++ (UIAlertController*)videoConversionPromptForVideoAsset:(AVAsset *)videoAsset
+                                           withCompletion:(void (^)(NSString * _Nullable presetName))completion;
 
 #pragma mark - App permissions
 
