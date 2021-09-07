@@ -3472,13 +3472,14 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             self->eventsToProcessSnapshot = nil;
         }
         
-        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
-            // Check whether some events have been processed
-            if (self->bubblesSnapshot)
-            {
-                // Updated data can be displayed now
-                // Block MXKRoomDataSource.processingQueue while the processing is finalised on the main thread
-
+        // Check whether some events have been processed
+        if (self->bubblesSnapshot)
+        {
+            // Updated data can be displayed now
+            // Block MXKRoomDataSource.processingQueue while the processing is finalised on the main thread
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER);
+            
+            dispatch_sync(dispatch_get_main_queue(), ^{
                 // Check whether self has not been reloaded or destroyed
                 if (self.state == MXKDataSourceStateReady && self->bubblesSnapshot)
                 {
@@ -3511,16 +3512,18 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 {
                     onComplete(addedHistoryCellCount, addedLiveCellCount);
                 }
-            }
-            else
+            });
+        }
+        else
+        {
+            // No new event has been added, we just inform about the end if requested.
+            if (onComplete)
             {
-                // No new event has been added, we just inform about the end if requested.
-                if (onComplete)
-                {
+                dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
                     onComplete(0, 0);
-                }
+                });
             }
-        });
+        }
     });
 }
 

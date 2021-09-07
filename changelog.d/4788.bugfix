@@ -1,0 +1,1 @@
+MXKRoomDataSource: Fix threading on processQueuedEvents method at the end of the process.
