@@ -255,3 +255,89 @@
 "notice_encryption_enabled_ok" = "%@ вмикає наскрізне шифрування.";
 "notice_encrypted_message" = "Зашифроване повідомлення";
 "notice_avatar_url_changed" = "%@ змінює свій аватар";
+
+// Settings screen 
+"settings_title_config" = "Конфігурація";
+
+// Others
+"user_id_title" = "ID користувача:";
+"e2e_export" = "Експорт";
+"e2e_import" = "Імпорт";
+"search_searching" = "Триває пошук...";
+
+// Search
+"search_no_results" = "Немає результатів";
+"group_section" = "Групи";
+
+// Groups
+"group_invite_section" = "Запрошення";
+"contact_local_contacts" = "Локальні контакти";
+
+// Contacts
+"contact_mx_users" = "Користувачі Matrix";
+"attachment_e2e_keys_import" = "Імпорт...";
+"attachment_multiselection_original" = "Справжній розмір";
+"attachment_multiselection_size_prompt" = "Хочете надіслати зображення як:";
+"attachment_cancel_upload" = "Скасувати вивантаження?";
+"attachment_cancel_download" = "Скасувати завантаження?";
+"attachment_large" = "Великий: %@";
+"attachment_medium" = "Середній: %@";
+"attachment_small" = "Маленький: %@";
+"attachment_original" = "Справжній розмір: %@";
+
+// Attachment
+"attachment_size_prompt" = "Бажаєте надіслати:";
+"message_reply_to_sender_sent_a_file" = "надсилає файл.";
+"message_reply_to_sender_sent_an_audio_file" = "надсилає звуковий файл.";
+"message_reply_to_sender_sent_a_voice_message" = "надсилає голосове повідомлення.";
+"message_reply_to_sender_sent_a_video" = "надсилає відео.";
+
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "надсилає зображення.";
+
+// E2E import
+"e2e_import_room_keys" = "Імпорт ключів кімнати";
+"format_time_d" = "д";
+"format_time_h" = "год";
+"format_time_m" = "хв";
+
+// Time
+"format_time_s" = "с";
+"room_error_join_failed_title" = "Не вдалося приєднатися до кімнати";
+
+// Room
+"room_please_select" = "Виберіть кімнату";
+"room_creation_participants_placeholder" = "(наприклад @bob:homeserver1; @john:homeserver2...)";
+"room_creation_participants_title" = "Учасники:";
+"room_creation_name_placeholder" = "(наприклад lunchGroup)";
+
+// Room creation
+"room_creation_name_title" = "Назва кімнати:";
+"room_event_encryption_info_device_fingerprint" = "Відбиток Ed25519\n";
+"room_event_encryption_info_event_unencrypted" = "незашифровано";
+"room_event_encryption_info_event_decryption_error" = "Помилка розшифрування\n";
+"room_event_encryption_info_event_session_id" = "ID сеансу\n";
+"room_event_encryption_info_event_algorithm" = "Алгоритм\n";
+"room_event_encryption_info_event_identity_key" = "Ключ ідентифікації Curve25519\n";
+"room_event_encryption_info_event_user_id" = "ID користувача\n";
+"room_event_encryption_info_event" = "Відомості про подію\n";
+
+// Encryption information
+"room_event_encryption_info_title" = "Відомості про наскрізне шифрування\n\n";
+"device_details_rename_prompt_title" = "Назва сеансу";
+"device_details_last_seen_format" = "%@ @ %@\n";
+"device_details_identifier" = "ID\n";
+"room_event_encryption_info_device_id" = "ID\n";
+"room_event_encryption_info_device_name" = "Загальнодоступна назва\n";
+"device_details_name" = "Загальнодоступна назва\n";
+
+// Devices
+"device_details_title" = "Відомості про сеанс\n";
+"notification_settings_room_rule_title" = "Кімната: '%@'";
+"notice_in_reply_to" = "У відповідь на";
+"message_reply_to_message_to_reply_to_prefix" = "У відповідь на";
+"notice_crypto_unable_to_decrypt" = "** Не вдалося розшифрувати: %@ **";
+"notice_error_unknown_event_type" = "Невідомий тип події";
+"notice_error_unexpected_event" = "Неочікувана подія";
+"notice_error_unsupported_event" = "Непідтримувана подія";
+"notice_invalid_attachment" = "неприпустиме вкладення";
