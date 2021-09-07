@@ -194,6 +194,7 @@
 		F09A66671FD812CA004B13B5 /* MXKGroupCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = F09A66661FD812CA004B13B5 /* MXKGroupCellData.m */; };
 		F09E288E1AC1FEDA00C51E44 /* MXKImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F09E288B1AC1FEDA00C51E44 /* MXKImageView.m */; };
 		F09E288F1AC1FEDA00C51E44 /* MXKPieChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = F09E288D1AC1FEDA00C51E44 /* MXKPieChartView.m */; };
+		F0A8955E1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A8955D1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.m */; };
 		F0AD3CC21B288C05002E0899 /* MXKInterleavedRecentsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F0AD3CBF1B288C05002E0899 /* MXKInterleavedRecentsDataSource.m */; };
 		F0AD3CC71B289441002E0899 /* MXKInterleavedRecentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F0AD3CC51B289441002E0899 /* MXKInterleavedRecentTableViewCell.m */; };
 		F0AD3CC81B289441002E0899 /* MXKInterleavedRecentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0AD3CC61B289441002E0899 /* MXKInterleavedRecentTableViewCell.xib */; };
@@ -604,6 +605,8 @@
 		F09E288B1AC1FEDA00C51E44 /* MXKImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKImageView.m; sourceTree = "<group>"; };
 		F09E288C1AC1FEDA00C51E44 /* MXKPieChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKPieChartView.h; sourceTree = "<group>"; };
 		F09E288D1AC1FEDA00C51E44 /* MXKPieChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKPieChartView.m; sourceTree = "<group>"; };
+		F0A8955C1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+MatrixKit.h"; sourceTree = "<group>"; };
+		F0A8955D1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+MatrixKit.m"; sourceTree = "<group>"; };
 		F0AD3CBE1B288C05002E0899 /* MXKInterleavedRecentsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKInterleavedRecentsDataSource.h; sourceTree = "<group>"; };
 		F0AD3CBF1B288C05002E0899 /* MXKInterleavedRecentsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKInterleavedRecentsDataSource.m; sourceTree = "<group>"; };
 		F0AD3CC41B289441002E0899 /* MXKInterleavedRecentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKInterleavedRecentTableViewCell.h; sourceTree = "<group>"; };
@@ -1311,6 +1314,8 @@
 		F07E18111ABC563900DE3766 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				F0A8955C1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.h */,
+				F0A8955D1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.m */,
 				F04F78331F17A1B60039485E /* UIAlertController+MatrixKit.h */,
 				F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */,
 				32D9F4E021D54A08008007F2 /* UIViewController+MatrixKit.h */,
@@ -1961,6 +1966,7 @@
 				F0B0ECC41B14B16C005EB20D /* MXKRoomTitleView.m in Sources */,
 				F09A66641FD8061D004B13B5 /* MXKSessionGroupsDataSource.m in Sources */,
 				B12C56F22396D75500FAC6DE /* UITextView+MatrixKit.m in Sources */,
+				F0A8955E1F7A55DF00BD6C2A /* UIScrollView+MatrixKit.m in Sources */,
 				F095E50F1B25899F009606CE /* MXKContactManager.m in Sources */,
 				F09617C31DE881D800093E9D /* MXKEncryptionInfoView.m in Sources */,
 				F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */,
@@ -2066,6 +2072,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5537B7A941FDD5CF92368345 /* Pods-MatrixKitSamplePods-MatrixKitTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -2075,6 +2082,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = MatrixKitTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.matrix.MatrixKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2089,6 +2097,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1099FE41E4156DB223718DB2 /* Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -2098,6 +2107,7 @@
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = MatrixKitTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.matrix.MatrixKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2154,7 +2164,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -2202,7 +2212,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2220,6 +2230,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				INFOPLIST_FILE = "$(SRCROOT)/Samples/MatrixKitSample/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.matrix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_MODULE_NAME = MatrixKit;
@@ -2240,6 +2251,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7J4U792NQT;
 				INFOPLIST_FILE = "$(SRCROOT)/Samples/MatrixKitSample/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.matrix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_MODULE_NAME = MatrixKit;

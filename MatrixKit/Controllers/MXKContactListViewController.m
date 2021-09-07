@@ -19,6 +19,7 @@
 #import "MXKSectionedContacts.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "UIScrollView+MatrixKit.h"
 
 @interface MXKContactListViewController ()
 {
@@ -149,7 +150,7 @@
     // stop any scrolling effect
     [UIView setAnimationsEnabled:NO];
     // before scrolling to the tableview top
-    self.tableView.contentOffset = CGPointMake(-self.tableView.adjustedContentInset.left, -self.tableView.adjustedContentInset.top);
+    self.tableView.contentOffset = CGPointMake(-self.tableView.mxk_adjustedContentInset.left, -self.tableView.mxk_adjustedContentInset.top);
     [UIView setAnimationsEnabled:YES];
 }
 
