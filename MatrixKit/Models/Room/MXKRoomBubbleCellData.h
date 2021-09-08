@@ -76,6 +76,11 @@
 @property(nonatomic) NSMutableDictionary<NSString* /* eventId */, MXAggregatedReactions*> *reactions;
 
 /**
+ Whether there is a link to preview in the components.
+ */
+@property (nonatomic, readonly) BOOL hasLink;
+
+/**
  Event formatter
  */
 @property (nonatomic) MXKEventFormatter *eventFormatter;
