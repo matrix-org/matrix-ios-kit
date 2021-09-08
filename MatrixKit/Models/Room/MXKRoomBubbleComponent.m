@@ -61,7 +61,7 @@
         
         _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:(MXRoomState*)roomState session:session];
         
-        [self updateLink];
+        [self updateLinkWithRoomState:roomState];
     }
     return self;
 }
@@ -84,9 +84,10 @@
 
     MXKEventFormatterError error;
     _attributedTextMessage = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
-    [self updateLink];
     
     _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:roomState session:session];
+    
+    [self updateLinkWithRoomState:roomState];
 }
 
 - (NSString *)textMessage
@@ -98,7 +99,7 @@
     return _textMessage;
 }
 
-- (void)updateLink
+- (void)updateLinkWithRoomState:(MXRoomState*)roomState
 {
     // Ensure link detection has been enabled
     if (!MXKAppSettings.standardAppSettings.enableBubbleComponentLinkDetection)
@@ -106,8 +107,9 @@
         return;
     }
     
-    // Only get URLs for unencrypted, un-redacted message events that are text, notice or emote.
-    if (self.event.eventType != MXEventTypeRoomMessage || self.event.isEncrypted || [self.event isRedactedEvent])
+    // Only detect links in unencrypted rooms, for un-redacted message events that are text, notice or emote.
+    // Specifically check the room's encryption state rather than the event's as outgoing events are always unencrypted initially.
+    if (roomState.isEncrypted || self.event.eventType != MXEventTypeRoomMessage || [self.event isRedactedEvent])
     {
         self.link = nil;    // Ensure there's no link for a redacted event
         return;
