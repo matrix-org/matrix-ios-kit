@@ -119,6 +119,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
         enableBubbleComponentLinkDetection = NO;
+        firstURLDetectionIgnoredHosts = @[[NSURL URLWithString:kMXMatrixDotToUrl].host];
         
         _allowPushKitPushers = NO;
         _notificationBodyLocalizationKey = @"MESSAGE";
