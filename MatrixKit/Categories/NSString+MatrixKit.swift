@@ -18,9 +18,19 @@ import Foundation
 import MatrixSDK.MXLog
 
 public extension NSString {
-    /// Gets the first URL contained in the string.
+    /// Gets the first URL contained in the string ignoring any links to the matrix.to service.
     /// - Returns: A URL if detected, otherwise nil.
     @objc func mxk_firstURLDetected() -> NSURL? {
+        guard let matrixDotToHost = URL(string: kMXMatrixDotToUrl)?.host else {
+            return mxk_firstURLDetected(ignoring: [])
+        }
+        
+        return mxk_firstURLDetected(ignoring: [matrixDotToHost])
+    }
+    
+    /// Gets the first URL contained in the string ignoring any links to the specified hosts.
+    /// - Returns: A URL if detected, otherwise nil.
+    @objc func mxk_firstURLDetected(ignoring ignoredHosts: [String]) -> NSURL? {
         guard let linkDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
             MXLog.debug("[NSString+URLDetector]: Unable to create link detector.")
             return nil
@@ -44,9 +54,9 @@ public extension NSString {
                   scheme == "https" || scheme == "http"
             else { return }
             
-            // discard any matrix.to links
+            // discard any links to ignored hosts
             guard let host = url.host?.lowercased(),
-                  host != "matrix.to"
+                  !ignoredHosts.contains(host)
             else { return }
             
             detectedURL = url
