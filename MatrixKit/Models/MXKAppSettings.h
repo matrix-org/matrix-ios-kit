@@ -112,6 +112,15 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
 @property (nonatomic) BOOL enableBubbleComponentLinkDetection;
 
 /**
+ Any hosts that should be ignored when calling `mxk_firstURLDetected` on an `NSString` without passing in any parameters.
+ Customising this value modifies the behaviour of link detection in `MXKRoomBubbleComponent`.
+ 
+ This boolean value is defined in shared settings object with the key: `firstURLDetectionIgnoredHosts`.
+ Return NO if no value is defined.
+ */
+@property (nonatomic) NSArray<NSString *> *firstURLDetectionIgnoredHosts;
+
+/**
  Indicate to hide un-decryptable events before joining the room. Default is `NO`.
  */
 @property (nonatomic) BOOL hidePreJoinedUndecryptableEvents;

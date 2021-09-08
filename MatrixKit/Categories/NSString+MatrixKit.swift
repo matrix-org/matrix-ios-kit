@@ -18,14 +18,12 @@ import Foundation
 import MatrixSDK.MXLog
 
 public extension NSString {
-    /// Gets the first URL contained in the string ignoring any links to the matrix.to service.
+    /// Gets the first URL contained in the string ignoring any links to hosts defined in
+    /// the `firstURLDetectionIgnoredHosts` property of `MXKAppSettings`.
     /// - Returns: A URL if detected, otherwise nil.
     @objc func mxk_firstURLDetected() -> NSURL? {
-        guard let matrixDotToHost = URL(string: kMXMatrixDotToUrl)?.host else {
-            return mxk_firstURLDetected(ignoring: [])
-        }
-        
-        return mxk_firstURLDetected(ignoring: [matrixDotToHost])
+        let hosts = MXKAppSettings.standard().firstURLDetectionIgnoredHosts ?? []
+        return mxk_firstURLDetected(ignoring: hosts)
     }
     
     /// Gets the first URL contained in the string ignoring any links to the specified hosts.
