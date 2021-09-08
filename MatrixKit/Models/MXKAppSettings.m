@@ -119,7 +119,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
         enableBubbleComponentLinkDetection = NO;
-        firstURLDetectionIgnoredHosts = @[[NSURL URLWithString:kMXMatrixDotToUrl].host];
         
         _allowPushKitPushers = NO;
         _notificationBodyLocalizationKey = @"MESSAGE";
@@ -497,7 +496,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        return [NSUserDefaults.standardUserDefaults objectForKey:@"firstURLDetectionIgnoredHosts"] ?: @[[NSURL URLWithString:kMXMatrixDotToUrl].host];
+        return [NSUserDefaults.standardUserDefaults objectForKey:@"firstURLDetectionIgnoredHosts"];
     }
     else
     {
