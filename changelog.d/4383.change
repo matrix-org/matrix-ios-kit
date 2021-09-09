@@ -1,1 +1,0 @@
-MXKRoomDataSource: Adapt to new async `MXRoom.getEventReceipts` method.
