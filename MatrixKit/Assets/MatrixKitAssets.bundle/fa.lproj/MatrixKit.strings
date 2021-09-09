@@ -17,7 +17,7 @@
 "ssl_trust" = "اعتماد کردن";
 "call_more_actions_dialpad" = "پد شماره گیری";
 "call_more_actions_transfer" = "انتقال";
-"call_more_actions_audio_use_device" = "استفاده از خروجی صدای دستگاه";
+"call_more_actions_audio_use_device" = "بلندگوی دستگاه";
 "call_more_actions_audio_use_headset" = "استفاده از هدست صوتی";
 "call_more_actions_change_audio_device" = "تغییر خروجی صدا";
 "call_more_actions_unhold" = "از سرگیری";
@@ -544,3 +544,6 @@
 "call_video_with_user" = "تماس تصویری با %@";
 "call_voice_with_user" = "تماس صوتی با %@";
 "call_ringing" = "در حال زنگ خوردن…";
+"microphone_access_not_granted_for_voice_message" = "جهت ارسال پیام صوتی نیاز به دسترسی به میکروفون وجود دارد اما %@ دسترسی استفاده از آن را ندارد";
+"e2e_passphrase_too_short" = "کلمه عبور بیش از حد کوتاه است (حداقل می‌بایست %d کاراکتر باشد)";
+"message_reply_to_sender_sent_a_voice_message" = "یک پیام صوتی ارسال کنید.";
