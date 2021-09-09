@@ -61,7 +61,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) MXKEventFormatter *eventFormatter;
 
 /**
- The event on which the composent is based (used in case of redaction)
+ The event on which the component is based (used in case of redaction)
  */
 @property (nonatomic, readonly) MXEvent *event;
 
@@ -74,6 +74,11 @@ typedef enum : NSUInteger {
  Set of flags indicating fixes that need to be applied at display time.
  */
 @property (nonatomic) MXKRoomBubbleComponentDisplayFix displayFix;
+
+/**
+ The first link detected in the event's content, otherwise nil.
+ */
+@property (nonatomic) NSURL *link;
 
 /**
  Event antivirus scan. Present only if antivirus is enabled and event contains media.

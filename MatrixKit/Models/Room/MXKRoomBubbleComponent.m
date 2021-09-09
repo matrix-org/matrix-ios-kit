@@ -17,6 +17,7 @@
 #import "MXKRoomBubbleComponent.h"
 
 #import "MXEvent+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 @implementation MXKRoomBubbleComponent
 
@@ -59,6 +60,8 @@
         }
         
         _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:(MXRoomState*)roomState session:session];
+        
+        [self updateLinkWithRoomState:roomState];
     }
     return self;
 }
@@ -70,7 +73,7 @@
 
     if (_event.isRedactedEvent)
     {
-        // Do not use the live room state for redacted events as they occured in the past
+        // Do not use the live room state for redacted events as they occurred in the past
         // Note: as we don't have valid room state in this case, userId will be used as display name
         roomState = nil;
     }
@@ -83,6 +86,8 @@
     _attributedTextMessage = [_eventFormatter attributedStringFromEvent:event withRoomState:roomState error:&error];
     
     _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:roomState session:session];
+    
+    [self updateLinkWithRoomState:roomState];
 }
 
 - (NSString *)textMessage
@@ -92,6 +97,43 @@
         _textMessage = _attributedTextMessage.string;
     }
     return _textMessage;
+}
+
+- (void)updateLinkWithRoomState:(MXRoomState*)roomState
+{
+    // Ensure link detection has been enabled
+    if (!MXKAppSettings.standardAppSettings.enableBubbleComponentLinkDetection)
+    {
+        return;
+    }
+    
+    // Only detect links in unencrypted rooms, for un-redacted message events that are text, notice or emote.
+    // Specifically check the room's encryption state rather than the event's as outgoing events are always unencrypted initially.
+    if (roomState.isEncrypted || self.event.eventType != MXEventTypeRoomMessage || [self.event isRedactedEvent])
+    {
+        self.link = nil;    // Ensure there's no link for a redacted event
+        return;
+    }
+    
+    NSString *messageType = self.event.content[@"msgtype"];
+    
+    if (!messageType || !([messageType isEqualToString:kMXMessageTypeText] || [messageType isEqualToString:kMXMessageTypeNotice] || [messageType isEqualToString:kMXMessageTypeEmote]))
+    {
+        return;
+    }
+    
+    // Detect links in the attributed string which gets updated when the message is edited.
+    // Restrict detection to the unquoted string so links are only found in the sender's message.
+    NSString *body = [self.attributedTextMessage mxk_unquotedString];
+    NSURL *url = [body mxk_firstURLDetected];
+    
+    if (!url)
+    {
+        self.link = nil;
+        return;
+    }
+    
+    self.link = url;
 }
 
 - (BOOL)shouldShowWarningBadgeForEvent:(MXEvent*)event roomState:(MXRoomState*)roomState session:(MXSession*)session

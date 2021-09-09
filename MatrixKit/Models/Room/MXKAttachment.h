@@ -153,6 +153,10 @@ typedef enum : NSUInteger {
  */
 - (void)decryptToTempFile:(void (^_Nullable)(NSString *_Nullable))onSuccess failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
 
+
+/** Deletes all previously created temporary files */
++ (void)clearCache;
+
 /**
  Gets the thumbnails for this attachment, downloading it or loading it from disk cache
  if necessary
