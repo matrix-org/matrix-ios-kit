@@ -56,6 +56,8 @@
 		71DE22E71BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71DE22E51BCE3FF200284153 /* MXKRoomBubbleCellDataWithIncomingAppendingMode.m */; };
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
 		8EE45E64044E107FAB59C7D1 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */; };
+		9135FFD926DE8EFD000E6D84 /* NSString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */; };
+		918DAB9F26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
 		A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */; };
 		A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */; };
@@ -365,6 +367,8 @@
 		71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomActivitiesView.m; sourceTree = "<group>"; };
 		8878281C260C85BB00429B35 /* MXKEventFormatter+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXKEventFormatter+Tests.h"; sourceTree = "<group>"; };
 		8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSString+MatrixKit.swift"; sourceTree = "<group>"; };
+		918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+MatrixKit.swift"; sourceTree = "<group>"; };
 		92663A6A1EF6E5B3005FB712 /* MXKSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSoundPlayer.h; sourceTree = "<group>"; };
 		92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSoundPlayer.m; sourceTree = "<group>"; };
 		A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKRoomDataSourceTests.swift; sourceTree = "<group>"; };
@@ -1316,10 +1320,12 @@
 				F04F78341F17A1B60039485E /* UIAlertController+MatrixKit.m */,
 				32D9F4E021D54A08008007F2 /* UIViewController+MatrixKit.h */,
 				32D9F4E121D54A08008007F2 /* UIViewController+MatrixKit.m */,
+				918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */,
 				F049FC1E1B2B878A00DD9D3C /* NSBundle+MatrixKit.h */,
 				F049FC1F1B2B878A00DD9D3C /* NSBundle+MatrixKit.m */,
 				323F9AF41F1E53730013AFDE /* NSBundle+MXKLanguage.h */,
 				323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */,
+				9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */,
 				32C3ABB822C4F23B00CA0449 /* MXAggregatedReactions+MatrixKit.h */,
 				32C3ABB922C4F23B00CA0449 /* MXAggregatedReactions+MatrixKit.m */,
 				F07E18121ABC563900DE3766 /* MXEvent+MatrixKit.h */,
@@ -1942,6 +1948,7 @@
 				F06CDD5F1EF017CB00870B75 /* MXKRoomEmptyBubbleTableViewCell.m in Sources */,
 				32D9F4E221D54A08008007F2 /* UIViewController+MatrixKit.m in Sources */,
 				F01449AD1B53FA7600EA7D73 /* MXKPushRuleCreationTableViewCell.m in Sources */,
+				9135FFD926DE8EFD000E6D84 /* NSString+MatrixKit.swift in Sources */,
 				EC9010C825308312004DC138 /* MXKPasteboardManager.swift in Sources */,
 				3235CD771C32DC8A0084EA40 /* MXKSearchDataSource.m in Sources */,
 				F0CF98DD1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSubLabel.m in Sources */,
@@ -1970,6 +1977,7 @@
 				F05FB1711AD4236800DC0647 /* MXKRoomMemberListViewController.m in Sources */,
 				328AC48F1AA86E110044A6FB /* MXKDataSource.m in Sources */,
 				F06E76951AF0FED000980E5A /* MXKAuthInputsEmailCodeBasedView.m in Sources */,
+				918DAB9F26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift in Sources */,
 				F0CE56E51AA8BB5E003BE77A /* AppDelegate.m in Sources */,
 				F0DD7D851B7B3CF100C4BE02 /* MXKRoomCreationInputs.m in Sources */,
 				B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */,

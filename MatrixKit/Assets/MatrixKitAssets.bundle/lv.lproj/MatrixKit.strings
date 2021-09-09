@@ -2,9 +2,9 @@
 // Login Screen
 "login_create_account" = "Izveidot kontu:";
 "login_server_url_placeholder" = "URL adrese (piemēram, https://matrix.org)";
-"login_home_server_title" = "Mājas serveris:";
-"login_home_server_info" = "Tavs mājas serveris saglabā visus sarunu un konta datus";
-"login_identity_server_title" = "Identitātes serveris:";
+"login_home_server_title" = "Mājas serveria URL:";
+"login_home_server_info" = "Tavs mājas serveris glabā visas sarunas un konta datus";
+"login_identity_server_title" = "Identifikācijas servera URL:";
 "view" = "Skatīt";
 "back" = "Atpakaļ";
 "continue" = "Turpināt";
@@ -76,3 +76,44 @@
 "room_event_encryption_info_device_verification" = "Verifikācija\n";
 "room_event_encryption_info_device_verified" = "Verificēts";
 "room_event_encryption_info_device_not_verified" = "NAV verificēts";
+"notice_room_name_removed_for_dm" = "%@ noņēma nosaukumu";
+
+// Events formatter
+"notice_avatar_changed_too" = "(avatars arī tika nomainīts)";
+"resume_call" = "Atjaunot";
+"resend_message" = "Atkārtot ziņojuma sūtīšanu";
+"reset_to_default" = "Atietatīt uz noklusējumu";
+"capture_media" = "Uzņemt foto/video";
+"attach_media" = "Pievienot mediju no bibliotēkas";
+"mention" = "Pieminēt";
+"set_admin" = "Norādīt administratoru";
+"set_moderator" = "Norādīt moderatoru";
+"set_default_power_level" = "Nodzēst jaudas līmeni";
+"set_power_level" = "Iestatīt jaudas līmeni";
+"submit_code" = "Iesniegt kodu";
+"submit" = "Iesniegt";
+"dismiss" = "Noraidīt";
+"discard" = "Izmest";
+"abort" = "Pārtraukt";
+
+// Action
+"no" = "Nē";
+"login_error_resource_limit_exceeded_contact_button" = "Sazinieties ar administratoru";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nLai turpinātu lietot šo pakalpojumu, lūdzu, sazinieties ar savu pakalpojuma administratoru.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Šis mājas serveris ir sasniedzis ikmēneša aktīvo lietotāju limitu.";
+"login_error_resource_limit_exceeded_message_default" = "Šis mājas serveris ir sasniedzis vienu no savu resursu limitiem.";
+"login_desktop_device" = "Dators";
+"login_tablet_device" = "Planšete";
+"login_mobile_device" = "Mobilā iekārta";
+"login_error_forgot_password_is_not_supported" = "“Aizmirsu paroli” patlaban nav atbalstīta";
+"login_use_fallback" = "Lietojiet atkāpšanās lappusi";
+"login_error_login_email_not_yet" = "E-pasta saite vel nav noklikšķināta";
+"login_error_not_json" = "Nesatur derīgu JSON";
+"login_error_bad_json" = "Bojāts JSON";
+"login_error_unknown_token" = "Netika atpazīta norādītā pieejas atslēga";
+"login_error_do_not_support_login_flows" = "Mēs patrez neatbalstām jebkādas pieteikšanās plūsmas, kas definētas no šī mājas servera";
+"login_error_no_login_flow" = "Mums neizdevās saņemt autentifikācijas informāciju no šī mājas servera.";
+"login_email_info" = "E-pasta adreses norādīšana ļauj citiem lietotājiem viegli atras tevi Matix, kā arī nodrošinās tev iespēju nākotnē atjaunot savu paroli.";
+"login_optional_field" = "neobligāts";
+"login_user_id_placeholder" = "Matrix ID (piem. @bob:matrix.org vai bobs)";
+"login_identity_server_info" = "Matrix nodrošina identifikācijas serverus, lai atšķirtu, kuri e-pasti, u.c., pieder kuram Matrix ID. Patlaban pastāv vienīgi https://matrix.org";
