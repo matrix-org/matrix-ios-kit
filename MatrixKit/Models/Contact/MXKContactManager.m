@@ -1518,7 +1518,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
             [self internationalizePhoneNumbers:[[MXKAppSettings standardAppSettings] phonebookCountryCode]];
             
             // Refresh local contacts if we have some
-            if (!self->localContactByContactID)
+            if (MXKAppSettings.standardAppSettings.syncLocalContacts && self->localContactByContactID.count)
             {
                 [self refreshLocalContacts];
             }

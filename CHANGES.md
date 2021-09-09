@@ -1,3 +1,39 @@
+## Changes in 0.16.0 (2021-09-09)
+
+✨ Features
+
+- MXKRoomBubbleComponent: Add link property and parse message events for links that could be previewed. ([#888](https://github.com/vector-im/element-ios/issues/888))
+- MXKTools: Add +videoConversionPromptForVideoAsset:withCompletion: to create a UIAlertController with appropriate presets. ([#4638](https://github.com/vector-im/element-ios/issues/4638))
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.0)).
+- MXKRoomDataSource: Adapt to new async `MXRoom.getEventReceipts` method. ([#4383](https://github.com/vector-im/element-ios/issues/4383))
+
+🐛 Bugfixes
+
+- MXKRoomDataSource: Fix threading on processQueuedEvents method at the end of the process. ([#4788](https://github.com/vector-im/element-ios/issues/4788))
+- Authentication screen: Unexpected request to access the contact book ([#4803](https://github.com/vector-im/element-ios/issues/4803))
+
+Others
+
+- MXKAttachment: Added method for deleting all previously created temporary, decrypted attachments. ([#887](https://github.com/matrix-org/matrix-ios-kit/pull/887))
+- Git: Add .DS_Store to .gitignore. ([#892](https://github.com/matrix-org/matrix-ios-kit/pull/892))
+
+
+## Changes in 0.15.8 (2021-08-26)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.19.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.8)).
+- Notifications: Add notificationBodyLocalizationKey to MXKAppSettings to customise the default notification payload. ([#4132](https://github.com/vector-im/element-ios/issues/4132))
+
+🐛 Bugfixes
+
+- MXKViewControllerHandling: Use processing local cache session state to show an activity indicator. ([#4471](https://github.com/vector-im/element-ios/issues/4471))
+- MXKRoomBubbleComponent: Only consider messages and attachments when computing whether to show a warning badge (fixes misaligned messages in the timeline). ([#4510](https://github.com/vector-im/element-ios/issues/4510))
+
+
 ## Changes in 0.15.7 (2021-08-11)
 
 🙌 Improvements

@@ -24,6 +24,7 @@
 
 #import "NSBundle+MatrixKit.h"
 #import "MXKAppSettings.h"
+#import <MatrixSDK/MXTools.h>
 
 #pragma mark - Constants definitions
 
@@ -705,6 +706,71 @@ static NSMutableDictionary* backgroundByImageNameDict;
     }
     
     return bgColor;
+}
+
+#pragma mark - Video Conversion
+
++ (UIAlertController*)videoConversionPromptForVideoAsset:(AVAsset *)videoAsset
+                                           withCompletion:(void (^)(NSString * _Nullable presetName))completion
+{
+    UIAlertController *compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_title"]
+                                                                               message:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_message"]
+                                                                        preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    CGSize naturalSize = [videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize;
+    
+    // Provide 480p as the baseline preset.
+    NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset640x480];
+    NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small_with_resolution"], @"480p", fileSizeString];
+    [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+        // Call the completion with 480p preset.
+        completion(AVAssetExportPreset640x480);
+    }]];
+    
+    // Allow 720p when the video exceeds 480p.
+    if (naturalSize.height > 480)
+    {
+        NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset1280x720];
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium_with_resolution"], @"720p", fileSizeString];
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+            // Call the completion with 720p preset.
+            completion(AVAssetExportPreset1280x720);
+        }]];
+    }
+    
+    // Allow 1080p when the video exceeds 720p.
+    if (naturalSize.height > 720)
+    {
+        NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset1920x1080];
+        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large_with_resolution"], @"1080p", fileSizeString];
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+            // Call the completion with 1080p preset.
+            completion(AVAssetExportPreset1920x1080);
+        }]];
+    }
+    
+    [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                                          style:UIAlertActionStyleCancel
+                                                        handler:^(UIAlertAction * action) {
+        // Cancelled. Call the completion with nil.
+        completion(nil);
+    }]];
+    
+    return compressionPrompt;
+}
+
++ (NSString *)estimatedFileSizeStringForVideoAsset:(AVAsset *)videoAsset withPresetName:(NSString *)presetName
+{
+    AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:videoAsset presetName:presetName];
+    exportSession.timeRange = CMTimeRangeMake(kCMTimeZero, videoAsset.duration);
+    
+    return [MXTools fileSizeToString:exportSession.estimatedOutputFileLength];
 }
 
 #pragma mark - App permissions
