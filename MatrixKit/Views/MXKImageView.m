@@ -376,10 +376,8 @@
         UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
         if (sharedApplication)
         {
-            if (@available(iOS 11.0, *))
-            {
-                safeAreaInsets = [sharedApplication keyWindow].safeAreaInsets;
-            }
+            safeAreaInsets = [sharedApplication keyWindow].safeAreaInsets;
+
             UIViewController *rootViewController = [sharedApplication keyWindow].rootViewController;
             tabBarController = rootViewController.tabBarController;
             if (!tabBarController && [rootViewController isKindOfClass:[UITabBarController class]])
