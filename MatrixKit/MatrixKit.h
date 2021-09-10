@@ -29,7 +29,6 @@
 #import "NSBundle+MatrixKit.h"
 #import "NSBundle+MXKLanguage.h"
 #import "UIAlertController+MatrixKit.h"
-#import "UIScrollView+MatrixKit.h"
 #import "UIViewController+MatrixKit.h"
 
 #import "MXKEventFormatter.h"
