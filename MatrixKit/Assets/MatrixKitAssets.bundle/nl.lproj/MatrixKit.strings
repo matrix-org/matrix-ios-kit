@@ -207,10 +207,10 @@
 "room_member_power_level_prompt" = "U kunt deze veranderingen niet ongedaan maken aangezien u de gebruiker tot hetzelfde niveau als uzelf promoveert.\nWeet u het zeker?";
 // Attachment
 "attachment_size_prompt" = "Wilt u het versturen als:";
-"attachment_original" = "Werkelijke grootte: %@";
-"attachment_small" = "Klein: %@";
-"attachment_medium" = "Medium: %@";
-"attachment_large" = "Groot: %@";
+"attachment_original" = "Werkelijke grootte (%@)";
+"attachment_small" = "Klein (~%@)";
+"attachment_medium" = "Middel (~%@)";
+"attachment_large" = "Groot (~%@)";
 "attachment_cancel_download" = "Download annuleren?";
 "attachment_cancel_upload" = "Upload annuleren?";
 "attachment_multiselection_size_prompt" = "Wilt u afbeeldingen versturen als:";
@@ -526,3 +526,8 @@
 "e2e_passphrase_too_short" = "Wachtwoord is te kort (hij moet minimaal %d tekens lang zijn)";
 "microphone_access_not_granted_for_voice_message" = "Spraakberichten vereisen toegang tot de Microfoon maar %@ heeft geen toestemming om het te gebruiken";
 "message_reply_to_sender_sent_a_voice_message" = "heeft een spraakbericht gestuurd.";
+"attachment_large_with_resolution" = "Groot %@ (~%@)";
+"attachment_medium_with_resolution" = "Middel %@ (~%@)";
+"attachment_small_with_resolution" = "Klein %@ (~%@)";
+"attachment_size_prompt_message" = "U kunt dit uitzetten in uw instellingen.";
+"attachment_size_prompt_title" = "Bevestig de afmeting om te versturen";
