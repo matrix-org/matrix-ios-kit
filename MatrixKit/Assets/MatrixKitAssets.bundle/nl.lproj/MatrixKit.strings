@@ -247,7 +247,7 @@
 "not_supported_yet" = "Nog niet ondersteund";
 "default" = "standaard";
 "private" = "Privé";
-"public" = "Openbaar";
+"public" = "Publiek";
 "power_level" = "Machtsniveau";
 "network_error_not_reachable" = "Controleer uw netwerkverbinding";
 "user_id_placeholder" = "bv: @jan:thuisserver";
@@ -495,10 +495,10 @@
 "notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ heeft toekomstige berichten voor iedereen zichtbaar gemaakt vanaf het moment dat zij zijn uitgenodigd.";
 "notice_room_history_visible_to_members_for_dm" = "%@ heeft toekomstige berichten voor alle gespreksleden zichtbaar gemaakt.";
 "notice_room_aliases_for_dm" = "De bijnamen zijn: %@";
-"notice_room_join_rule_public_by_you_for_dm" = "U maakte dit openbaar.";
-"notice_room_join_rule_public_by_you" = "U heeft het gesprek openbaar gemaakt.";
-"notice_room_join_rule_public_for_dm" = "%@ maakte dit openbaar.";
-"notice_room_join_rule_public" = "%@ heeft het gesprek openbaar gemaakt.";
+"notice_room_join_rule_public_by_you_for_dm" = "U maakte dit publiekelijk.";
+"notice_room_join_rule_public_by_you" = "U heeft de kamer publiekelijk gemaakt.";
+"notice_room_join_rule_public_for_dm" = "%@ maakte dit publiekelijk.";
+"notice_room_join_rule_public" = "%@ heeft de kamer publiekelijk gemaakt.";
 "notice_room_created_for_dm" = "%@ is toegetreden.";
 "notice_room_power_level_intro_for_dm" = "Het machtsniveau van de gespreksleden is:";
 "notice_room_join_rule_invite_by_you_for_dm" = "U maakte dit gesprek alleen op uitnodiging.";
