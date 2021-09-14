@@ -896,10 +896,10 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
-                                                    
-                                                    handler(NO);
-                                                    
-                                                }]];
+            
+            handler(NO);
+            
+        }]];
         
         // Add a shortcut to the app settings (This requires the shared application instance)
         UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
@@ -908,15 +908,17 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
             UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
-                                                                       [MXKAppSettings standardAppSettings].syncLocalContactsPermissionOpenedSystemSettings = YES;
-                                                                       
-                                                                       NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                                                                       [sharedApplication performSelector:@selector(openURL:) withObject:url];
-                                                                       
-                                                                       // Note: it does not worth to check if the user changes the permission
-                                                                       // because iOS restarts the app in case of change of app privacy settings
-                                                                       handler(NO);
-                                                                    }];
+                [MXKAppSettings standardAppSettings].syncLocalContactsPermissionOpenedSystemSettings = YES;
+                // Wait for the setting to be saved as the app could be killed imminently.
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                
+                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                [sharedApplication performSelector:@selector(openURL:) withObject:url];
+                
+                // Note: it does not worth to check if the user changes the permission
+                // because iOS restarts the app in case of change of app privacy settings
+                handler(NO);
+            }];
             
             [alert addAction: settingsAction];
             alert.preferredAction = settingsAction;

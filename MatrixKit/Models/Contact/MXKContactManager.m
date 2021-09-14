@@ -497,6 +497,45 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 
 #pragma mark -
 
+- (void)validateSyncLocalContactsState
+{
+    if (!self.allowLocalContactsAccess)
+    {
+        
+        return;
+    }
+    
+    // Get the status of the identity service terms.
+    BOOL areAllTermsAgreed = self.identityService.areAllTermsAgreed;
+    
+    if (MXKAppSettings.standardAppSettings.syncLocalContacts)
+    {
+        // Disable local contact sync when all terms are no longer accepted or if contacts access has been revoked.
+        if (!areAllTermsAgreed || [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] != CNAuthorizationStatusAuthorized)
+        {
+            MXLogDebug(@"[MXKContactManager] validateSyncLocalContactsState : Disabling contacts sync.");
+            MXKAppSettings.standardAppSettings.syncLocalContacts = false;
+            return;
+        }
+    }
+    else
+    {
+        // Check whether the user has been directed to the Settings app to enable contact access.
+        if (MXKAppSettings.standardAppSettings.syncLocalContactsPermissionOpenedSystemSettings)
+        {
+            // Reset the system settings app flag as they are back in the app.
+            MXKAppSettings.standardAppSettings.syncLocalContactsPermissionOpenedSystemSettings = false;
+            
+            // And if all other conditions are met for contacts sync enable it.
+            if (areAllTermsAgreed && [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] == CNAuthorizationStatusAuthorized)
+            {
+                MXLogDebug(@"[MXKContactManager] validateSyncLocalContactsState : Enabling contacts sync after user visited Settings app.");
+                MXKAppSettings.standardAppSettings.syncLocalContacts = true;
+            }
+        }
+    }
+}
+
 - (void)refreshLocalContacts
 {
     MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Started");
