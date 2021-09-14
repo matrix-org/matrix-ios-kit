@@ -2294,6 +2294,10 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
                 shouldProcessQueuedEvents = YES;
             }
+            else
+            {
+                MXLogWarning(@"[MXKRoomDataSource][%p] handleUnsentMessages: event sent but still marked as outgoing: %@", self, outgoingMessage.eventId);
+            }
         }
         
         if (shouldProcessQueuedEvents)
