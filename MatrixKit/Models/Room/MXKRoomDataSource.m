@@ -2392,7 +2392,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 {
     NSMutableArray *deletedRows = [NSMutableArray array];
     
-    MXLogVerbose(@"[MXKRoomDataSource][%p] removeCellData: %@", self, cellData.events);
+    MXLogVerbose(@"[MXKRoomDataSource][%p] removeCellData: %@", self, [cellData.events valueForKey:@"eventId"]);
     
     // Remove potential occurrences in bubble map
     @synchronized (eventIdToBubbleMap)
@@ -2569,10 +2569,10 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     MXEvent *event = notif.object;
     NSString *previousId = notif.userInfo[kMXEventIdentifierKey];
     
+    MXLogVerbose(@"[MXKRoomDataSource][%p] localEventDidChangeIdentifier from: %@ to: %@", self, previousId, event.eventId);
+    
     if (event && previousId)
     {
-        MXLogVerbose(@"[MXKRoomDataSource][%p] localEventDidChangeIdentifier from: %@ to: %@", self, previousId, event.eventId);
-        
         // Update bubbles mapping
         @synchronized (eventIdToBubbleMap)
         {
