@@ -2537,6 +2537,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     MXEvent *event = notif.object;
     if ([event.roomId isEqualToString:_roomId])
     {
+        MXLogVerbose(@"[MXKRoomDataSource][%p] eventDidChangeSentState: %@, to: %tu", self, event.eventId, event.sentState);
+        
         // Retrieve the cell data hosting the local echo
         id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:event.eventId];
         if (!bubbleData)
@@ -2546,7 +2548,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 (event.sentState == MXEventSentStateSending || event.sentState == MXEventSentStateEncrypting);
             if (!isInitial)
             {
-                MXLogWarning(@"[MXKRoomDataSource][%p] eventDidChangeSentState: Cannot find bubble data for event: %@, state: %tu", self, event.eventId, event.sentState);
+                MXLogWarning(@"[MXKRoomDataSource][%p] eventDidChangeSentState: Cannot find bubble data for event: %@", self, event.eventId);
             }
             return;
         }
