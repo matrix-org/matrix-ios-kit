@@ -301,7 +301,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     self = [super initWithMatrixSession:matrixSession];
     if (self)
     {
-        //MXLogDebug(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
+        MXLogVerbose(@"[MXKRoomDataSource][%p] initWithRoomId: %@", self, roomId);
         
         _roomId = roomId;
         _secondaryRoomEventTypes = @[
@@ -546,6 +546,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     
     @synchronized(eventsToProcess)
     {
+        MXLogVerbose(@"[MXKRoomDataSource][%p] Reset eventsToProcess", self);
         [eventsToProcess removeAllObjects];
     }
     
@@ -589,7 +590,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)reloadNotifying:(BOOL)notify
 {
-    //    MXLogDebug(@"[MXKRoomDataSource] Reload %p - room id: %@", self, _roomId);
+    MXLogVerbose(@"[MXKRoomDataSource][%p] Reload - room id: %@", self, _roomId);
     
     [self setState:MXKDataSourceStatePreparing];
     
@@ -2158,6 +2159,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)removeEventWithEventId:(NSString *)eventId
 {
+    MXLogVerbose(@"[MXKRoomDataSource][%p] removeEventWithEventId: %@", self, eventId);
+    
     // First, retrieve the cell data hosting the event
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
     if (bubbleData)
@@ -2325,6 +2328,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)replaceEvent:(MXEvent*)eventToReplace withEvent:(MXEvent*)event
 {
+    MXLogVerbose(@"[MXKRoomDataSource][%p] replaceEvent: %@ with: %@", self, eventToReplace.eventId, event.eventId);
+    
     if (eventToReplace.isLocalEvent)
     {
         // Stop listening to the identifier change for the replaced event.
@@ -2386,6 +2391,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (NSArray<NSIndexPath *> *)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
 {
     NSMutableArray *deletedRows = [NSMutableArray array];
+    
+    MXLogVerbose(@"[MXKRoomDataSource][%p] removeCellData: %@", self, cellData.events);
     
     // Remove potential occurrences in bubble map
     @synchronized (eventIdToBubbleMap)
@@ -2534,6 +2541,13 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:event.eventId];
         if (!bubbleData)
         {
+            //  Initial state for local echos
+            BOOL isInitial = event.isLocalEvent &&
+                (event.sentState == MXEventSentStateSending || event.sentState == MXEventSentStateEncrypting);
+            if (!isInitial)
+            {
+                MXLogWarning(@"[MXKRoomDataSource][%p] eventDidChangeSentState: Cannot find bubble data for event: %@, state: %tu", self, event.eventId, event.sentState);
+            }
             return;
         }
         
@@ -2557,6 +2571,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     
     if (event && previousId)
     {
+        MXLogVerbose(@"[MXKRoomDataSource][%p] localEventDidChangeIdentifier from: %@ to: %@", self, previousId, event.eventId);
+        
         // Update bubbles mapping
         @synchronized (eventIdToBubbleMap)
         {
@@ -2775,6 +2791,11 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
  */
 - (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXTimelineDirection)direction
 {
+    if (event.isLocalEvent)
+    {
+        MXLogVerbose(@"[MXKRoomDataSource][%p] queueEventForProcessing: %@", self, event.eventId);
+    }
+    
     if (self.filterMessagesWithURL)
     {
         // Check whether the event has a value for the 'url' key in its content.
