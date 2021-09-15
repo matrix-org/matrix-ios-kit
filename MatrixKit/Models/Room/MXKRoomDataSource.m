@@ -2283,27 +2283,13 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
     
     [self.mxSession decryptEvents:outgoingMessages inTimeline:nil onComplete:^(NSArray<MXEvent *> *failedEvents) {
-        BOOL shouldProcessQueuedEvents = NO;
         
-        for (NSInteger index = 0; index < outgoingMessages.count; index++)
+        for (MXEvent *outgoingMessage in outgoingMessages)
         {
-            MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
-            
-            if (outgoingMessage.sentState != MXEventSentStateSent)
-            {
-                [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-                shouldProcessQueuedEvents = YES;
-            }
-            else
-            {
-                MXLogWarning(@"[MXKRoomDataSource][%p] handleUnsentMessages: event sent but still marked as outgoing: %@", self, outgoingMessage.eventId);
-            }
+            [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
         }
         
-        if (shouldProcessQueuedEvents)
-        {
-            [self processQueuedEvents:nil];
-        }
+        [self processQueuedEvents:nil];
     }];
 }
 
