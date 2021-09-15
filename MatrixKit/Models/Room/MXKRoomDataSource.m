@@ -2289,6 +2289,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
         }
         
+        MXLogVerbose(@"[MXKRoomDataSource][%p] handleUnsentMessages: queued %tu events", self, outgoingMessages.count);
+        
         [self processQueuedEvents:nil];
     }];
 }
@@ -3045,6 +3047,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                         //  Check whether the event processed before
                         if (self->eventIdToBubbleMap[queuedEvent.event.eventId])
                         {
+                            MXLogVerbose(@"[MXKRoomDataSource][%p] processQueuedEvents: Skip event: %@, state: %tu", self, queuedEvent.event.eventId, queuedEvent.event.sentState);
                             continue;
                         }
                     }
