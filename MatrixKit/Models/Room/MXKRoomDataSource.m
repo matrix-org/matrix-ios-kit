@@ -3040,6 +3040,15 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
                 for (MXKQueuedEvent *queuedEvent in self->eventsToProcessSnapshot)
                 {
+                    @synchronized (self->eventIdToBubbleMap)
+                    {
+                        //  Check whether the event processed before
+                        if (self->eventIdToBubbleMap[queuedEvent.event.eventId])
+                        {
+                            continue;
+                        }
+                    }
+                    
                     @autoreleasepool
                     {
                         // Count events received while the server sync was in progress
