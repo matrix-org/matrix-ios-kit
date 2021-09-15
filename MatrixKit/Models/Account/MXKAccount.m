@@ -1143,6 +1143,8 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     
     if (mxSession)
     {
+        MXLogVerbose(@"[MXKAccount] resume with session state: %tu", mxSession.state);
+        
         [self cancelBackgroundSync];
         
         if (mxSession.state == MXSessionStatePaused || mxSession.state == MXSessionStatePauseRequested)
