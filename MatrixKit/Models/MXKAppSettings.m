@@ -511,7 +511,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     {
         if (ignoredHosts == nil)
         {
-            ignoredHosts = @[]
+            ignoredHosts = @[];
         }
         
         [NSUserDefaults.standardUserDefaults setObject:ignoredHosts forKey:@"firstURLDetectionIgnoredHosts"];
