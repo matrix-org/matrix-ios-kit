@@ -1,996 +1,401 @@
-Changes to be released in next version
-=================================================
+## Changes in 0.16.0 (2021-09-09)
 
 ✨ Features
- * 
+
+- MXKRoomBubbleComponent: Add link property and parse message events for links that could be previewed. ([#888](https://github.com/vector-im/element-ios/issues/888))
+- MXKTools: Add +videoConversionPromptForVideoAsset:withCompletion: to create a UIAlertController with appropriate presets. ([#4638](https://github.com/vector-im/element-ios/issues/4638))
 
 🙌 Improvements
- * 
 
-🐛 Bugfix
- * 
+- Upgrade MatrixSDK version ([v0.20.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.0)).
+- MXKRoomDataSource: Adapt to new async `MXRoom.getEventReceipts` method. ([#4383](https://github.com/vector-im/element-ios/issues/4383))
 
-⚠️ API Changes
- * 
+🐛 Bugfixes
 
-🗣 Translations
- * 
-    
-🧱 Build
- * 
+- MXKRoomDataSource: Fix threading on processQueuedEvents method at the end of the process. ([#4788](https://github.com/vector-im/element-ios/issues/4788))
+- Authentication screen: Unexpected request to access the contact book ([#4803](https://github.com/vector-im/element-ios/issues/4803))
 
 Others
- * 
 
-Changes in 0.15.6 (2021-07-29)
-=================================================
+- MXKAttachment: Added method for deleting all previously created temporary, decrypted attachments. ([#887](https://github.com/matrix-org/matrix-ios-kit/pull/887))
+- Git: Add .DS_Store to .gitignore. ([#892](https://github.com/matrix-org/matrix-ios-kit/pull/892))
 
-✨ Features
- * 
+
+## Changes in 0.15.8 (2021-08-26)
 
 🙌 Improvements
- * MXKAccount: added generic `others` storage dictionary (vector-im/element-ios/issues/4578)
+
+- Upgrade MatrixSDK version ([v0.19.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.8)).
+- Notifications: Add notificationBodyLocalizationKey to MXKAppSettings to customise the default notification payload. ([#4132](https://github.com/vector-im/element-ios/issues/4132))
+
+🐛 Bugfixes
+
+- MXKViewControllerHandling: Use processing local cache session state to show an activity indicator. ([#4471](https://github.com/vector-im/element-ios/issues/4471))
+- MXKRoomBubbleComponent: Only consider messages and attachments when computing whether to show a warning badge (fixes misaligned messages in the timeline). ([#4510](https://github.com/vector-im/element-ios/issues/4510))
+
+
+## Changes in 0.15.7 (2021-08-11)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.19.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.7)).
+
+🧱 Build
+
+- CHANGES.md: Use towncrier to manage the change log. More info in [CONTRIBUTING](CONTRIBUTING.md#changelog). ([#873](https://github.com/matrix-org/matrix-ios-kit/pull/873), [#4393](https://github.com/vector-im/element-ios/issues/4393))
+
+📄 Documentation
+
+- Convert CHANGES and CONTRIBUTING to MarkDown. ([#4393](https://github.com/vector-im/element-ios/issues/4393))
+
+
+## Changes in 0.15.6 (2021-07-29)
+
+🙌 Improvements
+
+ * MXKAccount: added generic `others` storage dictionary ([#4578](https://github.com/vector-im/element-ios/issues/4578))
 
 🐛 Bugfix
- * MXKRoomDataSource: Safe access to `bubbles` array on pagination (vector-im/element-ios/issues/4605).
+
+ * MXKRoomDataSource: Safe access to `bubbles` array on pagination ([#4605](https://github.com/vector-im/element-ios/issues/4605)).
  * MXKRoomViewController: Fix initial timeline position when viewing a room for the second time.
 
 ⚠️ API Changes
- * MXKAccountManager: `isAPNSAvailable` and `isPushAvailable` now only indicate the availability of notifications and not their visibility as well (vector-im/element-ios/issues/2368).
 
-🗣 Translations
- * 
-    
-🧱 Build
- * 
+ * MXKAccountManager: `isAPNSAvailable` and `isPushAvailable` now only indicate the availability of notifications and not their visibility as well ([#2368](https://github.com/vector-im/element-ios/issues/2368)).
 
 Others
+
  * Separated CI jobs into individual actions
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.19.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.6)).
 
-Changes in 0.15.5 (2021-07-22)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.15.5 (2021-07-22)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.19.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.5)).
 
-Changes in 0.15.4 (2021-07-15)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.15.4 (2021-07-15)
 
 🙌 Improvements
- * MXKAttachment: Add support for all voice message types (vector-im/element-ios/issues/4094).
- * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: Add methods to send videos as `AVAsset` objects (vector-im/element-ios/issues/4483).
+
+ * MXKAttachment: Add support for all voice message types ([#4094](https://github.com/vector-im/element-ios/issues/4094)).
+ * MXKRoomViewController, MXKRoomDataSource & MXKRoomInputToolbarView: Add methods to send videos as `AVAsset` objects ([#4483](https://github.com/vector-im/element-ios/issues/4483)).
  * MXKSendReplyEventStringLocalizations: Added senderSentAVoiceMessage property
  * MXKRoomDataSource: Retrying failed audio and voice messages
 
 🐛 Bugfix
+
  * MXKRoomDataSource: Calling completion blocks for unsupported or failed message retries
 
 ⚠️ API Changes
- * MXRoomDataSource: Added duration and sample parameters on the sendVoiceMessage method (vector-im/element-ios/issues/4090)
 
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * MXRoomDataSource: Added duration and sample parameters on the sendVoiceMessage method ([#4090](https://github.com/vector-im/element-ios/issues/4090))
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.19.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.4)).
 
-Changes in 0.15.3 (2021-06-30)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.15.3 (2021-06-30)
 
 🙌 Improvements
+
  * MXKCallViewController: Adapt new audio routing APIs.
- * MXKAuthenticationViewController: Add authentication indicator container outlet (vector-im/element-ios/issues/4485).
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * MXKAuthenticationViewController: Add authentication indicator container outlet ([#4485](https://github.com/vector-im/element-ios/issues/4485)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.19.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.3)).
 
-Changes in 0.15.2 (2021-06-24)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
+## Changes in 0.15.2 (2021-06-24)
 
 ⚠️ API Changes
- * MXKAttachment: Added MXKAttachmentTypeVoiceMessage attachment type (vector-im/element-ios/issues/4090).
 
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * MXKAttachment: Added MXKAttachmentTypeVoiceMessage attachment type ([#4090](https://github.com/vector-im/element-ios/issues/4090)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.19.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.2)).
 
-Changes in 0.15.1 (2021-06-21)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.15.1 (2021-06-21)
 
 🙌 Improvements
- * MXRoomSummary: Adapt removal of `lastMessageEvent` property (vector-im/element-ios/issues/4360).
- * MXKAttachment: Adapt removal of `mimetype` fields (vector-im/element-ios/issues/4303).
+
+ * MXRoomSummary: Adapt removal of `lastMessageEvent` property ([#4360](https://github.com/vector-im/element-ios/issues/4360)).
+ * MXKAttachment: Adapt removal of `mimetype` fields ([#4303](https://github.com/vector-im/element-ios/issues/4303)).
 
 🐛 Bugfix
+
  * MXKCallViewController: Fix status text of a remotely held call.
  * MXKCallViewController: Fix avatar image for outgoing on hold calls.
  * MXKRoomViewController: Fix virtual timeline issues.
  * MXKEventFormatter: Style blockquotes as blocks, fixing fallback display (#836).
- * MXKEventFormatter: Fix display of emote replies (vector-im/element-ios/issues/4081).
+ * MXKEventFormatter: Fix display of emote replies ([#4081](https://github.com/vector-im/element-ios/issues/4081)).
 
 ⚠️ API Changes
- * Exposed methods for sending audio files and voice messages (vector-im/element-ios/issues/4090).
 
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * Exposed methods for sending audio files and voice messages ([#4090](https://github.com/vector-im/element-ios/issues/4090)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.19.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.1)).
 
-Changes in 0.15.0 (2021-06-02)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.15.0 (2021-06-02)
 
 🙌 Improvements
+
  * MXKRoomDataSource: Decrypt unsent messages to follow MatrixSDK changes.
  * MXKEncryptionKeysExportView: Define a minimum size for the passphrase.
  * Pod: Update Down to 0.11.0.
- * Logging: Adopted MXLog throughout (vector-im/element-ios/issues/4351)
+ * Logging: Adopted MXLog throughout ([#4351](https://github.com/vector-im/element-ios/issues/4351))
 
 🐛 Bugfix
- * MXKAccount: Do not propagate errors for timed out initial sync requests (vector-im/element-ios/issues/4054).
 
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * MXKAccount: Do not propagate errors for timed out initial sync requests ([#4054](https://github.com/vector-im/element-ios/issues/4054)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.19.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.19.0)).
 
-Changes in 0.14.12 (2021-05-12)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.14.12 (2021-05-12)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.12](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.12)).
 
-Changes in 0.14.11 (2021-05-07)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.14.11 (2021-05-07)
 
 🙌 Improvements
+
  * MXKEventFormatter: Expose defaultRoomSummaryUpdater ivar as protected.
  * MXKCallViewController: Add transfer button and implement actions.
- * MXKAuthenticationVC: Expose current HTTP Operation (vector-im/element-ios/issues/4276)
- * MXKAccount: Log reasons for incompatible sync filter (vector-im/element-ios/issues/3921).
+ * MXKAuthenticationVC: Expose current HTTP Operation ([#4276](https://github.com/vector-im/element-ios/issues/4276))
+ * MXKAccount: Log reasons for incompatible sync filter ([#3921](https://github.com/vector-im/element-ios/issues/3921)).
  * MXKCallViewController: Handle asserted identity updates.
 
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
 🧱 Build
- * CI: Introduce GH actions.
 
-Others
- * 
+ * CI: Introduce GH actions.
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.11](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.11)).
 
-Changes in 0.14.10 (2021-04-22)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.14.10 (2021-04-22)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.10](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.10)).
 
-Changes in 0.14.9 (2021-04-16)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.14.9 (2021-04-16)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.9](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.9)).
 
-Changes in 0.14.8 (2021-04-14)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
+## Changes in 0.14.8 (2021-04-14)
 
 🐛 Bugfix
- * RR are not sent if a typing notification is shown in the timeline (vector-im/element-ios/issues/4209).
- * Outgoing messages edited on another session are not updated in my room history (vector-im/element-ios/issues/4201).
 
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * RR are not sent if a typing notification is shown in the timeline ([#4209](https://github.com/vector-im/element-ios/issues/4209)).
+ * Outgoing messages edited on another session are not updated in my room history ([#4201](https://github.com/vector-im/element-ios/issues/4201)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.8)).
 
-Changes in 0.14.7 (2021-04-09)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
+## Changes in 0.14.7 (2021-04-09)
 
 🐛 Bugfix
- * Vertical padding is borked on new attachment UI after going into file selector and out again (vector-im/element-ios/issues/4156).
- * Vertical layout of typing notifs can go wonky (vector-im/element-ios/issues/4159).
+
+ * Vertical padding is borked on new attachment UI after going into file selector and out again ([#4156](https://github.com/vector-im/element-ios/issues/4156)).
+ * Vertical layout of typing notifs can go wonky ([#4159](https://github.com/vector-im/element-ios/issues/4159)).
 
 ⚠️ API Changes
- * MXKRoomBubbleCellDataStoring: Introduce target user ID, display name and avatar URL for room membership events (vector-im/element-ios/issues/4102).
 
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * MXKRoomBubbleCellDataStoring: Introduce target user ID, display name and avatar URL for room membership events ([#4102](https://github.com/vector-im/element-ios/issues/4102)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.7)).
 
-Changes in 0.14.6 (2021-03-24)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.14.6 (2021-03-24)
 
 🙌 Improvements
- * Pods: Update JSQMessagesViewController, DTCoreText, Down (vector-im/element-ios/issues/4120).
+
+ * Pods: Update JSQMessagesViewController, DTCoreText, Down ([#4120](https://github.com/vector-im/element-ios/issues/4120)).
  * MXKRoomDataSource: Introduce secondaryRoomId and secondaryRoomEventTypes.
 
 🐛 Bugfix
+
  * Fix collapsing of separately processed events
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.6)).
 
-Changes in 0.14.5 (2021-03-11)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
+## Changes in 0.14.5 (2021-03-11)
 
 🐛 Bugfix
+
  * MXKRoomDataSource: Fix memory leak in `bubbles` array.
 
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
 Others
+
  * Ensure room on event editions.
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.5)).
 
-Changes in 0.14.4 (2021-03-03)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.14.4 (2021-03-03)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.4)).
 
-Changes in 0.14.3 (2021-02-26)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.14.3 (2021-02-26)
 
 🙌 Improvements
- * Crypto: Pre share session keys when typing by default (vector-im/element-ios/issues/4075).
+
+ * Crypto: Pre share session keys when typing by default ([#4075](https://github.com/vector-im/element-ios/issues/4075)).
 
 🐛 Bugfix
- * App state: Infinite loading spinner when resuming the app (vector-im/element-ios/issues/4073).
 
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * App state: Infinite loading spinner when resuming the app ([#4073](https://github.com/vector-im/element-ios/issues/4073)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.3)).
 
-Changes in 0.14.2 (2021-02-24)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.14.2 (2021-02-24)
 
 🙌 Improvements
+
  * MXKRoomDataSource: Notify subclasses on room change.
  
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
-
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.2)).
 
-Changes in 0.14.1 (2021-02-12)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.14.1 (2021-02-12)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.1)).
 
-Changes in 0.14.0 (2021-02-11)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.14.0 (2021-02-11)
 
 🙌 Improvements
- * Crypto: Add a MXKAppSettings option to pre-share session keys (vector-im/element-ios/issues/3934).
- * VoIP: DTMF support in calls (vector-im/element-ios/issues/3929).
 
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * Crypto: Add a MXKAppSettings option to pre-share session keys ([#3934](https://github.com/vector-im/element-ios/issues/3934)).
+ * VoIP: DTMF support in calls ([#3929](https://github.com/vector-im/element-ios/issues/3929)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.18.0](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.18.0)).
 
-Changes in 0.13.9 (2021-02-03)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
+## Changes in 0.13.9 (2021-02-03)
 
 🐛 Bugfix
- * Login screen: Unexpected request to access the contact book (vector-im/element-ios/issues/3984).
 
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * Login screen: Unexpected request to access the contact book ([#3984](https://github.com/vector-im/element-ios/issues/3984)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.11](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.11)).
 
-Changes in 0.13.8 (2021-01-27)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.13.8 (2021-01-27)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.10](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.10)).
 
-Changes in 0.13.7 (2021-01-18)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.13.7 (2021-01-18)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.9](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.9)).
 
-Changes in 0.13.6 (2021-01-15)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.13.6 (2021-01-15)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.8)).
 
-Changes in 0.13.5 (2021-01-14)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.13.5 (2021-01-14)
 
 🙌 Improvements
+
  * MXKAuthenticationViewController: Expose loginWithParameters method.
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.7)).
 
-Changes in 0.13.4 (2020-12-18)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
+## Changes in 0.13.4 (2020-12-18)
 
 🐛 Bugfix
+
  * MXKRoomViewController: Fix a crash by not calling UITableViewDataSource method, but dequeuing the cell.
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.6)).
 
-Changes in 0.13.3 (2020-12-16)
-=================================================
+## Changes in 0.13.3 (2020-12-16)
 
 ✨ Features
  * Data encryption for MXKContactManager and MXKAccountManager using MXKeyProvider (#3866)
 
-🙌 Improvements
- * 
-
 🐛 Bugfix
- * MXKAccountManager: fix a bug that prevents user to stay logged in if V2 file is not initially encrypted (vector-im/element-ios/issues/3866).
 
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * MXKAccountManager: fix a bug that prevents user to stay logged in if V2 file is not initially encrypted ([#3866](https://github.com/vector-im/element-ios/issues/3866)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.5)).
 
-Changes in 0.13.2 (2020-12-02)
-=================================================
+## Changes in 0.13.2 (2020-12-02)
 
 ✨ Features
- * Added AES encryption support in MXKContactManager (vector-im/element-ios/issues/3833).
+ * Added AES encryption support in MXKContactManager ([#3833](https://github.com/vector-im/element-ios/issues/3833)).
  * Added allowActionsInDocumentPreview property in MXKRoomViewController to show or hide the actions button in document preview. (#3864)
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.4](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.4)).
 
-Changes in 0.13.1 (2020-11-24)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.13.1 (2020-11-24)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.3)).
 
-Changes in 0.13.0 (2020-11-17)
-=================================================
+## Changes in 0.13.0 (2020-11-17)
 
 ✨ Features
  * Expose Webview object to SDK consumer (https://github.com/vector-im/element-ios/issues/3829)
 
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
-
 Improvements:
  * Upgrade MatrixSDK version ([v0.17.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.17.2)).
 
-Changes in 0.12.26 (2020-10-27)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.12.26 (2020-10-27)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.20](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.20)).
 
-Changes in 0.12.25 (2020-10-14)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.12.25 (2020-10-14)
 
 🙌 Improvements
+
  * Make copying & pasting media configurable. 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.19](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.19)).
 
-Changes in 0.12.24 (2020-10-13)
-=================================================
-
-✨ Features
- * 
-
-🙌 Improvements
- * 
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+## Changes in 0.12.24 (2020-10-13)
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.18](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.18)).
 
-Changes in 0.12.23 (2020-10-09)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.12.23 (2020-10-09)
 
 🙌 Improvements
- * MXKPasteboardManager: Introduce dedicated pasteboard manager to change the pasteboard used on copy operations (vector-im/element-ios/issues/3732). 
+
+ * MXKPasteboardManager: Introduce dedicated pasteboard manager to change the pasteboard used on copy operations ([#3732](https://github.com/vector-im/element-ios/issues/3732)). 
 
 🐛 Bugfix
- * Room: Refresh UI when the app is fully active (vector-im/element-ios/issues/3672).
 
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * Room: Refresh UI when the app is fully active ([#3672](https://github.com/vector-im/element-ios/issues/3672)).
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.17](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.17)).
 
-Changes in 0.12.22 (2020-10-02)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.12.22 (2020-10-02)
 
 🙌 Improvements
+
  * MXKAuthenticationViewController: Do not present fallback when there is one unsupported login flow among supported ones (/vector-im/element-ios/issues/3711).
-
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
 
 Improvements:
 
 
-Changes in 0.12.21 (2020-09-30)
-=================================================
+## Changes in 0.12.21 (2020-09-30)
 
 Features:
  * 
@@ -1018,8 +423,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.20 (2020-09-16)
-=================================================
+## Changes in 0.12.20 (2020-09-16)
 
 Features:
  * 
@@ -1045,35 +449,16 @@ Build:
 Test:
  * 
 
-Changes in 0.12.19 (2020-09-15)
-=================================================
-
-✨ Features
- * 
+## Changes in 0.12.19 (2020-09-15)
 
 🙌 Improvements
- * MXKAppSettings: Change some events to be visible (vector-im/element-ios/issues/3629). 
 
-🐛 Bugfix
- * 
-
-⚠️ API Changes
- * 
-
-🗣 Translations
- * 
-    
-🧱 Build
- * 
-
-Others
- * 
+ * MXKAppSettings: Change some events to be visible ([#3629](https://github.com/vector-im/element-ios/issues/3629)). 
 
 Improvements:
 
 
-Changes in 0.12.18 (2020-09-08)
-=================================================
+## Changes in 0.12.18 (2020-09-08)
 
 Features:
  * 
@@ -1099,8 +484,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.17 (2020-09-03)
-=================================================
+## Changes in 0.12.17 (2020-09-03)
 
 Features:
  * 
@@ -1127,8 +511,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.16 (2020-08-28)
-=================================================
+## Changes in 0.12.16 (2020-08-28)
 
 Features:
  * 
@@ -1155,8 +538,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.15 (2020-08-25)
-=================================================
+## Changes in 0.12.15 (2020-08-25)
 
 Features:
  * 
@@ -1183,8 +565,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.14 (2020-08-19)
-=================================================
+## Changes in 0.12.14 (2020-08-19)
 
 Features:
  * 
@@ -1211,8 +592,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.13 (2020-08-14)
-=================================================
+## Changes in 0.12.13 (2020-08-14)
 
 Features:
  * 
@@ -1239,8 +619,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.12 (2020-08-13)
-=================================================
+## Changes in 0.12.12 (2020-08-13)
 
 Features:
  * 
@@ -1267,8 +646,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.11 (2020-08-07)
-=================================================
+## Changes in 0.12.11 (2020-08-07)
 
 Features:
  * 
@@ -1295,8 +673,7 @@ Build:
 Test:
  * 
 
-Changes in 0.12.10 (2020-08-05)
-=================================================
+## Changes in 0.12.10 (2020-08-05)
 
 Features:
  * 
@@ -1323,13 +700,13 @@ Build:
 Test:
  * 
 
-Changes in 0.12.9 (2020-07-28)
+## Changes in 0.12.9 (2020-07-28)
 ==============================
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.8)).
 
-Changes in MatrixKit in 0.12.8 (2020-07-13)
+## Changes in MatrixKit in 0.12.8 (2020-07-13)
 =========================================
 
 Improvements:
@@ -1342,7 +719,7 @@ Bug fix:
  * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
  * MXKAccount: Add format and fallback_content to APNS push data (vector-im/riot-ios/issues/3325).
 
-Changes in MatrixKit in 0.12.7 (2020-05-xx)
+## Changes in MatrixKit in 0.12.7 (2020-05-xx)
 =========================================
 
 Improvements:
@@ -1359,19 +736,19 @@ Bug fix:
  * MXKRoomDataSource: Wait for initial event existence if provided (vector-im/riot-ios/issues/3290).
  * MXKRoomDataSource: Convert one-time observers to block variables to avoid releasing (vector-im/riot-ios/issues/3337).
 
-Changes in MatrixKit in 0.12.6 (2020-05-18)
+## Changes in MatrixKit in 0.12.6 (2020-05-18)
 =========================================
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.5)).
 
-Changes in MatrixKit in 0.12.5 (2020-05-13)
+## Changes in MatrixKit in 0.12.5 (2020-05-13)
 =========================================
 
 Bug fix:
  * Remove UIWebView dependency from MXKAuthenticationViewController (PR #666).
 
-Changes in MatrixKit in 0.12.4 (2020-05-11)
+## Changes in MatrixKit in 0.12.4 (2020-05-11)
 =========================================
 
 Improvements:
@@ -1381,19 +758,19 @@ Bug fix:
  * Replace UIWebView with WKWebView (PR #663).
  * Fix range of allowed surrogate emoji characters to 0x1d000-0x1f9ff.
 
-Changes in MatrixKit in 0.12.3 (2020-05-07)
+## Changes in MatrixKit in 0.12.3 (2020-05-07)
 =========================================
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.3)).
 
-Changes in MatrixKit in 0.12.2 (2020-05-01)
+## Changes in MatrixKit in 0.12.2 (2020-05-01)
 =========================================
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.16.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.16.2)).
 
-Changes in MatrixKit in 0.12.1 (2020-04-24)
+## Changes in MatrixKit in 0.12.1 (2020-04-24)
 =========================================
 
 Improvements:
@@ -1403,7 +780,7 @@ Bug fix:
  * MXKAttachmentsViewController: Make navigation bar respect to safe area insets (PR #659).
  * MXKAuthenticationViewController: Remove bottomLayoutGuide and content view equal width constraints (PR #660).
 
-Changes in MatrixKit in 0.12.0 (2020-04-17)
+## Changes in MatrixKit in 0.12.0 (2020-04-17)
 ==========================================
 
 Improvements:
@@ -1422,20 +799,20 @@ API break:
 Bug fix:
  * MXKImageView: Consider safe area insets when displayed fullscreen (PR #649).
 
-Changes in MatrixKit in 0.11.4 (2020-04-01)
+## Changes in MatrixKit in 0.11.4 (2020-04-01)
 ==========================================
 
  Bug fix:
  * Push notifications: Avoid any automatic deactivation (vector-im/riot-ios#3017).
 
-Changes in MatrixKit in 0.11.3 (2019-12-05)
+## Changes in MatrixKit in 0.11.3 (2019-12-05)
 ==========================================
 
 Improvements:
  * Upgrade MatrixSDK version ([v0.15.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.15.2)).
  * MXKRoomBubbleTableViewCell: Improve link gesture recognition.
 
-Changes in MatrixKit in 0.11.2 (2019-11-06)
+## Changes in MatrixKit in 0.11.2 (2019-11-06)
 ==========================================
 
 Improvements:
@@ -1450,13 +827,13 @@ Bug fix:
  * Pasteboard: Fix a crash when passing a nil object to `UIPasteboard`.
  * MXKImageView: UI API called from background thread (#517).
 
-Changes in MatrixKit in 0.11.1 (2019-10-11)
+## Changes in MatrixKit in 0.11.1 (2019-10-11)
 ==========================================
 
 Bug fix:
  * MXKContactManager: Fix assertion failure because of early call of updateMatrixIDsForAllLocalContacts.
 
-Changes in MatrixKit in 0.11.0 (2019-10-11)
+## Changes in MatrixKit in 0.11.0 (2019-10-11)
 ==========================================
 
 Improvements:
@@ -1472,7 +849,7 @@ Bug fix:
  * Display correctly the revoked third-party invite.
  * MXKRoomBubbleTableViewCell: Fix issue with links too easily touchable on iOS 13 (vector-im/riot-ios/issues/2738).
  
-Changes in MatrixKit in 0.10.2 (2019-08-08)
+## Changes in MatrixKit in 0.10.2 (2019-08-08)
 ==========================================
 
 Improvements:
@@ -1486,13 +863,13 @@ Improvements:
  Bug fix:
  * APNS Push: fix logic when enabling APNS push. Avoid calling nil callback method.
 
-Changes in MatrixKit in 0.10.1 (2019-07-16)
+## Changes in MatrixKit in 0.10.1 (2019-07-16)
 ==========================================
 
 Bug fix:
  * Use a usable pod of SwiftUTI.
 
-Changes in MatrixKit in 0.10.0 (2019-07-16)
+## Changes in MatrixKit in 0.10.0 (2019-07-16)
 ==========================================
 
 Improvements:
@@ -1525,7 +902,7 @@ Bug fix:
   * MXKAccount: Rename enablePushKitNotifications to hasPusherForPushKitNotifications.
   * MXKAccount: Remove deletePushKitPusher. Use enablePushKitNotifications:NO instead.
 
-Changes in MatrixKit in 0.9.9 (2019-05-03)
+## Changes in MatrixKit in 0.9.9 (2019-05-03)
 ==========================================
 
 Improvements:
@@ -1540,7 +917,7 @@ Bug fix:
  * MXKSessionRecentsDataSource: Hide a room if needed on room summary change (vector-im/riot-ios/issues/2148).
  * MXKAttachmentsViewController: Fix some retain cycles (PR #544).
 
-Changes in MatrixKit in 0.9.8 (2019-03-21)
+## Changes in MatrixKit in 0.9.8 (2019-03-21)
 ==========================================
 
 Improvements:
@@ -1550,13 +927,13 @@ Bug fix:
  * MXKRoomBubbleTableViewCell: Fix tap on file attachment when using a messageTextView of class `MXKMessageTextView` (PR #532).
  * MXKContactManager: some matrix contacts are missing in the search result (offline mode).
 
-Changes in MatrixKit in 0.9.7 (2019-03-13)
+## Changes in MatrixKit in 0.9.7 (2019-03-13)
 ==========================================
 
 Bug fix:
  * A left room is stuck in my joined room (vector-im/riot-ios/issues/2318).
 
-Changes in MatrixKit in 0.9.6 (2019-03-08)
+## Changes in MatrixKit in 0.9.6 (2019-03-08)
 ==========================================
 
 Improvements:
@@ -1569,26 +946,26 @@ Bug fix:
  * Room details: the attachments list is empty (or almost) for the encrypted rooms.
  * Quickly tapping on a URL in a message highlights the message rather than opening the URL (vector-im/riot-ios/issues/728).
 
-Changes in MatrixKit in 0.9.5 (2019-02-15)
+## Changes in MatrixKit in 0.9.5 (2019-02-15)
 ==========================================
 
 Improvements:
  * Upgrade MatrixSDK version (v0.12.2).
  * MXKTableViewCellWithButton: Remove all controls events on the button in [self prepareForReuse].
 
-Changes in MatrixKit in 0.9.4 (2019-01-05)
+## Changes in MatrixKit in 0.9.4 (2019-01-05)
 ==========================================
 
 Improvements:
  * Chat screen: `Redact` has been renamed to `Remove` to match riot/web (vector-im/riot-ios/issues/2134).
 
-Changes in MatrixKit in 0.9.3 (2019-01-08)
+## Changes in MatrixKit in 0.9.3 (2019-01-08)
 ==========================================
 
 Bug fix:
  * Chat screen: wrong thumbnail observed during scrollback (vector-im/riot-ios/issues/1122).
 
-Changes in MatrixKit in 0.9.2 (2019-01-04)
+## Changes in MatrixKit in 0.9.2 (2019-01-04)
 ==========================================
 
 Improvements:
@@ -1600,14 +977,14 @@ Improvements:
 Bug fix:
  * Crash in [MXKTools removeMarkedBlockquotesArtifacts:] (vector-im/riot-ios/issues/2147).
 
-Changes in MatrixKit in 0.9.1 (2018-12-12)
+## Changes in MatrixKit in 0.9.1 (2018-12-12)
 ==========================================
  
 Bug fix:
  * MXKAuthenticationRecaptchaWebView: Use WKWebView so that it can work on iOS 10 (vector-im/riot-ios/issues/2119).
  * Handle correctly media loader cancellation.
 
-Changes in MatrixKit in 0.9.0 (2018-12-06)
+## Changes in MatrixKit in 0.9.0 (2018-12-06)
 ==========================================
 
 Improvements:
@@ -1629,7 +1006,7 @@ Deprecated API:
  * MXKReceiptSendersContainer: [initWithFrame:andRestClient:] is deprecated, use [initWithFrame:andMediaManager:] instead.
  * Add media antivirus scan support.
 
-Changes in MatrixKit in 0.8.6 (2018-10-31)
+## Changes in MatrixKit in 0.8.6 (2018-10-31)
 ==========================================
 
 Improvements:
@@ -1639,7 +1016,7 @@ Bug fix:
  * MXKCallViewController: Fix crash in callRoomStateDidChange (vector-im/riot-ios#2079).
  * MXKEventFormatter: Be robust on malformatted m.relates_to data content (vector-im/riot-ios/issues/2080).
 
-Changes in MatrixKit in 0.8.5 (2018-10-05)
+## Changes in MatrixKit in 0.8.5 (2018-10-05)
 ==========================================
 
 Improvements:
@@ -1649,7 +1026,7 @@ Improvements:
 Bug fix:
  * MXKRoomDataSource: roomState was not updated (vector-im/riot-ios/issues/2058).
 
-Changes in MatrixKit in 0.8.4 (2018-09-26)
+## Changes in MatrixKit in 0.8.4 (2018-09-26)
 ==========================================
 
 Improvements:
@@ -1665,13 +1042,13 @@ Bug fix:
  * Fix crash in [MXKContactManager refreshLocalContacts] (vector-im/riot-ios/issues/2032).
  * Fix crash when opening a room with unsent message (vector-im/riot-ios/issues/2041).
 
-Changes in MatrixKit in 0.8.3 (2018-08-27)
+## Changes in MatrixKit in 0.8.3 (2018-08-27)
 ==========================================
 
 Improvements:
  * Upgrade MatrixSDK version (v0.11.3).
 
-Changes in MatrixKit in 0.8.2 (2018-08-24)
+## Changes in MatrixKit in 0.8.2 (2018-08-24)
 ==========================================
 
 Improvements:
@@ -1679,13 +1056,13 @@ Improvements:
  * MXKAuthenticationVC: Show a "Resource Limit Exceeded" popup if it happens server side (vector-im/riot-ios/issues/1937).
  * Remove keyboard type reset in MXKRoomInputToolbar... classes (vector-im/riot-ios/issues/1959).
 
-Changes in MatrixKit in 0.8.1 (2018-08-17)
+## Changes in MatrixKit in 0.8.1 (2018-08-17)
 ==========================================
 
 Improvements:
  * Upgrade MatrixSDK version (v0.11.1).
 
-Changes in MatrixKit in 0.8.0 (2018-08-10)
+## Changes in MatrixKit in 0.8.0 (2018-08-10)
 ==========================================
 
 Improvements:
@@ -1703,7 +1080,7 @@ API break:
  * MXKRoomDataSourceManager: The roomDataSourceForRoom method is now asynchronous.
  * MXKRoomDataSourceManager: closeRoomDataSource has been replaced by closeRoomDataSourceWithRoomId.
 
-Changes in MatrixKit in 0.7.15 (2018-07-03)
+## Changes in MatrixKit in 0.7.15 (2018-07-03)
 ==========================================
 
 Improvements:
@@ -1717,7 +1094,7 @@ Bug fix:
 
 API break:
  
-Changes in MatrixKit in 0.7.14 (2018-06-01)
+## Changes in MatrixKit in 0.7.14 (2018-06-01)
 ==========================================
 
 Improvements:
@@ -1726,7 +1103,7 @@ Improvements:
 Bug fix:
  * MXKWebViewVC: Fix crash with WKWebView and enableDebug
 
-Changes in MatrixKit in 0.7.13 (2018-05-31)
+## Changes in MatrixKit in 0.7.13 (2018-05-31)
 ==========================================
 
 Improvements:
@@ -1740,7 +1117,7 @@ Bug fix:
 API break:
  * MXKWebViewVC uses now a WKWebview.
 
-Changes in MatrixKit in 0.7.12 (2018-05-23)
+## Changes in MatrixKit in 0.7.12 (2018-05-23)
 ==========================================
 
 Improvements:
@@ -1754,7 +1131,7 @@ Improvements:
 Bug fix:
  * HTML Rendering: Fix the display of side borders of HTML blockquotes (vector-im/riot-ios#1857).
 
-Changes in MatrixKit in 0.7.11 (2018-04-23)
+## Changes in MatrixKit in 0.7.11 (2018-04-23)
 ==========================================
 
 Improvements:
@@ -1763,7 +1140,7 @@ Improvements:
 Bug fix:
  * Regression: Sending a photo from the photo library causes a crash.
 
-Changes in MatrixKit in 0.7.10 (2018-04-20)
+## Changes in MatrixKit in 0.7.10 (2018-04-20)
 ==========================================
 
 Improvements:
@@ -1774,32 +1151,32 @@ Improvements:
 Bug fix:
  * Crash on URL like https://riot.im/#/app/register?hs_url=... (vector-im/riot-ios#1838).
  
-Changes in MatrixKit in 0.7.9 (2018-03-30)
+## Changes in MatrixKit in 0.7.9 (2018-03-30)
 ==========================================
 
 Improvements:
  * Upgrade MatrixSDK version (v0.10.7).
 
-Changes in MatrixKit in 0.7.8 (2018-03-12)
+## Changes in MatrixKit in 0.7.8 (2018-03-12)
 ==========================================
 
 Bug fix:
  * Groups: Room summary should not display notices about groups (vector-im/riot-ios#1780).
  * MXKEventFormatter: Emotes which contain a single emoji are expanded to be enormous (vector-im/riot-ios#1558).
 
-Changes in MatrixKit in 0.7.7 (2018-02-27)
+## Changes in MatrixKit in 0.7.7 (2018-02-27)
 ==========================================
 
 Bug fix:
  * My communities screen is empty despite me being in several groups (vector-im/riot-ios#1792).
 
-Changes in MatrixKit in 0.7.6 (2018-02-14)
+## Changes in MatrixKit in 0.7.6 (2018-02-14)
 ==========================================
 
 Improvement:
  * Flair handling - MXKRoomDataSource: Wait for the session to be running before refreshing the related groups (PR #401).
 
-Changes in MatrixKit in 0.7.5 (2018-02-09)
+## Changes in MatrixKit in 0.7.5 (2018-02-09)
 ==========================================
 
 Improvements:
@@ -1817,7 +1194,7 @@ API breaks:
 Translations:
   * Catalan (6%), added thanks to @sim6 and @salvadorpla (PR #397).
 
-Changes in MatrixKit in 0.7.4 (2017-12-27)
+## Changes in MatrixKit in 0.7.4 (2017-12-27)
 ==========================================
 
 Bug fixes:
@@ -1825,7 +1202,7 @@ Bug fixes:
  * Should fix missing push notifications (https://github.com/vector-im/riot-ios/issues/1696).
  * Should fix the application crash on "Failed to grow buffer" when loading local phonebook contacts (https://github.com/matrix-org/riot-ios-rageshakes/issues/779).
 
-Changes in MatrixKit in 0.7.3 (2017-11-30)
+## Changes in MatrixKit in 0.7.3 (2017-11-30)
 ==========================================
 
 Improvements:
@@ -1846,7 +1223,7 @@ Translations:
   * Vietnamese (100%), added thanks to @loulsle (PR #381).
   * Japanese (5.2%), updated thanks to @libraryxhime (PR #381).
 
-Changes in MatrixKit in 0.7.2 (2017-11-13)
+## Changes in MatrixKit in 0.7.2 (2017-11-13)
 ==========================================
 
 Improvements:
@@ -1855,13 +1232,13 @@ Improvements:
 Bug fixes:
  * Share silently fails on big pics - eg panoramas (vector-im/riot-ios#1627).
 
-Changes in MatrixKit in 0.7.1 (2017-10-27)
+## Changes in MatrixKit in 0.7.1 (2017-10-27)
 ==========================================
 
 Improvements:
  * Upgrade MatrixSDK version (v0.10.1).
 
-Changes in MatrixKit in 0.7.0 (2017-10-23)
+## Changes in MatrixKit in 0.7.0 (2017-10-23)
 ==========================================
 
 Improvements:
@@ -1875,7 +1252,7 @@ Bug fixes:
  * Wrong paragraph rendering in the room messages (vector-im/riot-ios#1500).
  * MXKInterleavedRecentsDataSource: Fix crash (matrix-org/riot-ios-rageshakes#483).
 
-Changes in MatrixKit in 0.6.3 (2017-10-03)
+## Changes in MatrixKit in 0.6.3 (2017-10-03)
 ==========================================
 
 Improvements:
@@ -1897,7 +1274,7 @@ Translations:
   * Basque, updated thanks to @osoitz (PR #360).
   * French, updated thanks to @zecakeh (PR #363).
 
-Changes in MatrixKit in 0.6.2 (2017-08-25)
+## Changes in MatrixKit in 0.6.2 (2017-08-25)
 ==========================================
 
 Improvements:
@@ -1913,7 +1290,7 @@ Improvements:
 Translations:
   * Basque, thanks to @osoitz (PR #348).
 
-Changes in MatrixKit in 0.6.1 (2017-08-08)
+## Changes in MatrixKit in 0.6.1 (2017-08-08)
 ==========================================
 
 Improvements:
@@ -1923,7 +1300,7 @@ Improvements:
 Bug fixes:
  * Fix problem with dismissing of MXCallViewController (https://github.com/vector-im/riot-ios/issues/1405), thanks to @morozkin (#342).
  
-Changes in MatrixKit in 0.6.0 (2017-08-01)
+## Changes in MatrixKit in 0.6.0 (2017-08-01)
 ==========================================
 
 Improvements:
@@ -1951,7 +1328,7 @@ Bug fixes:
  * MXKEventFormatter: Fix URLs with 2 hashes create wrong links (https://github.com/vector-im/riot-ios#1365).
  * Room with no icon ended up with the icon of a different room.
 
-Changes in MatrixKit in 0.5.2 (2017-06-30)
+## Changes in MatrixKit in 0.5.2 (2017-06-30)
 ==========================================
 
 Improvements:
@@ -1963,7 +1340,7 @@ Bug fixes:
  * MXKEventFormatter: Fix URLs with 2 hashes create wrong links (https://github.com/vector-im/riot-ios#1365).
  * Room with no icon ended up with the icon of a different room.
 
-Changes in MatrixKit in 0.5.1 (2017-06-23)
+## Changes in MatrixKit in 0.5.1 (2017-06-23)
 ==========================================
 
 Improvements:
@@ -1976,7 +1353,7 @@ Bug fixes:
  * Home: Tapping on an unread room on home page takes you to the wrong room (https://github.com/vector-im/riot-ios#1304).
  * Member page: empty items (vector-im/riot-ios#1323).
 
-Changes in MatrixKit in 0.5.0 (2017-06-16)
+## Changes in MatrixKit in 0.5.0 (2017-06-16)
 ==========================================
 
 Improvements:
@@ -2006,7 +1383,7 @@ Bug fixes:
  * Photo selection and sending crash (https://github.com/vector-im/riot-ios#1025).
  * A permalink is positioned off the screen (https://github.com/vector-im/riot-ios#553).
 
-Changes in MatrixKit in 0.4.11 (2017-03-23)
+## Changes in MatrixKit in 0.4.11 (2017-03-23)
 ==========================================
 
 Improvements:
@@ -2016,13 +1393,13 @@ Bug fixes:
  * Chat screen: image thumbnails management is broken (https://github.com/vector-im/riot-ios#1121).
  * Image viewer repeatedly loses overlay menu (https://github.com/vector-im/riot-ios#1109).
 
-Changes in MatrixKit in 0.4.10 (2017-03-21)
+## Changes in MatrixKit in 0.4.10 (2017-03-21)
 ==========================================
 
 Improvements:
  * Upgrade MatrixSDK version (v0.7.10).
 
-Changes in MatrixKit in 0.4.9 (2017-03-16)
+## Changes in MatrixKit in 0.4.9 (2017-03-16)
 ==========================================
 
 Improvements:
@@ -2031,7 +1408,7 @@ Improvements:
 Bug fixes:
  * Riot user created without msisdn in his settings (https://github.com/vector-im/riot-ios#1103).
 
-Changes in MatrixKit in 0.4.8 (2017-03-10)
+## Changes in MatrixKit in 0.4.8 (2017-03-10)
 ==========================================
 
 Improvements:
@@ -2057,7 +1434,7 @@ API breaks:
   * MXKAuthInputsViewDelegate: [authInputsViewEmailValidationRestClient:] has been renamed to [authInputsViewThirdPartyIdValidationRestClient:].
   * MXKDeviceView: [deviceViewDidUpdate:] has been renamed to [dismissDeviceView: didUpdate:].
 
-Changes in MatrixKit in 0.4.7 (2017-02-08)
+## Changes in MatrixKit in 0.4.7 (2017-02-08)
 ==========================================
 
 Improvements:
@@ -2070,7 +1447,7 @@ Bug fixes:
  * Local echoes for typed messages stay (far) longer in grey (https://github.com/vector-im/riot-ios#1007).
  * Should fix crash in 0.3.8: [MXKRoomInputToolbarView contentEditingInputsForAssets:withResult:onComplete:] (https://github.com/vector-im/riot-ios#1015).
  
-Changes in MatrixKit in 0.4.6 (2017-01-24)
+## Changes in MatrixKit in 0.4.6 (2017-01-24)
 ==========================================
 
 Improvements:
@@ -2081,7 +1458,7 @@ Improvements:
 Bug fixes:
  * Bug Fix: App is stuck on logout when device is offline (https://github.com/vector-im/riot-ios#963).
 
-Changes in MatrixKit in 0.4.5 (2017-01-19)
+## Changes in MatrixKit in 0.4.5 (2017-01-19)
 ==========================================
 
 Improvements:
@@ -2102,7 +1479,7 @@ Bug fixes:
 API breaks:
  * MXKContactManager: Replace `localEmailContacts:` with `localContactsWithMethods:` to list the local contacts who have contact methods which may be used to invite them or to discover matrix users.
 
-Changes in MatrixKit in 0.4.4 (2016-12-23)
+## Changes in MatrixKit in 0.4.4 (2016-12-23)
 ==========================================
 
 Improvements:
@@ -2120,7 +1497,7 @@ API breaks:
  * Move MXEncryptedAttachments to SDK level.
  * Move outgoing messages management to SDK level.
 
-Changes in MatrixKit in 0.4.3 (2016-11-23)
+## Changes in MatrixKit in 0.4.3 (2016-11-23)
 ===========================================
 
 Improvements:
@@ -2130,7 +1507,7 @@ Bug fixes:
  * Typing indicator should stop when the user sends his message (https://github.com/vector-im/vector-ios#809).
  * Crypto: Made attachments work better cross platform.
 
-Changes in MatrixKit in 0.4.2 (2016-11-22)
+## Changes in MatrixKit in 0.4.2 (2016-11-22)
 ===========================================
 
 Improvements:
@@ -2140,7 +1517,7 @@ Improvements:
 Bug fixes:
  * Crypto: Do not allow to redact the event that enabled encryption in a room.
 
-Changes in MatrixKit in 0.4.1 (2016-11-18)
+## Changes in MatrixKit in 0.4.1 (2016-11-18)
 ===========================================
 
 Improvements:
@@ -2151,7 +1528,7 @@ Bug fixes:
  * Fix a random crash when uploading an e2e attachment.
  * Wrong thumbnail shown whilst uploading e2e image  (https://github.com/vector-im/vector-ios#795).
 
-Changes in MatrixKit in 0.4.0 (2016-11-17)
+## Changes in MatrixKit in 0.4.0 (2016-11-17)
 ===========================================
 
 Improvements:
@@ -2174,14 +1551,14 @@ Improvements:
  * Fix for accepting autocorrect on message send.
  * MXKRoomBubbleCellData: Should fix the text bubbles overlapping.
 
-Changes in MatrixKit in 0.3.19 (2016-09-30)
+## Changes in MatrixKit in 0.3.19 (2016-09-30)
 ===========================================
  
  Bug fixes:
  * App crashes when user taps on room alias with multiple # in chat history (https://github.com/vector-im/vector-ios/issues/668).
  * Room message search: the search pattern is not highlighted in results (https://github.com/vector-im/vector-ios/issues/660).
 
-Changes in MatrixKit in 0.3.18 (2016-09-27)
+## Changes in MatrixKit in 0.3.18 (2016-09-27)
 ===========================================
 
 Improvements:
@@ -2197,7 +1574,7 @@ Improvements:
  * MXKEventFormatter: The invitation rejection was not displayed.
  * The room preview does not always display the right member info (https://github.com/vector-im/vector-ios/issues/643).
 
-Changes in MatrixKit in 0.3.17 (2016-09-15)
+## Changes in MatrixKit in 0.3.17 (2016-09-15)
 ===========================================
 
 Improvements:
@@ -2207,7 +1584,7 @@ Improvements:
  Bug fixes:
  * Chat screen: unexpected scroll up on new sent messages (https://github.com/vector-im/vector-ios/issues/600).
 
-Changes in MatrixKit in 0.3.16 (2016-09-08)
+## Changes in MatrixKit in 0.3.16 (2016-09-08)
 ===========================================
 
 Improvements:
@@ -2237,14 +1614,12 @@ Bug fixes:
  * Vector automatically marks incoming messages as read in background (https://github.com/vector-im/vector-ios/issues/558).
  * Call Locking phone whilst setting up a call interrupts the call setup (https://github.com/vector-im/vector-ios/issues/161).
 
-Changes in MatrixKit in 0.3.15 (2016-08-25)
-===============================================
+## Changes in MatrixKit in 0.3.15 (2016-08-25)
 
 Bug fixes:
  * Fix crash in recents screen.
 
-Changes in MatrixKit in 0.3.14 (2016-08-25)
-===============================================
+## Changes in MatrixKit in 0.3.14 (2016-08-25)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.13).
@@ -2262,8 +1637,7 @@ Bug fixes:
  * Call: Do not vibrate when outgoing call is placed.
  * The message displayed in a room when a 3pid invited user has registered is not clear (https://github.com/vector-im/vector-ios/issues/74).
  
-Changes in MatrixKit in 0.3.13 (2016-08-01)
-===============================================
+## Changes in MatrixKit in 0.3.13 (2016-08-01)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.12).
@@ -2273,8 +1647,7 @@ Improvements:
 Bug fixes:
  * Vector is turning off my music now that VoIP is implemented (https://github.com/vector-im/vector-ios/476)
  
-Changes in MatrixKit in 0.3.12 (2016-07-26)
-===============================================
+## Changes in MatrixKit in 0.3.12 (2016-07-26)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.11).
@@ -2284,8 +1657,7 @@ Bug fixes:
  * Fixed string displayed on outgoing video call (it said "xxx placed a voice call)
  * Room Settings: The room privacy setting text doesn't fit in phone mode (https://github.com/vector-im/vector-ios/issues/429).
 
-Changes in MatrixKit in 0.3.11 (2016-07-15)
-===============================================
+## Changes in MatrixKit in 0.3.11 (2016-07-15)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.10).
@@ -2300,8 +1672,7 @@ Bug fixes:
  * MXKRoomSettingsViewController: Infinite loading wheel on bad network.
  * MXKEventFormatter - Fix crash on NSConcreteMutableAttributedString initWithString:: nil value.
 
-Changes in MatrixKit in 0.3.10 (2016-07-01)
-===============================================
+## Changes in MatrixKit in 0.3.10 (2016-07-01)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.9).
@@ -2330,14 +1701,12 @@ Bug fixes:
  * Room settings: refresh on room state change.
  * App crashes on '/join' command when no param is provided.
 
-Changes in MatrixKit in 0.3.9 (2016-06-02)
-===============================================
+## Changes in MatrixKit in 0.3.9 (2016-06-02)
 
 Bug fix:
  * Invitation preview button is broken.
 
-Changes in MatrixKit in 0.3.8 (2016-06-01)
-===============================================
+## Changes in MatrixKit in 0.3.8 (2016-06-01)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.8).
@@ -2363,8 +1732,7 @@ Bug fixes:
  * It sound like something is filling up the logs.
  * App crashes on room members.
 
-Changes in MatrixKit in 0.3.7 (2016-05-04)
-===============================================
+## Changes in MatrixKit in 0.3.7 (2016-05-04)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.7).
@@ -2381,8 +1749,7 @@ Bug fixes:
  * Video playback stops when you rotate the device.
  * Enable notifications on your device' toggle spills over the side on an iPhone 5 display.
 
-Changes in MatrixKit in 0.3.6 (2016-04-26)
-===============================================
+## Changes in MatrixKit in 0.3.6 (2016-04-26)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.6).
@@ -2403,8 +1770,7 @@ Bug fixes:
  * Chat screen: wrong attachment is opened.
  * Wrong application icon badge number.
 
-Changes in MatrixKit in 0.3.5 (2016-04-08)
-===============================================
+## Changes in MatrixKit in 0.3.5 (2016-04-08)
 
 Improvements:
  * MXKAccountManager: API change - [openSessionForActiveAccounts] is replaced by [prepareSessionForActiveAccounts]. This new method checks for each enabled account if a matrix session is already opened. It opens a matrix session for each enabled account which doesn't have a session.
@@ -2422,8 +1788,7 @@ Bug fixes:
  * MXKAccount: the push gateway URL must be configurable #76.
  * Multiple invitations on Start Chat action.
 
-Changes in MatrixKit in 0.3.4 (2016-03-17)
-===============================================
+## Changes in MatrixKit in 0.3.4 (2016-03-17)
 
 Improvements:
  * MXKWebViewViewController: add view controller for webview display.
@@ -2435,8 +1800,7 @@ Bug fixes:
  * Chat Screen: Some unsent messages are persistent.
  * Fix missing loading wheel when app is resumed.
 
-Changes in MatrixKit in 0.3.3 (2016-03-07)
-===============================================
+## Changes in MatrixKit in 0.3.3 (2016-03-07)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.3).
@@ -2459,8 +1823,7 @@ Bug fixes:
  * MXKRoomDataSource: A sent message may appear as unsent.
  * MXKRoomViewController: Fixed jumps when going forwards. Backwards pagination should be smoother.
 
-Changes in MatrixKit in 0.3.2 (2016-02-09)
-===============================================
+## Changes in MatrixKit in 0.3.2 (2016-02-09)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.2).
@@ -2473,16 +1836,14 @@ Bug fixes:
  * Deleted unsent messages keep coming back when the app is relaunched.
  * If messages arrive whilst you are scrolled back, the scroll offset jumps.
 
-Changes in MatrixKit in 0.3.1 (2016-01-29)
-===============================================
+## Changes in MatrixKit in 0.3.1 (2016-01-29)
 
 Improvements:
  * Upgrade MatrixSDK version (v0.6.1).
  * MXKAuthenticationViewController: Keep the current inputs view when it is still relevant after auth flow refresh.
  * MXKAuthenticationViewController: Improve scroller content size handling.
 
-Changes in MatrixKit in 0.3.0 (2016-01-22)
-===============================================
+## Changes in MatrixKit in 0.3.0 (2016-01-22)
 
 Improvements:
  * MXKDataSource: The table/collection view cell classes are now defined by the data source delegate (see README).
@@ -2531,8 +1892,7 @@ Bug fixes:
  * App freezes during back pagination in #matrix-spam.
  * Bing messages are not highlighted in Recents on new login.
 
-Changes in MatrixKit in 0.2.8 (2015-11-30)
-===============================================
+## Changes in MatrixKit in 0.2.8 (2015-11-30)
 
 Improvements:
  * MXKRoomViewController: Add MXKRoomActivitiesView class to display typing information above the input tool bar.
@@ -2544,8 +1904,7 @@ Improvements:
 Bug fixes:
  * MXKAttachmentsViewController: Back failed on attachment view (iOS8).
 
-Changes in MatrixKit in 0.2.7 (2015-11-13)
-===============================================
+## Changes in MatrixKit in 0.2.7 (2015-11-13)
 
 Improvements:
  * MXKRoomBubbleTableViewCell: Improve resources handling.
@@ -2555,8 +1914,7 @@ Bug fixes:
  * App crashes on an invite event during events stream resume.
  * MXKRoomMemberTableViewCell: App crashes on room members list update.
 
-Changes in MatrixKit in 0.2.6 (2015-11-12)
-===============================================
+## Changes in MatrixKit in 0.2.6 (2015-11-12)
 
 Improvements:
  * MXKRoomDataSource: Reduce computation time on read receipts handling.
@@ -2566,8 +1924,7 @@ Bug fixes:
  * MXKRoomDataSource: Fix performance regression (UI was refreshed even in case of no change).
  * MXKRoomDataSource: Fix "Missing messages in back pagination".
 
-Changes in MatrixKit in 0.2.5 (2015-11-06)
-===============================================
+## Changes in MatrixKit in 0.2.5 (2015-11-06)
 
 Improvements:
  * MXKAuthInputsView: Disable auto correction in login text fields.
@@ -2604,8 +1961,7 @@ Bug fixes:
  * MXKRecentCellData: Should fix App freeze on last message refresh.
  * MXKContact: Bug Fix App crashed on a fake contact.
 
-Changes in MatrixKit in 0.2.4 (2015-10-14)
-===============================================
+## Changes in MatrixKit in 0.2.4 (2015-10-14)
 
 Improvements:
  * MXKAuthenticationViewController: Strip whitespace around usernames.
@@ -2613,8 +1969,7 @@ Improvements:
 Bug fixes:
  * MXKAuthenticationViewController: App crashes in authentication screen on iOS 9.
 
-Changes in MatrixKit in 0.2.3 (2015-09-14)
-===============================================
+## Changes in MatrixKit in 0.2.3 (2015-09-14)
 
 Improvements:
  * MXKRoomViewController: Support animated gif.
@@ -2635,8 +1990,7 @@ Bug fixes:
  * Attachments: pptx and similar files are not actually viewable.
  * Attachments: Recorded videos are not saved in user's photo library.
 
-Changes in MatrixKit in 0.2.2 (2015-08-13)
-===============================================
+## Changes in MatrixKit in 0.2.2 (2015-08-13)
 
 Improvements:
  * MXKRecentsDataSource: handle recents edition at MatrixKit level.
@@ -2645,8 +1999,7 @@ Improvements:
 Bug fixes:
  * Bug fix: App crashes on resume via a push notification.
 
-Changes in MatrixKit in 0.2.1 (2015-08-10)
-===============================================
+## Changes in MatrixKit in 0.2.1 (2015-08-10)
 
 Improvements:
  * MXKAccountDetailsViewController: Add UI to support global notification settings.
@@ -2659,8 +2012,7 @@ Bug fixes:
  * Bug Fix: MXKRoomViewController - App crashes when user selects copy in text input view.
  * Bug Fix: App crashes when user press "Logout all accounts".
 
-Changes in MatrixKit in 0.2.0 (2015-07-10)
-===============================================
+## Changes in MatrixKit in 0.2.0 (2015-07-10)
 
 Improvements:
  * MXKAuthenticationViewController: add reusable UI for authentication.
@@ -2754,8 +2106,7 @@ Bug fixes:
    room history is reached).
 
 
-Changes in MatrixKit in 0.1.0 (2015-04-23)
-===============================================
+## Changes in MatrixKit in 0.1.0 (2015-04-23)
 
 First release.
 MatrixKit contains the following reusable UI components:

@@ -43,7 +43,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @implementation MXKAppSettings
 @synthesize syncWithLazyLoadOfRoomMembers;
 @synthesize showAllEventsInRoomHistory, showRedactionsInRoomHistory, showUnsupportedEventsInRoomHistory, httpLinkScheme, httpsLinkScheme;
-@synthesize showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
+@synthesize enableBubbleComponentLinkDetection, firstURLDetectionIgnoredHosts, showLeftMembersInRoomMemberList, sortRoomMembersUsingLastSeenTime;
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 @synthesize enableCallKit;
@@ -118,8 +118,11 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         httpLinkScheme = @"http";
         httpsLinkScheme = @"https";
+        enableBubbleComponentLinkDetection = NO;
+        firstURLDetectionIgnoredHosts = @[[NSURL URLWithString:kMXMatrixDotToUrl].host];
         
         _allowPushKitPushers = NO;
+        _notificationBodyLocalizationKey = @"MESSAGE";
         enableCallKit = YES;
         
         eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
@@ -207,6 +210,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpLinkScheme"];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"httpsLinkScheme"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableBubbleComponentLinkDetection"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"firstURLDetectionIgnoredHosts"];
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
 	}
@@ -461,6 +466,54 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     else
     {
         httpsLinkScheme = stringValue;
+    }
+}
+
+- (BOOL)enableBubbleComponentLinkDetection
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        return [NSUserDefaults.standardUserDefaults boolForKey:@"enableBubbleComponentLinkDetection"];
+    }
+    else
+    {
+        return enableBubbleComponentLinkDetection;
+    }
+}
+
+- (void)setEnableBubbleComponentLinkDetection:(BOOL)storeLinksInBubbleComponents
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [NSUserDefaults.standardUserDefaults setBool:storeLinksInBubbleComponents forKey:@"enableBubbleComponentLinkDetection"];
+    }
+    else
+    {
+        enableBubbleComponentLinkDetection = storeLinksInBubbleComponents;
+    }
+}
+
+- (NSArray<NSString *> *)firstURLDetectionIgnoredHosts
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        return [NSUserDefaults.standardUserDefaults objectForKey:@"firstURLDetectionIgnoredHosts"];
+    }
+    else
+    {
+        return firstURLDetectionIgnoredHosts;
+    }
+}
+
+- (void)setFirstURLDetectionIgnoredHosts:(NSArray<NSString *> *)ignoredHosts
+{
+    if (self == [MXKAppSettings standardAppSettings])
+    {
+        [NSUserDefaults.standardUserDefaults setObject:ignoredHosts forKey:@"firstURLDetectionIgnoredHosts"];
+    }
+    else
+    {
+        firstURLDetectionIgnoredHosts = ignoredHosts;
     }
 }
 

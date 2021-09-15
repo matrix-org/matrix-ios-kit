@@ -245,7 +245,7 @@
 "call_voice_with_user" = "Połączenie głosowe z %@";
 "call_more_actions_dialpad" = "Klawiatura numeryczna";
 "call_more_actions_transfer" = "Transferuj";
-"call_more_actions_audio_use_device" = "Użyj wyjścia audio urządzenia";
+"call_more_actions_audio_use_device" = "Wyjście audio";
 "call_more_actions_audio_use_headset" = "Użyj zestawu głosowego";
 "call_more_actions_change_audio_device" = "Zmień urządzenie dźwiękowe";
 "call_more_actions_unhold" = "Wznów";
@@ -489,3 +489,5 @@
 "room_event_encryption_info_event_none" = "brak";
 "room_event_encryption_info_event_unencrypted" = "niezaszyfrowane";
 "e2e_passphrase_too_short" = "Hasło jest zbyt krótkie (Hasło musi składać się z co najmniej %d znaków)";
+"microphone_access_not_granted_for_voice_message" = "Wiadomości głosowe wymagają dostępu do mikrofonu ale %@ nie posiada uprawnień do użycia go";
+"message_reply_to_sender_sent_a_voice_message" = "wysłał(-a) wiadomość głosową.";
