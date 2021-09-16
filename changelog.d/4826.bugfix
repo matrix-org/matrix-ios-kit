@@ -1,0 +1,1 @@
+MXKAppSettings: Return matrix.to when firstURLDetectionIgnoredHosts is nil, and store an empty array when setting nil.
