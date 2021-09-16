@@ -1,3 +1,17 @@
+## Changes in 0.16.1 (2021-09-16)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.1)).
+- MXKRoomDataSource: Add logs to better understand local echo lifecycle. ([#1771](https://github.com/vector-im/element-ios/issues/1771))
+- MXKAccount: Use new `pauseable` property of MXSession to check the session is suitable for pausing. ([#4834](https://github.com/vector-im/element-ios/issues/4834))
+
+🐛 Bugfixes
+
+- MXKRoomDataSource: Fix missing local echos. ([#1771](https://github.com/vector-im/element-ios/issues/1771))
+- MXKRoomViewController: Mark room as read when displayed. ([#4822](https://github.com/vector-im/element-ios/issues/4822))
+
+
 ## Changes in 0.16.0 (2021-09-09)
 
 ✨ Features

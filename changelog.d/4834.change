@@ -1,1 +1,0 @@
-MXKAccount: Use new `pauseable` property of MXSession to check the session is suitable for pausing.
