@@ -384,6 +384,9 @@
     {
         hasAppearedOnce = YES;
     }
+    
+    //  Mark all messages as read when the room is displayed
+    [self.roomDataSource.room.summary markAllAsReadLocally];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
