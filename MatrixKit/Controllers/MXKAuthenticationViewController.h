@@ -286,12 +286,26 @@
 /// @param parameters Login parameters
 - (void)loginWithParameters:(NSDictionary*)parameters;
 
+/// Create an account with the given credentials
+/// @param credentials Account credentials
+- (void)createAccountWithCredentials:(MXCredentials *)credentials;
+
 #pragma mark - Authentication Fallback
 
 /**
  Display the fallback URL within a webview.
  */
 - (void)showAuthenticationFallBackView;
+
+#pragma mark - Device rehydration
+
+/**
+ Call this method at an appropriate time to attempt rehydrating from an existing dehydrated device
+ @param keyData Secret key data
+ @param credentials Account credentials
+ */
+
+- (void)attemptDeviceRehydrationWithKeyData:(NSData *)keyData credentials:(MXCredentials *)credentials;
 
 @end
 
