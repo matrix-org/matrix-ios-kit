@@ -101,6 +101,8 @@ extern NSString *const MXKAccountManagerDataType;
  */
 @property (nonatomic) BOOL isPushAvailable;
 
+@property (nonatomic, readonly) MXDehydrationService *dehydrationService;
+
 /**
  Retrieve the MXKAccounts manager.
  
