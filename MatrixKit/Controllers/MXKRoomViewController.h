@@ -27,6 +27,13 @@
 #import "MXKAttachmentsViewController.h"
 #import "MXKAttachmentAnimator.h"
 
+typedef NS_ENUM(NSUInteger, MXKRoomViewControllerJoinRoomResult) {
+    MXKRoomViewControllerJoinRoomResultSuccess,
+    MXKRoomViewControllerJoinRoomResultFailureRoomEmpty,
+    MXKRoomViewControllerJoinRoomResultFailureJoinInProgress,
+    MXKRoomViewControllerJoinRoomResultFailureGeneric
+};
+
 /**
  This view controller displays messages of a room. Only one matrix session is handled by this view controller.
  */
@@ -280,7 +287,7 @@
  @param completion the block to execute at the end of the operation.
  You may specify nil for this parameter.
  */
-- (void)joinRoom:(void(^)(BOOL succeed))completion;
+- (void)joinRoom:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion;
 
 /**
  Join a room with a room id or an alias.
@@ -296,7 +303,10 @@
  @param completion the block to execute at the end of the operation.
  You may specify nil for this parameter.
  */
-- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias viaServers:(NSArray<NSString*>*)viaServers andSignUrl:(NSString*)signUrl completion:(void(^)(BOOL succeed))completion;
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias
+                       viaServers:(NSArray<NSString*>*)viaServers
+                       andSignUrl:(NSString*)signUrl
+                       completion:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion;
 
 /**
  Update view controller appearance when the user is about to leave the displayed room.

@@ -874,147 +874,125 @@
     }
 }
 
-- (void)joinRoom:(void(^)(BOOL succeed))completion
+- (void)joinRoom:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion
 {
-    // Check whether a join request is not already running
-    if (!joinRoomRequest)
+    if (joinRoomRequest != nil)
     {
-        [self startActivityIndicator];
-        
-        joinRoomRequest = [roomDataSource.room join:^{
-            
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-            
-            [self triggerInitialBackPagination];
-            
-            if (completion)
-            {
-                completion(YES);
-            }
-            
-        } failure:^(NSError *error) {
-            
-            MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", self->roomDataSource.room.summary.displayname);
-            
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-            
-            // Show the error to the end user
-            MXWeakify(self);
-            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-            if ([msg isEqualToString:@"No known servers"])
-            {
-                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
-                // 'Error when trying to join an empty room should be more explicit'
-                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
-            }
-            
-            [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
-            
-            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
-            
-            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
-                                                               
-                                                               MXStrongifyAndReturnIfNil(self);
-                                                               self->currentAlert = nil;
-                                                               
-                                                           }]];
-            
-            [self presentViewController:self->currentAlert animated:YES completion:nil];
-            
-            if (completion)
-            {
-                completion(NO);
-            }
-            
-        }];
+        if (completion)
+        {
+            completion(MXKRoomViewControllerJoinRoomResultFailureJoinInProgress);
+        }
+        return;
     }
-    else if (completion)
+    
+    [self startActivityIndicator];
+    
+    joinRoomRequest = [roomDataSource.room join:^{
+        
+        self->joinRoomRequest = nil;
+        [self stopActivityIndicator];
+        
+        [self triggerInitialBackPagination];
+        
+        if (completion)
+        {
+            completion(MXKRoomViewControllerJoinRoomResultSuccess);
+        }
+        
+    } failure:^(NSError *error) {
+        MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", self->roomDataSource.room.summary.displayname);
+        [self processRoomJoinFailureWithError:error completion:completion];
+    }];
+}
+
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias
+                       viaServers:(NSArray<NSString*>*)viaServers
+                       andSignUrl:(NSString*)signUrl
+                       completion:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion
+{
+    if (joinRoomRequest != nil)
     {
-        completion (NO);
+        if (completion)
+        {
+            completion(MXKRoomViewControllerJoinRoomResultFailureJoinInProgress);
+        }
+        
+        return;
+    }
+    
+    [self startActivityIndicator];
+    
+    void (^success)(MXRoom *room) = ^(MXRoom *room) {
+        
+        self->joinRoomRequest = nil;
+        [self stopActivityIndicator];
+        
+        // The room is now part of the user's room
+        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
+        
+        [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES onComplete:^(MXKRoomDataSource *newRoomDataSource) {
+            // And can be displayed
+            [self displayRoom:newRoomDataSource];
+            
+            if (completion)
+            {
+                completion(MXKRoomViewControllerJoinRoomResultSuccess);
+            }
+        }];
+    };
+    
+    void (^failure)(NSError *error) = ^(NSError *error) {
+        MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
+        [self processRoomJoinFailureWithError:error completion:completion];
+    };
+    
+    // Does the join need to be validated before?
+    if (signUrl)
+    {
+        joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers withSignUrl:signUrl success:success failure:failure];
+    }
+    else
+    {
+        joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers success:success failure:failure];
     }
 }
 
-- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias viaServers:(NSArray<NSString*>*)viaServers andSignUrl:(NSString*)signUrl  completion:(void(^)(BOOL succeed))completion
+- (void)processRoomJoinFailureWithError:(NSError *)error completion:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion
 {
-    // Check whether a join request is not already running
-    if (!joinRoomRequest)
+    self->joinRoomRequest = nil;
+    [self stopActivityIndicator];
+    
+    // Show the error to the end user
+    NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+    
+    // FIXME: We should hide this inside the SDK and expose it as a domain specific error
+    BOOL isRoomEmpty = [msg isEqualToString:@"No known servers"];
+    if (isRoomEmpty)
     {
-        [self startActivityIndicator];
-
-        void (^success)(MXRoom *room) = ^(MXRoom *room) {
-
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-
-            // The room is now part of the user's room
-            MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
-
-            [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES onComplete:^(MXKRoomDataSource *newRoomDataSource) {
-                // And can be displayed
-                [self displayRoom:newRoomDataSource];
-
-                if (completion)
-                {
-                    completion(YES);
-                }
-            }];
-        };
-
-        void (^failure)(NSError *error) = ^(NSError *error) {
-
-            MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
-
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-
-            // Show the error to the end user
-            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-            if ([msg isEqualToString:@"No known servers"])
-            {
-                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
-                // 'Error when trying to join an empty room should be more explicit'
-                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
-            }
-            MXWeakify(self);
-            [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
-            
-            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
-            
-            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
-                                                               
-                                                               MXStrongifyAndReturnIfNil(self);
-                                                               self->currentAlert = nil;
-                                                               
-                                                           }]];
-            
-            [self presentViewController:self->currentAlert animated:YES completion:nil];
-            
-            if (completion)
-            {
-                completion(NO);
-            }
-        };
-
-        // Does the join need to be validated before?
-        if (signUrl)
-        {
-            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers withSignUrl:signUrl success:success failure:failure];
-        }
-        else
-        {
-            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers success:success failure:failure];
-        }
+        // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
+        // 'Error when trying to join an empty room should be more explicit'
+        msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
     }
-    else if (completion)
-    {
-        completion (NO);
-    }
+    
+    MXWeakify(self);
+    [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
+    
+    self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
+    
+    [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        
+        if (completion)
+        {
+            completion((isRoomEmpty ? MXKRoomViewControllerJoinRoomResultFailureRoomEmpty : MXKRoomViewControllerJoinRoomResultFailureGeneric));
+        }
+    }]];
+    
+    [self presentViewController:self->currentAlert animated:YES completion:nil];
 }
 
 - (void)leaveRoomOnEvent:(MXEvent*)event
