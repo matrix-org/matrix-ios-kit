@@ -40,7 +40,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 @synthesize defaultBarTintColor, enableBarTintColorStatusChange;
 @synthesize barTitleColor;
 @synthesize mainSession;
-@synthesize activityIndicator, rageShakeManager;
+@synthesize rageShakeManager;
 @synthesize childViewControllers;
 
 #pragma mark -
@@ -81,35 +81,6 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 
 #pragma mark -
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    // Add default activity indicator
-    activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    activityIndicator.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0];
-    activityIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-    activityIndicator.hidesWhenStopped = YES;
-    
-    CGRect frame = activityIndicator.frame;
-    frame.size.width += 30;
-    frame.size.height += 30;
-    activityIndicator.bounds = frame;
-    [activityIndicator.layer setCornerRadius:5];
-    
-    activityIndicator.center = self.view.center;
-    [self.view addSubview:activityIndicator];
-}
-
-- (void)dealloc
-{
-    if (activityIndicator)
-    {
-        [activityIndicator removeFromSuperview];
-        activityIndicator = nil;
-    }
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -139,7 +110,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionStateDidChangeNotification object:nil];
     
-    [activityIndicator stopAnimating];
+    [self.activityIndicator stopAnimating];
     
     if (self.rageShakeManager)
     {
@@ -258,10 +229,10 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
     [super setView:view];
     
     // Keep the activity indicator (if any)
-    if (activityIndicator)
+    if (self.activityIndicator)
     {
-        activityIndicator.center = self.view.center;
-        [self.view addSubview:activityIndicator];
+        self.activityIndicator.center = self.view.center;
+        [self.view addSubview:self.activityIndicator];
     }
 }
 
@@ -521,24 +492,6 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
 
 #pragma mark - Activity indicator
 
-- (void)startActivityIndicator
-{
-    if (activityIndicator)
-    {
-        [self.view bringSubviewToFront:activityIndicator];
-        [activityIndicator startAnimating];
-        
-        // Show the loading wheel after a delay so that if the caller calls stopActivityIndicator
-        // in a short future, the loading wheel will not be displayed to the end user.
-        activityIndicator.alpha = 0;
-        [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            self->activityIndicator.alpha = 1;
-        } completion:^(BOOL finished)
-         {
-         }];
-    }
-}
-
 - (void)stopActivityIndicator
 {
     // Check whether all conditions are satisfied before stopping loading wheel
@@ -552,7 +505,7 @@ const CGFloat MXKViewControllerMaxExternalKeyboardHeight = 80;
     }
     if (!isActivityInProgress)
     {
-        [activityIndicator stopAnimating];
+        [super stopActivityIndicator];
     }
 }
 
