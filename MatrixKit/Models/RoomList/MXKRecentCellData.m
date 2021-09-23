@@ -17,19 +17,20 @@
 
 #import "MXKRecentCellData.h"
 
-#import "MXKSessionRecentsDataSource.h"
+#import "MXKDataSource.h"
 #import "MXEvent+MatrixKit.h"
 
 @implementation MXKRecentCellData
-@synthesize roomSummary, recentsDataSource, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
+@synthesize roomSummary, dataSource, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
 
-- (instancetype)initWithRoomSummary:(MXRoomSummary*)theRoomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource
+- (instancetype)initWithRoomSummary:(id<MXRoomSummaryProtocol>)theRoomSummary
+                         dataSource:(MXKDataSource*)theDataSource;
 {
     self = [self init];
     if (self)
     {
         roomSummary = theRoomSummary;
-        recentsDataSource = recentListDataSource;
+        dataSource = theDataSource;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(update) name:kMXRoomSummaryDidChangeNotification object:roomSummary];
 
@@ -56,6 +57,11 @@
     lastEventAttributedTextMessage = nil;
 }
 
+- (MXSession *)mxSession
+{
+    return dataSource.mxSession;
+}
+
 - (NSString*)lastEventDate
 {
     return (NSString*)roomSummary.lastMessage.others[@"lastEventDate"];
@@ -64,6 +70,11 @@
 - (BOOL)hasUnread
 {
     return (roomSummary.localUnreadEventCount != 0);
+}
+
+- (NSString *)roomDisplayname
+{
+    return roomSummary.displayname;
 }
 
 - (NSUInteger)notificationCount
