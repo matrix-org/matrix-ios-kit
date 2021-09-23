@@ -21,10 +21,6 @@
 /**
  The `MXKRoomNameStringLocalizations` implements localization strings for `MXRoomNameStringsLocalizable`.
  */
-@interface MXKRoomNameStringLocalizations : NSObject<MXRoomNameStringsLocalizable>
-
-@property (copy, readonly, nonnull) NSString *emptyRoom;
-@property (copy, readonly, nonnull) NSString *twoMembers;
-@property (copy, readonly, nonnull) NSString *moreThanTwoMembers;
+@interface MXKRoomNameStringLocalizations : NSObject <MXRoomNameStringsLocalizable>
 
 @end

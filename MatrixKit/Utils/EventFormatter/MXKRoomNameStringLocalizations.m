@@ -18,6 +18,15 @@
 
 #import "NSBundle+MatrixKit.h"
 
+@interface MXKRoomNameStringLocalizations ()
+
+@property (nonatomic, copy) NSString *emptyRoom;
+@property (nonatomic, copy) NSString *twoMembers;
+@property (nonatomic, copy) NSString *moreThanTwoMembers;
+@property (nonatomic, copy) NSString *allOtherParticipantsLeft;
+
+@end
+
 @implementation MXKRoomNameStringLocalizations
 
 - (instancetype)init
@@ -28,6 +37,7 @@
         _emptyRoom = [NSBundle mxk_localizedStringForKey:@"room_displayname_empty_room"];
         _twoMembers = [NSBundle mxk_localizedStringForKey:@"room_displayname_two_members"];
         _moreThanTwoMembers = [NSBundle mxk_localizedStringForKey:@"room_displayname_more_than_two_members"];
+        _allOtherParticipantsLeft = [NSBundle mxk_localizedStringForKey:@"room_displayname_all_other_participants_left"];
     }
     return self;
 }
