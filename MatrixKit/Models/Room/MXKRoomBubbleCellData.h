@@ -116,6 +116,12 @@
 @property (nonatomic, readonly) BOOL containsBubbleComponentWithEncryptionBadge;
 
 /**
+ Indicates that the cell should recompute its content for layout.
+ Under the hood, this is done by clearing the current `attributedTextMessage`.
+ */
+- (void)setNeedsUpdateContent;
+
+/**
  Check and refresh the position of each component.
  */
 - (void)prepareBubbleComponentsPosition;

@@ -711,6 +711,11 @@
     }
 }
 
+- (void)setNeedsUpdateContent
+{
+    self.attributedTextMessage = nil;
+}
+
 - (CGSize)contentSize
 {
     if (CGSizeEqualToSize(_contentSize, CGSizeZero))
