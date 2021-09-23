@@ -233,14 +233,6 @@
     return NO;
 }
 
-- (void)markAllAsRead
-{
-    for (MXKSessionRecentsDataSource *recentsDataSource in displayedRecentsDataSourceArray)
-    {
-        [recentsDataSource markAllAsRead];
-    }
-}
-
 - (void)searchWithPatterns:(NSArray*)patternsList
 {
     _searchPatternsList = patternsList;

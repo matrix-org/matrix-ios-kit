@@ -131,16 +131,6 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     return NO;
 }
 
-- (void)markAllAsRead
-{
-    // Clear unread count on all recent cells
-    for (NSUInteger i = 0; i < self.numberOfCells; i++)
-    {
-        id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:i];
-        [cellData markAllAsRead];
-    }
-}
-
 - (void)searchWithPatterns:(NSArray*)patternsList
 {
     if (patternsList.count)

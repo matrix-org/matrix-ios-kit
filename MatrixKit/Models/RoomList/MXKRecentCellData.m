@@ -81,11 +81,6 @@
     return [NSString stringWithFormat:@"%tu", self.notificationCount];
 }
 
-- (void)markAllAsRead
-{
-    [roomSummary markAllAsRead];
-}
-
 - (NSString*)description
 {
     return [NSString stringWithFormat:@"%@ %@: %@ - %@", super.description, self.roomSummary.roomId, self.roomDisplayname, self.lastEventTextMessage];
