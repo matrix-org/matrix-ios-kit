@@ -467,7 +467,7 @@
                 if ([cellData conformsToProtocol:@protocol(MXKRecentCellDataStoring)])
                 {
                     id<MXKRecentCellDataStoring> recentCellData = (id<MXKRecentCellDataStoring>)cellData;
-                    [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.roomSummary.room.mxSession];
+                    [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.mxSession];
                 }
             }
         }

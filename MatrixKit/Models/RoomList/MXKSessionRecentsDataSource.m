@@ -222,7 +222,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         if (!roomSummary.isConferenceUserRoom // @TODO Abstract this condition with roomSummary.hiddenFromUser
             && !roomSummary.hiddenFromUser)
         {
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
             if (cellData)
             {
                 [internalCellDataArray addObject:cellData];
@@ -293,7 +293,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             {
                 // Create a new instance to not modify the content of 'cellDataArray' (the copy is not a deep copy).
                 Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-                id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
+                id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
                 if (cellData)
                 {
                     [internalCellDataArray replaceObjectAtIndex:index withObject:cellData];
@@ -335,7 +335,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
 
             MXRoomSummary *roomSummary = [mxSession roomSummaryWithRoomId:roomId];
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
             if (cellData)
             {
                 [internalCellDataArray addObject:cellData];

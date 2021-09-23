@@ -596,7 +596,7 @@
     
     if (recentCellData)
     {
-        return recentCellData.roomSummary.room;
+        return [self.mxSession roomWithRoomId:recentCellData.roomSummary.roomId];
     }
     
     return nil;
