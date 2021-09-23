@@ -47,6 +47,7 @@
 		32FBDAF81E4484C40033C519 /* MXKEncryptionKeysImportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAF71E4484C40033C519 /* MXKEncryptionKeysImportView.m */; };
 		32FBDAFB1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32FBDAFA1E44B0FC0033C519 /* MXKEncryptionKeysExportView.m */; };
 		3A1293A825801D9400F3474B /* MXKPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1293A625801D9400F3474B /* MXKPreviewViewController.m */; };
+		3AF85F9726FCD75700A9E67B /* MXKActivityHandlingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF85F9626FCC35D00A9E67B /* MXKActivityHandlingViewController.m */; };
 		4F236C27EC459185548BEF4F /* Pods_MatrixKitSamplePods_MatrixKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B455B95A7B9ECAD75BA21E12 /* Pods_MatrixKitSamplePods_MatrixKitTests.framework */; };
 		550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 550A36BC1DE484DB005C1647 /* EncryptedAttachmentsTest.m */; };
 		71352D551C0ED240001D50B0 /* MXKRoomSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71352D531C0ED240001D50B0 /* MXKRoomSettingsViewController.m */; };
@@ -1881,6 +1882,7 @@
 				F06E76811AF0FEB100980E5A /* MXKAuthenticationViewController.m in Sources */,
 				F0F148C61AB31240005F5D4A /* MXKTools.m in Sources */,
 				3230A3721ACA835400CC57F5 /* MXKSampleJSQMessageMediaData.m in Sources */,
+				3AF85F9726FCD75700A9E67B /* MXKActivityHandlingViewController.m in Sources */,
 				F0868E0D1B18FC01004CBE80 /* MXKRoomCreationView.m in Sources */,
 				CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */,
 				B125D10C22D7414400570CA4 /* MXKVideoThumbnailGenerator.swift in Sources */,
