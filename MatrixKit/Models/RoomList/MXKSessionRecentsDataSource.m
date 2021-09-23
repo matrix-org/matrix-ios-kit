@@ -50,6 +50,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
      Last received suggested rooms per space ID
      */
     NSMutableDictionary<NSString*, NSArray<MXSpaceChildInfo *> *> *lastSuggestedRooms;
+    
+    id spaceEventsListener;
 }
 
 /**
@@ -126,28 +128,46 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         return;
     }
     
+    if (_currentSpace && spaceEventsListener)
+    {
+        [_currentSpace.room removeListener:spaceEventsListener];
+    }
+    
     _currentSpace = currentSpace;
     
     self.suggestedRooms = _currentSpace ? lastSuggestedRooms[_currentSpace.spaceId] : nil;
+    [self updateSuggestedRooms];
     
-    if (self.currentSpace)
-    {
-        MXWeakify(self);
-        [self.mxSession.spaceService getSpaceChildrenForSpaceWithId:self.currentSpace.spaceId suggestedOnly:YES limit:5 success:^(MXSpaceChildrenSummary * _Nonnull childrenSummary) {
-            MXLogDebug(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId %@: %ld found", self.currentSpace.spaceId, childrenSummary.childInfos.count);
-            MXStrongifyAndReturnIfNil(self);
-            self->lastSuggestedRooms[currentSpace.spaceId] = childrenSummary.childInfos;
-            self.suggestedRooms = childrenSummary.childInfos;
-        } failure:^(NSError * _Nonnull error) {
-            MXLogError(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId failed with error: %@", error);
-        }];
-    }
+    MXWeakify(self);
+    spaceEventsListener = [self.currentSpace.room listenToEvents:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+        MXStrongifyAndReturnIfNil(self);
+        [self updateSuggestedRooms];
+    }];
 }
 
 -(void)setSuggestedRooms:(NSArray<MXSpaceChildInfo *> *)suggestedRooms
 {
     _suggestedRooms = suggestedRooms;
     [self loadData];
+}
+
+-(void)updateSuggestedRooms
+{
+    if (self.currentSpace)
+    {
+        NSString *currentSpaceId = self.currentSpace.spaceId;
+        MXWeakify(self);
+        [self.mxSession.spaceService getSpaceChildrenForSpaceWithId:currentSpaceId suggestedOnly:YES limit:5 success:^(MXSpaceChildrenSummary * _Nonnull childrenSummary) {
+            MXLogDebug(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId %@: %ld found", self.currentSpace.spaceId, childrenSummary.childInfos.count);
+            MXStrongifyAndReturnIfNil(self);
+            self->lastSuggestedRooms[currentSpaceId] = childrenSummary.childInfos;
+            if ([self.currentSpace.spaceId isEqual:currentSpaceId]) {
+                self.suggestedRooms = childrenSummary.childInfos;
+            }
+        } failure:^(NSError * _Nonnull error) {
+            MXLogError(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId failed with error: %@", error);
+        }];
+    }
 }
 
 #pragma mark -
