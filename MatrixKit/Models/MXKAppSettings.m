@@ -177,6 +177,14 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
                                                                     kMXEventTypeStringKeyVerificationDone
                                                                    ]];
         
+        _eventsFilterForLastMessage = [NSMutableArray arrayWithArray:@[
+                                                                      kMXEventTypeStringRoomMessage,
+                                                                      kMXEventTypeStringCallInvite,
+                                                                      kMXEventTypeStringCallAnswer,
+                                                                      kMXEventTypeStringCallHangup,
+                                                                      kMXEventTypeStringSticker
+                                                                      ]];
+        
         _messageDetailsAllowSharing = YES;
         _messageDetailsAllowSaving = YES;
         _messageDetailsAllowCopyingMedia = YES;

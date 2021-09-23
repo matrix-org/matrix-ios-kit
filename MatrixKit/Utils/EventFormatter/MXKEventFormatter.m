@@ -99,7 +99,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         _settings = [MXKAppSettings standardAppSettings];
 
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
-        defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
+        defaultRoomSummaryUpdater.eventsFilterForLastMessage = MXKAppSettings.standardAppSettings.eventsFilterForLastMessage;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
         defaultRoomSummaryUpdater.roomNameStringLocalizations = [MXKRoomNameStringLocalizations new];
 
@@ -123,13 +123,6 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateStyle:NSDateFormatterNoStyle];
     [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
-}
-
-- (void)setEventTypesFilterForMessages:(NSArray<NSString *> *)eventTypesFilterForMessages
-{
-    _eventTypesFilterForMessages = eventTypesFilterForMessages;
-    
-    defaultRoomSummaryUpdater.eventsFilterForMessages = eventTypesFilterForMessages;
 }
 
 #pragma mark - Event formatter settings
