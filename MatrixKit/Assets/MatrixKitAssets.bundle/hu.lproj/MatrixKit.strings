@@ -173,7 +173,7 @@
 // Room
 "room_please_select" = "Kérlek válassz szobát";
 "room_error_join_failed_title" = "A szobához való csatlakozás nem sikerült";
-"room_error_join_failed_empty_room" = "Üres szobába jelenleg nem lehet újra belépni.";
+"room_error_join_failed_empty_room" = "Üres szobába jelenleg nem lehet belépni.";
 "room_error_name_edition_not_authorized" = "A szoba nevének megváltoztatásához nincs jogosultságod";
 "room_event_encryption_verify_message" = "Ennek a munkamenet hitelességének a vizsgálatához vedd fel a kapcsolatot a tulajdonossal egy másik csatornán (pl. személyes találkozó vagy telefonhívás) és kérdezd meg, hogy amit ő lát a személyes beállításoknál mint a munkamenethez tartozó kulcs, az megegyezik az alábbi kulccsal:\n\n\tMunkamenet neve: %@\n\tMunkamenet azonosító: %@\n\tMunkamenet kulcs: %@\n\nHa egyezik akkor nyomd meg az ellenőrizve gombot alább. Ha nem egyezik, akkor valaki jogosulatlanul akarja használni a munkamenetet; talán a legjobb, ha a tiltólista gombot nyomod meg inkább.\n\nA jövőben ezen az ellenőrzési módon javítani fogunk.";
 "account_email_validation_message" = "Ellenőrizd a leveleidet, és kattints a levélben lévő hivatkozásra. Ha az megvan, akkor kattints itt a tovább gombra.";
