@@ -49,7 +49,6 @@
 #import "MXKEncryptionKeysImportView.h"
 
 #import "NSBundle+MatrixKit.h"
-#import "UIScrollView+MatrixKit.h"
 #import "MXKSlashCommands.h"
 #import "MXKSwiftHeader.h"
 
@@ -366,12 +365,9 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
-    if (@available(iOS 11.0, *))
-    {
-        // Remove the rounded bottom unsafe area of the iPhone X
-        _bubblesTableViewBottomConstraint.constant += self.view.safeAreaInsets.bottom;
-    }
+    
+    // Remove the rounded bottom unsafe area of the iPhone X
+    _bubblesTableViewBottomConstraint.constant += self.view.safeAreaInsets.bottom;
 
     if (_saveProgressTextInput && roomDataSource)
     {
@@ -533,18 +529,15 @@
     // Update constraints
     _roomInputToolbarContainerBottomConstraint.constant = inputToolbarViewBottomConst;
     _bubblesTableViewBottomConstraint.constant = inputToolbarViewBottomConst + _roomInputToolbarContainerHeightConstraint.constant + _roomActivitiesContainerHeightConstraint.constant;
-
-    if (@available(iOS 11.0, *))
-    {
-        // Remove the rounded bottom unsafe area of the iPhone X
-        _bubblesTableViewBottomConstraint.constant += self.view.safeAreaInsets.bottom;
-    }
+    
+    // Remove the rounded bottom unsafe area of the iPhone X
+    _bubblesTableViewBottomConstraint.constant += self.view.safeAreaInsets.bottom;
 
     // Invalidate the current layout to take into account the new constraints in the next update cycle.
     [self.view setNeedsLayout];
     
     // Compute the visible area (tableview + toolbar) at the end of animation
-    CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.top - keyboardHeight;
+    CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.adjustedContentInset.top - keyboardHeight;
     // Deduce max height of the message text input by considering the minimum height of the table view.
     inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     
@@ -675,7 +668,7 @@
     if (!self.keyboardView)
     {
         // Compute the visible area (tableview + toolbar)
-        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.top;
+        CGFloat visibleArea = self.view.frame.size.height - _bubblesTableView.adjustedContentInset.top;
         // Deduce max height of the message text input by considering the minimum height of the table view.
         inputToolbarView.maxHeight = visibleArea - MXKROOMVIEWCONTROLLER_MESSAGES_TABLE_MINIMUM_HEIGHT;
     }
@@ -685,13 +678,8 @@
 {
     CGFloat safeAreaInsetsWidth;
     
-    if (@available(iOS 11.0, *))
-    {
-        // Take safe area into account
-        safeAreaInsetsWidth = self.bubblesTableView.safeAreaInsets.left + self.bubblesTableView.safeAreaInsets.right;
-    } else {
-        safeAreaInsetsWidth = 0;
-    }
+    // Take safe area into account
+    safeAreaInsetsWidth = self.bubblesTableView.safeAreaInsets.left + self.bubblesTableView.safeAreaInsets.right;
     
     return self.bubblesTableView.frame.size.width - safeAreaInsetsWidth;
 }
@@ -886,147 +874,125 @@
     }
 }
 
-- (void)joinRoom:(void(^)(BOOL succeed))completion
+- (void)joinRoom:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion
 {
-    // Check whether a join request is not already running
-    if (!joinRoomRequest)
+    if (joinRoomRequest != nil)
     {
-        [self startActivityIndicator];
-        
-        joinRoomRequest = [roomDataSource.room join:^{
-            
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-            
-            [self triggerInitialBackPagination];
-            
-            if (completion)
-            {
-                completion(YES);
-            }
-            
-        } failure:^(NSError *error) {
-            
-            MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", self->roomDataSource.room.summary.displayname);
-            
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-            
-            // Show the error to the end user
-            MXWeakify(self);
-            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-            if ([msg isEqualToString:@"No known servers"])
-            {
-                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
-                // 'Error when trying to join an empty room should be more explicit'
-                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
-            }
-            
-            [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
-            
-            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
-            
-            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
-                                                               
-                                                               MXStrongifyAndReturnIfNil(self);
-                                                               self->currentAlert = nil;
-                                                               
-                                                           }]];
-            
-            [self presentViewController:self->currentAlert animated:YES completion:nil];
-            
-            if (completion)
-            {
-                completion(NO);
-            }
-            
-        }];
+        if (completion)
+        {
+            completion(MXKRoomViewControllerJoinRoomResultFailureJoinInProgress);
+        }
+        return;
     }
-    else if (completion)
+    
+    [self startActivityIndicator];
+    
+    joinRoomRequest = [roomDataSource.room join:^{
+        
+        self->joinRoomRequest = nil;
+        [self stopActivityIndicator];
+        
+        [self triggerInitialBackPagination];
+        
+        if (completion)
+        {
+            completion(MXKRoomViewControllerJoinRoomResultSuccess);
+        }
+        
+    } failure:^(NSError *error) {
+        MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", self->roomDataSource.room.summary.displayname);
+        [self processRoomJoinFailureWithError:error completion:completion];
+    }];
+}
+
+- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias
+                       viaServers:(NSArray<NSString*>*)viaServers
+                       andSignUrl:(NSString*)signUrl
+                       completion:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion
+{
+    if (joinRoomRequest != nil)
     {
-        completion (NO);
+        if (completion)
+        {
+            completion(MXKRoomViewControllerJoinRoomResultFailureJoinInProgress);
+        }
+        
+        return;
+    }
+    
+    [self startActivityIndicator];
+    
+    void (^success)(MXRoom *room) = ^(MXRoom *room) {
+        
+        self->joinRoomRequest = nil;
+        [self stopActivityIndicator];
+        
+        // The room is now part of the user's room
+        MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
+        
+        [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES onComplete:^(MXKRoomDataSource *newRoomDataSource) {
+            // And can be displayed
+            [self displayRoom:newRoomDataSource];
+            
+            if (completion)
+            {
+                completion(MXKRoomViewControllerJoinRoomResultSuccess);
+            }
+        }];
+    };
+    
+    void (^failure)(NSError *error) = ^(NSError *error) {
+        MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
+        [self processRoomJoinFailureWithError:error completion:completion];
+    };
+    
+    // Does the join need to be validated before?
+    if (signUrl)
+    {
+        joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers withSignUrl:signUrl success:success failure:failure];
+    }
+    else
+    {
+        joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers success:success failure:failure];
     }
 }
 
-- (void)joinRoomWithRoomIdOrAlias:(NSString*)roomIdOrAlias viaServers:(NSArray<NSString*>*)viaServers andSignUrl:(NSString*)signUrl  completion:(void(^)(BOOL succeed))completion
+- (void)processRoomJoinFailureWithError:(NSError *)error completion:(void(^)(MXKRoomViewControllerJoinRoomResult result))completion
 {
-    // Check whether a join request is not already running
-    if (!joinRoomRequest)
+    self->joinRoomRequest = nil;
+    [self stopActivityIndicator];
+    
+    // Show the error to the end user
+    NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
+    
+    // FIXME: We should hide this inside the SDK and expose it as a domain specific error
+    BOOL isRoomEmpty = [msg isEqualToString:@"No known servers"];
+    if (isRoomEmpty)
     {
-        [self startActivityIndicator];
-
-        void (^success)(MXRoom *room) = ^(MXRoom *room) {
-
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-
-            // The room is now part of the user's room
-            MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
-
-            [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES onComplete:^(MXKRoomDataSource *newRoomDataSource) {
-                // And can be displayed
-                [self displayRoom:newRoomDataSource];
-
-                if (completion)
-                {
-                    completion(YES);
-                }
-            }];
-        };
-
-        void (^failure)(NSError *error) = ^(NSError *error) {
-
-            MXLogDebug(@"[MXKRoomVC] Failed to join room (%@)", roomIdOrAlias);
-
-            self->joinRoomRequest = nil;
-            [self stopActivityIndicator];
-
-            // Show the error to the end user
-            NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
-            if ([msg isEqualToString:@"No known servers"])
-            {
-                // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
-                // 'Error when trying to join an empty room should be more explicit'
-                msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
-            }
-            MXWeakify(self);
-            [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
-            
-            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
-            
-            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
-                                                               
-                                                               MXStrongifyAndReturnIfNil(self);
-                                                               self->currentAlert = nil;
-                                                               
-                                                           }]];
-            
-            [self presentViewController:self->currentAlert animated:YES completion:nil];
-            
-            if (completion)
-            {
-                completion(NO);
-            }
-        };
-
-        // Does the join need to be validated before?
-        if (signUrl)
-        {
-            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers withSignUrl:signUrl success:success failure:failure];
-        }
-        else
-        {
-            joinRoomRequest = [self.mainSession joinRoom:roomIdOrAlias viaServers:viaServers success:success failure:failure];
-        }
+        // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
+        // 'Error when trying to join an empty room should be more explicit'
+        msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
     }
-    else if (completion)
-    {
-        completion (NO);
-    }
+    
+    MXWeakify(self);
+    [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
+    
+    self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
+    
+    [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+        
+        MXStrongifyAndReturnIfNil(self);
+        self->currentAlert = nil;
+        
+        if (completion)
+        {
+            completion((isRoomEmpty ? MXKRoomViewControllerJoinRoomResultFailureRoomEmpty : MXKRoomViewControllerJoinRoomResultFailureGeneric));
+        }
+    }]];
+    
+    [self presentViewController:self->currentAlert animated:YES completion:nil];
 }
 
 - (void)leaveRoomOnEvent:(MXEvent*)event
@@ -1110,54 +1076,8 @@
     
     titleView.delegate = self;
     
-    if (@available(iOS 11.0, *))
-    {
-        // Define directly the navigation titleView with the custom title view instance. Do not use anymore a container.
-        self.navigationItem.titleView = titleView;
-    }
-    else
-    {
-        if (!_roomTitleViewContainer)
-        {
-            _roomTitleViewContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 600, 40)];
-            self.navigationItem.titleView = _roomTitleViewContainer;
-        }
-        
-        // Add the title view and define edge constraints
-        titleView.translatesAutoresizingMaskIntoConstraints = NO;
-        [_roomTitleViewContainer addSubview:titleView];
-        NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                            attribute:NSLayoutAttributeBottom
-                                                                            relatedBy:NSLayoutRelationEqual
-                                                                               toItem:titleView
-                                                                            attribute:NSLayoutAttributeBottom
-                                                                           multiplier:1.0f
-                                                                             constant:0.0f];
-        NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                         attribute:NSLayoutAttributeTop
-                                                                         relatedBy:NSLayoutRelationEqual
-                                                                            toItem:titleView
-                                                                         attribute:NSLayoutAttributeTop
-                                                                        multiplier:1.0f
-                                                                          constant:0.0f];
-        NSLayoutConstraint *leadingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                             attribute:NSLayoutAttributeLeading
-                                                                             relatedBy:NSLayoutRelationEqual
-                                                                                toItem:titleView
-                                                                             attribute:NSLayoutAttributeLeading
-                                                                            multiplier:1.0f
-                                                                              constant:0.0f];
-        NSLayoutConstraint *trailingConstraint = [NSLayoutConstraint constraintWithItem:_roomTitleViewContainer
-                                                                              attribute:NSLayoutAttributeTrailing
-                                                                              relatedBy:NSLayoutRelationEqual
-                                                                                 toItem:titleView
-                                                                              attribute:NSLayoutAttributeTrailing
-                                                                             multiplier:1.0f
-                                                                               constant:0.0f];
-        
-        [NSLayoutConstraint activateConstraints:@[topConstraint, bottomConstraint, leadingConstraint, trailingConstraint]];
-        [_roomTitleViewContainer setNeedsUpdateConstraints];
-    }
+    // Define directly the navigation titleView with the custom title view instance. Do not use anymore a container.
+    self.navigationItem.titleView = titleView;
     
     [self updateViewControllerAppearanceOnRoomDataSourceState];
 }
@@ -1774,7 +1694,7 @@
     {
         // Check whether the most recent message is visible.
         // Compute the max vertical position visible according to contentOffset
-        CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
+        CGFloat maxPositionY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.adjustedContentInset.bottom);
         // Be a bit less retrictive, consider the table view at the bottom even if the most recent message is partially hidden
         maxPositionY += 44;
         BOOL isScrolledToBottom = (maxPositionY >= _bubblesTableView.contentSize.height);
@@ -1793,10 +1713,10 @@
 {
     if (_bubblesTableView.contentSize.height)
     {
-        CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.top - _bubblesTableView.mxk_adjustedContentInset.bottom;
+        CGFloat visibleHeight = _bubblesTableView.frame.size.height - _bubblesTableView.adjustedContentInset.top - _bubblesTableView.adjustedContentInset.bottom;
         if (visibleHeight < _bubblesTableView.contentSize.height)
         {
-            CGFloat wantedOffsetY = _bubblesTableView.contentSize.height - visibleHeight - _bubblesTableView.mxk_adjustedContentInset.top;
+            CGFloat wantedOffsetY = _bubblesTableView.contentSize.height - visibleHeight - _bubblesTableView.adjustedContentInset.top;
             CGFloat currentOffsetY = _bubblesTableView.contentOffset.y;
             if (wantedOffsetY != currentOffsetY)
             {
@@ -1814,7 +1734,7 @@
         }
         else
         {
-            [self setBubbleTableViewContentOffset:CGPointMake(0, -_bubblesTableView.mxk_adjustedContentInset.top) animated:animated];            
+            [self setBubbleTableViewContentOffset:CGPointMake(0, -_bubblesTableView.adjustedContentInset.top) animated:animated];            
         }
         
         shouldScrollToBottomOnTableRefresh = NO;
@@ -1948,8 +1868,8 @@
                                            UITableViewCell *cell = [self->_bubblesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
                                            
                                            CGPoint contentOffset = self->_bubblesTableView.contentOffset;
-                                           CGFloat firstVisibleContentRowOffset = self->_bubblesTableView.contentOffset.y + self->_bubblesTableView.mxk_adjustedContentInset.top;
-                                           CGFloat lastVisibleContentRowOffset = self->_bubblesTableView.frame.size.height - self->_bubblesTableView.mxk_adjustedContentInset.bottom;
+                                           CGFloat firstVisibleContentRowOffset = self->_bubblesTableView.contentOffset.y + self->_bubblesTableView.adjustedContentInset.top;
+                                           CGFloat lastVisibleContentRowOffset = self->_bubblesTableView.frame.size.height - self->_bubblesTableView.adjustedContentInset.bottom;
                                            
                                            CGFloat localPositionOfEvent = 0.0;
                                            
@@ -2405,7 +2325,7 @@
                 }
                 
                 // Compute the offset of the content displayed at the bottom.
-                CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
+                CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.adjustedContentInset.bottom);
                 if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
                 {
                     contentBottomOffsetY = _bubblesTableView.contentSize.height;
@@ -2415,13 +2335,13 @@
                 if ((contentBottomOffsetY <= eventTopPosition ) || (eventBottomPosition < contentBottomOffsetY))
                 {
                     // Compute the top content offset to display again this event at the table bottom
-                    CGFloat contentOffsetY = eventBottomPosition - (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
+                    CGFloat contentOffsetY = eventBottomPosition - (_bubblesTableView.frame.size.height - _bubblesTableView.adjustedContentInset.bottom);
                     
                     // Check if there are enought data to fill the top
-                    if (contentOffsetY < -_bubblesTableView.mxk_adjustedContentInset.top)
+                    if (contentOffsetY < -_bubblesTableView.adjustedContentInset.top)
                     {
                         // Scroll to the top
-                        contentOffsetY = -_bubblesTableView.mxk_adjustedContentInset.top;
+                        contentOffsetY = -_bubblesTableView.adjustedContentInset.top;
                     }
                     
                     CGPoint contentOffset = _bubblesTableView.contentOffset;
@@ -2457,7 +2377,7 @@
     if (!isSizeTransitionInProgress && !self.isBubbleTableViewDisplayInTransition)
     {
         // Compute the content offset corresponding to the line displayed at the table bottom (just above the toolbar).
-        CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.mxk_adjustedContentInset.bottom);
+        CGFloat contentBottomOffsetY = _bubblesTableView.contentOffset.y + (_bubblesTableView.frame.size.height - _bubblesTableView.adjustedContentInset.bottom);
         if (contentBottomOffsetY > _bubblesTableView.contentSize.height)
         {
             contentBottomOffsetY = _bubblesTableView.contentSize.height;
@@ -3298,7 +3218,7 @@
     if (scrollView == _bubblesTableView)
     {
         // Detect top bounce
-        if (scrollView.contentOffset.y < -scrollView.mxk_adjustedContentInset.top)
+        if (scrollView.contentOffset.y < -scrollView.adjustedContentInset.top)
         {
             // Shall we add back pagination spinner?
             if (isPaginationInProgress && !backPaginationActivityView)
@@ -3380,7 +3300,7 @@
             // when the content size if smaller that the frame
             // scrollViewDidEndDecelerating is not called
             // so test it when the content offset goes back to the screen top.
-            if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.mxk_adjustedContentInset.top))
+            if ((scrollView.contentSize.height < scrollView.frame.size.height) && (-scrollView.contentOffset.y == scrollView.adjustedContentInset.top))
             {
                 [self managePullToKick:scrollView];
             }
@@ -3727,7 +3647,7 @@
                     
                     // "Initializing" closedAttachmentEventId so it is equal to openedAttachmentEventId at the beginning
                     self.closedAttachmentEventId = self.openedAttachmentEventId;
-
+                    
                     if (@available(iOS 13.0, *))
                     {
                         attachmentsViewer.modalPresentationStyle = UIModalPresentationFullScreen;

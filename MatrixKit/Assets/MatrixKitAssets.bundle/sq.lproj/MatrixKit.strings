@@ -465,3 +465,8 @@
 "e2e_passphrase_too_short" = "Frazëkalim shumë i shkurtër (Duhet të jetë e pakta %d shenja i gjatë)";
 "microphone_access_not_granted_for_voice_message" = "Mesazhet zanorë lypin përdorim të Mikrofonit, por %@ s’ka leje përdorimi të tij";
 "message_reply_to_sender_sent_a_voice_message" = "dërgoi një mesazh zanor.";
+"attachment_large_with_resolution" = "E madhe %@ (~%@)";
+"attachment_medium_with_resolution" = "Mesatare %@ (~%@)";
+"attachment_small_with_resolution" = "E vogël %@ (~%@)";
+"attachment_size_prompt_message" = "Këtë mund ta çaktivizoni te rregullimet.";
+"attachment_size_prompt_title" = "Ripohoni madhësi për dërgim";

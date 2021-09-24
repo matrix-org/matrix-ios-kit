@@ -59,6 +59,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
     if (self)
     {
         _storeClass = [MXFileStore class];
+        _dehydrationService = [MXDehydrationService new];
         
         // Migrate old account file to new format
         [self migrateAccounts];
@@ -122,8 +123,7 @@ NSString *const MXKAccountManagerDataType = @"org.matrix.kit.MXKAccountManagerDa
     if (openSession && !account.disabled)
     {
         // Open a new matrix session by default
-        MXLogDebug(@"[MXKAccountManager] openSession for %@ account", account.mxCredentials.userId);
-        
+        MXLogDebug(@"[MXKAccountManager] openSession for %@ account (device %@)", account.mxCredentials.userId, account.mxCredentials.deviceId);
         id<MXStore> store = [[_storeClass alloc] init];
         [account openSessionWithStore:store];
     }

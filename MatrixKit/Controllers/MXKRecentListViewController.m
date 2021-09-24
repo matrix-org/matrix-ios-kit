@@ -21,8 +21,7 @@
 
 #import "MXKInterleavedRecentsDataSource.h"
 #import "MXKInterleavedRecentTableViewCell.h"
-
-#import "UIScrollView+MatrixKit.h"
+#import <MatrixSDK/MatrixSDK-Swift.h>
 
 @interface MXKRecentListViewController ()
 {
@@ -469,7 +468,14 @@
                 if ([cellData conformsToProtocol:@protocol(MXKRecentCellDataStoring)])
                 {
                     id<MXKRecentCellDataStoring> recentCellData = (id<MXKRecentCellDataStoring>)cellData;
-                    [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.roomSummary.room.mxSession];
+                    if (recentCellData.isSuggestedRoom)
+                    {
+                        [_delegate recentListViewController:self didSelectSuggestedRoom:recentCellData.spaceChildInfo];
+                    }
+                    else
+                    {
+                        [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.roomSummary.mxSession];
+                    }
                 }
             }
         }
@@ -511,7 +517,7 @@
 {
     if (scrollView == _recentsTableView)
     {
-        if (scrollView.contentOffset.y + scrollView.mxk_adjustedContentInset.top == 0)
+        if (scrollView.contentOffset.y + scrollView.adjustedContentInset.top == 0)
         {
             [self managePullToKick:scrollView];
         }
@@ -605,7 +611,7 @@
     if (!reconnectingView)
     {
         // detect if the user scrolls over the tableview top
-        restartConnection = (scrollView.contentOffset.y + scrollView.mxk_adjustedContentInset.top < -128);
+        restartConnection = (scrollView.contentOffset.y + scrollView.adjustedContentInset.top < -128);
         
         if (restartConnection)
         {
