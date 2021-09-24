@@ -232,7 +232,7 @@
 "save" = "Ruaje";
 "leave" = "Dilni";
 "send" = "Dërgoje";
-"copy" = "Kopjoje";
+"copy_button_name" = "Kopjoje";
 "resend" = "Ridërgoje";
 "set_power_level" = "Caktoni Shkallë Pushteti";
 "delete" = "Fshije";

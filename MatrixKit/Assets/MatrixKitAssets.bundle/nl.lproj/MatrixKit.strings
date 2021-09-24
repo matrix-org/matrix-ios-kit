@@ -316,7 +316,7 @@
 "save" = "Opslaan";
 "leave" = "Verlaten";
 "send" = "Versturen";
-"copy" = "Kopiëren";
+"copy_button_name" = "Kopiëren";
 "resend" = "Opnieuw versturen";
 "redact" = "Verwijderen";
 "share" = "Delen";

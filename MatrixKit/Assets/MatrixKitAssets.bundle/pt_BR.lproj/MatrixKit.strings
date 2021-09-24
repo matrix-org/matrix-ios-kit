@@ -298,7 +298,7 @@
 // button names 
 "ok" = "OK";
 "send" = "Enviar";
-"copy" = "Copiar";
+"copy_button_name" = "Copiar";
 "resend" = "Reenviar";
 "redact" = "Remover";
 "share" = "Compartilhar";

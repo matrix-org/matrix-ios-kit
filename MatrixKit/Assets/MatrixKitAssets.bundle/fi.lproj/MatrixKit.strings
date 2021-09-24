@@ -104,7 +104,7 @@
 // button names 
 "ok" = "OK";
 "send" = "Lähetä";
-"copy" = "Kopioi";
+"copy_button_name" = "Kopioi";
 "redact" = "Poista";
 "share" = "Jaa";
 "delete" = "Poista";

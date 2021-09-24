@@ -1,0 +1,10 @@
+input_dir: ../../MatrixKit/
+output_dir: ../../MatrixKit/Generated/
+strings:
+  inputs: Assets/MatrixKitAssets.bundle/en.lproj/MatrixKit.strings
+  outputs:
+    templatePath: Templates/Strings/flat-swift4-vector.stencil
+    output: Strings.swift
+    params:
+      className: MatrixKitL10n
+      publicAccess: true

@@ -4,7 +4,7 @@
 "delete" = "Видалити";
 "share" = "Поділитися";
 "redact" = "Вилучити";
-"copy" = "Копіювати";
+"copy_button_name" = "Копіювати";
 "send" = "Надіслати";
 "register_error_title" = "Поле реєстрації";
 "login_invalid_param" = "Недійсний параметр";

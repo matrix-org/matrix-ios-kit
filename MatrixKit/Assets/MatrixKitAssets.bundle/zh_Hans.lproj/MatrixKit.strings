@@ -218,7 +218,7 @@
 // button names 
 "ok" = "确定";
 "send" = "发送";
-"copy" = "复制";
+"copy_button_name" = "复制";
 "resend" = "重新发送";
 "share" = "分享";
 "redact" = "移除";

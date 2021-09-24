@@ -29,6 +29,8 @@ abstract_target 'MatrixKitSamplePods' do
         
     target "MatrixKitSample" do
         
+        pod 'SwiftGen', '~> 6.3'
+
     end
     
     target "MatrixKitTests" do

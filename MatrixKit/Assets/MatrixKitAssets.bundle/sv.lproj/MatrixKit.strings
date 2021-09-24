@@ -336,7 +336,7 @@
 "save" = "Spara";
 "leave" = "Lämna";
 "send" = "Skicka";
-"copy" = "Kopiera";
+"copy_button_name" = "Kopiera";
 "resend" = "Skicka igen";
 "redact" = "Ta bort";
 "share" = "Dela";

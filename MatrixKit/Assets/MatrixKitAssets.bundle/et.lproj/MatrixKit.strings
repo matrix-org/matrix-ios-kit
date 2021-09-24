@@ -334,7 +334,7 @@
 // button names 
 "ok" = "Sobib";
 "send" = "Saada";
-"copy" = "Kopeeri";
+"copy_button_name" = "Kopeeri";
 "membership_leave" = "Lahkus";
 "ban" = "Keela ligipääs";
 "message_unsaved_changes" = "Osa muudatusi on salvestamata. Lahkudes need kaovad.";

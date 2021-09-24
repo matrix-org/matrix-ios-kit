@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18BA7B5126FDAC19001C25DF /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BA7B4C26FDAC19001C25DF /* Strings.swift */; };
 		3205ED791E96905A003D65FA /* MXKDirectoryServerCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED751E96905A003D65FA /* MXKDirectoryServerCellData.m */; };
 		3205ED7A1E96905A003D65FA /* MXKDirectoryServersDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */; };
 		321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */; };
@@ -265,6 +266,7 @@
 		0B24B45B3C37CC4E22FABCEF /* Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		1099FE41E4156DB223718DB2 /* Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitTests/Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		18BA7B4C26FDAC19001C25DF /* Strings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		1FB34B020AC3FC88B77D286E /* Pods-MatrixKit-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
 		3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -717,6 +719,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18BA7B4B26FDAC19001C25DF /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				18BA7B4C26FDAC19001C25DF /* Strings.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 		3203F2691D2E9CAE0021F170 /* MatrixKitTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -787,6 +797,7 @@
 				F09E28921AC2007000C51E44 /* Assets */,
 				F07E18111ABC563900DE3766 /* Categories */,
 				3219CBBB1AA6FB1C0027D7E2 /* Controllers */,
+				18BA7B4B26FDAC19001C25DF /* Generated */,
 				3219CBBC1AA6FB1C0027D7E2 /* Models */,
 				32CEE21C1AB1A57E00F7C74D /* Utils */,
 				3219CBBD1AA6FB1C0027D7E2 /* Views */,
@@ -1584,6 +1595,7 @@
 			buildConfigurationList = 3219CB8E1AA6F2790027D7E2 /* Build configuration list for PBXNativeTarget "MatrixKitSample" */;
 			buildPhases = (
 				C4EF25314B5653164693070B /* [CP] Check Pods Manifest.lock */,
+				18BA7B5426FDACD3001C25DF /* 🛠 SwiftGen */,
 				3219CB641AA6F2780027D7E2 /* Sources */,
 				3219CB651AA6F2780027D7E2 /* Frameworks */,
 				3219CB661AA6F2780027D7E2 /* Resources */,
@@ -1746,6 +1758,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		18BA7B5426FDACD3001C25DF /* 🛠 SwiftGen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "🛠 SwiftGen";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftGen/bin/swiftgen\" config run --config \"Tools/SwiftGen/swiftgen-config.yml\"\n";
 		};
 		377905BE14B160E84117ED22 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1994,6 +2024,7 @@
 				F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */,
 				F0316E431B7E469C00F03620 /* MXKTableViewCellWithLabelAndImageView.m in Sources */,
 				F09E288F1AC1FEDA00C51E44 /* MXKPieChartView.m in Sources */,
+				18BA7B5126FDAC19001C25DF /* Strings.swift in Sources */,
 				F05927B21FDDA09D009F2A68 /* MXKGroupListViewController.m in Sources */,
 				F0CF98DC1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSlider.m in Sources */,
 				F080B4311BD6991A00DE095E /* MXKMediaCollectionViewCell.m in Sources */,

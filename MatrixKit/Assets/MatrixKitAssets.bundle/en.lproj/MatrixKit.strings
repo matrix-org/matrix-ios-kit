@@ -457,7 +457,7 @@
 "save" = "Save";
 "leave" = "Leave";
 "send" = "Send";
-"copy" = "Copy";
+"copy_button_name" = "Copy";
 "resend" = "Resend";
 "redact" = "Remove";
 "share" = "Share";
