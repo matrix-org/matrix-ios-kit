@@ -287,7 +287,7 @@
 "cancel" = "Mégse";
 "save" = "Ment";
 "send" = "Küld";
-"copy" = "Másol";
+"copy_button_name" = "Másol";
 "resend" = "Újraküld";
 "redact" = "Töröl";
 "share" = "Megosztás";

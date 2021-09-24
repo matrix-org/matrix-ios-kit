@@ -111,7 +111,7 @@
 // button names 
 "ok" = "好";
 "send" = "傳送";
-"copy" = "複製";
+"copy_button_name" = "複製";
 "resend" = "重新傳送";
 "redact" = "撤除";
 "share" = "分享";

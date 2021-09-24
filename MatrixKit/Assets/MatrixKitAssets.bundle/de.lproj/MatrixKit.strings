@@ -377,7 +377,7 @@
 "save" = "Speichern";
 "leave" = "Verlassen";
 "send" = "Senden";
-"copy" = "Kopieren";
+"copy_button_name" = "Kopieren";
 "resend" = "Erneut senden";
 "redact" = "Entfernen";
 "share" = "Teilen";

@@ -19,6 +19,7 @@
 @import libPhoneNumber_iOS;
 
 #import "NSBundle+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 
 NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPickerViewControllerCountryCellId";
@@ -108,7 +109,7 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
-    self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"country_picker_title"];
+    self.navigationItem.title = [MatrixKitL10n countryPickerTitle];
     
     [self setupSearchController];
 }

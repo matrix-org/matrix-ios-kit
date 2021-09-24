@@ -175,7 +175,7 @@
 "share" = "Havigi";
 "redact" = "Forigi";
 "resend" = "Resendi";
-"copy" = "Kopii";
+"copy_button_name" = "Kopii";
 "send" = "Sendi";
 
 // Room Screen 

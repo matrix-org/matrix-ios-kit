@@ -301,7 +301,7 @@
 "save" = "Salva";
 "leave" = "Esci";
 "send" = "Invia";
-"copy" = "Copia";
+"copy_button_name" = "Copia";
 "resend" = "Invia di nuovo";
 "redact" = "Cancella";
 "share" = "Condividi";

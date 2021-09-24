@@ -18,7 +18,7 @@
 "save" = "Gorde";
 "leave" = "Atera";
 "send" = "Bidali";
-"copy" = "Kopiatu";
+"copy_button_name" = "Kopiatu";
 "resend" = "Birbidali";
 "redact" = "Kendu";
 "share" = "Partekatu";

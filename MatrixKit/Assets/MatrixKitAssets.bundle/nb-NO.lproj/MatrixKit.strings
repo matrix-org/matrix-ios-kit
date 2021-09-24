@@ -393,7 +393,7 @@
 "delete" = "Slett";
 "share" = "Del";
 "redact" = "Fjern";
-"copy" = "Kopier";
+"copy_button_name" = "Kopier";
 "send" = "Send";
 "leave" = "Forlat";
 "save" = "Lagre";
