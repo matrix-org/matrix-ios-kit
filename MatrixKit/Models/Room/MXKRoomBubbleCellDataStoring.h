@@ -279,6 +279,11 @@ Update the event because its sent state changed or it is has been redacted.
  */
 - (void)refreshSenderFlair;
 
+/**
+ Indicate that the data's text message layout should be recomputed.
+ */
+- (void)setNeedsUpdateContent;
+
 #pragma mark - Bubble collapsing
 
 /**

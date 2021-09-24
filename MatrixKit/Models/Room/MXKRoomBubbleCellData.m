@@ -120,8 +120,8 @@
                 {
                     [bubbleComponents removeObjectAtIndex:index];
                 }
-                // flush the current attributed string to force refresh
-                self.attributedTextMessage = nil;
+                // Indicate that the text message layout should be recomputed.
+                [self setNeedsUpdateContent];
                 
                 // Handle here attachment update.
                 // For example: the case of update of attachment event happens when an echo is replaced by its true event
@@ -223,8 +223,8 @@
             {
                 [bubbleComponents removeObject:roomBubbleComponent];
                 
-                // flush the current attributed string to force refresh
-                self.attributedTextMessage = nil;
+                // Indicate that the text message layout should be recomputed.
+                [self setNeedsUpdateContent];
                 
                 break;
             }
@@ -256,8 +256,8 @@
 
             bubbleComponents = [NSMutableArray arrayWithArray:newBubbleComponents];
 
-            // Flush the current attributed string to force refresh
-            self.attributedTextMessage = nil;
+            // Indicate that the text message layout should be recomputed.
+            [self setNeedsUpdateContent];
         }
     }
 
@@ -357,8 +357,8 @@
     highlightedPatternColor = patternColor;
     highlightedPatternFont = patternFont;
     
-    // flush the current attributed string to force refresh
-    self.attributedTextMessage = nil;
+    // Indicate that the text message layout should be recomputed.
+    [self setNeedsUpdateContent];
 }
 
 - (void)setShouldHideSenderInformation:(BOOL)inShouldHideSenderInformation
