@@ -1,1 +1,0 @@
-Add suggested rooms and support for suggested room selection to the list of recent cell data

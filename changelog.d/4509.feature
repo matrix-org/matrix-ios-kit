@@ -1,1 +1,0 @@
-moved space filtering to MatrixKit.
