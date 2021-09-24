@@ -15,6 +15,7 @@
  */
 
 #import "MXKViewControllerHandling.h"
+#import "MXKActivityHandlingViewController.h"
 
 /**
  MXKViewController extends UIViewController to handle requirements for
@@ -23,7 +24,7 @@
  This class provides some methods to ease keyboard handling. 
  */
 
-@interface MXKViewController : UIViewController <MXKViewControllerHandling>
+@interface MXKViewController : MXKActivityHandlingViewController <MXKViewControllerHandling>
 
 
 #pragma mark - Keyboard handling

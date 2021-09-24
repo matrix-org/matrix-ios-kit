@@ -1,0 +1,1 @@
+Tweaked `MXKRoomMemberDetailsViewController` so we can hide leave option
