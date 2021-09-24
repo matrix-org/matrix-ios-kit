@@ -1399,7 +1399,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     {
         for (id<MXKRoomBubbleCellDataStoring> bubble in bubbles)
         {
-            [bubble setNeedsUpdateContent];
+            [bubble invalidateTextLayout];
         }
     }
 }
@@ -3900,7 +3900,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     }
 
     // Indicate that the text message layout should be recomputed.
-    [roomBubbleCellData setNeedsUpdateContent];
+    [roomBubbleCellData invalidateTextLayout];
 }
 
 - (BOOL)canReactToEventWithId:(NSString*)eventId
@@ -4074,7 +4074,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             }
 
             [bubbleCellData updateEvent:eventId withEvent:editedEvent];
-            [bubbleCellData setNeedsUpdateContent];
+            [bubbleCellData invalidateTextLayout];
             hasChanged = YES;
         }
     }

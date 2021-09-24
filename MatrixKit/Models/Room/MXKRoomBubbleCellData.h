@@ -116,10 +116,13 @@
 @property (nonatomic, readonly) BOOL containsBubbleComponentWithEncryptionBadge;
 
 /**
- Indicate that the data's text message layout should be recomputed.
- Under the hood, this is done by clearing the current `attributedTextMessage`.
+ Indicate that the data's text message layout should be recomputed
+ before being presented in a bubble cell.
+ 
+ This will clear the current `attributedTextMessage` allowing it to be
+ rebuilt on demand when requested.
  */
-- (void)setNeedsUpdateContent;
+- (void)invalidateTextLayout;
 
 /**
  Check and refresh the position of each component.

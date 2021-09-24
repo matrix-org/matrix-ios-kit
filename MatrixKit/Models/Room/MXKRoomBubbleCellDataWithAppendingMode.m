@@ -345,7 +345,7 @@ static NSAttributedString *messageSeparator = nil;
         [bubbleComponents insertObject:addedComponent atIndex:index];
         
         // Indicate that the data's text message layout should be recomputed.
-        [self setNeedsUpdateContent];
+        [self invalidateTextLayout];
     }
 }
 

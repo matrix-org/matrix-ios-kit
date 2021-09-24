@@ -121,7 +121,7 @@
                     [bubbleComponents removeObjectAtIndex:index];
                 }
                 // Indicate that the text message layout should be recomputed.
-                [self setNeedsUpdateContent];
+                [self invalidateTextLayout];
                 
                 // Handle here attachment update.
                 // For example: the case of update of attachment event happens when an echo is replaced by its true event
@@ -224,7 +224,7 @@
                 [bubbleComponents removeObject:roomBubbleComponent];
                 
                 // Indicate that the text message layout should be recomputed.
-                [self setNeedsUpdateContent];
+                [self invalidateTextLayout];
                 
                 break;
             }
@@ -257,7 +257,7 @@
             bubbleComponents = [NSMutableArray arrayWithArray:newBubbleComponents];
 
             // Indicate that the text message layout should be recomputed.
-            [self setNeedsUpdateContent];
+            [self invalidateTextLayout];
         }
     }
 
@@ -358,7 +358,7 @@
     highlightedPatternFont = patternFont;
     
     // Indicate that the text message layout should be recomputed.
-    [self setNeedsUpdateContent];
+    [self invalidateTextLayout];
 }
 
 - (void)setShouldHideSenderInformation:(BOOL)inShouldHideSenderInformation
@@ -711,7 +711,7 @@
     }
 }
 
-- (void)setNeedsUpdateContent
+- (void)invalidateTextLayout
 {
     self.attributedTextMessage = nil;
 }
