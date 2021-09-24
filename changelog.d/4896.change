@@ -1,0 +1,1 @@
+MXKRoomBubbleCellData: Add invalidateTextLayout method and use this instead of clearing the attributed string.
