@@ -26,6 +26,7 @@
 #import "NSBundle+MatrixKit.h"
 
 #import <AFNetworking/AFNetworking.h>
+#import "MXKAppSettings.h"
 
 @interface MXKAuthenticationViewController ()
 {
@@ -1423,15 +1424,8 @@
         {
             credentials.identityServer = _identityServerTextField.text;
         }
-        MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
-        account.identityServerURL = credentials.identityServer;
         
-        [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
-        
-        if (_delegate)
-        {
-            [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
-        }
+        [self createAccountWithCredentials:credentials];
     }
 }
 
@@ -1441,6 +1435,82 @@
 }
 
 #pragma mark - Privates
+
+// Hook point for triggering device rehydration in subclasses
+// Avoid cycles by using a separate private method do to the actual work
+- (void)createAccountWithCredentials:(MXCredentials *)credentials
+{
+    [self _createAccountWithCredentials:credentials];
+}
+
+- (void)attemptDeviceRehydrationWithKeyData:(NSData *)keyData
+                                credentials:(MXCredentials *)credentials
+{
+    [self attemptDeviceRehydrationWithKeyData:keyData
+                                  credentials:credentials
+                                        retry:YES];
+}
+
+- (void)attemptDeviceRehydrationWithKeyData:(NSData *)keyData
+                                credentials:(MXCredentials *)credentials
+                                      retry:(BOOL)retry
+{
+    MXLogDebug(@"[MXKAuthenticationViewController] attemptDeviceRehydration: starting device rehydration");
+    
+    if (keyData == nil)
+    {
+        MXLogError(@"[MXKAuthenticationViewController] attemptDeviceRehydration: no key provided for device rehydration");
+        [self _createAccountWithCredentials:credentials];
+        return;
+    }
+    
+    MXRestClient *mxRestClient = [[MXRestClient alloc] initWithCredentials:credentials andOnUnrecognizedCertificateBlock:^BOOL(NSData *certificate) {
+        return NO;
+    }];
+    
+    MXWeakify(self);
+    [[MXKAccountManager sharedManager].dehydrationService rehydrateDeviceWithMatrixRestClient:mxRestClient dehydrationKey:keyData success:^(NSString * deviceId) {
+        MXStrongifyAndReturnIfNil(self);
+        
+        if (deviceId)
+        {
+            MXLogDebug(@"[MXKAuthenticationViewController] attemptDeviceRehydration: device %@ rehydrated successfully.", deviceId);
+            credentials.deviceId = deviceId;
+        }
+        else
+        {
+            MXLogDebug(@"[MXKAuthenticationViewController] attemptDeviceRehydration: device rehydration has been canceled.");
+        }
+        
+        [self _createAccountWithCredentials:credentials];
+    } failure:^(NSError *error) {
+        MXStrongifyAndReturnIfNil(self);
+        
+        if (retry)
+        {
+            MXLogError(@"[MXKAuthenticationViewController] attemptDeviceRehydration: device rehydration failed due to error: %@. Retrying", error);
+            [self attemptDeviceRehydrationWithKeyData:keyData credentials:credentials retry:NO];
+            return;
+        }
+        
+        MXLogError(@"[MXKAuthenticationViewController] attemptDeviceRehydration: device rehydration failed due to error: %@", error);
+        
+        [self _createAccountWithCredentials:credentials];
+    }];
+}
+
+- (void)_createAccountWithCredentials:(MXCredentials *)credentials
+{
+    MXKAccount *account = [[MXKAccount alloc] initWithCredentials:credentials];
+    account.identityServerURL = credentials.identityServer;
+    
+    [[MXKAccountManager sharedManager] addAccount:account andOpenSession:YES];
+    
+    if (_delegate)
+    {
+        [_delegate authenticationViewController:self didLogWithUserId:credentials.userId];
+    }
+}
 
 - (NSString *)deviceDisplayName
 {

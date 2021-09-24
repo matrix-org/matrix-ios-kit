@@ -130,6 +130,11 @@ typedef enum : NSUInteger
 @property (nonatomic) BOOL enableVoipCall;
 
 /**
+ Enable leave this room. YES by default
+ */
+@property (nonatomic) BOOL enableLeave;
+
+/**
  Tell whether an action is already in progress.
  */
 @property (nonatomic, readonly) BOOL hasPendingAction;

@@ -208,10 +208,10 @@
 "room_member_power_level_prompt" = "Non potrai annullare questa modifica perché stai innalzando i permessi dell'utente al tuo stesso livello di accesso.\nSei sicuro?";
 // Attachment
 "attachment_size_prompt" = "Vuoi inviare come:";
-"attachment_original" = "Originale: %@";
-"attachment_small" = "Piccolo: %@";
-"attachment_medium" = "Medio: %@";
-"attachment_large" = "Grande: %@";
+"attachment_original" = "Dim. effettiva (%@)";
+"attachment_small" = "Piccolo (~%@)";
+"attachment_medium" = "Medio (~%@)";
+"attachment_large" = "Grande (~%@)";
 "attachment_cancel_download" = "Interrompi scaricamento?";
 "attachment_cancel_upload" = "Interrompi caricamento?";
 "attachment_multiselection_size_prompt" = "Vuoi inviare le immagini come:";
@@ -465,3 +465,8 @@
 "e2e_passphrase_too_short" = "Password troppo corta (deve avere almeno %d caratteri)";
 "microphone_access_not_granted_for_voice_message" = "I messaggi vocali hanno bisogno dell'accesso al microfono, ma %@ non ha il permesso di usarlo";
 "message_reply_to_sender_sent_a_voice_message" = "inviato un messaggio vocale.";
+"attachment_large_with_resolution" = "Grande %@ (~%@)";
+"attachment_medium_with_resolution" = "Medio %@ (~%@)";
+"attachment_small_with_resolution" = "Piccolo %@ (~%@)";
+"attachment_size_prompt_message" = "Puoi disattivarlo nelle impostazioni.";
+"attachment_size_prompt_title" = "Conferma dimensione da inviare";

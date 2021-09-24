@@ -431,4 +431,11 @@ typedef BOOL (^MXKAccountOnCertificateChange)(MXKAccount *mxAccount, NSData *cer
  */
 - (void)supportLazyLoadOfRoomMembers:(void (^)(BOOL supportLazyLoadOfRoomMembers))completion;
 
+/**
+ Call this method at an appropriate time to attempt dehydrating to a new backup device
+ */
+- (void)attemptDeviceDehydrationWithKeyData:(NSData *)keyData
+                                    success:(void (^)(void))success
+                                    failure:(void (^)(NSError *error))failure;
+
 @end
