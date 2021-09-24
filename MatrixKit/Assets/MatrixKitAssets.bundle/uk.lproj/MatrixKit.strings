@@ -58,8 +58,8 @@
 "start_chat" = "Почати бесіду";
 "set_admin" = "Призначити адміністратора";
 "set_moderator" = "Призначити модератора";
-"set_default_power_level" = "Скинути рівень прав";
-"set_power_level" = "Визначити рівень прав";
+"set_default_power_level" = "Скинути рівень повноважень";
+"set_power_level" = "Визначити рівень повноважень";
 "submit_code" = "Надіслати код";
 "dismiss" = "Відхилити";
 "abort" = "Перервати";
@@ -98,8 +98,8 @@
 "login_identity_server_title" = "URL-адреса сервера ідентифікації:";
 "login_home_server_info" = "Ваш домашній сервер зберігає всі ваші розмови та дані облікового запису";
 "login_home_server_title" = "URL-адреса домашнього сервера:";
-"notice_room_power_level_intro_for_dm" = "Рівні доступу учасників:";
-"notice_room_power_level_intro" = "Рівні доступу учасників кімнати:";
+"notice_room_power_level_intro_for_dm" = "Рівні повноважень учасників:";
+"notice_room_power_level_intro" = "Рівні повноважень учасників кімнати:";
 "notice_room_join_rule_public_by_you_for_dm" = "Ви дозволяєте доступ всім.";
 "notice_room_join_rule_public_by_you" = "Ви дозволяєте доступ до кімнати всім.";
 "notice_room_join_rule_public_for_dm" = "%@ дозволяє доступ всім.";
@@ -200,7 +200,7 @@
 "ssl_homeserver_url" = "URL-адреса домашнього сервера: %@";
 "user_id_placeholder" = "наприклад: @bob:homeserver";
 "network_error_not_reachable" = "Перевірте під'єднання до мережі";
-"power_level" = "Рівень доступу";
+"power_level" = "Рівень повноважень";
 "public" = "Загальнодоступний";
 "private" = "Приватний";
 "default" = "типово";
@@ -280,10 +280,10 @@
 "attachment_multiselection_size_prompt" = "Хочете надіслати зображення як:";
 "attachment_cancel_upload" = "Скасувати вивантаження?";
 "attachment_cancel_download" = "Скасувати завантаження?";
-"attachment_large" = "Великий: %@";
-"attachment_medium" = "Середній: %@";
-"attachment_small" = "Маленький: %@";
-"attachment_original" = "Справжній розмір: %@";
+"attachment_large" = "Великий (~%@)";
+"attachment_medium" = "Середній (~%@)";
+"attachment_small" = "Маленький (~%@)";
+"attachment_original" = "Справжній розмір (%@)";
 
 // Attachment
 "attachment_size_prompt" = "Бажаєте надіслати:";
@@ -341,3 +341,14 @@
 "notice_error_unexpected_event" = "Неочікувана подія";
 "notice_error_unsupported_event" = "Непідтримувана подія";
 "notice_invalid_attachment" = "неприпустиме вкладення";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ робить майбутню історію повідомлень видимою всім від часу їхнього приєднання.";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ робить майбутню історію кімнати видимою всім учасникам кімнати від часу їхнього приєднання.";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ робить майбутню історію повідомлень видимою всім від часу їхнього запрошення.";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ робить майбутню історію кімнати видимою усім учасникам кімнати від часу їхнього запрошення.";
+"notice_room_history_visible_to_members_for_dm" = "%@ робить майбутню історію повідомлень видимою усім учасникам кімнати.";
+"notice_room_history_visible_to_members" = "%@ робить майбутню історію кімнати видимою усім учасникам кімнати.";
+"notice_room_history_visible_to_anyone" = "%@ робить майбутню історію кімнати видимою усім.";
+"notice_redaction" = "%@ редагує подію (id: %@)";
+"notice_feedback" = "Подія відгуку (id: %@): %@";
+"notice_room_related_groups" = "Групи пов'язані з цією кімнатою: %@";
+"notice_room_power_level_acting_requirement" = "Мінімальний рівень повноважень користувача для виконання дії:";

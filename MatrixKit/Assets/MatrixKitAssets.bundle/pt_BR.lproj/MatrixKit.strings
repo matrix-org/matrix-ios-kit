@@ -210,10 +210,10 @@
 "room_member_power_level_prompt" = "Você não vai ser capaz de desfazer esta mudança como você está promovendo a/o usuária(o) para ter o mesmo nível de poder que você mesma(o).\nVocê tem certeza?";
 // Attachment
 "attachment_size_prompt" = "Você quer enviar como:";
-"attachment_original" = "Tamanho de Verdade: %@";
-"attachment_small" = "Pequeno: %@";
-"attachment_medium" = "Médio: %@";
-"attachment_large" = "Grande: %@";
+"attachment_original" = "Tamanho de Verdade (%@)";
+"attachment_small" = "Pequeno (~%@)";
+"attachment_medium" = "Médio (~%@)";
+"attachment_large" = "Grande (~%@)";
 "attachment_cancel_download" = "Cancelar o download?";
 "attachment_cancel_upload" = "Cancelar o upload?";
 "attachment_multiselection_size_prompt" = "Você quer enviar imagens como:";
@@ -465,3 +465,8 @@
 "e2e_passphrase_too_short" = "Frasepasse curta demais (Ela deve ser a um mínimo %d caracteres em comprimento)";
 "microphone_access_not_granted_for_voice_message" = "Mensagens de voz requerem acesso ao Microfone mas %@ não tem permissão para usá-lo";
 "message_reply_to_sender_sent_a_voice_message" = "enviou uma mensagem de voz.";
+"attachment_large_with_resolution" = "Grande %@ (~%@)";
+"attachment_medium_with_resolution" = "Médio %@ (~%@)";
+"attachment_small_with_resolution" = "Pequeno %@ (~%@)";
+"attachment_size_prompt_message" = "Você pode desligar isto em configurações.";
+"attachment_size_prompt_title" = "Confirmar tamanho para enviar";
