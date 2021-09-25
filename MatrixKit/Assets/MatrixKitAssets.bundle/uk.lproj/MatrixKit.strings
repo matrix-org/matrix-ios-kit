@@ -352,3 +352,45 @@
 "notice_feedback" = "Подія відгуку (id: %@): %@";
 "notice_room_related_groups" = "Групи пов'язані з цією кімнатою: %@";
 "notice_room_power_level_acting_requirement" = "Мінімальний рівень повноважень користувача для виконання дії:";
+"notification_settings_by_default" = "Типово...";
+"membership_leave" = "Виходить";
+"notice_redaction_by_you" = "Ви відредагували подію (id: %@)";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "Ви ввімкнули наскрізне шифрування (нерозпізнаний алгоритм %@).";
+"notice_encryption_enabled_ok_by_you" = "Ви ввімкнули наскрізне шифрування.";
+"notice_room_created_by_you_for_dm" = "Ви приєдналися.";
+"notice_room_third_party_revoked_invite_by_you_for_dm" = "Ви відкликали запрошення для %@";
+"notice_room_third_party_revoked_invite_by_you" = "Ви відкликали запрошення приєднатися до кімнати для %@";
+"notice_room_third_party_registered_invite_by_you" = "Ви прийняли запрошення для %@";
+"notice_room_withdraw_by_you" = "Ви анулювали запрошення для %@";
+"notice_room_reject_by_you" = "Ви відхилили запрошення";
+"notice_room_third_party_invite_by_you" = "Ви надіслали запрошення приєднатися до кімнати для %@";
+"notice_room_name_changed_for_dm" = "%@ змінює назву на %@.";
+"notice_room_name_changed" = "%@ змінює назву кімнати на %@.";
+"notice_topic_changed" = "%@ змінює тему на «%@».";
+"notice_display_name_removed" = "%@ вилучає своє показуване ім'я";
+"notice_display_name_changed_from" = "%@ змінює своє показуване ім'я з %@ на %@";
+"notice_display_name_set" = "%@ встановлює своїм показуваним іменем %@";
+"notice_room_withdraw" = "%@ анульовує запрошення для %@";
+"notice_room_kick" = "%@ викидає %@";
+"notice_room_reject" = "%@ відхиляє запрошення";
+"notice_room_leave" = "%@ виходить";
+"notice_room_join" = "%@ приєднується";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ відкликає запрошення для %@";
+"notice_room_third_party_revoked_invite" = "%@ відкликає запрошення приєднатися до кімнати для %@";
+"notice_room_third_party_invite" = "%@ надсилає запрошення приєднатися до кімнати для %@";
+"microphone_access_not_granted_for_voice_message" = "Для голосових повідомлень потрібен доступ до мікрофона, але %@ не має дозволу на його використання";
+"microphone_access_not_granted_for_call" = "Для викликів потрібен доступ до мікрофона, але %@ не має дозволу на його використання";
+
+// Permissions
+"camera_access_not_granted_for_call" = "Для відеовикликів потрібен доступ до камери, але %@ не має дозволу на її використання";
+"language_picker_default_language" = "Типово (%@)";
+
+// Language picker
+"language_picker_title" = "Виберіть мову";
+
+// Country picker
+"country_picker_title" = "Виберіть країну";
+"notice_room_join_by_you" = "Ви приєдналися";
+"notice_room_leave_by_you" = "Ви вийшли";
+"room_left_for_dm" = "Ви вийшли";
+"room_left" = "Ви вийшли з кімнати";
