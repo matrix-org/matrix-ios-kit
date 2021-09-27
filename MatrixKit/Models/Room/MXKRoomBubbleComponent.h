@@ -18,6 +18,8 @@
 
 #import "MXKEventFormatter.h"
 
+@class URLPreviewData;
+
 /**
  Flags to indicate if a fix is required at the display time.
  */
@@ -79,6 +81,18 @@ typedef enum : NSUInteger {
  The first link detected in the event's content, otherwise nil.
  */
 @property (nonatomic) NSURL *link;
+
+/**
+ Any data necessary to show a URL preview.
+ Note: MatrixKit is unable to display this data by itself.
+ */
+@property (nonatomic) URLPreviewData *urlPreviewData;
+
+/**
+ Whether a URL preview should be displayed for this cell.
+ Note: MatrixKit is unable to display URL previews by itself.
+ */
+@property (nonatomic) BOOL showURLPreview;
 
 /**
  Event antivirus scan. Present only if antivirus is enabled and event contains media.
