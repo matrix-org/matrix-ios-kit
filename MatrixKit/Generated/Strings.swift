@@ -1339,6 +1339,10 @@ public class MatrixKitL10n: NSObject {
   public static var rejectCall: String { 
     return MatrixKitL10n.tr("reject_call") 
   }
+  /// Rename
+  public static var rename: String { 
+    return MatrixKitL10n.tr("rename") 
+  }
   /// Resend
   public static var resend: String { 
     return MatrixKitL10n.tr("resend") 

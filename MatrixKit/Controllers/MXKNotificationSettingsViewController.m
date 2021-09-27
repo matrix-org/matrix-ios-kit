@@ -26,6 +26,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 #define MXKNOTIFICATIONSETTINGS_SECTION_INTRO_INDEX      0
 #define MXKNOTIFICATIONSETTINGS_SECTION_PER_WORD_INDEX   1
 #define MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX   2
@@ -315,13 +317,13 @@
             
             if (areAllDisabled)
             {
-                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications"] forState:UIControlStateNormal];
-                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications"] forState:UIControlStateHighlighted];
+                [masterBtnCell.mxkButton setTitle:[MatrixKitL10n notificationSettingsEnableNotifications] forState:UIControlStateNormal];
+                [masterBtnCell.mxkButton setTitle:[MatrixKitL10n notificationSettingsEnableNotifications] forState:UIControlStateHighlighted];
             }
             else
             {
-                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_disable_all"] forState:UIControlStateNormal];
-                [masterBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"notification_settings_disable_all"] forState:UIControlStateHighlighted];
+                [masterBtnCell.mxkButton setTitle:[MatrixKitL10n notificationSettingsDisableAll] forState:UIControlStateNormal];
+                [masterBtnCell.mxkButton setTitle:[MatrixKitL10n notificationSettingsDisableAll] forState:UIControlStateHighlighted];
             }
             
             [masterBtnCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -340,12 +342,12 @@
             
             if (areAllDisabled)
             {
-                introCell.mxkTextView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications_warning"];
+                introCell.mxkTextView.text = [MatrixKitL10n notificationSettingsEnableNotificationsWarning];
                 introCell.mxkTextView.backgroundColor = [UIColor redColor];
             }
             else
             {
-                introCell.mxkTextView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_global_info"];
+                introCell.mxkTextView.text = [MatrixKitL10n notificationSettingsGlobalInfo];
                 introCell.mxkTextView.backgroundColor = [UIColor clearColor];
             }
             
@@ -363,7 +365,7 @@
             {
                 introCell = [[MXKTableViewCellWithTextView alloc] init];
             }
-            introCell.mxkTextView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_word_info"];
+            introCell.mxkTextView.text = [MatrixKitL10n notificationSettingsPerWordInfo];
             introCell.mxkTextView.font = [UIFont systemFontOfSize:14];
              
              cell = introCell;
@@ -472,37 +474,37 @@
         if (rowIndex == ruleContainsUserNameIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterContainUserNameRuleID];
-            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_contain_my_user_name"];
+            ruleDescription = [MatrixKitL10n notificationSettingsContainMyUserName];
         }
         if (rowIndex == ruleContainsDisplayNameIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterContainDisplayNameRuleID];
-            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_contain_my_display_name"];
+            ruleDescription = [MatrixKitL10n notificationSettingsContainMyDisplayName];
         }
         if (rowIndex == ruleOneToOneRoomIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterOneToOneRoomRuleID];
-            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_just_sent_to_me"];
+            ruleDescription = [MatrixKitL10n notificationSettingsJustSentToMe];
         }
         if (rowIndex == ruleInviteForMeIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterInviteMeRuleID];
-            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_invite_to_a_new_room"];
+            ruleDescription = [MatrixKitL10n notificationSettingsInviteToANewRoom];
         }
         if (rowIndex == ruleMemberEventIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterMemberEventRuleID];
-            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_people_join_leave_rooms"];
+            ruleDescription = [MatrixKitL10n notificationSettingsPeopleJoinLeaveRooms];
         }
         if (rowIndex == ruleCallIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterCallRuleID];
-            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_receive_a_call"];
+            ruleDescription = [MatrixKitL10n notificationSettingsReceiveACall];
         }
         if (rowIndex == ruleSuppressBotsNotificationsIndex)
         {
             pushRule = [_mxAccount.mxSession.notificationCenter ruleById:kMXNotificationCenterSuppressBotsNotificationsRuleID];
-            ruleDescription = [NSBundle mxk_localizedStringForKey:@"notification_settings_suppress_from_bots"];
+            ruleDescription = [MatrixKitL10n notificationSettingsSuppressFromBots];
         }
         
         if (pushRule)
@@ -534,7 +536,7 @@
             
             pushRuleCell.mxSession = _mxAccount.mxSession;
             pushRuleCell.mxPushRule = pushRule;
-            pushRuleCell.ruleDescription.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_notify_all_other"];
+            pushRuleCell.ruleDescription.text = [MatrixKitL10n notificationSettingsNotifyAllOther];
 
             cell = pushRuleCell;
         }
@@ -556,7 +558,7 @@
     {
         UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
         textView.font = [UIFont systemFontOfSize:14];
-        textView.text = areAllDisabled ? [NSBundle mxk_localizedStringForKey:@"notification_settings_enable_notifications_warning"] : [NSBundle mxk_localizedStringForKey:@"notification_settings_global_info"];
+        textView.text = areAllDisabled ? [MatrixKitL10n notificationSettingsEnableNotificationsWarning] : [MatrixKitL10n notificationSettingsGlobalInfo];
         CGSize contentSize = [textView sizeThatFits:textView.frame.size];
         return contentSize.height + 1;
     }
@@ -567,7 +569,7 @@
         {
             UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
             textView.font = [UIFont systemFontOfSize:14];
-            textView.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_word_info"];
+            textView.text = [MatrixKitL10n notificationSettingsPerWordInfo];
             CGSize contentSize = [textView sizeThatFits:textView.frame.size];
             return contentSize.height + 1;
         }
@@ -610,23 +612,23 @@
     
     if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_WORD_INDEX)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_word_notifications"];
+        sectionLabel.text = [MatrixKitL10n notificationSettingsPerWordNotifications];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_ROOM_INDEX)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_room_notifications"];
+        sectionLabel.text = [MatrixKitL10n notificationSettingsPerRoomNotifications];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_PER_SENDER_INDEX)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_per_sender_notifications"];
+        sectionLabel.text = [MatrixKitL10n notificationSettingsPerSenderNotifications];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_OTHERS_INDEX)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_other_alerts"];
+        sectionLabel.text = [MatrixKitL10n notificationSettingsOtherAlerts];
     }
     else if (section == MXKNOTIFICATIONSETTINGS_SECTION_DEFAULT_INDEX)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"notification_settings_by_default"];
+        sectionLabel.text = [MatrixKitL10n notificationSettingsByDefault];
     }
     
     return sectionHeader;

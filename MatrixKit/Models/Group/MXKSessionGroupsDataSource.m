@@ -22,6 +22,8 @@
 
 #import "MXKConstants.h"
 
+#import "MXKSwiftHeader.h"
+
 #pragma mark - Constant definitions
 NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
 
@@ -512,11 +514,11 @@ NSString *const kMXKGroupCellIdentifier = @"kMXKGroupCellIdentifier";
     
     if (section == _groupInvitesSection)
     {
-        sectionTitle = [NSBundle mxk_localizedStringForKey:@"group_invite_section"];
+        sectionTitle = [MatrixKitL10n groupInviteSection];
     }
     else if (section == _joinedGroupsSection)
     {
-        sectionTitle = [NSBundle mxk_localizedStringForKey:@"group_section"];
+        sectionTitle = [MatrixKitL10n groupSection];
     }
     
     return sectionTitle;

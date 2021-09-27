@@ -463,6 +463,7 @@
 "share" = "Share";
 "delete" = "Delete";
 "view" = "View";
+"rename" = "Rename";
 
 // actions 
 "action_logout" = "Logout";

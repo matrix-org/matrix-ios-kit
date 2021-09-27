@@ -29,6 +29,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKRoomMemberTableViewCell ()
 {
     NSRange lastSeenRange;
@@ -114,7 +116,7 @@
         if (memberCellData.roomMember.membership == MXMembershipLeave || memberCellData.roomMember.membership == MXMembershipBan)
         {
             self.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0];
-            presenceText = (memberCellData.roomMember.membership == MXMembershipLeave) ? [NSBundle mxk_localizedStringForKey:@"membership_leave"] : [NSBundle mxk_localizedStringForKey:@"membership_ban"];
+            presenceText = (memberCellData.roomMember.membership == MXMembershipLeave) ? [MatrixKitL10n membershipLeave] : [MatrixKitL10n membershipBan];
         }
         else
         {
@@ -124,7 +126,7 @@
             if (memberCellData.roomMember.membership == MXMembershipInvite)
             {
                 thumbnailBorderColor = [UIColor lightGrayColor];
-                presenceText = [NSBundle mxk_localizedStringForKey:@"membership_invite"];
+                presenceText = [MatrixKitL10n membershipInvite];
             }
             else
             {
@@ -216,7 +218,7 @@
         {
             case MXPresenceOffline:
             {
-                lastActiveTime = [NSBundle mxk_localizedStringForKey:@"offline"];
+                lastActiveTime = [MatrixKitL10n offline];
                 break;
             }
             case MXPresenceUnknown:

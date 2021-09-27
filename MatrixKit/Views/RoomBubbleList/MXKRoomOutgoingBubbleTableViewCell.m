@@ -22,6 +22,8 @@
 
 #import "MXKRoomBubbleCellData.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKRoomOutgoingBubbleTableViewCell
 
 - (void)render:(MXKCellData *)cellData
@@ -39,8 +41,8 @@
                 {
                     UIButton *unsentButton = [[UIButton alloc] initWithFrame:CGRectMake(0, component.position.y, 58 , 20)];
                     
-                    [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateNormal];
-                    [unsentButton setTitle:[NSBundle mxk_localizedStringForKey:@"unsent"] forState:UIControlStateSelected];
+                    [unsentButton setTitle:[MatrixKitL10n unsent] forState:UIControlStateNormal];
+                    [unsentButton setTitle:[MatrixKitL10n unsent] forState:UIControlStateSelected];
                     [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
                     [unsentButton setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
                     

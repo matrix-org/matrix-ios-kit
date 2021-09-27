@@ -19,6 +19,8 @@
 #import "MXKErrorPresentableBuilder.h"
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKErrorAlertPresentation()
 
 @property (nonatomic, strong) MXKErrorPresentableBuilder *errorPresentableBuidler;
@@ -51,7 +53,7 @@
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * _Nonnull action) {
                                                 if (handler)
