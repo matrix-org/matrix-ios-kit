@@ -237,10 +237,10 @@
 "room_no_conference_call_in_encrypted_rooms" = "Групповые вызовы не поддерживаются в зашифрованных комнатах";
 // Attachment
 "attachment_size_prompt" = "Вы хотите отправить как:";
-"attachment_original" = "Фактический размер: %@";
-"attachment_small" = "Маленький: %@";
-"attachment_medium" = "Средний: %@";
-"attachment_large" = "Большой: %@";
+"attachment_original" = "Фактический размер (%@)";
+"attachment_small" = "Маленький (%@)";
+"attachment_medium" = "Средний (%@)";
+"attachment_large" = "Большой (%@)";
 "attachment_cancel_download" = "Отменить загрузку?";
 "attachment_cancel_upload" = "Отменить отправку?";
 "attachment_multiselection_size_prompt" = "Вы хотите отправить изображения как:";
@@ -365,10 +365,10 @@
 "notice_in_reply_to" = "В ответ на";
 "error_common_message" = "Произошла ошибка. Пожалуйста, повторите попытку позже.";
 // Reply to message
-"message_reply_to_sender_sent_an_image" = "отправил изображение.";
-"message_reply_to_sender_sent_a_video" = "отправил видео.";
-"message_reply_to_sender_sent_an_audio_file" = "отправил аудиофайл.";
-"message_reply_to_sender_sent_a_file" = "отправил файл.";
+"message_reply_to_sender_sent_an_image" = "отправил(а) изображение.";
+"message_reply_to_sender_sent_a_video" = "отправил(а) видео.";
+"message_reply_to_sender_sent_an_audio_file" = "отправил(а) аудиофайл.";
+"message_reply_to_sender_sent_a_file" = "отправил(а) файл.";
 "message_reply_to_message_to_reply_to_prefix" = "В ответ на";
 "login_error_resource_limit_exceeded_title" = "Превышен лимит ресурса";
 "login_error_resource_limit_exceeded_contact_button" = "Связаться с администратором";
@@ -464,4 +464,9 @@
 "call_ringing" = "Звонок…";
 "microphone_access_not_granted_for_voice_message" = "Голосовые сообщения требуют доступа к микрофону, но у %@ нет разрешения на его использование";
 "e2e_passphrase_too_short" = "Слишком короткая парольная фраза (Длина парольной фразы должна быть не менее %d символов)";
-"message_reply_to_sender_sent_a_voice_message" = "отправил голосовое сообщение.";
+"message_reply_to_sender_sent_a_voice_message" = "отправил(а) голосовое сообщение.";
+"attachment_large_with_resolution" = "Большой %@ (~%@)";
+"attachment_medium_with_resolution" = "Средний %@ (~%@)";
+"attachment_small_with_resolution" = "Маленький %@ (~%@)";
+"attachment_size_prompt_message" = "Это можно отключить в настройках.";
+"attachment_size_prompt_title" = "Подтвердите размер для отправки";

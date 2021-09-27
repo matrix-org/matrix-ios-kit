@@ -197,10 +197,10 @@
 "room_member_power_level_prompt" = "Valószínűleg nem fogod tudni visszavonni ezt a műveletet, mivel ugyanarra a szintre emeled a felhasználót mint amin te magad vagy.\nBiztos vagy benne?";
 // Attachment
 "attachment_size_prompt" = "Hogy szeretnéd elküldeni:";
-"attachment_original" = "Jelenlegi méret: %@";
-"attachment_small" = "Kicsi: %@";
-"attachment_medium" = "Közepes: %@";
-"attachment_large" = "Nagy: %@";
+"attachment_original" = "Jelenlegi méret (%@)";
+"attachment_small" = "Kicsi (~%@)";
+"attachment_medium" = "Közepes (~%@)";
+"attachment_large" = "Nagy (~%@)";
 "attachment_cancel_download" = "Megszakítod a letöltést?";
 "attachment_cancel_upload" = "Megszakítod a feltöltést?";
 "attachment_multiselection_size_prompt" = "Hogy szeretnéd elküldeni a képet:";
@@ -465,3 +465,8 @@
 "e2e_passphrase_too_short" = "A jelmondat túl rövid (legalább %d karakter hosszúnak kell lennie)";
 "microphone_access_not_granted_for_voice_message" = "Ha hangüzenetekhez a mikrofonhoz szükséges a hozzáférés, de %@ nem rendelkezik a használatához szükséges engedéllyel";
 "message_reply_to_sender_sent_a_voice_message" = "hang üzenet elküldve.";
+"attachment_large_with_resolution" = "Nagy %@ (~%@)";
+"attachment_medium_with_resolution" = "Közepes %@ (~%@)";
+"attachment_small_with_resolution" = "Kicsi %@ (~%@)";
+"attachment_size_prompt_message" = "Ezt a beállításokban kikapcsolhatod.";
+"attachment_size_prompt_title" = "Méret megerősítése küldéshez";
