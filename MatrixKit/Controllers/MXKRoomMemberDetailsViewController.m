@@ -67,6 +67,7 @@
     [super finalizeInit];
     
     actionsArray = [[NSMutableArray alloc] init];
+    _enableLeave = YES;
 }
 
 - (void)viewDidLoad
@@ -176,6 +177,16 @@
     if (_enableVoipCall != enableVoipCall)
     {
         _enableVoipCall = enableVoipCall;
+        
+        [self updateMemberInfo];
+    }
+}
+
+- (void)setEnableLeave:(BOOL)enableLeave
+{
+    if (_enableLeave != enableLeave)
+    {
+        _enableLeave = enableLeave;
         
         [self updateMemberInfo];
     }
@@ -644,7 +655,10 @@
     // Consider the case of the user himself
     if ([_mxRoomMember.userId isEqualToString:self.mainSession.myUser.userId])
     {
-        [actionsArray addObject:@(MXKRoomMemberDetailsActionLeave)];
+        if (_enableLeave)
+        {
+            [actionsArray addObject:@(MXKRoomMemberDetailsActionLeave)];
+        }
         
         if (oneSelfPowerLevel >= [powerLevels minimumPowerLevelForSendingEventAsStateEvent:kMXEventTypeStringRoomPowerLevels])
         {

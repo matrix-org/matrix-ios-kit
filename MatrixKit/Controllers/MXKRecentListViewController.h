@@ -36,6 +36,14 @@ limitations under the License.
  */
 - (void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectRoom:(NSString*)roomId inMatrixSession:(MXSession*)mxSession;
 
+/**
+ Tells the delegate that the user selected a suggested room.
+
+ @param recentListViewController the `MXKRecentListViewController` instance.
+ @param childInfo the `MXSpaceChildInfo` instance that describes the selected room.
+ */
+-(void)recentListViewController:(MXKRecentListViewController *)recentListViewController didSelectSuggestedRoom:(MXSpaceChildInfo *)childInfo;
+
 @end
 
 
