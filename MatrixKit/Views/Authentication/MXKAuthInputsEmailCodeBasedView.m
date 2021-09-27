@@ -18,6 +18,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKAuthInputsEmailCodeBasedView
 
 + (UINib *)nib
@@ -30,11 +32,11 @@
 {
     [super awakeFromNib];
     
-    _userLoginTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_user_id_placeholder"];
-    _emailAndTokenTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_email_placeholder"];
-    _promptEmailTokenLabel.text = [NSBundle mxk_localizedStringForKey:@"login_prompt_email_token"];
+    _userLoginTextField.placeholder = [MatrixKitL10n loginUserIdPlaceholder];
+    _emailAndTokenTextField.placeholder = [MatrixKitL10n loginEmailPlaceholder];
+    _promptEmailTokenLabel.text = [MatrixKitL10n loginPromptEmailToken];
     
-    _displayNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_display_name_placeholder"];
+    _displayNameTextField.placeholder = [MatrixKitL10n loginDisplayNamePlaceholder];
 }
 
 #pragma mark -
@@ -82,7 +84,7 @@
     {
         if (!self.areAllRequiredFieldsSet)
         {
-            errorMsg = [NSBundle mxk_localizedStringForKey:@"login_invalid_param"];
+            errorMsg = [MatrixKitL10n loginInvalidParam];
         }
     }
     

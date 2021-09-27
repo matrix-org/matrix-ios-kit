@@ -33,6 +33,8 @@
 
 #import "MXKConstants.h"
 
+#import "MXKSwiftHeader.h"
+
 NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinkedEmailCellId";
 
 @interface MXKAccountDetailsViewController ()
@@ -113,8 +115,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     [userPictureButton.layer setCornerRadius:userPictureButton.frame.size.width / 2];
     userPictureButton.clipsToBounds = YES;
     
-    [saveUserInfoButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_save_changes"] forState:UIControlStateNormal];
-    [saveUserInfoButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_save_changes"] forState:UIControlStateHighlighted];
+    [saveUserInfoButton setTitle:[MatrixKitL10n accountSaveChanges] forState:UIControlStateNormal];
+    [saveUserInfoButton setTitle:[MatrixKitL10n accountSaveChanges] forState:UIControlStateHighlighted];
     
     // Force refresh
     self.mxAccount = _mxAccount;
@@ -248,10 +250,10 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     {
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"message_unsaved_changes"] preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:[MatrixKitL10n messageUnsavedChanges] preferredStyle:UIAlertControllerStyleAlert];
             
             [self->alertsArray addObject:alert];
-            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"discard"]
+            [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n discard]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
@@ -269,7 +271,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                         
                                                     }]];
             
-            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+            [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n save]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
@@ -441,7 +443,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                 NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
                 if (!title)
                 {
-                    title = [NSBundle mxk_localizedStringForKey:@"account_error_display_name_change_failed"];
+                    title = [MatrixKitL10n accountErrorDisplayNameChangeFailed];
                 }
                 NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
                 
@@ -449,7 +451,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                 
                 [self->alertsArray addObject:alert];
                 
-                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"]
+                [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n abort]
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             
@@ -462,7 +464,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                             
                                                         }]];
                 
-                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"retry"]
+                [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n retry]
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             
@@ -550,14 +552,14 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
     if (!title)
     {
-        title = [NSBundle mxk_localizedStringForKey:@"account_error_picture_change_failed"];
+        title = [MatrixKitL10n accountErrorPictureChangeFailed];
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
     
     [alertsArray addObject:alert];
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n abort]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
@@ -571,7 +573,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                 
                                             }]];
     
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"retry"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n retry]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
@@ -729,10 +731,10 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
 
 - (void)showValidationEmailDialogWithMessage:(NSString*)message
 {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"account_email_validation_title"] message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n accountEmailValidationTitle] message:message preferredStyle:UIAlertControllerStyleAlert];
     
     [alertsArray addObject:alert];
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"abort"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n abort]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
@@ -742,7 +744,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                 
                                             }]];
     
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"continue"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n continue]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
@@ -777,7 +779,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                                                         MXError *mxError = [[MXError alloc] initWithNSError:error];
                                                         if (mxError && [mxError.errcode isEqualToString:kMXErrCodeStringThreePIDAuthFailed])
                                                         {
-                                                            [self showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_error"]];
+                                                            [self showValidationEmailDialogWithMessage:[MatrixKitL10n accountEmailValidationError]];
                                                         }
                                                         else
                                                         {
@@ -839,10 +841,10 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         // Email check
         if (![MXTools isEmailAddress:emailTextField.text])
         {
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_title"] message:[NSBundle mxk_localizedStringForKey:@"account_error_email_wrong_description"] preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n accountErrorEmailWrongTitle] message:[MatrixKitL10n accountErrorEmailWrongDescription] preferredStyle:UIAlertControllerStyleAlert];
             
             [alertsArray addObject:alert];
-            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+            [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
@@ -868,7 +870,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             if (weakSelf)
             {
                 typeof(self) self = weakSelf;
-                [self showValidationEmailDialogWithMessage:[NSBundle mxk_localizedStringForKey:@"account_email_validation_message"]];
+                [self showValidationEmailDialogWithMessage:[MatrixKitL10n accountEmailValidationMessage]];
             }
 
         } failure:^(NSError *error) {
@@ -983,10 +985,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         {
             UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, MAXFLOAT)];
             textView.font = [UIFont systemFontOfSize:14];
-            
-            NSString *configFormat = [NSString stringWithFormat:@"%@\n%@\n%@", [NSBundle mxk_localizedStringForKey:@"settings_config_home_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_identity_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_user_id"]];
-            
-            textView.text = [NSString stringWithFormat:configFormat, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            textView.text = [NSString stringWithFormat:@"%@\n%@\n%@", [MatrixKitL10n settingsConfigHomeServer:_mxAccount.mxCredentials.homeServer], [MatrixKitL10n settingsConfigIdentityServer:_mxAccount.identityServerURL], [MatrixKitL10n settingsConfigUserId:_mxAccount.mxCredentials.userId]];
             
             CGSize contentSize = [textView sizeThatFits:textView.frame.size];
             return contentSize.height + 1;
@@ -1031,8 +1030,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             submittedEmailCell.mxkTextField.text = currentEmail;
             submittedEmailCell.mxkTextField.keyboardType = UIKeyboardTypeEmailAddress;
             submittedEmailCell.mxkButton.enabled = (currentEmail.length != 0);
-            [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_link_email"] forState:UIControlStateNormal];
-            [submittedEmailCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"account_link_email"] forState:UIControlStateHighlighted];
+            [submittedEmailCell.mxkButton setTitle:[MatrixKitL10n accountLinkEmail] forState:UIControlStateNormal];
+            [submittedEmailCell.mxkButton setTitle:[MatrixKitL10n accountLinkEmail] forState:UIControlStateHighlighted];
             [submittedEmailCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             
             emailSubmitButton = submittedEmailCell.mxkButton;
@@ -1058,13 +1057,13 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
         
         if (indexPath.row == enableInAppNotifRowIndex)
         {
-            notificationsCell.mxkLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_enable_inapp_notifications"];
+            notificationsCell.mxkLabel.text = [MatrixKitL10n settingsEnableInappNotifications];
             notificationsCell.mxkSwitch.on = _mxAccount.enableInAppNotifications;
             inAppNotificationsSwitch = notificationsCell.mxkSwitch;
         }
         else /* enablePushNotifRowIndex */
         {
-            notificationsCell.mxkLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_enable_push_notifications"];
+            notificationsCell.mxkLabel.text = [MatrixKitL10n settingsEnablePushNotifications];
             notificationsCell.mxkSwitch.on = _mxAccount.pushNotificationServiceIsActive;
             notificationsCell.mxkSwitch.enabled = YES;
             apnsNotificationsSwitch = notificationsCell.mxkSwitch;
@@ -1082,9 +1081,7 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
                 configCell = [[MXKTableViewCellWithTextView alloc] init];
             }
             
-            NSString *configFormat = [NSString stringWithFormat:@"%@\n%@\n%@", [NSBundle mxk_localizedStringForKey:@"settings_config_home_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_identity_server"], [NSBundle mxk_localizedStringForKey:@"settings_config_user_id"]];
-            
-            configCell.mxkTextView.text = [NSString stringWithFormat:configFormat, _mxAccount.mxCredentials.homeServer, _mxAccount.identityServerURL, _mxAccount.mxCredentials.userId];
+            configCell.mxkTextView.text = [NSString stringWithFormat:@"%@\n%@\n%@", [MatrixKitL10n settingsConfigHomeServer:_mxAccount.mxCredentials.homeServer], [MatrixKitL10n settingsConfigIdentityServer:_mxAccount.identityServerURL], [MatrixKitL10n settingsConfigUserId:_mxAccount.mxCredentials.userId]];
             
             cell = configCell;
         }
@@ -1095,8 +1092,8 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
             {
                 logoutBtnCell = [[MXKTableViewCellWithButton alloc] init];
             }
-            [logoutBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"action_logout"] forState:UIControlStateNormal];
-            [logoutBtnCell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"action_logout"] forState:UIControlStateHighlighted];
+            [logoutBtnCell.mxkButton setTitle:[MatrixKitL10n actionLogout] forState:UIControlStateNormal];
+            [logoutBtnCell.mxkButton setTitle:[MatrixKitL10n actionLogout] forState:UIControlStateHighlighted];
             [logoutBtnCell.mxkButton addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             
             logoutButton = logoutBtnCell.mxkButton;
@@ -1136,15 +1133,15 @@ NSString* const kMXKAccountDetailsLinkedEmailCellId = @"kMXKAccountDetailsLinked
     
     if (section == linkedEmailsSection)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"account_linked_emails"];
+        sectionLabel.text = [MatrixKitL10n accountLinkedEmails];
     }
     else if (section == notificationsSection)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_title_notifications"];
+        sectionLabel.text = [MatrixKitL10n settingsTitleNotifications];
     }
     else if (section == configurationSection)
     {
-        sectionLabel.text = [NSBundle mxk_localizedStringForKey:@"settings_title_config"];
+        sectionLabel.text = [MatrixKitL10n settingsTitleConfig];
     }
     
     return sectionHeader;

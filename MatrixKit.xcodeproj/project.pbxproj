@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1873680326FE05860018959C /* MXKEventFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */; };
+		1873680426FE05890018959C /* MXKRoomDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */; };
+		1873680526FE058B0018959C /* MXKRoomDataSource+Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */; };
 		18BA7B5126FDAC19001C25DF /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BA7B4C26FDAC19001C25DF /* Strings.swift */; };
+		18BA7B5526FDFFBB001C25DF /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BA7B4C26FDAC19001C25DF /* Strings.swift */; };
 		3205ED791E96905A003D65FA /* MXKDirectoryServerCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED751E96905A003D65FA /* MXKDirectoryServerCellData.m */; };
 		3205ED7A1E96905A003D65FA /* MXKDirectoryServersDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */; };
 		321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */; };
@@ -26,7 +30,6 @@
 		3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */; };
 		323F9AF61F1E53730013AFDE /* NSBundle+MXKLanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = 323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */; };
 		324978F4243F444C000D0384 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 324978F3243F444C000D0384 /* UTI.swift */; };
-		32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */; };
 		327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */; };
 		328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */; };
 		328AC4891AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4881AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m */; };
@@ -61,8 +64,6 @@
 		9135FFD926DE8EFD000E6D84 /* NSString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */; };
 		918DAB9F26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
-		A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */; };
-		A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */; };
 		B11D3C7E20C032BD00938BCB /* MXKBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */; };
 		B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */; };
 		B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D10322D62A4800570CA4 /* MXKUTITests.swift */; };
@@ -154,7 +155,6 @@
 		F07267D91BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */; };
 		F079333E1F38A6A600F04D4C /* MXKView.m in Sources */ = {isa = PBXBuildFile; fileRef = F079333D1F38A6A600F04D4C /* MXKView.m */; };
 		F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */; };
-		F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148C51AB31240005F5D4A /* MXKTools.m */; };
 		F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */; };
 		F07D74AE1AC5A36B00D83B98 /* MXKEventDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07D74AD1AC5A36B00D83B98 /* MXKEventDetailsView.xib */; };
 		F07E180D1ABC2EDA00DE3766 /* MXKQueuedEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18051ABC2EDA00DE3766 /* MXKQueuedEvent.m */; };
@@ -1891,13 +1891,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
+				18BA7B5526FDFFBB001C25DF /* Strings.swift in Sources */,
+				1873680526FE058B0018959C /* MXKRoomDataSource+Tests.m in Sources */,
+				1873680426FE05890018959C /* MXKRoomDataSourceTests.swift in Sources */,
+				1873680326FE05860018959C /* MXKEventFormatterTests.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
-				A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */,
 				328E410424CB135100DC4490 /* MatrixKitVersion.m in Sources */,
 				B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */,
-				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
-				A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */,
-				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

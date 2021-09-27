@@ -27,6 +27,8 @@
 #import <MatrixSDK/MXRestClient.h>
 #import <MatrixSDK/MXKeyProvider.h>
 
+#import "MXKSwiftHeader.h"
+
 NSString *const kMXKContactManagerDidUpdateMatrixContactsNotification = @"kMXKContactManagerDidUpdateMatrixContactsNotification";
 
 NSString *const kMXKContactManagerDidUpdateLocalContactsNotification = @"kMXKContactManagerDidUpdateLocalContactsNotification";
@@ -1138,9 +1140,9 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 {
     NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
 
-    [MXKContactManager requestUserConfirmationForLocalContactsSyncWithTitle:[NSBundle mxk_localizedStringForKey:@"local_contacts_access_discovery_warning_title"]
-                                                                    message:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"local_contacts_access_discovery_warning"], appDisplayName]
-                                                manualPermissionChangeMessage:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"local_contacts_access_not_granted"], appDisplayName]
+    [MXKContactManager requestUserConfirmationForLocalContactsSyncWithTitle:[MatrixKitL10n localContactsAccessDiscoveryWarningTitle]
+                                                                    message:[MatrixKitL10n localContactsAccessDiscoveryWarning:appDisplayName]
+                                                manualPermissionChangeMessage:[MatrixKitL10n localContactsAccessNotGranted:appDisplayName]
                                                     showPopUpInViewController:viewController
                                                             completionHandler:handler];
 }
@@ -1159,7 +1161,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
     {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
         
-        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+        [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
                                                     
@@ -1170,7 +1172,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
                                                     
                                                 }]];
         
-        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+        [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
                                                     

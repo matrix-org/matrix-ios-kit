@@ -22,6 +22,8 @@
 
 #import "MXKConstants.h"
 
+#import "MXKSwiftHeader.h"
+
 static NSAttributedString *verticalWhitespace = nil;
 
 @interface MXKDeviceView ()
@@ -75,14 +77,14 @@ static NSAttributedString *verticalWhitespace = nil;
     [self.bgView addGestureRecognizer:tap];
     
     // Localize string
-    [_cancelButton setTitle:[NSBundle mxk_localizedStringForKey:@"ok"] forState:UIControlStateNormal];
-    [_cancelButton setTitle:[NSBundle mxk_localizedStringForKey:@"ok"] forState:UIControlStateHighlighted];
+    [_cancelButton setTitle:[MatrixKitL10n ok] forState:UIControlStateNormal];
+    [_cancelButton setTitle:[MatrixKitL10n ok] forState:UIControlStateHighlighted];
     
-    [_renameButton setTitle:[NSBundle mxk_localizedStringForKey:@"rename"] forState:UIControlStateNormal];
-    [_renameButton setTitle:[NSBundle mxk_localizedStringForKey:@"rename"] forState:UIControlStateHighlighted];
+    [_renameButton setTitle:[MatrixKitL10n rename] forState:UIControlStateNormal];
+    [_renameButton setTitle:[MatrixKitL10n rename] forState:UIControlStateHighlighted];
     
-    [_deleteButton setTitle:[NSBundle mxk_localizedStringForKey:@"delete"] forState:UIControlStateNormal];
-    [_deleteButton setTitle:[NSBundle mxk_localizedStringForKey:@"delete"] forState:UIControlStateHighlighted];
+    [_deleteButton setTitle:[MatrixKitL10n delete] forState:UIControlStateNormal];
+    [_deleteButton setTitle:[MatrixKitL10n delete] forState:UIControlStateHighlighted];
 }
 
 - (void)layoutSubviews
@@ -147,15 +149,15 @@ static NSAttributedString *verticalWhitespace = nil;
         {
             // Device information
             NSMutableAttributedString *deviceInformationString = [[NSMutableAttributedString alloc]
-                                                           initWithString:[NSBundle mxk_localizedStringForKey:@"device_details_title"]
-                                                           attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
-                                                                        NSFontAttributeName: [UIFont boldSystemFontOfSize:15]}];
+                                                                  initWithString:[MatrixKitL10n deviceDetailsTitle]
+                                                                  attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
+                                                                               NSFontAttributeName: [UIFont boldSystemFontOfSize:15]}];
             [deviceInformationString appendAttributedString:[MXKDeviceView verticalWhitespace]];
             
             [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                      initWithString:[NSBundle mxk_localizedStringForKey:@"device_details_name"]
-                                                      attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
-                                                                   NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
+                                                             initWithString:[MatrixKitL10n deviceDetailsName]
+                                                             attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
+                                                                          NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
             [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
                                                              initWithString:device.displayName.length ? device.displayName : @""
                                                              attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
@@ -163,16 +165,17 @@ static NSAttributedString *verticalWhitespace = nil;
             [deviceInformationString appendAttributedString:[MXKDeviceView verticalWhitespace]];
             
             [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                      initWithString:[NSBundle mxk_localizedStringForKey:@"device_details_identifier"]                                                      attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
-                                                                   NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
+                                                             initWithString:[MatrixKitL10n deviceDetailsIdentifier]
+                                                             attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
+                                                                          NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
             [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                      initWithString:device.deviceId
-                                                      attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
-                                                                   NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
+                                                             initWithString:device.deviceId
+                                                             attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
+                                                                          NSFontAttributeName: [UIFont systemFontOfSize:14]}]];
             [deviceInformationString appendAttributedString:[MXKDeviceView verticalWhitespace]];
             
             [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
-                                                      initWithString:[NSBundle mxk_localizedStringForKey:@"device_details_last_seen"]
+                                                      initWithString:[MatrixKitL10n deviceDetailsLastSeen]
                                                       attributes:@{NSForegroundColorAttributeName : _defaultTextColor,
                                                                    NSFontAttributeName: [UIFont boldSystemFontOfSize:14]}]];
             
@@ -184,7 +187,7 @@ static NSAttributedString *verticalWhitespace = nil;
             [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
             [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
             
-            NSString *lastSeen = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"device_details_last_seen_format"], device.lastSeenIp, [dateFormatter stringFromDate:lastSeenDate]];
+            NSString *lastSeen = [MatrixKitL10n deviceDetailsLastSeenFormat:device.lastSeenIp :[dateFormatter stringFromDate:lastSeenDate]];
             
             [deviceInformationString appendAttributedString:[[NSMutableAttributedString alloc]
                                                       initWithString:lastSeen
@@ -259,8 +262,8 @@ static NSAttributedString *verticalWhitespace = nil;
     [currentAlert dismissViewControllerAnimated:NO completion:nil];
     __weak typeof(self) weakSelf = self;
     
-    currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"device_details_rename_prompt_title"]
-                                                       message:[NSBundle mxk_localizedStringForKey:@"device_details_rename_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
+    currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n deviceDetailsRenamePromptTitle]
+                                                       message:[MatrixKitL10n deviceDetailsRenamePromptMessage] preferredStyle:UIAlertControllerStyleAlert];
 
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         
@@ -274,7 +277,7 @@ static NSAttributedString *verticalWhitespace = nil;
         }
     }];
     
-    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
@@ -286,7 +289,7 @@ static NSAttributedString *verticalWhitespace = nil;
                                                 
                                             }]];
     
-    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        
@@ -372,7 +375,7 @@ static NSAttributedString *verticalWhitespace = nil;
             __weak typeof(self) weakSelf = self;
             
             // Prompt the user before deleting the device.
-            self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_title"] message:[NSBundle mxk_localizedStringForKey:@"device_details_delete_prompt_message"] preferredStyle:UIAlertControllerStyleAlert];
+            self->currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n deviceDetailsDeletePromptTitle] message:[MatrixKitL10n deviceDetailsDeletePromptMessage] preferredStyle:UIAlertControllerStyleAlert];
             
             
             [self->currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -382,7 +385,7 @@ static NSAttributedString *verticalWhitespace = nil;
                 textField.keyboardType = UIKeyboardTypeDefault;
             }];
             
-            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -395,7 +398,7 @@ static NSAttributedString *verticalWhitespace = nil;
                                                                
                                                            }]];
             
-            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"submit"]
+            [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n submit]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                

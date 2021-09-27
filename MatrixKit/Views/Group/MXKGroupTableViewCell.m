@@ -18,6 +18,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKGroupTableViewCell
 @synthesize delegate;
 
@@ -48,11 +50,11 @@
         {
             if (groupCellData.group.summary.usersSection.totalUserCountEstimate > 1)
             {
-                _memberCount.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"num_members_other"], @(groupCellData.group.summary.usersSection.totalUserCountEstimate)];
+                _memberCount.text = [MatrixKitL10n numMembersOther:@(groupCellData.group.summary.usersSection.totalUserCountEstimate).stringValue];
             }
             else if (groupCellData.group.summary.usersSection.totalUserCountEstimate == 1)
             {
-                _memberCount.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"num_members_one"], @1];
+                _memberCount.text = [MatrixKitL10n numMembersOne:@(1).stringValue];
             }
             else
             {

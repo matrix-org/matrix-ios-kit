@@ -24,6 +24,8 @@
 #import "MXKTools.h"
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 NSString *const kMXKCallViewControllerWillAppearNotification = @"kMXKCallViewControllerWillAppearNotification";
 NSString *const kMXKCallViewControllerAppearedNotification = @"kMXKCallViewControllerAppearedNotification";
 NSString *const kMXKCallViewControllerWillDisappearNotification = @"kMXKCallViewControllerWillDisappearNotification";
@@ -149,14 +151,14 @@ static const CGFloat kLocalPreviewMargin = 20;
     [self.speakerButton setImage:[NSBundle mxk_imageFromMXKAssetsBundleWithName:@"icon_speaker_on"] forState:UIControlStateSelected];
     
     // Localize string
-    [answerCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"answer_call"] forState:UIControlStateNormal];
-    [answerCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"answer_call"] forState:UIControlStateHighlighted];
-    [rejectCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"reject_call"] forState:UIControlStateNormal];
-    [rejectCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"reject_call"] forState:UIControlStateHighlighted];
-    [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateNormal];
-    [endCallButton setTitle:[NSBundle mxk_localizedStringForKey:@"end_call"] forState:UIControlStateHighlighted];
-    [_resumeButton setTitle:[NSBundle mxk_localizedStringForKey:@"resume_call"] forState:UIControlStateNormal];
-    [_resumeButton setTitle:[NSBundle mxk_localizedStringForKey:@"resume_call"] forState:UIControlStateHighlighted];
+    [answerCallButton setTitle:[MatrixKitL10n answerCall] forState:UIControlStateNormal];
+    [answerCallButton setTitle:[MatrixKitL10n answerCall] forState:UIControlStateHighlighted];
+    [rejectCallButton setTitle:[MatrixKitL10n rejectCall] forState:UIControlStateNormal];
+    [rejectCallButton setTitle:[MatrixKitL10n rejectCall] forState:UIControlStateHighlighted];
+    [endCallButton setTitle:[MatrixKitL10n endCall] forState:UIControlStateNormal];
+    [endCallButton setTitle:[MatrixKitL10n endCall] forState:UIControlStateHighlighted];
+    [_resumeButton setTitle:[MatrixKitL10n resumeCall] forState:UIControlStateNormal];
+    [_resumeButton setTitle:[MatrixKitL10n resumeCall] forState:UIControlStateHighlighted];
     
     // Refresh call information
     self.mxCall = mxCall;
@@ -362,7 +364,7 @@ static const CGFloat kLocalPreviewMargin = 20;
             // Check the permission right now
             NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
             [MXKTools checkAccessForMediaType:AVMediaTypeVideo
-                          manualChangeMessage:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"camera_access_not_granted_for_call"], appDisplayName]
+                          manualChangeMessage:[MatrixKitL10n cameraAccessNotGrantedForCall:appDisplayName]
 
                     showPopUpInViewController:self completionHandler:^(BOOL granted) {
 
@@ -507,17 +509,17 @@ static const CGFloat kLocalPreviewMargin = 20;
     
     if (mxCall.isConsulting)
     {
-        callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_consulting_with_user"], peerDisplayName];
+        callerNameLabel.text = [MatrixKitL10n callConsultingWithUser:peerDisplayName];
     }
     else
     {
         if (mxCall.isVideoCall)
         {
-            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_video_with_user"], peerDisplayName];
+            callerNameLabel.text = [MatrixKitL10n callVideoWithUser:peerDisplayName];
         }
         else
         {
-            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_voice_with_user"], peerDisplayName];
+            callerNameLabel.text = [MatrixKitL10n callVoiceWithUser:peerDisplayName];
         }
     }
     
@@ -639,8 +641,8 @@ static const CGFloat kLocalPreviewMargin = 20;
         NSString *appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
 
         [MXKTools checkAccessForCall:mxCall.isVideoCall
-         manualChangeMessageForAudio:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"microphone_access_not_granted_for_call"], appDisplayName]
-         manualChangeMessageForVideo:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"camera_access_not_granted_for_call"], appDisplayName]
+         manualChangeMessageForAudio:[MatrixKitL10n microphoneAccessNotGrantedForCall:appDisplayName]
+         manualChangeMessageForVideo:[MatrixKitL10n cameraAccessNotGrantedForCall:appDisplayName]
            showPopUpInViewController:self completionHandler:^(BOOL granted) {
 
                if (granted)
@@ -685,7 +687,7 @@ static const CGFloat kLocalPreviewMargin = 20;
         if (self.speakerButton == nil)
         {
             //  audio device action
-            UIAlertAction *audioDeviceAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_change_audio_device"]
+            UIAlertAction *audioDeviceAction = [UIAlertAction actionWithTitle:[MatrixKitL10n callMoreActionsChangeAudioDevice]
                                                                         style:UIAlertActionStyleDefault
                                                                       handler:^(UIAlertAction * action) {
                 
@@ -703,7 +705,7 @@ static const CGFloat kLocalPreviewMargin = 20;
         //  check the call can send DTMF tones
         if (self.mxCall.supportsDTMF)
         {
-            UIAlertAction *dialpadAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_dialpad"]
+            UIAlertAction *dialpadAction = [UIAlertAction actionWithTitle:[MatrixKitL10n callMoreActionsDialpad]
                                                                     style:UIAlertActionStyleDefault
                                                                   handler:^(UIAlertAction * action) {
                 
@@ -719,9 +721,9 @@ static const CGFloat kLocalPreviewMargin = 20;
         //  check the call be holded/unholded
         if (mxCall.supportsHolding)
         {
-            NSString *actionLocKey = (mxCall.state == MXCallStateOnHold) ? @"call_more_actions_unhold" : @"call_more_actions_hold";
+            NSString *actionLocKey = (mxCall.state == MXCallStateOnHold) ? [MatrixKitL10n callMoreActionsUnhold] : [MatrixKitL10n callMoreActionsHold];
             
-            UIAlertAction *holdAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:actionLocKey]
+            UIAlertAction *holdAction = [UIAlertAction actionWithTitle:actionLocKey
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                 
@@ -737,7 +739,7 @@ static const CGFloat kLocalPreviewMargin = 20;
         //  check the call be transferred
         if (mxCall.supportsTransferring && self.peer)
         {
-            UIAlertAction *transferAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"call_more_actions_transfer"]
+            UIAlertAction *transferAction = [UIAlertAction actionWithTitle:[MatrixKitL10n callMoreActionsTransfer]
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                 
@@ -763,7 +765,7 @@ static const CGFloat kLocalPreviewMargin = 20;
             }];
             
             //  add cancel action always
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                              style:UIAlertActionStyleCancel
                                                            handler:^(UIAlertAction * action) {
                 
@@ -831,7 +833,7 @@ static const CGFloat kLocalPreviewMargin = 20;
         NSString *name = route.name;
         if (route.routeType == MXiOSAudioOutputRouteTypeLoudSpeakers)
         {
-            name = [NSBundle mxk_localizedStringForKey:@"call_more_actions_audio_use_device"];
+            name = [MatrixKitL10n callMoreActionsAudioUseDevice];
         }
         MXWeakify(self);
         UIAlertAction *routeAction = [UIAlertAction actionWithTitle:name
@@ -861,7 +863,7 @@ static const CGFloat kLocalPreviewMargin = 20;
         
         //  add cancel action
         MXWeakify(self);
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                          style:UIAlertActionStyleCancel
                                                        handler:^(UIAlertAction * action) {
             
@@ -909,7 +911,7 @@ static const CGFloat kLocalPreviewMargin = 20;
     {
         case MXCallStateFledgling:
             self.isRinging = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
+            callStatusLabel.text = [MatrixKitL10n callConnecting];
             break;
         case MXCallStateWaitLocalMedia:
             self.isRinging = NO;
@@ -932,12 +934,12 @@ static const CGFloat kLocalPreviewMargin = 20;
                 self.isRinging = YES;
             }
             
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_connecting"];
+            callStatusLabel.text = [MatrixKitL10n callConnecting];
             break;
         }
         case MXCallStateInviteSent:
         {
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ringing"];
+            callStatusLabel.text = [MatrixKitL10n callRinging];
             break;
         }
         case MXCallStateRinging:
@@ -945,11 +947,11 @@ static const CGFloat kLocalPreviewMargin = 20;
             [self configureSpeakerButton];
             if (call.isVideoCall)
             {
-                callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_video_call"];
+                callStatusLabel.text = [MatrixKitL10n incomingVideoCall];
             }
             else
             {
-                callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"incoming_voice_call"];
+                callStatusLabel.text = [MatrixKitL10n incomingVoiceCall];
             }
             // Update bottom bar
             endCallButton.hidden = YES;
@@ -1006,7 +1008,7 @@ static const CGFloat kLocalPreviewMargin = 20;
 
             break;
         case MXCallStateOnHold:
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_holded"];
+            callStatusLabel.text = [MatrixKitL10n callHolded];
             
             break;
         case MXCallStateRemotelyOnHold:
@@ -1015,20 +1017,20 @@ static const CGFloat kLocalPreviewMargin = 20;
             speakerButton.enabled = NO;
             cameraSwitchButton.enabled = NO;
             self.moreButton.enabled = NO;
-            callStatusLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_remote_holded"], peerDisplayName];
+            callStatusLabel.text = [MatrixKitL10n callRemoteHolded:peerDisplayName];
             
             break;
         case MXCallStateInviteExpired:
             // MXCallStateInviteExpired state is sent as an notification
             // MXCall will move quickly to the MXCallStateEnded state
             self.isRinging = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_invite_expired"];
+            callStatusLabel.text = [MatrixKitL10n callInviteExpired];
             
             break;
         case MXCallStateEnded:
         {
             self.isRinging = NO;
-            callStatusLabel.text = [NSBundle mxk_localizedStringForKey:@"call_ended"];
+            callStatusLabel.text = [MatrixKitL10n callEnded];
             
             NSString *soundName = [self soundNameForCallEnding];
             if (soundName)
@@ -1066,18 +1068,18 @@ static const CGFloat kLocalPreviewMargin = 20;
         NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
         if (!title)
         {
-            title = [NSBundle mxk_localizedStringForKey:@"error"];
+            title = [MatrixKitL10n error];
         }
         NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
         if (!msg)
         {
-            msg = [NSBundle mxk_localizedStringForKey:@"error_common_message"];
+            msg = [MatrixKitL10n errorCommonMessage];
         }
 
         MXWeakify(self);
         errorAlert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
         
-        [errorAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+        [errorAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                        style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction * action) {
             
@@ -1100,7 +1102,7 @@ static const CGFloat kLocalPreviewMargin = 20;
     
     if (call.isConsulting)
     {
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_transfer_to_user"], call.transferee.displayname];
+        NSString *title = [MatrixKitL10n callTransferToUser:call.transferee.displayname];
         [_transferButton setTitle:title forState:UIControlStateNormal];
         _transferButton.hidden = call.state != MXCallStateConnected;
     }
@@ -1130,11 +1132,11 @@ static const CGFloat kLocalPreviewMargin = 20;
         
         if (mxCall.isVideoCall)
         {
-            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_video_with_user"], peerDisplayName];
+            callerNameLabel.text = [MatrixKitL10n callVideoWithUser:peerDisplayName];
         }
         else
         {
-            callerNameLabel.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"call_voice_with_user"], peerDisplayName];
+            callerNameLabel.text = [MatrixKitL10n callVoiceWithUser:peerDisplayName];
         }
         
         if (peerAvatarURL)

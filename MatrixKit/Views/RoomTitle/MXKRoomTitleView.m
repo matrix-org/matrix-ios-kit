@@ -23,6 +23,8 @@
 #import "NSBundle+MatrixKit.h"
 #import "MXRoom+Sync.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKRoomTitleView ()
 {
     // Observer kMXRoomSummaryDidChangeNotification to keep updated the room name.
@@ -84,7 +86,7 @@
     }
     else
     {
-        self.displayNameTextField.text = [NSBundle mxk_localizedStringForKey:@"room_please_select"];
+        self.displayNameTextField.text = [MatrixKitL10n roomPleaseSelect];
         self.displayNameTextField.enabled = NO;
     }
     self.displayNameTextField.hidden = NO;
@@ -168,7 +170,7 @@
             }
             else
             {
-                alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
+                alertMsg = [MatrixKitL10n roomErrorNameEditionNotAuthorized];
             }
         }
         
@@ -183,7 +185,7 @@
             
             currentAlert = [UIAlertController alertControllerWithTitle:nil message:alertMsg preferredStyle:UIAlertControllerStyleAlert];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
