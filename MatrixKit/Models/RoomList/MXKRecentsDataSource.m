@@ -354,7 +354,7 @@
                 for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
                 {
                     id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
-                    if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
+                    if ([roomId isEqualToString:recentCellData.roomIdentifier])
                     {
                         // Got it
                         indexPath = [NSIndexPath indexPathForRow:index inSection:section];
@@ -605,7 +605,7 @@
     
     if (recentCellData)
     {
-        return [self.mxSession roomWithRoomId:recentCellData.roomSummary.roomId];
+        return [self.mxSession roomWithRoomId:recentCellData.roomIdentifier];
     }
     
     return nil;

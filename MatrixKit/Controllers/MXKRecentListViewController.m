@@ -470,11 +470,14 @@
                     id<MXKRecentCellDataStoring> recentCellData = (id<MXKRecentCellDataStoring>)cellData;
                     if (recentCellData.isSuggestedRoom)
                     {
-                        [_delegate recentListViewController:self didSelectSuggestedRoom:recentCellData.spaceChildInfo];
+                        [_delegate recentListViewController:self
+                                     didSelectSuggestedRoom:recentCellData.spaceChildInfo];
                     }
                     else
                     {
-                        [_delegate recentListViewController:self didSelectRoom:recentCellData.roomSummary.roomId inMatrixSession:recentCellData.mxSession];
+                        [_delegate recentListViewController:self
+                                              didSelectRoom:recentCellData.roomIdentifier
+                                            inMatrixSession:recentCellData.mxSession];
                     }
                 }
             }

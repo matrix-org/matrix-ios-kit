@@ -90,9 +90,31 @@
     return (roomSummary.localUnreadEventCount != 0);
 }
 
+- (NSString *)roomIdentifier
+{
+    if (self.isSuggestedRoom)
+    {
+        return self.spaceChildInfo.name;
+    }
+    return roomSummary.roomId;
+}
+
 - (NSString *)roomDisplayname
 {
+    if (self.isSuggestedRoom)
+    {
+        return self.spaceChildInfo.displayName;
+    }
     return roomSummary.displayname;
+}
+
+- (NSString *)avatarUrl
+{
+    if (self.isSuggestedRoom)
+    {
+        return self.spaceChildInfo.avatarUrl;
+    }
+    return roomSummary.avatar;
 }
 
 - (NSUInteger)notificationCount

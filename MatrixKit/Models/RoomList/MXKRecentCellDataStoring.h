@@ -45,7 +45,9 @@
  */
 @property (nonatomic, readonly) MXSpaceChildInfo *spaceChildInfo;
 
+@property (nonatomic, readonly) NSString *roomIdentifier;
 @property (nonatomic, readonly) NSString *roomDisplayname;
+@property (nonatomic, readonly) NSString *avatarUrl;
 @property (nonatomic, readonly) NSString *lastEventTextMessage;
 @property (nonatomic, readonly) NSString *lastEventDate;
 

@@ -267,7 +267,7 @@
             for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
             {
                 id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
-                if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
+                if ([roomId isEqualToString:recentCellData.roomIdentifier])
                 {
                     // Got it
                     indexPath = [NSIndexPath indexPathForRow:index inSection:0];
@@ -290,7 +290,7 @@
                     for (NSInteger index = 0; index < interleavedCellDataArray.count; index ++)
                     {
                         id<MXKRecentCellDataStoring> recentCellData = interleavedCellDataArray[index];
-                        if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
+                        if ([roomId isEqualToString:recentCellData.roomIdentifier])
                         {
                             // Got it
                             indexPath = [NSIndexPath indexPathForRow:index inSection:0];
