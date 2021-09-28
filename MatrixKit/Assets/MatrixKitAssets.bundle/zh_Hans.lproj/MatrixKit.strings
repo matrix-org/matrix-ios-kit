@@ -471,3 +471,4 @@
 "attachment_small_with_resolution" = "小 %@ (~%@)";
 "attachment_size_prompt_message" = "你可以在设置中关闭这个。";
 "attachment_size_prompt_title" = "确认要发送的大小";
+"room_displayname_all_other_participants_left" = "%@ (离开)";
