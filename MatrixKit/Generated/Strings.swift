@@ -1395,6 +1395,10 @@ public class MatrixKitL10n: NSObject {
   public static var roomDetailsTitle: String { 
     return MatrixKitL10n.tr("room_details_title") 
   }
+  /// %@ (Left)
+  public static func roomDisplaynameAllOtherMembersLeft(_ p1: String) -> String {
+    return MatrixKitL10n.tr("room_displayname_all_other_members_left", p1)
+  }
   /// Empty room
   public static var roomDisplaynameEmptyRoom: String { 
     return MatrixKitL10n.tr("room_displayname_empty_room") 
