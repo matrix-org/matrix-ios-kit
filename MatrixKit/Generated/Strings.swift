@@ -159,6 +159,22 @@ public class MatrixKitL10n: NSObject {
   public static func attachmentSmallWithResolution(_ p1: String, _ p2: String) -> String {
     return MatrixKitL10n.tr("attachment_small_with_resolution", p1, p2)
   }
+  /// Invalid username
+  public static var authInvalidUserName: String { 
+    return MatrixKitL10n.tr("auth_invalid_user_name") 
+  }
+  /// Not found
+  public static var authResetPasswordErrorNotFound: String { 
+    return MatrixKitL10n.tr("auth_reset_password_error_not_found") 
+  }
+  /// Unauthorized
+  public static var authResetPasswordErrorUnauthorized: String { 
+    return MatrixKitL10n.tr("auth_reset_password_error_unauthorized") 
+  }
+  /// Username in use
+  public static var authUsernameInUse: String { 
+    return MatrixKitL10n.tr("auth_username_in_use") 
+  }
   /// Back
   public static var back: String { 
     return MatrixKitL10n.tr("back") 

@@ -15,11 +15,11 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <MatrixSDK/MXSendReplyEventStringLocalizer.h>
+#import <MatrixSDK/MXSendReplyEventStringLocalizerProtocol.h>
 
 /**
  A `MXKSendReplyEventStringLocalizer` instance represents string localizations used when send reply event to a message in a room.
  */
-@interface MXKSendReplyEventStringLocalizer : NSObject<MXSendReplyEventStringLocalizer>
+@interface MXKSendReplyEventStringLocalizer : NSObject<MXSendReplyEventStringLocalizerProtocol>
 
 @end

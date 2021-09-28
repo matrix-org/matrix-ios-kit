@@ -1047,7 +1047,7 @@
                             if (isUserNameInUse)
                             {
                                 MXLogDebug(@"[MXKAuthenticationVC] User name is already use");
-                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_username_in_use"]}]];
+                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n authUsernameInUse]}]];
                             }
                             else
                             {
@@ -1094,7 +1094,7 @@
                 else
                 {
                     MXLogDebug(@"[MXKAuthenticationVC] User name is missing");
-                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_invalid_user_name"]}]];
+                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n authInvalidUserName]}]];
                 }
             }
             else if (_authType == MXKAuthenticationTypeForgotPassword)
@@ -1840,7 +1840,7 @@
                 [self->alert dismissViewControllerAnimated:NO completion:nil];
             }
             
-            self->alert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n error] message:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_unauthorized"] preferredStyle:UIAlertControllerStyleAlert];
+            self->alert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n error] message:[MatrixKitL10n authResetPasswordErrorUnauthorized] preferredStyle:UIAlertControllerStyleAlert];
             
             [self->alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                       style:UIAlertActionStyleDefault
@@ -1866,7 +1866,7 @@
             {
                 userInfo = [NSMutableDictionary dictionary];
             }
-            userInfo[NSLocalizedDescriptionKey] = [NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_not_found"];
+            userInfo[NSLocalizedDescriptionKey] = [MatrixKitL10n authResetPasswordErrorNotFound];
             
             [self onFailureDuringAuthRequest:[NSError errorWithDomain:kMXNSErrorDomain code:0 userInfo:userInfo]];
         }
