@@ -225,10 +225,10 @@
 "room_member_power_level_prompt" = "Du kannst diese Änderung nicht rückgangig machen, weil du dem Benutzer die gleiche Berechtigungsstufe gibst, die du selbst hast.\nBist du sicher?";
 // Attachment
 "attachment_size_prompt" = "Möchtest du senden als:";
-"attachment_original" = "Originalgröße: %@";
-"attachment_small" = "Klein: %@";
-"attachment_medium" = "Mittel: %@";
-"attachment_large" = "Groß: %@";
+"attachment_original" = "Originalgröße (%@)";
+"attachment_small" = "Klein (~%@)";
+"attachment_medium" = "Mittel (~%@)";
+"attachment_large" = "Groß (~%@)";
 "attachment_cancel_download" = "Herunterladen abbrechen?";
 "attachment_cancel_upload" = "Hochladen abbrechen?";
 "attachment_multiselection_size_prompt" = "Bilder senden als:";
@@ -492,3 +492,8 @@
 "call_consulting_with_user" = "Bei %@ anfragen";
 "microphone_access_not_granted_for_voice_message" = "%@ fehlt die Berechtigung, für Sprachnachrichten auf das Mikrofon zuzugreifen";
 "message_reply_to_sender_sent_a_voice_message" = "hat eine Sprachnachricht gesendet.";
+"attachment_size_prompt_title" = "Größe zum Senden";
+"attachment_large_with_resolution" = "Groß %@ (~%@)";
+"attachment_medium_with_resolution" = "Mittel %@ (~%@)";
+"attachment_small_with_resolution" = "Klein %@ (~%@)";
+"attachment_size_prompt_message" = "Du kannst dies in den Einstellungen ausschalten.";

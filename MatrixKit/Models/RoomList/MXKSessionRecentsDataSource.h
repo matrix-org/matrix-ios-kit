@@ -21,6 +21,8 @@
 #import "MXKDataSource.h"
 #import "MXKRecentCellData.h"
 
+@class MXSpace;
+
 /**
  Identifier to use for cells that display a room in the recents list.
  */
@@ -53,6 +55,8 @@ extern NSString *const kMXKRecentCellIdentifier;
  Tell whether there are some unread messages.
  */
 @property (nonatomic, readonly) BOOL hasUnread;
+
+@property (nonatomic, strong, nullable) MXSpace *currentSpace;
 
 
 #pragma mark - Life cycle

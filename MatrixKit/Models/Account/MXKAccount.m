@@ -881,7 +881,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
  */
 - (void)closeSession:(BOOL)clearStore
 {
-    MXLogDebug(@"[MXKAccount] closeSession (%tu)", clearStore);
+    MXLogDebug(@"[MXKAccount] closeSession (%u)", clearStore);
     
     if (NSCurrentLocaleDidChangeNotificationObserver)
     {

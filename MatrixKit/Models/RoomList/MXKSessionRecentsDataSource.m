@@ -18,6 +18,7 @@
 #import "MXKSessionRecentsDataSource.h"
 
 #import "MXKRoomDataSourceManager.h"
+#import <MatrixSDK/MatrixSDK-Swift.h>
 
 #pragma mark - Constant definitions
 NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";
@@ -44,7 +45,19 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
      Do not react on every summary change
      */
     MXThrottler *roomSummaryChangeThrottler;
+    
+    /**
+     Last received suggested rooms per space ID
+     */
+    NSMutableDictionary<NSString*, NSArray<MXSpaceChildInfo *> *> *lastSuggestedRooms;
+    
+    id spaceEventsListener;
 }
+
+/**
+ Additional suggestedRooms related to the current selected Space
+ */
+@property (nonatomic, strong) NSArray<MXSpaceChildInfo *> *suggestedRooms;
 
 @end
 
@@ -59,6 +72,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         
         internalCellDataArray = [NSMutableArray array];
         filteredCellDataArray = nil;
+        
+        lastSuggestedRooms = [NSMutableDictionary new];
         
         // Set default data and view classes
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
@@ -82,6 +97,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     cellDataArray = nil;
     internalCellDataArray = nil;
     filteredCellDataArray = nil;
+    lastSuggestedRooms = nil;
     
     searchPatternsList = nil;
     
@@ -102,6 +118,55 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             // Sort cell data and notify the delegate
             [self sortCellDataAndNotifyChanges];
         }
+    }
+}
+
+- (void)setCurrentSpace:(MXSpace *)currentSpace
+{
+    if (_currentSpace == currentSpace)
+    {
+        return;
+    }
+    
+    if (_currentSpace && spaceEventsListener)
+    {
+        [_currentSpace.room removeListener:spaceEventsListener];
+    }
+    
+    _currentSpace = currentSpace;
+    
+    self.suggestedRooms = _currentSpace ? lastSuggestedRooms[_currentSpace.spaceId] : nil;
+    [self updateSuggestedRooms];
+    
+    MXWeakify(self);
+    spaceEventsListener = [self.currentSpace.room listenToEvents:^(MXEvent *event, MXTimelineDirection direction, MXRoomState *roomState) {
+        MXStrongifyAndReturnIfNil(self);
+        [self updateSuggestedRooms];
+    }];
+}
+
+-(void)setSuggestedRooms:(NSArray<MXSpaceChildInfo *> *)suggestedRooms
+{
+    _suggestedRooms = suggestedRooms;
+    [self loadData];
+}
+
+-(void)updateSuggestedRooms
+{
+    if (self.currentSpace)
+    {
+        NSString *currentSpaceId = self.currentSpace.spaceId;
+        MXWeakify(self);
+        [self.mxSession.spaceService getSpaceChildrenForSpaceWithId:currentSpaceId suggestedOnly:YES limit:5 success:^(MXSpaceChildrenSummary * _Nonnull childrenSummary) {
+            MXLogDebug(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId %@: %ld found", self.currentSpace.spaceId, childrenSummary.childInfos.count);
+            MXStrongifyAndReturnIfNil(self);
+            self->lastSuggestedRooms[currentSpaceId] = childrenSummary.childInfos;
+            if ([self.currentSpace.spaceId isEqual:currentSpaceId]) {
+                self.suggestedRooms = childrenSummary.childInfos;
+            }
+        } failure:^(NSError * _Nonnull error) {
+            MXLogError(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId failed with error: %@", error);
+        }];
     }
 }
 
@@ -225,8 +290,21 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
             if (cellData)
             {
-                [internalCellDataArray addObject:cellData];
+                if (self.currentSpace == nil || [self.mxSession.spaceService isRoomWithId:roomSummary.roomId descendantOf:self.currentSpace.spaceId])
+                {
+                    [internalCellDataArray addObject:cellData];
+                }
             }
+        }
+    }
+    
+    for (MXSpaceChildInfo *childInfo in _suggestedRooms)
+    {
+        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithSpaceChildInfo:childInfo
+                                                                           dataSource:self];
+        if (cellData)
+        {
+            [internalCellDataArray addObject:cellData];
         }
     }
 
