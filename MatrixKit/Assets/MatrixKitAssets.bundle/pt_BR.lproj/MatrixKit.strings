@@ -470,3 +470,4 @@
 "attachment_small_with_resolution" = "Pequeno %@ (~%@)";
 "attachment_size_prompt_message" = "Você pode desligar isto em configurações.";
 "attachment_size_prompt_title" = "Confirmar tamanho para enviar";
+"room_displayname_all_other_participants_left" = "%@ (Saiu)";
