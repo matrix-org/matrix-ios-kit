@@ -94,7 +94,7 @@
 {
     if (self.isSuggestedRoom)
     {
-        return self.spaceChildInfo.name;
+        return self.spaceChildInfo.childRoomId;
     }
     return roomSummary.roomId;
 }
