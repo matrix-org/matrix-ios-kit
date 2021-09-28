@@ -1,3 +1,11 @@
+## Changes in 0.16.3 (2021-09-28)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.3)).
+- Exposed new room name localizable string to use for empty direct messages. ([#4717](https://github.com/vector-im/element-ios/issues/4717))
+
+
 ## Changes in 0.16.2 (2021-09-24)
 
 ✨ Features
