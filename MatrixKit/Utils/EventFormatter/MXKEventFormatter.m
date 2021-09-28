@@ -27,7 +27,7 @@
 #import "MXKTools.h"
 #import "MXRoom+Sync.h"
 
-#import "MXKRoomNameStringLocalizations.h"
+#import "MXKRoomNameStringLocalizer.h"
 
 static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 
@@ -101,7 +101,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
         defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
-        defaultRoomSummaryUpdater.roomNameStringLocalizations = [MXKRoomNameStringLocalizations new];
+        defaultRoomSummaryUpdater.roomNameStringLocalizer = [MXKRoomNameStringLocalizer new];
 
         linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
         

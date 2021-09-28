@@ -31,7 +31,7 @@
 
 #import "MXKAppSettings.h"
 
-#import "MXKSendReplyEventStringLocalizations.h"
+#import "MXKSendReplyEventStringLocalizer.h"
 #import "MXKSlashCommands.h"
 
 
@@ -1736,9 +1736,9 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     NSString *sanitizedText = [self sanitizedMessageText:text];
     NSString *html = [self htmlMessageFromSanitizedText:sanitizedText];
     
-    id<MXSendReplyEventStringsLocalizable> stringLocalizations = [MXKSendReplyEventStringLocalizations new];
+    id<MXSendReplyEventStringLocalizer> stringLocalizer = [MXKSendReplyEventStringLocalizer new];
     
-    [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizations:stringLocalizations localEcho:&localEchoEvent success:success failure:failure];
+    [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizer:stringLocalizer localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
