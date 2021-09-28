@@ -158,6 +158,7 @@
 "room_displayname_empty_room" = "Empty room";
 "room_displayname_two_members" = "%@ and %@";
 "room_displayname_more_than_two_members" = "%@ and %@ others";
+"room_displayname_all_other_participants_left" = "%@ (Left)";
 
 // Settings
 "settings" = "Settings";
