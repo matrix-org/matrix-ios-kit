@@ -1736,7 +1736,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     NSString *sanitizedText = [self sanitizedMessageText:text];
     NSString *html = [self htmlMessageFromSanitizedText:sanitizedText];
     
-    id<MXSendReplyEventStringLocalizer> stringLocalizer = [MXKSendReplyEventStringLocalizer new];
+    id<MXSendReplyEventStringLocalizerProtocol> stringLocalizer = [MXKSendReplyEventStringLocalizer new];
     
     [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizer:stringLocalizer localEcho:&localEchoEvent success:success failure:failure];
     

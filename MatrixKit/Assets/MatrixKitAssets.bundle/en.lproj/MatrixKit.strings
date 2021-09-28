@@ -572,3 +572,8 @@
 "ssl_unexpected_existing_expl" = "The certificate has changed from one that was trusted by your phone. This is HIGHLY UNUSUAL. It is recommended that you DO NOT ACCEPT this new certificate.";
 "ssl_expected_existing_expl" = "The certificate has changed from a previously trusted one to one that is not trusted. The server may have renewed its certificate. Contact the server administrator for the expected fingerprint.";
 "ssl_only_accept" = "ONLY accept the certificate if the server administrator has published a fingerprint that matches the one above.";
+
+"auth_invalid_user_name" = "Invalid username";
+"auth_username_in_use" = "Username in use";
+"auth_reset_password_error_unauthorized" = "Unauthorized";
+"auth_reset_password_error_not_found" = "Not found";
