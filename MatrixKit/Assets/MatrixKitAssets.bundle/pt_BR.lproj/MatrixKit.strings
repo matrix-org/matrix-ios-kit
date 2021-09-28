@@ -187,7 +187,7 @@
 // Room
 "room_please_select" = "Por favor selecione uma sala";
 "room_error_join_failed_title" = "Falha para se juntar a sala";
-"room_error_join_failed_empty_room" = "Não é atualmente possível se rejuntar a uma sala vazia.";
+"room_error_join_failed_empty_room" = "Não é atualmente possível se juntar a uma sala vazia.";
 "room_error_name_edition_not_authorized" = "Você não está autorizada(o) a editar o nome deste sala";
 "room_error_topic_edition_not_authorized" = "Você não está autorizada(o) a editar o tópico desta sala";
 "room_error_cannot_load_timeline" = "Falha para carregar timeline";

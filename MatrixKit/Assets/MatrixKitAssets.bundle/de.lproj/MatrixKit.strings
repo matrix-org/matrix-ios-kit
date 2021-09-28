@@ -124,7 +124,7 @@
 "notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ hat den zukünftigen Verlauf für alle Raumteilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ hat den zukünftigen Raumverlauf für alle Raumteilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ hat den zukünftigen Verlauf für alle Raumteilnehmer ab deren Einladung sichtbar gemacht.";
-"notice_crypto_unable_to_decrypt" = "** Kann nicht entschlüsseln: %@ **";
+"notice_crypto_unable_to_decrypt" = "** Entschlüsselung nicht möglich: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Die Sitzung des Absenders hat uns keine Schlüssel für diese Nachricht gesendet.";
 "notice_sticker" = "Aufkleber";
 "notice_in_reply_to" = "Als Antwort auf";
@@ -204,7 +204,7 @@
 // Room
 "room_please_select" = "Bitte wähle einen Raum";
 "room_error_join_failed_title" = "Konnte Raum nicht betreten";
-"room_error_join_failed_empty_room" = "Leeren Raum erneut betreten derzeit nicht möglich.";
+"room_error_join_failed_empty_room" = "Es ist aktuell nicht möglich einen leeren Raum zu betreten.";
 "room_error_name_edition_not_authorized" = "Du bist nicht authorisiert den Raumnamen zu ändern";
 "room_error_topic_edition_not_authorized" = "Du bist nicht authorisiert das Raumthema zu ändern";
 "room_error_cannot_load_timeline" = "Konnte Verlauf nicht laden";
@@ -301,7 +301,7 @@
 "notice_room_ban" = "%@ sperrte %@";
 "notice_room_withdraw" = "%@ hat %@s Einladung zurückgezogen";
 "notice_room_reason" = ". Grund: %@";
-"notice_avatar_url_changed" = "%@ hat seinen Avatar geändert";
+"notice_avatar_url_changed" = "%@ hat den eigenen Avatar geändert";
 "notice_display_name_set" = "%@ setzte den Anzeigenamen auf %@";
 "notice_display_name_changed_from" = "%@ änderte den Anzeigenamen von %@ auf %@";
 "notice_display_name_removed" = "%@ hat den Anzeigenamen entfernt";
