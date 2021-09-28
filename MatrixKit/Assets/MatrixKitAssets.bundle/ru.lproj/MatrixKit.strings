@@ -227,7 +227,7 @@
 "room_creation_alias_placeholder" = "(напр. #foo:primer.ru)";
 "room_creation_alias_placeholder_with_homeserver" = "(напр. #foo%@)";
 "room_creation_participants_placeholder" = "(напр. @boris:homeserver1; @ivan:homeserver2...)";
-"room_error_join_failed_empty_room" = "В настоящее время невозможно перезайти в пустую комнату.";
+"room_error_join_failed_empty_room" = "В настоящее время невозможно присоединиться в пустую комнату.";
 "room_error_name_edition_not_authorized" = "У вас нет прав на редактирование названия этой комнаты";
 "room_error_topic_edition_not_authorized" = "У вас нет прав редактировать тему этой комнаты";
 "room_error_cannot_load_timeline" = "Не удалось загрузить хронологию";
