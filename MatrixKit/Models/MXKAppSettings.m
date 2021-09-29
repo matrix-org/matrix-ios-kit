@@ -179,6 +179,8 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         ].mutableCopy;
         
         lastMessageEventTypesAllowList = @[
+            kMXEventTypeStringRoomCreate,       // Without any messages, calls or stickers an event is needed to provide a date.
+            kMXEventTypeStringRoomEncrypted,    // Show a UTD string rather than the previous message.
             kMXEventTypeStringRoomMessage,
             kMXEventTypeStringCallInvite,
             kMXEventTypeStringCallAnswer,
