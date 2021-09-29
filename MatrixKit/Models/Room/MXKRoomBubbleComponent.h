@@ -17,8 +17,7 @@
 #import <MatrixSDK/MatrixSDK.h>
 
 #import "MXKEventFormatter.h"
-
-@class URLPreviewData;
+#import "MXKURLPreviewDataProtocol.h"
 
 /**
  Flags to indicate if a fix is required at the display time.
@@ -86,7 +85,7 @@ typedef enum : NSUInteger {
  Any data necessary to show a URL preview.
  Note: MatrixKit is unable to display this data by itself.
  */
-@property (nonatomic) URLPreviewData *urlPreviewData;
+@property (nonatomic) id <MXKURLPreviewDataProtocol> urlPreviewData;
 
 /**
  Whether a URL preview should be displayed for this cell.

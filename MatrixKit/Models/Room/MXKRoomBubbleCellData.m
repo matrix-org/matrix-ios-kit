@@ -420,6 +420,11 @@
 
 #pragma mark -
 
+- (void)invalidateTextLayout
+{
+    self.attributedTextMessage = nil;
+}
+
 - (void)prepareBubbleComponentsPosition
 {
     // Consider here only the first component if any
@@ -709,11 +714,6 @@
         // Reset content size
         _contentSize = CGSizeZero;
     }
-}
-
-- (void)invalidateTextLayout
-{
-    self.attributedTextMessage = nil;
 }
 
 - (CGSize)contentSize
