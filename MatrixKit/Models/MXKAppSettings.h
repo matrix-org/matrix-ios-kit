@@ -62,9 +62,11 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
 @property (nonatomic, readonly) NSArray<MXEventTypeString> *allEventTypesForMessages;
 
 /**
- The types of events allowed to be displayed as the last message.
+ An allow list for the types of events allowed to be displayed as the last message.
+ 
+ When `nil`, there is no list and all events are allowed.
  */
-@property (nonatomic) NSArray<MXEventTypeString> *eventsFilterForLastMessage;
+@property (nonatomic, readonly) NSArray<MXEventTypeString> *lastMessageEventTypesAllowList;
 
 /**
  Add event types to `eventsFilterForMessages` and `eventsFilterForMessages`.

@@ -99,7 +99,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         _settings = [MXKAppSettings standardAppSettings];
 
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
-        defaultRoomSummaryUpdater.eventsFilterForLastMessage = MXKAppSettings.standardAppSettings.eventsFilterForLastMessage;
+        defaultRoomSummaryUpdater.lastMessageEventTypesAllowList = MXKAppSettings.standardAppSettings.lastMessageEventTypesAllowList;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
         defaultRoomSummaryUpdater.roomNameStringLocalizations = [MXKRoomNameStringLocalizations new];
 
