@@ -33,6 +33,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     NSMutableArray <NSString*> *eventsFilterForMessages;
     NSMutableArray <NSString*> *allEventTypesForMessages;
+    NSMutableArray <NSString*> *lastMessageEventTypesAllowList;
 }
 
 @property (nonatomic, readwrite) NSUserDefaults *sharedUserDefaults;
@@ -125,57 +126,67 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         _notificationBodyLocalizationKey = @"MESSAGE";
         enableCallKit = YES;
         
-        eventsFilterForMessages = [NSMutableArray arrayWithArray:@[
-                                                                  kMXEventTypeStringRoomCreate,
-                                                                  kMXEventTypeStringRoomName,
-                                                                  kMXEventTypeStringRoomTopic,
-                                                                  kMXEventTypeStringRoomMember,
-                                                                  kMXEventTypeStringRoomEncrypted,
-                                                                  kMXEventTypeStringRoomEncryption,
-                                                                  kMXEventTypeStringRoomHistoryVisibility,
-                                                                  kMXEventTypeStringRoomMessage,
-                                                                  kMXEventTypeStringRoomThirdPartyInvite,
-                                                                  kMXEventTypeStringRoomGuestAccess,
-                                                                  kMXEventTypeStringRoomJoinRules,
-                                                                  kMXEventTypeStringCallInvite,
-                                                                  kMXEventTypeStringCallAnswer,
-                                                                  kMXEventTypeStringCallHangup,
-                                                                  kMXEventTypeStringCallReject,
-                                                                  kMXEventTypeStringCallNegotiate,
-                                                                  kMXEventTypeStringSticker,
-                                                                  kMXEventTypeStringKeyVerificationCancel,
-                                                                  kMXEventTypeStringKeyVerificationDone
-                                                                  ]];
+        eventsFilterForMessages = @[
+            kMXEventTypeStringRoomCreate,
+            kMXEventTypeStringRoomName,
+            kMXEventTypeStringRoomTopic,
+            kMXEventTypeStringRoomMember,
+            kMXEventTypeStringRoomEncrypted,
+            kMXEventTypeStringRoomEncryption,
+            kMXEventTypeStringRoomHistoryVisibility,
+            kMXEventTypeStringRoomMessage,
+            kMXEventTypeStringRoomThirdPartyInvite,
+            kMXEventTypeStringRoomGuestAccess,
+            kMXEventTypeStringRoomJoinRules,
+            kMXEventTypeStringCallInvite,
+            kMXEventTypeStringCallAnswer,
+            kMXEventTypeStringCallHangup,
+            kMXEventTypeStringCallReject,
+            kMXEventTypeStringCallNegotiate,
+            kMXEventTypeStringSticker,
+            kMXEventTypeStringKeyVerificationCancel,
+            kMXEventTypeStringKeyVerificationDone
+        ].mutableCopy;
         
 
         // List all the event types, except kMXEventTypeStringPresence which are not related to a specific room.
-        allEventTypesForMessages = [NSMutableArray arrayWithArray:@[
-                                                                    kMXEventTypeStringRoomName,
-                                                                    kMXEventTypeStringRoomTopic,
-                                                                    kMXEventTypeStringRoomMember,
-                                                                    kMXEventTypeStringRoomCreate,
-                                                                    kMXEventTypeStringRoomEncrypted,
-                                                                    kMXEventTypeStringRoomEncryption,
-                                                                    kMXEventTypeStringRoomJoinRules,
-                                                                    kMXEventTypeStringRoomPowerLevels,
-                                                                    kMXEventTypeStringRoomAliases,
-                                                                    kMXEventTypeStringRoomHistoryVisibility,
-                                                                    kMXEventTypeStringRoomMessage,
-                                                                    kMXEventTypeStringRoomMessageFeedback,
-                                                                    kMXEventTypeStringRoomRedaction,
-                                                                    kMXEventTypeStringRoomThirdPartyInvite,
-                                                                    kMXEventTypeStringRoomRelatedGroups,
-                                                                    kMXEventTypeStringReaction,
-                                                                    kMXEventTypeStringCallInvite,
-                                                                    kMXEventTypeStringCallAnswer,
-                                                                    kMXEventTypeStringCallSelectAnswer,
-                                                                    kMXEventTypeStringCallHangup,
-                                                                    kMXEventTypeStringCallReject,
-                                                                    kMXEventTypeStringCallNegotiate,
-                                                                    kMXEventTypeStringSticker,
-                                                                    kMXEventTypeStringKeyVerificationCancel,
-                                                                    kMXEventTypeStringKeyVerificationDone
-                                                                   ]];
+        allEventTypesForMessages = @[
+            kMXEventTypeStringRoomName,
+            kMXEventTypeStringRoomTopic,
+            kMXEventTypeStringRoomMember,
+            kMXEventTypeStringRoomCreate,
+            kMXEventTypeStringRoomEncrypted,
+            kMXEventTypeStringRoomEncryption,
+            kMXEventTypeStringRoomJoinRules,
+            kMXEventTypeStringRoomPowerLevels,
+            kMXEventTypeStringRoomAliases,
+            kMXEventTypeStringRoomHistoryVisibility,
+            kMXEventTypeStringRoomMessage,
+            kMXEventTypeStringRoomMessageFeedback,
+            kMXEventTypeStringRoomRedaction,
+            kMXEventTypeStringRoomThirdPartyInvite,
+            kMXEventTypeStringRoomRelatedGroups,
+            kMXEventTypeStringReaction,
+            kMXEventTypeStringCallInvite,
+            kMXEventTypeStringCallAnswer,
+            kMXEventTypeStringCallSelectAnswer,
+            kMXEventTypeStringCallHangup,
+            kMXEventTypeStringCallReject,
+            kMXEventTypeStringCallNegotiate,
+            kMXEventTypeStringSticker,
+            kMXEventTypeStringKeyVerificationCancel,
+            kMXEventTypeStringKeyVerificationDone
+        ].mutableCopy;
+        
+        lastMessageEventTypesAllowList = @[
+            kMXEventTypeStringRoomCreate,       // Without any messages, calls or stickers an event is needed to provide a date.
+            kMXEventTypeStringRoomEncrypted,    // Show a UTD string rather than the previous message.
+            kMXEventTypeStringRoomMessage,
+            kMXEventTypeStringCallInvite,
+            kMXEventTypeStringCallAnswer,
+            kMXEventTypeStringCallHangup,
+            kMXEventTypeStringSticker
+        ].mutableCopy;
         
         _messageDetailsAllowSharing = YES;
         _messageDetailsAllowSaving = YES;
@@ -353,6 +364,11 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     return allEventTypesForMessages;
 }
 
+- (NSArray<MXEventTypeString> *)lastMessageEventTypesAllowList
+{
+    return lastMessageEventTypesAllowList;
+}
+
 - (void)addSupportedEventTypes:(NSArray<NSString *> *)eventTypes
 {
     [eventsFilterForMessages addObjectsFromArray:eventTypes];
@@ -363,6 +379,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     [eventsFilterForMessages removeObjectsInArray:eventTypes];
     [allEventTypesForMessages removeObjectsInArray:eventTypes];
+    [lastMessageEventTypesAllowList removeObjectsInArray:eventTypes];
 }
 
 - (BOOL)showRedactionsInRoomHistory

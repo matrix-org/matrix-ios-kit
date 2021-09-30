@@ -99,7 +99,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         _settings = [MXKAppSettings standardAppSettings];
 
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
-        defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
+        defaultRoomSummaryUpdater.lastMessageEventTypesAllowList = MXKAppSettings.standardAppSettings.lastMessageEventTypesAllowList;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
         defaultRoomSummaryUpdater.roomNameStringLocalizer = [MXKRoomNameStringLocalizer new];
 
@@ -123,13 +123,6 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateStyle:NSDateFormatterNoStyle];
     [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
-}
-
-- (void)setEventTypesFilterForMessages:(NSArray<NSString *> *)eventTypesFilterForMessages
-{
-    _eventTypesFilterForMessages = eventTypesFilterForMessages;
-    
-    defaultRoomSummaryUpdater.eventsFilterForMessages = eventTypesFilterForMessages;
 }
 
 #pragma mark - Event formatter settings
@@ -1950,6 +1943,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         // users displaynames, we want current displaynames
         MXKEventFormatterError error;
         NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
+        
+        if ([event.type isEqualToString:kMXEventTypeStringRoomCreate])
+        {
+            // Temporarily fallback to the room joined notice when the last event is for the room's creation.
+            // This will be improved as part of https://github.com/vector-im/element-ios/issues/4918
+            lastMessageString = MatrixKitL10n.noticeRoomJoinByYou;
+        }
+        
         if (0 == lastMessageString.length)
         {
             // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
