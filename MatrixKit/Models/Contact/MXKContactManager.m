@@ -503,7 +503,6 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 {
     if (!self.allowLocalContactsAccess)
     {
-        
         return;
     }
     

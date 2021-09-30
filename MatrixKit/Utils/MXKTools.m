@@ -863,7 +863,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
      showPopUpInViewController:(UIViewController *)viewController
              completionHandler:(void (^)(BOOL granted))handler
 {
-    [self checkAccessForContacts:nil           withManualChangeMessage:manualChangeMessage showPopUpInViewController:viewController completionHandler:handler];
+    [self checkAccessForContacts:nil withManualChangeMessage:manualChangeMessage showPopUpInViewController:viewController completionHandler:handler];
 }
 
 + (void)checkAccessForContacts:(NSString *)manualChangeTitle
@@ -894,7 +894,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         // Display manualChangeMessage
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:manualChangeTitle message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+        [alert addAction:[UIAlertAction actionWithTitle:MatrixKitL10n.cancel
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
             
@@ -906,7 +906,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
         if (sharedApplication)
         {
-            UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+            UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:MatrixKitL10n.settings
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                 [MXKAppSettings standardAppSettings].syncLocalContactsPermissionOpenedSystemSettings = YES;
