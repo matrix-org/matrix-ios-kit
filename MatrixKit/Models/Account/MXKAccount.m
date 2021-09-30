@@ -33,6 +33,8 @@
 
 #import <MatrixSDK/MXBackgroundModeHandler.h>
 
+#import "MXKSwiftHeader.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 NSString *const kMXKAccountPushKitActivityDidChangeNotification = @"kMXKAccountPushKitActivityDidChangeNotification";
@@ -454,7 +456,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                                                  code:0
                                              userInfo:@{
                                                         NSLocalizedDescriptionKey:
-                                                            [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
+                                                            [MatrixKitL10n accountErrorPushNotAllowed]
                                                         }];
             if (failure)
             {
@@ -531,7 +533,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                                                  code:0
                                              userInfo:@{
                                                         NSLocalizedDescriptionKey:
-                                                            [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
+                                                            [MatrixKitL10n accountErrorPushNotAllowed]
                                                         }];
             failure (error);
         }
@@ -648,7 +650,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [MatrixKitL10n accountErrorMatrixSessionIsNotOpened]}]);
     }
 }
 
@@ -668,7 +670,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [MatrixKitL10n accountErrorMatrixSessionIsNotOpened]}]);
     }
 }
 
@@ -689,7 +691,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [MatrixKitL10n accountErrorMatrixSessionIsNotOpened]}]);
     }
 }
 
@@ -1080,7 +1082,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     // Reset internal flag
     isPauseRequested = NO;
     
-    if (mxSession && mxSession.state == MXSessionStateRunning)
+    if (mxSession && mxSession.isPauseable)
     {
         id<MXBackgroundModeHandler> handler = [MXSDKOptions sharedInstance].backgroundModeHandler;
         if (handler)
@@ -1143,6 +1145,8 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     
     if (mxSession)
     {
+        MXLogVerbose(@"[MXKAccount] resume with session state: %tu", mxSession.state);
+        
         [self cancelBackgroundSync];
         
         if (mxSession.state == MXSessionStatePaused || mxSession.state == MXSessionStatePauseRequested)
@@ -1627,7 +1631,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 
                 if (isClientTimeout || isServerTimeout)
                 {
-                    //  do not propogate this error to the client
+                    //  do not propagate this error to the client
                     //  the request will be retried or postponed according to the reachability status
                     MXLogDebug(@"[MXKAccount] Initial sync failure did not propagated");
                 }
@@ -1670,6 +1674,56 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                 }
             }];
         }];
+    }];
+}
+
+- (void)attemptDeviceDehydrationWithKeyData:(NSData *)keyData
+                                    success:(void (^)(void))success
+                                    failure:(void (^)(NSError *error))failure
+{
+    [self attemptDeviceDehydrationWithKeyData:keyData retry:YES success:success failure:failure];
+}
+
+- (void)attemptDeviceDehydrationWithKeyData:(NSData *)keyData
+                                      retry:(BOOL)retry
+                                    success:(void (^)(void))success
+                                    failure:(void (^)(NSError *error))failure
+{
+    if (keyData == nil)
+    {
+        MXLogWarning(@"[MXKAccount] attemptDeviceDehydrationWithRetry: no key provided for device dehydration");
+        
+        if (failure)
+        {
+            failure(nil);
+        }
+        
+        return;
+    }
+    
+    MXLogDebug(@"[MXKAccount] attemptDeviceDehydrationWithRetry: starting device dehydration");
+    [[MXKAccountManager sharedManager].dehydrationService dehydrateDeviceWithMatrixRestClient:mxRestClient crypto:mxSession.crypto dehydrationKey:keyData success:^(NSString *deviceId) {
+        MXLogDebug(@"[MXKAccount] attemptDeviceDehydrationWithRetry: device successfully dehydrated");
+        
+        if (success)
+        {
+            success();
+        }
+    } failure:^(NSError *error) {
+        if (retry)
+        {
+            [self attemptDeviceDehydrationWithKeyData:keyData retry:NO success:success failure:failure];
+            MXLogError(@"[MXKAccount] attemptDeviceDehydrationWithRetry: device dehydration failed due to error: %@. Retrying.", error);
+        }
+        else
+        {
+            MXLogError(@"[MXKAccount] attemptDeviceDehydrationWithRetry: device dehydration failed due to error: %@", error);
+            
+            if (failure)
+            {
+                failure(error);
+            }
+        }
     }];
 }
 

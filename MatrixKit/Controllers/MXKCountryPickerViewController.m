@@ -19,6 +19,7 @@
 @import libPhoneNumber_iOS;
 
 #import "NSBundle+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 
 NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPickerViewControllerCountryCellId";
@@ -108,7 +109,7 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
         [[[self class] nib] instantiateWithOwner:self options:nil];
     }
     
-    self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"country_picker_title"];
+    self.navigationItem.title = [MatrixKitL10n countryPickerTitle];
     
     [self setupSearchController];
 }
@@ -117,9 +118,7 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
 {
     [super viewDidAppear:animated];
     
-    if (@available(iOS 11.0, *)) {
-        self.navigationItem.hidesSearchBarWhenScrolling = YES;
-    }
+    self.navigationItem.hidesSearchBarWhenScrolling = YES;
 }
 
 #pragma mark - 
@@ -156,12 +155,10 @@ NSString* const kMXKCountryPickerViewControllerCountryCellId = @"kMXKCountryPick
     searchController.dimsBackgroundDuringPresentation = NO;
     searchController.hidesNavigationBarDuringPresentation = NO;
     searchController.searchResultsUpdater = self;
-            
-    if (@available(iOS 11.0, *)) {
-        self.navigationItem.searchController = searchController;
-        // Make the search bar visible on first view appearance
-        self.navigationItem.hidesSearchBarWhenScrolling = NO;
-    }
+    
+    self.navigationItem.searchController = searchController;
+    // Make the search bar visible on first view appearance
+    self.navigationItem.hidesSearchBarWhenScrolling = NO;
     
     self.definesPresentationContext = YES;
     

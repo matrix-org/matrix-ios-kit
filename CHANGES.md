@@ -1,3 +1,49 @@
+## Changes in 0.16.3 (2021-09-28)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.3](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.3)).
+- Exposed new room name localizable string to use for empty direct messages. ([#4717](https://github.com/vector-im/element-ios/issues/4717))
+
+
+## Changes in 0.16.2 (2021-09-24)
+
+✨ Features
+
+- Added device de/rehydration supporting flows. ([#4255](https://github.com/vector-im/element-ios/issues/4255))
+- Support for space link. ([#4498](https://github.com/vector-im/element-ios/issues/4498))
+- Add suggested rooms and support for suggested room selection to the list of recent cell data ([#4501](https://github.com/vector-im/element-ios/issues/4501))
+- moved space filtering to MatrixKit. ([#4509](https://github.com/vector-im/element-ios/issues/4509))
+- Tweaked `MXKRoomMemberDetailsViewController` so we can hide leave option ([#4682](https://github.com/vector-im/element-ios/issues/4682))
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.2](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.2)).
+
+🐛 Bugfixes
+
+- MXKAppSettings: Return matrix.to when firstURLDetectionIgnoredHosts is nil, and store an empty array when setting nil. ([#4826](https://github.com/vector-im/element-ios/issues/4826))
+
+⚠️ API Changes
+
+- Dropped support for iOS versions 11 and lower. ([#4693](https://github.com/vector-im/element-ios/issues/4693))
+- Exposed more room joining result types in the completion handler. ([#4830](https://github.com/vector-im/element-ios/issues/4830))
+
+
+## Changes in 0.16.1 (2021-09-16)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.1](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.1)).
+- MXKRoomDataSource: Add logs to better understand local echo lifecycle. ([#1771](https://github.com/vector-im/element-ios/issues/1771))
+- MXKAccount: Use new `pauseable` property of MXSession to check the session is suitable for pausing. ([#4834](https://github.com/vector-im/element-ios/issues/4834))
+
+🐛 Bugfixes
+
+- MXKRoomDataSource: Fix missing local echos. ([#1771](https://github.com/vector-im/element-ios/issues/1771))
+- MXKRoomViewController: Mark room as read when displayed. ([#4822](https://github.com/vector-im/element-ios/issues/4822))
+
+
 ## Changes in 0.16.0 (2021-09-09)
 
 ✨ Features

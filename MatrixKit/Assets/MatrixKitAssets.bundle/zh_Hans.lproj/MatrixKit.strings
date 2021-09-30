@@ -160,9 +160,9 @@
 "room_error_cannot_load_timeline" = "时间线加载失败";
 "room_error_timeline_event_not_found_title" = "时间线位置加载失败";
 "room_left" = "你离开了聊天室";
-"attachment_small" = "小：%@";
-"attachment_medium" = "中：%@";
-"attachment_large" = "大：%@";
+"attachment_small" = "小 (~%@）";
+"attachment_medium" = "中 (~%@)";
+"attachment_large" = "大 (~%@)";
 "attachment_cancel_download" = "是否取消下载？";
 "attachment_cancel_upload" = "是否取消上传？";
 "attachment_e2e_keys_import" = "导入…";
@@ -218,7 +218,7 @@
 // button names 
 "ok" = "确定";
 "send" = "发送";
-"copy" = "复制";
+"copy_button_name" = "复制";
 "resend" = "重新发送";
 "share" = "分享";
 "redact" = "移除";
@@ -250,7 +250,7 @@
 "room_creation_participants_title" = "成员：";
 "room_creation_alias_placeholder_with_homeserver" = "（例如：#foo%@）";
 "room_creation_alias_placeholder" = "（例如：#foo:example.org）";
-"room_error_join_failed_empty_room" = "目前无法重新加入空聊天室。";
+"room_error_join_failed_empty_room" = "目前无法加入空聊天室。";
 "room_error_name_edition_not_authorized" = "你没有修改聊天室名称所需的权限";
 "room_error_topic_edition_not_authorized" = "你没有修改聊天室话题所需的权限";
 // Room members
@@ -338,7 +338,7 @@
 "room_member_power_level_prompt" = "该用户将被提升至与您一样的权限级别，所以此操作将无法撤销。\n您确定吗？";
 // Attachment
 "attachment_size_prompt" = "发送为：";
-"attachment_original" = "实际大小：%@";
+"attachment_original" = "实际大小 (%@)";
 "attachment_multiselection_size_prompt" = "发送图片为：";
 "attachment_multiselection_original" = "实际大小";
 "attachment_e2e_keys_file_prompt" = "此文件含有 Matrix 客户端导出的密钥。\n您想要查看文件内容还是导入密钥？";
@@ -466,3 +466,8 @@
 "e2e_passphrase_too_short" = "密码口令太短 (长度至少为 %d 个字符)";
 "microphone_access_not_granted_for_voice_message" = "语音消息需要访问麦克风，但 %@ 无权使用它";
 "message_reply_to_sender_sent_a_voice_message" = "发送了一条语音消息。";
+"attachment_large_with_resolution" = "大 %@ (~%@)";
+"attachment_medium_with_resolution" = "中等 %@ (~%@)";
+"attachment_small_with_resolution" = "小 %@ (~%@)";
+"attachment_size_prompt_message" = "你可以在设置中关闭这个。";
+"attachment_size_prompt_title" = "确认要发送的大小";

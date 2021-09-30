@@ -188,7 +188,7 @@
 // Room
 "room_please_select" = "Seleziona un canale";
 "room_error_join_failed_title" = "Accesso al canale fallito";
-"room_error_join_failed_empty_room" = "Non è possibile al momento rientrare in un canale senza partecipanti.";
+"room_error_join_failed_empty_room" = "Al momento non è possibile entrare in una stanza vuota.";
 "room_error_name_edition_not_authorized" = "Non sei autorizzato a modificare il nome di questo canale";
 "room_error_topic_edition_not_authorized" = "Non sei autorizzato a modificare l'argomento di questo canale";
 "room_error_cannot_load_timeline" = "Caricamento storico dei messaggi fallito";
@@ -208,10 +208,10 @@
 "room_member_power_level_prompt" = "Non potrai annullare questa modifica perché stai innalzando i permessi dell'utente al tuo stesso livello di accesso.\nSei sicuro?";
 // Attachment
 "attachment_size_prompt" = "Vuoi inviare come:";
-"attachment_original" = "Originale: %@";
-"attachment_small" = "Piccolo: %@";
-"attachment_medium" = "Medio: %@";
-"attachment_large" = "Grande: %@";
+"attachment_original" = "Dim. effettiva (%@)";
+"attachment_small" = "Piccolo (~%@)";
+"attachment_medium" = "Medio (~%@)";
+"attachment_large" = "Grande (~%@)";
 "attachment_cancel_download" = "Interrompi scaricamento?";
 "attachment_cancel_upload" = "Interrompi caricamento?";
 "attachment_multiselection_size_prompt" = "Vuoi inviare le immagini come:";
@@ -301,7 +301,7 @@
 "save" = "Salva";
 "leave" = "Esci";
 "send" = "Invia";
-"copy" = "Copia";
+"copy_button_name" = "Copia";
 "resend" = "Invia di nuovo";
 "redact" = "Cancella";
 "share" = "Condividi";
@@ -465,3 +465,8 @@
 "e2e_passphrase_too_short" = "Password troppo corta (deve avere almeno %d caratteri)";
 "microphone_access_not_granted_for_voice_message" = "I messaggi vocali hanno bisogno dell'accesso al microfono, ma %@ non ha il permesso di usarlo";
 "message_reply_to_sender_sent_a_voice_message" = "inviato un messaggio vocale.";
+"attachment_large_with_resolution" = "Grande %@ (~%@)";
+"attachment_medium_with_resolution" = "Medio %@ (~%@)";
+"attachment_small_with_resolution" = "Piccolo %@ (~%@)";
+"attachment_size_prompt_message" = "Puoi disattivarlo nelle impostazioni.";
+"attachment_size_prompt_title" = "Conferma dimensione da inviare";

@@ -19,6 +19,7 @@
 @import libPhoneNumber_iOS;
 
 #import "NSBundle+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 NSString* const kMXKLanguagePickerViewControllerCellId = @"kMXKLanguagePickerViewControllerCellId";
 
@@ -83,7 +84,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     // Populate cellDataArray
     // Start by the default language chosen by the OS
     NSString *defaultLanguage = [MXKLanguagePickerViewController defaultLanguage];
-    NSString *languageDescription = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"language_picker_default_language"], [MXKLanguagePickerViewController languageDescription:defaultLanguage]];
+    NSString *languageDescription = [MatrixKitL10n languagePickerDefaultLanguage:[MXKLanguagePickerViewController languageDescription:defaultLanguage]];
 
     [cellDataArray addObject:@{
                                kMXKLanguagePickerCellDataKeyText:languageDescription
@@ -142,7 +143,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 
     [self setupSearchController];
 
-    self.navigationItem.title = [NSBundle mxk_localizedStringForKey:@"language_picker_title"];
+    self.navigationItem.title = [MatrixKitL10n languagePickerTitle];
         
 }
 
@@ -150,9 +151,7 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
 {
     [super viewDidAppear:animated];
     
-    if (@available(iOS 11.0, *)) {
-        self.navigationItem.hidesSearchBarWhenScrolling = YES;
-    }
+    self.navigationItem.hidesSearchBarWhenScrolling = YES;
 }
 
 #pragma mark - Private
@@ -164,14 +163,12 @@ NSString* const kMXKLanguagePickerCellDataKeyLanguage = @"language";
     searchController.dimsBackgroundDuringPresentation = NO;
     searchController.hidesNavigationBarDuringPresentation = NO;
     searchController.searchResultsUpdater = self;
-            
-    if (@available(iOS 11.0, *)) {
-        // Search bar is hidden for the moment, uncomment following line to enable it.
-        // TODO: Enable it once we have enough translations to fill pages and pages
-//        self.navigationItem.searchController = searchController;
-        // Make the search bar visible on first view appearance
-        self.navigationItem.hidesSearchBarWhenScrolling = NO;
-    }
+    
+    // Search bar is hidden for the moment, uncomment following line to enable it.
+    // TODO: Enable it once we have enough translations to fill pages and pages
+    //        self.navigationItem.searchController = searchController;
+    // Make the search bar visible on first view appearance
+    self.navigationItem.hidesSearchBarWhenScrolling = NO;
     
     self.definesPresentationContext = YES;
     

@@ -126,6 +126,15 @@
     }
 }
 
+- (void)setCurrentSpace:(MXSpace *)currentSpace
+{
+    _currentSpace = currentSpace;
+
+    for (MXKSessionRecentsDataSource *recentsDataSource in recentsDataSourceArray) {
+        recentsDataSource.currentSpace = currentSpace;
+    }
+}
+
 #pragma mark - MXKDataSource overridden
 
 - (MXSession*)mxSession

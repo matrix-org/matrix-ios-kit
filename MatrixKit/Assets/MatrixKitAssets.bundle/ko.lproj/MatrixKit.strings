@@ -299,7 +299,7 @@
 // button names 
 "ok" = "예";
 "send" = "보내기";
-"copy" = "복사";
+"copy_button_name" = "복사";
 "resend" = "다시 보내기";
 "redact" = "감추기";
 "share" = "공유";

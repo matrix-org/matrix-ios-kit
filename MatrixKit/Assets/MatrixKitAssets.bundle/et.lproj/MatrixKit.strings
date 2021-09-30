@@ -37,10 +37,10 @@
 "room_member_power_level_prompt" = "Sa ei saa seda muudatust hiljem tagasi pöörata, sest annad teisele kasutajale samad õigused, mis sinul on.\nKas sa oled ikka kindel?";
 // Attachment
 "attachment_size_prompt" = "Kas sa soovid faili saata:";
-"attachment_original" = "Tegelikus suuruses: %@";
-"attachment_small" = "Väiksena: %@";
-"attachment_medium" = "Keskmisena: %@";
-"attachment_large" = "Suurena: %@";
+"attachment_original" = "Tegelikus suuruses (%@)";
+"attachment_small" = "Väiksena (%@)";
+"attachment_medium" = "Keskmisena (%@)";
+"attachment_large" = "Suurena (%@)";
 "attachment_cancel_download" = "Kas katkestame allalaadimise?";
 "attachment_cancel_upload" = "Kas katkestame üleslaadimise?";
 "attachment_multiselection_size_prompt" = "Kas sa soovid pilte saata:";
@@ -227,7 +227,7 @@
 // Room
 "room_please_select" = "Palun vali jututuba";
 "room_error_join_failed_title" = "Jututoaga liitumine ei õnnestunud";
-"room_error_join_failed_empty_room" = "Hetkel ei ole võimalik uuesti liituda tühja jututoaga.";
+"room_error_join_failed_empty_room" = "Hetkel ei ole võimalik liituda tühja jututoaga.";
 "room_error_timeline_event_not_found_title" = "Asukoha laadimine ajajoonel ei õnnestunud";
 "room_error_timeline_event_not_found" = "Rakendus üritas laadida teatud hetke selle jututoa ajajoonelt, kuid ei suutnud seda leida";
 "room_left" = "Sa lahkusid jututoast";
@@ -334,7 +334,7 @@
 // button names 
 "ok" = "Sobib";
 "send" = "Saada";
-"copy" = "Kopeeri";
+"copy_button_name" = "Kopeeri";
 "membership_leave" = "Lahkus";
 "ban" = "Keela ligipääs";
 "message_unsaved_changes" = "Osa muudatusi on salvestamata. Lahkudes need kaovad.";
@@ -464,3 +464,8 @@
 "e2e_passphrase_too_short" = "Salafraas on liiga lühike (pikkus peaks olema vähemalt %d tähemärki)";
 "microphone_access_not_granted_for_voice_message" = "Häälsõnumite salvestamiseks on vajalik ligipääs mikrofonile, kuid %@'l pole selleks õigusi";
 "message_reply_to_sender_sent_a_voice_message" = "saatis häälsõnumi.";
+"attachment_large_with_resolution" = "Suurena %@ (~%@)";
+"attachment_medium_with_resolution" = "Keskmisena %@ (~%@)";
+"attachment_small_with_resolution" = "Väiksena %@ (~%@)";
+"attachment_size_prompt_message" = "Seadistustest saad määrata, et see funktsionaalsus pole kasutusel.";
+"attachment_size_prompt_title" = "Saatmiseks kinnita meedia suurus";

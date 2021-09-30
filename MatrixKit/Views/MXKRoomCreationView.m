@@ -22,6 +22,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKRoomCreationView ()
 {
     UIAlertController *mxSessionPicker;
@@ -73,18 +75,18 @@
     _participantsTextField.inputAccessoryView = inputAccessoryView;
     
     // Localize strings
-    _roomNameLabel.text = [NSBundle mxk_localizedStringForKey:@"room_creation_name_title"];
-    _roomNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_name_placeholder"];
-    _roomAliasLabel.text = [NSBundle mxk_localizedStringForKey:@"room_creation_alias_title"];
-    _roomAliasTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_alias_placeholder"];
-    _participantsLabel.text = [NSBundle mxk_localizedStringForKey:@"room_creation_participants_title"];
-    _participantsTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_participants_placeholder"];
+    _roomNameLabel.text = [MatrixKitL10n roomCreationNameTitle];
+    _roomNameTextField.placeholder = [MatrixKitL10n roomCreationNamePlaceholder];
+    _roomAliasLabel.text = [MatrixKitL10n roomCreationAliasTitle];
+    _roomAliasTextField.placeholder = [MatrixKitL10n roomCreationAliasPlaceholder];
+    _participantsLabel.text = [MatrixKitL10n roomCreationParticipantsTitle];
+    _participantsTextField.placeholder = [MatrixKitL10n roomCreationParticipantsPlaceholder];
     
-    [_roomVisibilityControl setTitle:[NSBundle mxk_localizedStringForKey:@"public"] forSegmentAtIndex:0];
-    [_roomVisibilityControl setTitle:[NSBundle mxk_localizedStringForKey:@"private"] forSegmentAtIndex:1];
+    [_roomVisibilityControl setTitle:[MatrixKitL10n public] forSegmentAtIndex:0];
+    [_roomVisibilityControl setTitle:[MatrixKitL10n private] forSegmentAtIndex:1];
     
-    [_createRoomBtn setTitle:[NSBundle mxk_localizedStringForKey:@"create_room"] forState:UIControlStateNormal];
-    [_createRoomBtn setTitle:[NSBundle mxk_localizedStringForKey:@"create_room"] forState:UIControlStateHighlighted];
+    [_createRoomBtn setTitle:[MatrixKitL10n createRoom] forState:UIControlStateNormal];
+    [_createRoomBtn setTitle:[MatrixKitL10n createRoom] forState:UIControlStateHighlighted];
 }
 
 - (void)dealloc
@@ -178,11 +180,11 @@
     // Update alias placeholder in room creation section
     if (homeServerSuffixArray.count == 1)
     {
-        _roomAliasTextField.placeholder = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"room_creation_alias_placeholder_with_homeserver"], homeServerSuffixArray.firstObject];
+        _roomAliasTextField.placeholder = [MatrixKitL10n roomCreationAliasPlaceholderWithHomeserver:homeServerSuffixArray.firstObject];
     }
     else
     {
-        _roomAliasTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"room_creation_alias_placeholder"];
+        _roomAliasTextField.placeholder = [MatrixKitL10n roomCreationAliasPlaceholder];
     }
 }
 
@@ -318,7 +320,7 @@
             [mxSessionPicker dismissViewControllerAnimated:NO completion:nil];
         }
         
-        mxSessionPicker = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"select_account"] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        mxSessionPicker = [UIAlertController alertControllerWithTitle:[MatrixKitL10n selectAccount] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
         __weak typeof(self) weakSelf = self;
         
@@ -342,7 +344,7 @@
                                                               }]];
         }
         
-        [mxSessionPicker addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+        [mxSessionPicker addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                             style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction * action) {
                                                               

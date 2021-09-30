@@ -153,10 +153,10 @@
 "room_left" = "Dolët prej dhomës";
 // Attachment
 "attachment_size_prompt" = "Doni të dërgohet si:";
-"attachment_original" = "Madhësi Faktike: %@";
-"attachment_small" = "E vogël: %@";
-"attachment_medium" = "E mesme: %@";
-"attachment_large" = "E madhe: %@";
+"attachment_original" = "Madhësi Faktike (%@)";
+"attachment_small" = "E vogël (~ %@)";
+"attachment_medium" = "Mesatare (~%@)";
+"attachment_large" = "E madhe (~ %@)";
 "attachment_cancel_download" = "Të anulohet shkarkimi?";
 "attachment_cancel_upload" = "Të anulohet ngarkimin?";
 "attachment_multiselection_size_prompt" = "Doni të dërgoni figura si:";
@@ -232,7 +232,7 @@
 "save" = "Ruaje";
 "leave" = "Dilni";
 "send" = "Dërgoje";
-"copy" = "Kopjoje";
+"copy_button_name" = "Kopjoje";
 "resend" = "Ridërgoje";
 "set_power_level" = "Caktoni Shkallë Pushteti";
 "delete" = "Fshije";
@@ -327,7 +327,7 @@
 "account_email_validation_error" = "S’arrihet të verifikohet adresë email. Ju lutemi, kontrolloni email-in tuaj dhe klikoni mbi lidhjen që përmban. Pasi të jetë bërë kjo, klikoni që të vazhdohet";
 "account_msisdn_validation_message" = "Kemi dërguar një SMS me një kod aktivizimi. Ju lutemi, jepeni këtë kod më poshtë.";
 "room_creation_participants_placeholder" = "(p.sh. @mane:homeserver1; @taku:homeserver2...)";
-"room_error_join_failed_empty_room" = "Hëpërhë s’është e mundur të rihyhet në një dhomë të zbrazët.";
+"room_error_join_failed_empty_room" = "Hëpërhë s’është e mundur të hyhet në një dhomë të zbrazët.";
 "room_error_timeline_event_not_found" = "Aplikacioni u rrek të ngarkonte një pikë të dhënë prej rrjedhës kohore në këtë dhomë, por s’qe në gjendje ta gjente";
 "room_no_power_to_create_conference_call" = "Ju duhen leje për ftesa, që të nisni një konferencë në këtë dhomë";
 "room_no_conference_call_in_encrypted_rooms" = "Thirrjet konferencë nuk mbulohen në dhoma të fshehtëzuara";
@@ -465,3 +465,8 @@
 "e2e_passphrase_too_short" = "Frazëkalim shumë i shkurtër (Duhet të jetë e pakta %d shenja i gjatë)";
 "microphone_access_not_granted_for_voice_message" = "Mesazhet zanorë lypin përdorim të Mikrofonit, por %@ s’ka leje përdorimi të tij";
 "message_reply_to_sender_sent_a_voice_message" = "dërgoi një mesazh zanor.";
+"attachment_large_with_resolution" = "E madhe %@ (~%@)";
+"attachment_medium_with_resolution" = "Mesatare %@ (~%@)";
+"attachment_small_with_resolution" = "E vogël %@ (~%@)";
+"attachment_size_prompt_message" = "Këtë mund ta çaktivizoni te rregullimet.";
+"attachment_size_prompt_title" = "Ripohoni madhësi për dërgim";

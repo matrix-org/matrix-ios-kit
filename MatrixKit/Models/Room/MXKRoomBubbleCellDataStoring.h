@@ -279,6 +279,13 @@ Update the event because its sent state changed or it is has been redacted.
  */
 - (void)refreshSenderFlair;
 
+/**
+ Indicate that the current text message layout is no longer valid and should be recomputed
+ before presentation in a bubble cell. This could be due to the content changing, or the
+ available space for the cell has been updated.
+ */
+- (void)invalidateTextLayout;
+
 #pragma mark - Bubble collapsing
 
 /**

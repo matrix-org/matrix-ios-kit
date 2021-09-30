@@ -124,7 +124,7 @@
 "notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ hat den zukünftigen Verlauf für alle Raumteilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point" = "%@ hat den zukünftigen Raumverlauf für alle Raumteilnehmer ab deren Einladung sichtbar gemacht.";
 "notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ hat den zukünftigen Verlauf für alle Raumteilnehmer ab deren Einladung sichtbar gemacht.";
-"notice_crypto_unable_to_decrypt" = "** Kann nicht entschlüsseln: %@ **";
+"notice_crypto_unable_to_decrypt" = "** Entschlüsselung nicht möglich: %@ **";
 "notice_crypto_error_unknown_inbound_session_id" = "Die Sitzung des Absenders hat uns keine Schlüssel für diese Nachricht gesendet.";
 "notice_sticker" = "Aufkleber";
 "notice_in_reply_to" = "Als Antwort auf";
@@ -204,7 +204,7 @@
 // Room
 "room_please_select" = "Bitte wähle einen Raum";
 "room_error_join_failed_title" = "Konnte Raum nicht betreten";
-"room_error_join_failed_empty_room" = "Leeren Raum erneut betreten derzeit nicht möglich.";
+"room_error_join_failed_empty_room" = "Es ist aktuell nicht möglich einen leeren Raum zu betreten.";
 "room_error_name_edition_not_authorized" = "Du bist nicht authorisiert den Raumnamen zu ändern";
 "room_error_topic_edition_not_authorized" = "Du bist nicht authorisiert das Raumthema zu ändern";
 "room_error_cannot_load_timeline" = "Konnte Verlauf nicht laden";
@@ -225,10 +225,10 @@
 "room_member_power_level_prompt" = "Du kannst diese Änderung nicht rückgangig machen, weil du dem Benutzer die gleiche Berechtigungsstufe gibst, die du selbst hast.\nBist du sicher?";
 // Attachment
 "attachment_size_prompt" = "Möchtest du senden als:";
-"attachment_original" = "Originalgröße: %@";
-"attachment_small" = "Klein: %@";
-"attachment_medium" = "Mittel: %@";
-"attachment_large" = "Groß: %@";
+"attachment_original" = "Originalgröße (%@)";
+"attachment_small" = "Klein (~%@)";
+"attachment_medium" = "Mittel (~%@)";
+"attachment_large" = "Groß (~%@)";
 "attachment_cancel_download" = "Herunterladen abbrechen?";
 "attachment_cancel_upload" = "Hochladen abbrechen?";
 "attachment_multiselection_size_prompt" = "Bilder senden als:";
@@ -301,7 +301,7 @@
 "notice_room_ban" = "%@ sperrte %@";
 "notice_room_withdraw" = "%@ hat %@s Einladung zurückgezogen";
 "notice_room_reason" = ". Grund: %@";
-"notice_avatar_url_changed" = "%@ hat seinen Avatar geändert";
+"notice_avatar_url_changed" = "%@ hat den eigenen Avatar geändert";
 "notice_display_name_set" = "%@ setzte den Anzeigenamen auf %@";
 "notice_display_name_changed_from" = "%@ änderte den Anzeigenamen von %@ auf %@";
 "notice_display_name_removed" = "%@ hat den Anzeigenamen entfernt";
@@ -377,7 +377,7 @@
 "save" = "Speichern";
 "leave" = "Verlassen";
 "send" = "Senden";
-"copy" = "Kopieren";
+"copy_button_name" = "Kopieren";
 "resend" = "Erneut senden";
 "redact" = "Entfernen";
 "share" = "Teilen";
@@ -492,3 +492,8 @@
 "call_consulting_with_user" = "Bei %@ anfragen";
 "microphone_access_not_granted_for_voice_message" = "%@ fehlt die Berechtigung, für Sprachnachrichten auf das Mikrofon zuzugreifen";
 "message_reply_to_sender_sent_a_voice_message" = "hat eine Sprachnachricht gesendet.";
+"attachment_size_prompt_title" = "Größe zum Senden";
+"attachment_large_with_resolution" = "Groß %@ (~%@)";
+"attachment_medium_with_resolution" = "Mittel %@ (~%@)";
+"attachment_small_with_resolution" = "Klein %@ (~%@)";
+"attachment_size_prompt_message" = "Du kannst dies in den Einstellungen ausschalten.";

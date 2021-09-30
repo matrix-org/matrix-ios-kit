@@ -116,7 +116,7 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
  Customising this value modifies the behaviour of link detection in `MXKRoomBubbleComponent`.
  
  This boolean value is defined in shared settings object with the key: `firstURLDetectionIgnoredHosts`.
- Return NO if no value is defined.
+ The default value of this property only contains the matrix.to host.
  */
 @property (nonatomic) NSArray<NSString *> *firstURLDetectionIgnoredHosts;
 

@@ -19,7 +19,8 @@
 #import "MXKSectionedContacts.h"
 
 #import "NSBundle+MatrixKit.h"
-#import "UIScrollView+MatrixKit.h"
+
+#import "MXKSwiftHeader.h"
 
 @interface MXKContactListViewController ()
 {
@@ -116,8 +117,8 @@
     }
     
     // Localize string
-    [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_mx_users"] forSegmentAtIndex:0];
-    [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_local_contacts"] forSegmentAtIndex:1];
+    [_contactsControls setTitle:[MatrixKitL10n contactMxUsers] forSegmentAtIndex:0];
+    [_contactsControls setTitle:[MatrixKitL10n contactLocalContacts] forSegmentAtIndex:1];
     
     // Apply search option in navigation bar
     self.enableBarButtonSearch = _enableBarButtonSearch;
@@ -150,7 +151,7 @@
     // stop any scrolling effect
     [UIView setAnimationsEnabled:NO];
     // before scrolling to the tableview top
-    self.tableView.contentOffset = CGPointMake(-self.tableView.mxk_adjustedContentInset.left, -self.tableView.mxk_adjustedContentInset.top);
+    self.tableView.contentOffset = CGPointMake(-self.tableView.adjustedContentInset.left, -self.tableView.adjustedContentInset.top);
     [UIView setAnimationsEnabled:YES];
 }
 

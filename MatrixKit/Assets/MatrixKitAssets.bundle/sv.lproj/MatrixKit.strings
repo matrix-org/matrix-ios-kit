@@ -207,10 +207,10 @@
 "room_member_power_level_prompt" = "Du kommer inte att kunna ångra denna ändring eftersom du befordrar användaren till samma behörighetsnivå som dig själv.\nÄr du säker?";
 // Attachment
 "attachment_size_prompt" = "Vill du skicka som:";
-"attachment_original" = "Faktisk storlek: %@";
-"attachment_small" = "Liten: %@";
-"attachment_medium" = "Mellan: %@";
-"attachment_large" = "Stor: %@";
+"attachment_original" = "Faktisk storlek (%@)";
+"attachment_small" = "Liten (%@)";
+"attachment_medium" = "Mellan (%@)";
+"attachment_large" = "Stor (%@)";
 "attachment_cancel_download" = "Avbryt nedladdningen?";
 "attachment_cancel_upload" = "Avbryt uppladdningen?";
 "attachment_multiselection_size_prompt" = "Vill du skicka bilder som:";
@@ -336,7 +336,7 @@
 "save" = "Spara";
 "leave" = "Lämna";
 "send" = "Skicka";
-"copy" = "Kopiera";
+"copy_button_name" = "Kopiera";
 "resend" = "Skicka igen";
 "redact" = "Ta bort";
 "share" = "Dela";
@@ -464,3 +464,8 @@
 "e2e_passphrase_too_short" = "Lösenfras för kort (den måste vara minst %d tecken långt)";
 "microphone_access_not_granted_for_voice_message" = "Röstmeddelanden kräver åtkomst till mikrofonen, men %@ har inte behörighet att använda den";
 "message_reply_to_sender_sent_a_voice_message" = "skickade ett röstmeddelande.";
+"attachment_large_with_resolution" = "Stor %@ (~%@)";
+"attachment_medium_with_resolution" = "Mellan %@ (~%@)";
+"attachment_small_with_resolution" = "Liten %@ (~%@)";
+"attachment_size_prompt_message" = "Du kan stänga av detta i inställningarna.";
+"attachment_size_prompt_title" = "Bekräfta storlek att skicka";

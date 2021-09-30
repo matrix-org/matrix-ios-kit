@@ -22,6 +22,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKEncryptionKeysExportView ()
 {
     MXSession *mxSession;
@@ -39,7 +41,7 @@
         mxSession = matrixSession;
         _passphraseMinLength = 1;
         
-        _alertController = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_export_room_keys"] message:[NSBundle mxk_localizedStringForKey:@"e2e_export_prompt"] preferredStyle:UIAlertControllerStyleAlert];
+        _alertController = [UIAlertController alertControllerWithTitle:[MatrixKitL10n e2eExportRoomKeys] message:[MatrixKitL10n e2eExportPrompt] preferredStyle:UIAlertControllerStyleAlert];
     }
     return self;
 }
@@ -70,18 +72,18 @@
     [_alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
      {
          textField.secureTextEntry = YES;
-         textField.placeholder = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_create"];
+        textField.placeholder = [MatrixKitL10n e2ePassphraseCreate];
          [textField resignFirstResponder];
      }];
 
     [_alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
      {
          textField.secureTextEntry = YES;
-         textField.placeholder = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_confirm"];
+         textField.placeholder = [MatrixKitL10n e2ePassphraseConfirm];
          [textField resignFirstResponder];
      }];
 
-    [_alertController addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+    [_alertController addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
 
@@ -92,7 +94,7 @@
 
                                                        }]];
 
-    [_alertController addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_export"]
+    [_alertController addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n e2eExport]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
 
@@ -113,20 +115,20 @@
                                                                    NSString *error;
                                                                    if (!password.length)
                                                                    {
-                                                                       error = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_empty"];
+                                                                       error = [MatrixKitL10n e2ePassphraseEmpty];
                                                                    }
                                                                    else if (password.length < self.passphraseMinLength)
                                                                    {
-                                                                       error = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"e2e_passphrase_too_short"], self.passphraseMinLength];
+                                                                       error = [MatrixKitL10n e2ePassphraseTooShort:self.passphraseMinLength];
                                                                    }
                                                                    else
                                                                    {
-                                                                       error = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_not_match"];
+                                                                       error = [MatrixKitL10n e2ePassphraseNotMatch];
                                                                    }
 
-                                                                   UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:error preferredStyle:UIAlertControllerStyleAlert];
+                                                                   UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n error] message:error preferredStyle:UIAlertControllerStyleAlert];
 
-                                                                   [otherAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                   [otherAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
 
                                                                        if (weakSelf)
                                                                        {
@@ -160,9 +162,9 @@
                                                                            onLoading(NO);
 
                                                                            // TODO: i18n the error
-                                                                           UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+                                                                           UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n error] message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
 
-                                                                           [otherAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                           [otherAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
 
                                                                                if (weakSelf)
                                                                                {

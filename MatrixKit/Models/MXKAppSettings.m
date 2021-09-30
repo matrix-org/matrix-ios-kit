@@ -497,7 +497,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        return [NSUserDefaults.standardUserDefaults objectForKey:@"firstURLDetectionIgnoredHosts"];
+        return [NSUserDefaults.standardUserDefaults objectForKey:@"firstURLDetectionIgnoredHosts"] ?: @[[NSURL URLWithString:kMXMatrixDotToUrl].host];
     }
     else
     {
@@ -509,6 +509,11 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
+        if (ignoredHosts == nil)
+        {
+            ignoredHosts = @[];
+        }
+        
         [NSUserDefaults.standardUserDefaults setObject:ignoredHosts forKey:@"firstURLDetectionIgnoredHosts"];
     }
     else

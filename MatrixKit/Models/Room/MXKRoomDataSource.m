@@ -31,7 +31,7 @@
 
 #import "MXKAppSettings.h"
 
-#import "MXKSendReplyEventStringLocalizations.h"
+#import "MXKSendReplyEventStringLocalizer.h"
 #import "MXKSlashCommands.h"
 
 
@@ -301,7 +301,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     self = [super initWithMatrixSession:matrixSession];
     if (self)
     {
-        //MXLogDebug(@"[MXKRoomDataSource] initWithRoomId %p - room id: %@", self, roomId);
+        MXLogVerbose(@"[MXKRoomDataSource][%p] initWithRoomId: %@", self, roomId);
         
         _roomId = roomId;
         _secondaryRoomEventTypes = @[
@@ -460,7 +460,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 outgoingMessage.sentState == MXEventSentStateEncrypting ||
                 outgoingMessage.sentState == MXEventSentStateUploading)
             {
-                MXLogDebug(@"[MXKRoomDataSource] cancel limitMemoryUsage because some messages are being sent");
+                MXLogDebug(@"[MXKRoomDataSource][%p] cancel limitMemoryUsage because some messages are being sent", self);
                 return;
             }
         }
@@ -546,6 +546,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     
     @synchronized(eventsToProcess)
     {
+        MXLogVerbose(@"[MXKRoomDataSource][%p] Reset eventsToProcess", self);
         [eventsToProcess removeAllObjects];
     }
     
@@ -589,7 +590,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)reloadNotifying:(BOOL)notify
 {
-    //    MXLogDebug(@"[MXKRoomDataSource] Reload %p - room id: %@", self, _roomId);
+    MXLogVerbose(@"[MXKRoomDataSource][%p] Reload - room id: %@", self, _roomId);
     
     [self setState:MXKDataSourceStatePreparing];
     
@@ -601,7 +602,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)destroy
 {
-    MXLogDebug(@"[MXKRoomDataSource] Destroy %p - room id: %@", self, _roomId);
+    MXLogDebug(@"[MXKRoomDataSource][%p] Destroy - room id: %@", self, _roomId);
     
     [self unregisterScanManagerNotifications];
     [self unregisterReactionsChangeListener];
@@ -790,7 +791,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                         
                         MXStrongifyAndReturnIfNil(self);
 
-                        MXLogDebug(@"[MXKRoomDataSource] Failed to resetPaginationAroundInitialEventWithLimit");
+                        MXLogDebug(@"[MXKRoomDataSource][%p] Failed to resetPaginationAroundInitialEventWithLimit", self);
 
                         // Notify the error
                         [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceTimelineError
@@ -803,7 +804,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             }
             else
             {
-                MXLogDebug(@"[MXKRoomDataSource] Warning: The user does not know the room %@", _roomId);
+                MXLogDebug(@"[MXKRoomDataSource][%p] Warning: The user does not know the room %@", self, _roomId);
                 
                 // Update here data source state if it is not already ready
                 [self setState:MXKDataSourceStateFailed];
@@ -842,7 +843,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
                         } failure:^(NSError *error) {
 
-                            MXLogDebug(@"[MXKRoomDataSource] group profile update failed %@", groupId);
+                            MXLogDebug(@"[MXKRoomDataSource][%p] group profile update failed %@", self, groupId);
 
                             if (self.delegate && !(--count))
                             {
@@ -1398,7 +1399,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     {
         for (id<MXKRoomBubbleCellDataStoring> bubble in bubbles)
         {
-            bubble.attributedTextMessage = nil;
+            [bubble invalidateTextLayout];
         }
     }
 }
@@ -1419,7 +1420,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     
     if (paginationRequest || secondaryPaginationRequest)
     {
-        MXLogDebug(@"[MXKRoomDataSource] paginate: a pagination is already in progress");
+        MXLogDebug(@"[MXKRoomDataSource][%p] paginate: a pagination is already in progress", self);
         if (failure)
         {
             failure(nil);
@@ -1429,7 +1430,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     
     if (NO == [self canPaginate:direction])
     {
-        MXLogDebug(@"[MXKRoomDataSource] paginate: No more events to paginate");
+        MXLogDebug(@"[MXKRoomDataSource][%p] paginate: No more events to paginate", self);
         if (success)
         {
             success(0);
@@ -1476,7 +1477,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         
     } failure:^(NSError *error) {
         
-        MXLogDebug(@"[MXKRoomDataSource] paginateBackMessages fails");
+        MXLogDebug(@"[MXKRoomDataSource][%p] paginateBackMessages fails", self);
         
         MXStrongifyAndReturnIfNil(self);
         
@@ -1540,7 +1541,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             
         } failure:^(NSError *error) {
             
-            MXLogDebug(@"[MXKRoomDataSource] paginateBackMessages fails");
+            MXLogDebug(@"[MXKRoomDataSource][%p] paginateBackMessages fails", self);
             
             MXStrongifyAndReturnIfNil(self);
             
@@ -1588,14 +1589,14 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)paginateToFillRect:(CGRect)rect direction:(MXTimelineDirection)direction withMinRequestMessagesCount:(NSUInteger)minRequestMessagesCount success:(void (^)(void))success failure:(void (^)(NSError *error))failure
 {
-    MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: %@", NSStringFromCGRect(rect));
+    MXLogDebug(@"[MXKRoomDataSource][%p] paginateToFillRect: %@", self, NSStringFromCGRect(rect));
     
     // During the first call of this method, the delegate is supposed defined.
     // This delegate may be removed whereas this method is called by itself after a pagination request.
     // The delegate is required here to be able to compute cell height (and prevent infinite loop in case of reentrancy).
     if (!self.delegate)
     {
-        MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect ignored (delegate is undefined)");
+        MXLogDebug(@"[MXKRoomDataSource][%p] paginateToFillRect ignored (delegate is undefined)", self);
         if (failure)
         {
             failure(nil);
@@ -1627,7 +1628,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                     if (bubblesTotalHeight > rect.size.height)
                     {
                         // No need to compute more cells heights, there are enough to fill the rect
-                        MXLogDebug(@"[MXKRoomDataSource] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", bubbles.count - i, eventsCount);
+                        MXLogDebug(@"[MXKRoomDataSource][%p] -> %tu already loaded bubbles (%tu events) are enough to fill the screen", self, bubbles.count - i, eventsCount);
                         break;
                     }
                     
@@ -1638,7 +1639,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         }
         else if (minRequestMessagesCount && [self canPaginate:direction])
         {
-            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: Prefill with data from the store");
+            MXLogDebug(@"[MXKRoomDataSource][%p] paginateToFillRect: Prefill with data from the store", self);
             // Give a chance to load data from the store before doing homeserver requests
             // Reuse minRequestMessagesCount because we need to provide a number.
             [self paginate:minRequestMessagesCount direction:direction onlyFromStore:YES success:^(NSUInteger addedCellNumber) {
@@ -1668,7 +1669,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             // So, use minRequestMessagesCount
             messagesToLoad = MAX(messagesToLoad, minRequestMessagesCount);
             
-            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: need to paginate %tu events to cover %fpx", messagesToLoad, rect.size.height - bubblesTotalHeight);
+            MXLogDebug(@"[MXKRoomDataSource][%p] paginateToFillRect: need to paginate %tu events to cover %fpx", self, messagesToLoad, rect.size.height - bubblesTotalHeight);
             [self paginate:messagesToLoad direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
                 
                 [self paginateToFillRect:rect direction:direction withMinRequestMessagesCount:minRequestMessagesCount success:success failure:failure];
@@ -1678,7 +1679,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         else
         {
             
-            MXLogDebug(@"[MXKRoomDataSource] paginateToFillRect: No more events to paginate");
+            MXLogDebug(@"[MXKRoomDataSource][%p] paginateToFillRect: No more events to paginate", self);
             if (success)
             {
                 success();
@@ -1735,9 +1736,9 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     NSString *sanitizedText = [self sanitizedMessageText:text];
     NSString *html = [self htmlMessageFromSanitizedText:sanitizedText];
     
-    id<MXSendReplyEventStringsLocalizable> stringLocalizations = [MXKSendReplyEventStringLocalizations new];
+    id<MXSendReplyEventStringLocalizerProtocol> stringLocalizer = [MXKSendReplyEventStringLocalizer new];
     
-    [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizations:stringLocalizations localEcho:&localEchoEvent success:success failure:failure];
+    [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizer:stringLocalizer localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
@@ -1971,7 +1972,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         return;
     }
     
-    MXLogInfo(@"[MXKRoomDataSource] resendEventWithEventId. EventId: %@", event.eventId);
+    MXLogInfo(@"[MXKRoomDataSource][%p] resendEventWithEventId. EventId: %@", self, event.eventId);
     
     // Check first whether the event is encrypted
     if ([event.wireType isEqualToString:kMXEventTypeStringRoomEncrypted])
@@ -2024,7 +2025,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 else
                 {
                     failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendGeneric userInfo:nil]);
-                    MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                    MXLogWarning(@"[MXKRoomDataSource][%p] resendEventWithEventId: Warning - Unable to resend room message of type: %@", self, msgType);
                 }
             }
             else
@@ -2051,7 +2052,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             
             if (![NSFileManager.defaultManager fileExistsAtPath:localFilePath]) {
                 failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidLocalFilePath userInfo:nil]);
-                MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend voice message, invalid file path.");
+                MXLogWarning(@"[MXKRoomDataSource][%p] resendEventWithEventId: Warning - Unable to resend voice message, invalid file path.", self);
                 return;
             }
             
@@ -2075,7 +2076,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             if (contentURL && [contentURL hasPrefix:kMXMediaUploadIdPrefix])
             {
                 // TODO: Support resend on attached video when upload has been failed.
-                MXLogDebug(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend attached video (upload was not complete)");
+                MXLogDebug(@"[MXKRoomDataSource][%p] resendEventWithEventId: Warning - Unable to resend attached video (upload was not complete)", self);
                 failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
             }
             else
@@ -2111,7 +2112,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 else
                 {
                     failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendGeneric userInfo:nil]);
-                    MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+                    MXLogWarning(@"[MXKRoomDataSource][%p] resendEventWithEventId: Warning - Unable to resend room message of type: %@", self, msgType);
                 }
             }
             else
@@ -2123,13 +2124,13 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         else
         {
             failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
-            MXLogWarning(@"[MXKRoomDataSource] resendEventWithEventId: Warning - Unable to resend room message of type: %@", msgType);
+            MXLogWarning(@"[MXKRoomDataSource][%p] resendEventWithEventId: Warning - Unable to resend room message of type: %@", self, msgType);
         }
     }
     else
     {
         failure([NSError errorWithDomain:MXKRoomDataSourceErrorDomain code:MXKRoomDataSourceErrorResendInvalidMessageType userInfo:nil]);
-        MXLogWarning(@"[MXKRoomDataSource] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", event.type);
+        MXLogWarning(@"[MXKRoomDataSource][%p] MXKRoomDataSource: Warning - Only resend of MXEventTypeRoomMessage is allowed. Event.type: %@", self, event.type);
     }
 }
 
@@ -2158,6 +2159,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)removeEventWithEventId:(NSString *)eventId
 {
+    MXLogVerbose(@"[MXKRoomDataSource][%p] removeEventWithEventId: %@", self, eventId);
+    
     // First, retrieve the cell data hosting the event
     id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:eventId];
     if (bubbleData)
@@ -2280,23 +2283,15 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     NSArray<MXEvent*>* outgoingMessages = _room.outgoingMessages;
     
     [self.mxSession decryptEvents:outgoingMessages inTimeline:nil onComplete:^(NSArray<MXEvent *> *failedEvents) {
-        BOOL shouldProcessQueuedEvents = NO;
         
-        for (NSInteger index = 0; index < outgoingMessages.count; index++)
+        for (MXEvent *outgoingMessage in outgoingMessages)
         {
-            MXEvent *outgoingMessage = [outgoingMessages objectAtIndex:index];
-            
-            if (outgoingMessage.sentState != MXEventSentStateSent)
-            {
-                [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
-                shouldProcessQueuedEvents = YES;
-            }
+            [self queueEventForProcessing:outgoingMessage withRoomState:self.roomState direction:MXTimelineDirectionForwards];
         }
         
-        if (shouldProcessQueuedEvents)
-        {
-            [self processQueuedEvents:nil];
-        }
+        MXLogVerbose(@"[MXKRoomDataSource][%p] handleUnsentMessages: queued %tu events", self, outgoingMessages.count);
+        
+        [self processQueuedEvents:nil];
     }];
 }
 
@@ -2325,6 +2320,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)replaceEvent:(MXEvent*)eventToReplace withEvent:(MXEvent*)event
 {
+    MXLogVerbose(@"[MXKRoomDataSource][%p] replaceEvent: %@ with: %@", self, eventToReplace.eventId, event.eventId);
+    
     if (eventToReplace.isLocalEvent)
     {
         // Stop listening to the identifier change for the replaced event.
@@ -2386,6 +2383,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (NSArray<NSIndexPath *> *)removeCellData:(id<MXKRoomBubbleCellDataStoring>)cellData
 {
     NSMutableArray *deletedRows = [NSMutableArray array];
+    
+    MXLogVerbose(@"[MXKRoomDataSource][%p] removeCellData: %@", self, [cellData.events valueForKey:@"eventId"]);
     
     // Remove potential occurrences in bubble map
     @synchronized (eventIdToBubbleMap)
@@ -2491,7 +2490,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     if (self.mxSession == room.mxSession &&
         ([self.roomId isEqualToString:room.roomId] || [self.secondaryRoomId isEqualToString:room.roomId]))
     { 
-        MXLogDebug(@"[MXKRoomDataSource] didMXRoomInitialSynced for room: %@", room.roomId);
+        MXLogDebug(@"[MXKRoomDataSource][%p] didMXRoomInitialSynced for room: %@", self, room.roomId);
         
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomInitialSyncNotification object:room];
         
@@ -2530,10 +2529,19 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     MXEvent *event = notif.object;
     if ([event.roomId isEqualToString:_roomId])
     {
+        MXLogVerbose(@"[MXKRoomDataSource][%p] eventDidChangeSentState: %@, to: %tu", self, event.eventId, event.sentState);
+        
         // Retrieve the cell data hosting the local echo
         id<MXKRoomBubbleCellDataStoring> bubbleData = [self cellDataOfEventWithEventId:event.eventId];
         if (!bubbleData)
         {
+            //  Initial state for local echos
+            BOOL isInitial = event.isLocalEvent &&
+                (event.sentState == MXEventSentStateSending || event.sentState == MXEventSentStateEncrypting);
+            if (!isInitial)
+            {
+                MXLogWarning(@"[MXKRoomDataSource][%p] eventDidChangeSentState: Cannot find bubble data for event: %@", self, event.eventId);
+            }
             return;
         }
         
@@ -2554,6 +2562,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 {
     MXEvent *event = notif.object;
     NSString *previousId = notif.userInfo[kMXEventIdentifierKey];
+    
+    MXLogVerbose(@"[MXKRoomDataSource][%p] localEventDidChangeIdentifier from: %@ to: %@", self, previousId, event.eventId);
     
     if (event && previousId)
     {
@@ -2775,6 +2785,11 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
  */
 - (void)queueEventForProcessing:(MXEvent*)event withRoomState:(MXRoomState*)roomState direction:(MXTimelineDirection)direction
 {
+    if (event.isLocalEvent)
+    {
+        MXLogVerbose(@"[MXKRoomDataSource][%p] queueEventForProcessing: %@", self, event.eventId);
+    }
+    
     if (self.filterMessagesWithURL)
     {
         // Check whether the event has a value for the 'url' key in its content.
@@ -3027,6 +3042,16 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
                 for (MXKQueuedEvent *queuedEvent in self->eventsToProcessSnapshot)
                 {
+                    @synchronized (self->eventIdToBubbleMap)
+                    {
+                        //  Check whether the event processed before
+                        if (self->eventIdToBubbleMap[queuedEvent.event.eventId])
+                        {
+                            MXLogVerbose(@"[MXKRoomDataSource][%p] processQueuedEvents: Skip event: %@, state: %tu", self, queuedEvent.event.eventId, queuedEvent.event.sentState);
+                            continue;
+                        }
+                    }
+                    
                     @autoreleasepool
                     {
                         // Count events received while the server sync was in progress
@@ -3617,12 +3642,12 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 break;
             }
 
-            MXLogDebug(@"[MXKRoomDataSource] addReadReceipts: Read receipts for an event(%@) that is not displayed", eventId);
+            MXLogDebug(@"[MXKRoomDataSource][%p] addReadReceipts: Read receipts for an event(%@) that is not displayed", self, eventId);
         }
 
         if (!areReadReceiptsAssigned)
         {
-            MXLogDebug(@"[MXKRoomDataSource] addReadReceipts: Try to attach read receipts to an older message: %@", eventId);
+            MXLogDebug(@"[MXKRoomDataSource][%p] addReadReceipts: Try to attach read receipts to an older message: %@", self, eventId);
 
             // Try to assign RRs to a previous cell data
             if (cellDataIndex >= 1)
@@ -3631,7 +3656,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             }
             else
             {
-                MXLogDebug(@"[MXKRoomDataSource] addReadReceipts: Fail to attach read receipts for an event(%@)", eventId);
+                MXLogDebug(@"[MXKRoomDataSource][%p] addReadReceipts: Fail to attach read receipts for an event(%@)", self, eventId);
             }
         }
     }
@@ -3774,7 +3799,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         // Retrieve at least the group profile
         [self.mxSession updateGroupProfile:group success:nil failure:^(NSError *error) {
             
-            MXLogDebug(@"[MXKRoomDataSource] groupWithGroupId: group profile update failed %@", groupId);
+            MXLogDebug(@"[MXKRoomDataSource][%p] groupWithGroupId: group profile update failed %@", self, groupId);
             
         }];
     }
@@ -3874,8 +3899,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         roomBubbleCellData.reactions[eventId] = nil;
     }
 
-    // Recompute the text message layout
-    roomBubbleCellData.attributedTextMessage = nil;
+    // Indicate that the text message layout should be recomputed.
+    [roomBubbleCellData invalidateTextLayout];
 }
 
 - (BOOL)canReactToEventWithId:(NSString*)eventId
@@ -3904,7 +3929,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     [self.mxSession.aggregations addReaction:reaction forEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
-        MXLogDebug(@"[MXKRoomDataSource] Fail to send reaction on eventId: %@", eventId);
+        MXLogDebug(@"[MXKRoomDataSource][%p] Fail to send reaction on eventId: %@", self, eventId);
         if (failure)
         {
             failure(error);
@@ -3915,7 +3940,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (void)removeReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
     [self.mxSession.aggregations removeReaction:reaction forEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
-        MXLogDebug(@"[MXKRoomDataSource] Fail to unreact on eventId: %@", eventId);
+        MXLogDebug(@"[MXKRoomDataSource][%p] Fail to unreact on eventId: %@", self, eventId);
         if (failure)
         {
             failure(error);
@@ -4049,7 +4074,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             }
 
             [bubbleCellData updateEvent:eventId withEvent:editedEvent];
-            bubbleCellData.attributedTextMessage = nil;
+            [bubbleCellData invalidateTextLayout];
             hasChanged = YES;
         }
     }

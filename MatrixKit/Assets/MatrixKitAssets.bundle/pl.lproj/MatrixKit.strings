@@ -151,7 +151,7 @@
 "share" = "Udostępnij";
 "redact" = "Usuń";
 "resend" = "Wyślij ponownie";
-"copy" = "Kopiuj";
+"copy_button_name" = "Kopiuj";
 "send" = "Wyślij";
 "leave" = "Opuść";
 "save" = "Zapisz";
@@ -414,10 +414,10 @@
 // Contacts
 "contact_mx_users" = "Użytkownicy Matrix";
 "attachment_e2e_keys_file_prompt" = "Ten plik zawiera klucze szyfrowania wyeksportowane z klienta Matrix.\nChcesz przejrzeć zawartość pliku czy zaimportować zawarte w nim klucze?";
-"attachment_large" = "Duży: %@";
-"attachment_medium" = "Średni: %@";
-"attachment_small" = "Mały: %@";
-"attachment_original" = "Rzeczywisty rozmiar: %@";
+"attachment_large" = "Duży (%@)";
+"attachment_medium" = "Średni (%@)";
+"attachment_small" = "Mały (%@)";
+"attachment_original" = "Rzeczywisty rozmiar (%@)";
 
 // Attachment
 "attachment_size_prompt" = "Czy chcesz wysłać jako:";
@@ -491,3 +491,8 @@
 "e2e_passphrase_too_short" = "Hasło jest zbyt krótkie (Hasło musi składać się z co najmniej %d znaków)";
 "microphone_access_not_granted_for_voice_message" = "Wiadomości głosowe wymagają dostępu do mikrofonu ale %@ nie posiada uprawnień do użycia go";
 "message_reply_to_sender_sent_a_voice_message" = "wysłał(-a) wiadomość głosową.";
+"attachment_large_with_resolution" = "Duży %@ (~%@)";
+"attachment_medium_with_resolution" = "Średni %@ (~%@)";
+"attachment_small_with_resolution" = "Mały %@ (~%@)";
+"attachment_size_prompt_message" = "Możesz to wyłączyć w ustawieniach.";
+"attachment_size_prompt_title" = "Potwierdź rozmiar, który chcesz wysłać";

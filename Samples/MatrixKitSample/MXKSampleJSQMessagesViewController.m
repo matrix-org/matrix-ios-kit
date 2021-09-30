@@ -242,7 +242,7 @@
 {
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Media messages"
                                                        delegate:self
-                                              cancelButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                                              cancelButtonTitle:[MatrixKitL10n cancel]
                                          destructiveButtonTitle:nil
                                               otherButtonTitles:@"Photo Library", @"Take Photo/Video", nil];
     

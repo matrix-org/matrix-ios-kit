@@ -19,6 +19,7 @@
 #import <MatrixSDK/MatrixSDK.h>
 
 #import "MXKResponderRageShaking.h"
+#import "MXKViewControllerActivityHandling.h"
 
 /**
  `MXKViewControllerHandling` defines a protocol to handle requirements for
@@ -30,7 +31,7 @@
  - update view appearance on matrix session state change.
  - support rage shake mechanism (depend on `rageShakeManager` property).
  */
-@protocol MXKViewControllerHandling <NSObject>
+@protocol MXKViewControllerHandling <MXKViewControllerActivityHandling>
 
 /**
  The default navigation bar tint color (nil by default).
@@ -72,15 +73,6 @@
  This property is nil by default.
  */
 @property (nonatomic) id<MXKResponderRageShaking> rageShakeManager;
-
-/**
- Activity indicator view.
- By default this activity indicator is centered inside the view controller view. It automatically
- starts if `shouldShowActivityIndicator `returns true for the session.
- It is stopped on other states.
- Set nil to disable activity indicator animation.
- */
-@property (nonatomic) UIActivityIndicatorView *activityIndicator;
 
 /**
  Called during UIViewController initialization to set the default
@@ -151,16 +143,6 @@
  Dispose of any resources, and remove event observers.
  */
 - (void)destroy;
-
-/**
- Bring the activity indicator to the front and start it.
- */
-- (void)startActivityIndicator;
-
-/**
- Stop the activity indicator if all conditions are satisfied.
- */
-- (void)stopActivityIndicator;
 
 @end
 

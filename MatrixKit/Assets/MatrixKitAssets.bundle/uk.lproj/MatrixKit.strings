@@ -4,7 +4,7 @@
 "delete" = "Видалити";
 "share" = "Поділитися";
 "redact" = "Вилучити";
-"copy" = "Копіювати";
+"copy_button_name" = "Копіювати";
 "send" = "Надіслати";
 "register_error_title" = "Поле реєстрації";
 "login_invalid_param" = "Недійсний параметр";
@@ -58,8 +58,8 @@
 "start_chat" = "Почати бесіду";
 "set_admin" = "Призначити адміністратора";
 "set_moderator" = "Призначити модератора";
-"set_default_power_level" = "Скинути рівень прав";
-"set_power_level" = "Визначити рівень прав";
+"set_default_power_level" = "Скинути рівень повноважень";
+"set_power_level" = "Визначити рівень повноважень";
 "submit_code" = "Надіслати код";
 "dismiss" = "Відхилити";
 "abort" = "Перервати";
@@ -98,8 +98,8 @@
 "login_identity_server_title" = "URL-адреса сервера ідентифікації:";
 "login_home_server_info" = "Ваш домашній сервер зберігає всі ваші розмови та дані облікового запису";
 "login_home_server_title" = "URL-адреса домашнього сервера:";
-"notice_room_power_level_intro_for_dm" = "Рівні доступу учасників:";
-"notice_room_power_level_intro" = "Рівні доступу учасників кімнати:";
+"notice_room_power_level_intro_for_dm" = "Рівні повноважень учасників:";
+"notice_room_power_level_intro" = "Рівні повноважень учасників кімнати:";
 "notice_room_join_rule_public_by_you_for_dm" = "Ви дозволяєте доступ всім.";
 "notice_room_join_rule_public_by_you" = "Ви дозволяєте доступ до кімнати всім.";
 "notice_room_join_rule_public_for_dm" = "%@ дозволяє доступ всім.";
@@ -200,7 +200,7 @@
 "ssl_homeserver_url" = "URL-адреса домашнього сервера: %@";
 "user_id_placeholder" = "наприклад: @bob:homeserver";
 "network_error_not_reachable" = "Перевірте під'єднання до мережі";
-"power_level" = "Рівень доступу";
+"power_level" = "Рівень повноважень";
 "public" = "Загальнодоступний";
 "private" = "Приватний";
 "default" = "типово";
@@ -280,10 +280,10 @@
 "attachment_multiselection_size_prompt" = "Хочете надіслати зображення як:";
 "attachment_cancel_upload" = "Скасувати вивантаження?";
 "attachment_cancel_download" = "Скасувати завантаження?";
-"attachment_large" = "Великий: %@";
-"attachment_medium" = "Середній: %@";
-"attachment_small" = "Маленький: %@";
-"attachment_original" = "Справжній розмір: %@";
+"attachment_large" = "Великий (~%@)";
+"attachment_medium" = "Середній (~%@)";
+"attachment_small" = "Маленький (~%@)";
+"attachment_original" = "Справжній розмір (%@)";
 
 // Attachment
 "attachment_size_prompt" = "Бажаєте надіслати:";
@@ -341,3 +341,56 @@
 "notice_error_unexpected_event" = "Неочікувана подія";
 "notice_error_unsupported_event" = "Непідтримувана подія";
 "notice_invalid_attachment" = "неприпустиме вкладення";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ робить майбутню історію повідомлень видимою всім від часу їхнього приєднання.";
+"notice_room_history_visible_to_members_from_joined_point" = "%@ робить майбутню історію кімнати видимою всім учасникам кімнати від часу їхнього приєднання.";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ робить майбутню історію повідомлень видимою всім від часу їхнього запрошення.";
+"notice_room_history_visible_to_members_from_invited_point" = "%@ робить майбутню історію кімнати видимою усім учасникам кімнати від часу їхнього запрошення.";
+"notice_room_history_visible_to_members_for_dm" = "%@ робить майбутню історію повідомлень видимою усім учасникам кімнати.";
+"notice_room_history_visible_to_members" = "%@ робить майбутню історію кімнати видимою усім учасникам кімнати.";
+"notice_room_history_visible_to_anyone" = "%@ робить майбутню історію кімнати видимою усім.";
+"notice_redaction" = "%@ редагує подію (id: %@)";
+"notice_feedback" = "Подія відгуку (id: %@): %@";
+"notice_room_related_groups" = "Групи пов'язані з цією кімнатою: %@";
+"notice_room_power_level_acting_requirement" = "Мінімальний рівень повноважень користувача для виконання дії:";
+"notification_settings_by_default" = "Типово...";
+"membership_leave" = "Виходить";
+"notice_redaction_by_you" = "Ви відредагували подію (id: %@)";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "Ви ввімкнули наскрізне шифрування (нерозпізнаний алгоритм %@).";
+"notice_encryption_enabled_ok_by_you" = "Ви ввімкнули наскрізне шифрування.";
+"notice_room_created_by_you_for_dm" = "Ви приєдналися.";
+"notice_room_third_party_revoked_invite_by_you_for_dm" = "Ви відкликали запрошення для %@";
+"notice_room_third_party_revoked_invite_by_you" = "Ви відкликали запрошення приєднатися до кімнати для %@";
+"notice_room_third_party_registered_invite_by_you" = "Ви прийняли запрошення для %@";
+"notice_room_withdraw_by_you" = "Ви анулювали запрошення для %@";
+"notice_room_reject_by_you" = "Ви відхилили запрошення";
+"notice_room_third_party_invite_by_you" = "Ви надіслали запрошення приєднатися до кімнати для %@";
+"notice_room_name_changed_for_dm" = "%@ змінює назву на %@.";
+"notice_room_name_changed" = "%@ змінює назву кімнати на %@.";
+"notice_topic_changed" = "%@ змінює тему на «%@».";
+"notice_display_name_removed" = "%@ вилучає своє показуване ім'я";
+"notice_display_name_changed_from" = "%@ змінює своє показуване ім'я з %@ на %@";
+"notice_display_name_set" = "%@ встановлює своїм показуваним іменем %@";
+"notice_room_withdraw" = "%@ анульовує запрошення для %@";
+"notice_room_kick" = "%@ викидає %@";
+"notice_room_reject" = "%@ відхиляє запрошення";
+"notice_room_leave" = "%@ виходить";
+"notice_room_join" = "%@ приєднується";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ відкликає запрошення для %@";
+"notice_room_third_party_revoked_invite" = "%@ відкликає запрошення приєднатися до кімнати для %@";
+"notice_room_third_party_invite" = "%@ надсилає запрошення приєднатися до кімнати для %@";
+"microphone_access_not_granted_for_voice_message" = "Для голосових повідомлень потрібен доступ до мікрофона, але %@ не має дозволу на його використання";
+"microphone_access_not_granted_for_call" = "Для викликів потрібен доступ до мікрофона, але %@ не має дозволу на його використання";
+
+// Permissions
+"camera_access_not_granted_for_call" = "Для відеовикликів потрібен доступ до камери, але %@ не має дозволу на її використання";
+"language_picker_default_language" = "Типово (%@)";
+
+// Language picker
+"language_picker_title" = "Виберіть мову";
+
+// Country picker
+"country_picker_title" = "Виберіть країну";
+"notice_room_join_by_you" = "Ви приєдналися";
+"notice_room_leave_by_you" = "Ви вийшли";
+"room_left_for_dm" = "Ви вийшли";
+"room_left" = "Ви вийшли з кімнати";

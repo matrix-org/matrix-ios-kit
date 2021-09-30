@@ -1,5 +1,5 @@
 /*
- Copyright 2017 Vector Creations Ltd
+ Copyright 2018 New Vector Ltd
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,17 +14,12 @@
  limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <MatrixSDK/MXSendReplyEventStringLocalizerProtocol.h>
 
 /**
- Define a `UIScrollView` category at MatrixKit level to handle the adjusted content inset which is not defined before iOS 11.
+ A `MXKSendReplyEventStringLocalizer` instance represents string localizations used when send reply event to a message in a room.
  */
-@interface UIScrollView (MatrixKit)
-
-/**
- Get the total adjustment in a scroll view.
- The insets derived from the content insets and the safe area of the scroll view.
- */
-@property(nonatomic, readonly) UIEdgeInsets mxk_adjustedContentInset;
+@interface MXKSendReplyEventStringLocalizer : NSObject<MXSendReplyEventStringLocalizerProtocol>
 
 @end

@@ -23,7 +23,8 @@
 #import "MXKConstants.h"
 
 #import "NSBundle+MatrixKit.h"
-#import "UIScrollView+MatrixKit.h"
+
+#import "MXKSwiftHeader.h"
 
 @interface MXKRoomMemberListViewController ()
 {
@@ -379,7 +380,7 @@
 
 - (void)scrollToTop:(BOOL)animated
 {
-    [self.membersTableView setContentOffset:CGPointMake(-self.membersTableView.mxk_adjustedContentInset.left, -self.membersTableView.mxk_adjustedContentInset.top) animated:animated];
+    [self.membersTableView setContentOffset:CGPointMake(-self.membersTableView.adjustedContentInset.left, -self.membersTableView.adjustedContentInset.top) animated:animated];
 }
 
 #pragma mark - MXKDataSourceDelegate
@@ -525,10 +526,10 @@
     }
     
     // Ask for userId to invite
-    currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n userIdTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
     
     
-    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        
@@ -544,10 +545,10 @@
     [currentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
         textField.secureTextEntry = NO;
-        textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
+        textField.placeholder = [MatrixKitL10n userIdPlaceholder];
     }];
     
-    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"]
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n invite]
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        

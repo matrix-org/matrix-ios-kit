@@ -193,7 +193,7 @@
 // Room
 "room_please_select" = "Selecteer een gesprek";
 "room_error_join_failed_title" = "Toetreden tot het gesprek is mislukt";
-"room_error_join_failed_empty_room" = "Het is momenteel niet mogelijk om opnieuw tot een leeg gesprek toe te treden.";
+"room_error_join_failed_empty_room" = "Het is momenteel niet mogelijk om tot een leeg gesprek toe te treden.";
 "room_error_name_edition_not_authorized" = "U bent niet bevoegd om de naam van dit gesprek te wijzigen";
 "room_error_topic_edition_not_authorized" = "U bent niet bevoegd om het onderwerp van dit gesprek te wijzigen";
 "room_error_cannot_load_timeline" = "Laden van tijdslijn is mislukt";
@@ -207,10 +207,10 @@
 "room_member_power_level_prompt" = "U kunt deze veranderingen niet ongedaan maken aangezien u de gebruiker tot hetzelfde niveau als uzelf promoveert.\nWeet u het zeker?";
 // Attachment
 "attachment_size_prompt" = "Wilt u het versturen als:";
-"attachment_original" = "Werkelijke grootte: %@";
-"attachment_small" = "Klein: %@";
-"attachment_medium" = "Medium: %@";
-"attachment_large" = "Groot: %@";
+"attachment_original" = "Werkelijke grootte (%@)";
+"attachment_small" = "Klein (~%@)";
+"attachment_medium" = "Middel (~%@)";
+"attachment_large" = "Groot (~%@)";
 "attachment_cancel_download" = "Download annuleren?";
 "attachment_cancel_upload" = "Upload annuleren?";
 "attachment_multiselection_size_prompt" = "Wilt u afbeeldingen versturen als:";
@@ -247,7 +247,7 @@
 "not_supported_yet" = "Nog niet ondersteund";
 "default" = "standaard";
 "private" = "Privé";
-"public" = "Openbaar";
+"public" = "Publiek";
 "power_level" = "Machtsniveau";
 "network_error_not_reachable" = "Controleer uw netwerkverbinding";
 "user_id_placeholder" = "bv: @jan:thuisserver";
@@ -316,7 +316,7 @@
 "save" = "Opslaan";
 "leave" = "Verlaten";
 "send" = "Versturen";
-"copy" = "Kopiëren";
+"copy_button_name" = "Kopiëren";
 "resend" = "Opnieuw versturen";
 "redact" = "Verwijderen";
 "share" = "Delen";
@@ -495,10 +495,10 @@
 "notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ heeft toekomstige berichten voor iedereen zichtbaar gemaakt vanaf het moment dat zij zijn uitgenodigd.";
 "notice_room_history_visible_to_members_for_dm" = "%@ heeft toekomstige berichten voor alle gespreksleden zichtbaar gemaakt.";
 "notice_room_aliases_for_dm" = "De bijnamen zijn: %@";
-"notice_room_join_rule_public_by_you_for_dm" = "U maakte dit openbaar.";
-"notice_room_join_rule_public_by_you" = "U heeft het gesprek openbaar gemaakt.";
-"notice_room_join_rule_public_for_dm" = "%@ maakte dit openbaar.";
-"notice_room_join_rule_public" = "%@ heeft het gesprek openbaar gemaakt.";
+"notice_room_join_rule_public_by_you_for_dm" = "U maakte dit publiekelijk.";
+"notice_room_join_rule_public_by_you" = "U heeft de kamer publiekelijk gemaakt.";
+"notice_room_join_rule_public_for_dm" = "%@ maakte dit publiekelijk.";
+"notice_room_join_rule_public" = "%@ heeft de kamer publiekelijk gemaakt.";
 "notice_room_created_for_dm" = "%@ is toegetreden.";
 "notice_room_power_level_intro_for_dm" = "Het machtsniveau van de gespreksleden is:";
 "notice_room_join_rule_invite_by_you_for_dm" = "U maakte dit gesprek alleen op uitnodiging.";
@@ -526,3 +526,8 @@
 "e2e_passphrase_too_short" = "Wachtwoord is te kort (hij moet minimaal %d tekens lang zijn)";
 "microphone_access_not_granted_for_voice_message" = "Spraakberichten vereisen toegang tot de Microfoon maar %@ heeft geen toestemming om het te gebruiken";
 "message_reply_to_sender_sent_a_voice_message" = "heeft een spraakbericht gestuurd.";
+"attachment_large_with_resolution" = "Groot %@ (~%@)";
+"attachment_medium_with_resolution" = "Middel %@ (~%@)";
+"attachment_small_with_resolution" = "Klein %@ (~%@)";
+"attachment_size_prompt_message" = "U kunt dit uitzetten in uw instellingen.";
+"attachment_size_prompt_title" = "Bevestig de afmeting om te versturen";
