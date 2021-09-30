@@ -394,3 +394,27 @@
 "notice_room_leave_by_you" = "Ви вийшли";
 "room_left_for_dm" = "Ви вийшли";
 "room_left" = "Ви вийшли з кімнати";
+"call_more_actions_unhold" = "Продовжити";
+"call_more_actions_change_audio_device" = "Змінити звуковий пристрій";
+"call_more_actions_audio_use_device" = "Гучномовець пристрою";
+"call_more_actions_transfer" = "Переведення";
+"call_more_actions_dialpad" = "Номеронабирач";
+"call_transfer_to_user" = "Передавання до %@";
+
+// unrecognized SSL certificate
+"ssl_trust" = "Довіряти";
+
+// Account
+"account_save_changes" = "Зберегти зміни";
+"room_event_encryption_info_unblock" = "Видалити з чорного списку";
+"room_event_encryption_info_block" = "Чорний список";
+"room_event_encryption_info_device_blocked" = "У чорному списку";
+"room_event_encryption_info_device_unknown" = "невідомий сеанс\n";
+"room_event_encryption_info_device" = "\nВідомості про сеанс відправника\n";
+"device_details_delete_prompt_title" = "Автентифікація";
+"settings_enter_validation_token_for" = "Введіть токен підтвердження для %@:";
+"settings_enable_push_notifications" = "Увімкнути push-сповіщення";
+"settings_enable_inapp_notifications" = "Увімкнути сповіщення в застосунку";
+"room_displayname_all_other_participants_left" = "%@ (виходить)";
+"notice_crypto_error_unknown_inbound_session_id" = "Сеанс відправника не надіслав нам ключі для цього повідомлення.";
+"notice_room_power_level_event_requirement" = "Найнижчий рівень повноважень пов'язаний з подією:";
