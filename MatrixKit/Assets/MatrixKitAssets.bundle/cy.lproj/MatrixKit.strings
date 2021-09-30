@@ -299,7 +299,7 @@
 "save" = "Cadw";
 "leave" = "Gadael";
 "send" = "Anfon";
-"copy" = "Copi";
+"copy_button_name" = "Copi";
 "resend" = "Ail-anfon";
 "redact" = "Tynnu";
 "share" = "Rhannu";

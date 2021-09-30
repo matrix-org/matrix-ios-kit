@@ -19,6 +19,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKPushRuleTableViewCell
 
 - (void)awakeFromNib
@@ -69,7 +71,7 @@
             MXRoom *room = [_mxSession roomWithRoomId:mxPushRule.ruleId];
             if (room)
             {
-                description = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notification_settings_room_rule_title"], room.summary.displayname];
+                description = [MatrixKitL10n notificationSettingsRoomRuleTitle:room.summary.displayname];
             }
             break;
         }
@@ -113,20 +115,20 @@
         {
             if (ruleAction.actionType == MXPushRuleActionTypeDontNotify)
             {
-                notify = [NSBundle mxk_localizedStringForKey:@"notification_settings_never_notify"];
+                notify = [MatrixKitL10n notificationSettingsNeverNotify];
                 sound = @"";
                 highlight = @"";
                 break;
             }
             else if (ruleAction.actionType == MXPushRuleActionTypeNotify || ruleAction.actionType == MXPushRuleActionTypeCoalesce)
             {
-                notify = [NSBundle mxk_localizedStringForKey:@"notification_settings_always_notify"];
+                notify = [MatrixKitL10n notificationSettingsAlwaysNotify];
             }
             else if (ruleAction.actionType == MXPushRuleActionTypeSetTweak)
             {
                 if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"sound"])
                 {
-                    sound = [NSString stringWithFormat:@", %@", [NSBundle mxk_localizedStringForKey:@"notification_settings_custom_sound"]];
+                    sound = [NSString stringWithFormat:@", %@", [MatrixKitL10n notificationSettingsCustomSound]];
                 }
                 else if ([ruleAction.parameters[@"set_tweak"] isEqualToString:@"highlight"])
                 {
@@ -134,7 +136,7 @@
                     // If not present, highlight. Else check its value before highlighting
                     if (nil == ruleAction.parameters[@"value"] || YES == [ruleAction.parameters[@"value"] boolValue])
                     {
-                        highlight = [NSString stringWithFormat:@", %@", [NSBundle mxk_localizedStringForKey:@"notification_settings_highlight"]];
+                        highlight = [NSString stringWithFormat:@", %@", [MatrixKitL10n notificationSettingsHighlight]];
                     }
                 }
             }

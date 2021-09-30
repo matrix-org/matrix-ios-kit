@@ -151,7 +151,7 @@
 "share" = "Udostępnij";
 "redact" = "Usuń";
 "resend" = "Wyślij ponownie";
-"copy" = "Kopiuj";
+"copy_button_name" = "Kopiuj";
 "send" = "Wyślij";
 "leave" = "Opuść";
 "save" = "Zapisz";

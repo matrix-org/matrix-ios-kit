@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1873680326FE05860018959C /* MXKEventFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */; };
+		1873680426FE05890018959C /* MXKRoomDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */; };
+		1873680526FE058B0018959C /* MXKRoomDataSource+Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */; };
+		18BA7B5126FDAC19001C25DF /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BA7B4C26FDAC19001C25DF /* Strings.swift */; };
+		18BA7B5526FDFFBB001C25DF /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BA7B4C26FDAC19001C25DF /* Strings.swift */; };
 		3205ED791E96905A003D65FA /* MXKDirectoryServerCellData.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED751E96905A003D65FA /* MXKDirectoryServerCellData.m */; };
 		3205ED7A1E96905A003D65FA /* MXKDirectoryServersDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3205ED781E96905A003D65FA /* MXKDirectoryServersDataSource.m */; };
 		321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 321313C71AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m */; };
@@ -25,7 +30,6 @@
 		3235CD821C33D3EA0084EA40 /* MXKSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3235CD811C33D3EA0084EA40 /* MXKSearchTableViewCell.xib */; };
 		323F9AF61F1E53730013AFDE /* NSBundle+MXKLanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = 323F9AF51F1E53730013AFDE /* NSBundle+MXKLanguage.m */; };
 		324978F4243F444C000D0384 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 324978F3243F444C000D0384 /* UTI.swift */; };
-		32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */; };
 		327DCDC71AC1774000397E5E /* MXKRecentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 327DCDC61AC1774000397E5E /* MXKRecentTableViewCell.xib */; };
 		328AC4861AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4851AA75E000044A6FB /* MXKRoomBubbleTableViewCell.m */; };
 		328AC4891AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 328AC4881AA75EDD0044A6FB /* MXKRoomIncomingBubbleTableViewCell.m */; };
@@ -36,7 +40,7 @@
 		328E410424CB135100DC4490 /* MatrixKitVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 328E410224CB135100DC4490 /* MatrixKitVersion.m */; };
 		329CF77B1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 329CF77A1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m */; };
 		32B046722101EB5E002A24A1 /* MXRoom+Sync.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B046712101EB5E002A24A1 /* MXRoom+Sync.m */; };
-		32BA86B721538B35008F277E /* MXKRoomNameStringLocalizations.m in Sources */ = {isa = PBXBuildFile; fileRef = 32BA86B621538B35008F277E /* MXKRoomNameStringLocalizations.m */; };
+		32BA86B721538B35008F277E /* MXKRoomNameStringLocalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 32BA86B621538B35008F277E /* MXKRoomNameStringLocalizer.m */; };
 		32BA86BA21538FFC008F277E /* MXKEventFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 32BA86B821538FFC008F277E /* MXKEventFormatter.m */; };
 		32C3ABBA22C4F23B00CA0449 /* MXAggregatedReactions+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C3ABB922C4F23B00CA0449 /* MXAggregatedReactions+MatrixKit.m */; };
 		32CEE2231AB1E37600F7C74D /* MXKRecentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CEE2211AB1E37600F7C74D /* MXKRecentListViewController.m */; };
@@ -60,8 +64,6 @@
 		9135FFD926DE8EFD000E6D84 /* NSString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */; };
 		918DAB9F26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
-		A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */; };
-		A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = A8C4035A25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m */; };
 		B11D3C7E20C032BD00938BCB /* MXKBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */; };
 		B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */; };
 		B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D10322D62A4800570CA4 /* MXKUTITests.swift */; };
@@ -73,7 +75,7 @@
 		B12C471020BED312004FBF96 /* MXKErrorPresentableBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C470F20BED312004FBF96 /* MXKErrorPresentableBuilder.m */; };
 		B12C56F22396D75500FAC6DE /* UITextView+MatrixKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */; };
 		B13652F8221E9E7A00313B09 /* MXKMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B13652F7221E9E7A00313B09 /* MXKMessageTextView.m */; };
-		B164380C210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m in Sources */ = {isa = PBXBuildFile; fileRef = B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */; };
+		B164380C210603CD00DBB3FD /* MXKSendReplyEventStringLocalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizer.m */; };
 		B1668AC021072F93002B14F1 /* MXKSlashCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */; };
 		CE14CA661E80122600E329A3 /* MXKAttachmentAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA631E80122600E329A3 /* MXKAttachmentAnimator.m */; };
 		CE14CA671E80122600E329A3 /* MXKAttachmentInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE14CA651E80122600E329A3 /* MXKAttachmentInteractionController.m */; };
@@ -153,7 +155,6 @@
 		F07267D91BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07267D81BB2AA3D00ADC622 /* MXKRoomMemberListViewController.xib */; };
 		F079333E1F38A6A600F04D4C /* MXKView.m in Sources */ = {isa = PBXBuildFile; fileRef = F079333D1F38A6A600F04D4C /* MXKView.m */; };
 		F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F0EA4CB31ADD6E98007197D2 /* MXKAppSettings.m */; };
-		F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F148C51AB31240005F5D4A /* MXKTools.m */; };
 		F07D74AC1AC5A29800D83B98 /* MXKEventDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F07D74AB1AC5A29800D83B98 /* MXKEventDetailsView.m */; };
 		F07D74AE1AC5A36B00D83B98 /* MXKEventDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F07D74AD1AC5A36B00D83B98 /* MXKEventDetailsView.xib */; };
 		F07E180D1ABC2EDA00DE3766 /* MXKQueuedEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = F07E18051ABC2EDA00DE3766 /* MXKQueuedEvent.m */; };
@@ -265,6 +266,7 @@
 		0B24B45B3C37CC4E22FABCEF /* Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitSample/Pods-MatrixKitSamplePods-MatrixKitSample.release.xcconfig"; sourceTree = "<group>"; };
 		0CD8657A85A4139EB261B80E /* Pods-MatrixKit-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		1099FE41E4156DB223718DB2 /* Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitSamplePods-MatrixKitTests/Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		18BA7B4C26FDAC19001C25DF /* Strings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		1B00C7B017F5DAE5364C9E12 /* Pods-MatrixKit-MatrixKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitTests/Pods-MatrixKit-MatrixKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		1FB34B020AC3FC88B77D286E /* Pods-MatrixKit-MatrixKitSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKit-MatrixKitSample/Pods-MatrixKit-MatrixKitSample.debug.xcconfig"; sourceTree = "<group>"; };
 		3203F2681D2E9CAE0021F170 /* MatrixKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatrixKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -324,8 +326,8 @@
 		329CF77A1AA9FDE000A4753F /* MXKRoomIOSBubbleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomIOSBubbleTableViewCell.m; sourceTree = "<group>"; };
 		32B046702101EB5E002A24A1 /* MXRoom+Sync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXRoom+Sync.h"; sourceTree = "<group>"; };
 		32B046712101EB5E002A24A1 /* MXRoom+Sync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MXRoom+Sync.m"; sourceTree = "<group>"; };
-		32BA86B521538B35008F277E /* MXKRoomNameStringLocalizations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomNameStringLocalizations.h; sourceTree = "<group>"; };
-		32BA86B621538B35008F277E /* MXKRoomNameStringLocalizations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomNameStringLocalizations.m; sourceTree = "<group>"; };
+		32BA86B521538B35008F277E /* MXKRoomNameStringLocalizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKRoomNameStringLocalizer.h; sourceTree = "<group>"; };
+		32BA86B621538B35008F277E /* MXKRoomNameStringLocalizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKRoomNameStringLocalizer.m; sourceTree = "<group>"; };
 		32BA86B821538FFC008F277E /* MXKEventFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKEventFormatter.m; sourceTree = "<group>"; };
 		32BA86B921538FFC008F277E /* MXKEventFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKEventFormatter.h; sourceTree = "<group>"; };
 		32BDC981211AD6D10064AF51 /* AUTHORS.rst */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS.rst; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 		8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSString+MatrixKit.swift"; sourceTree = "<group>"; };
 		918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+MatrixKit.swift"; sourceTree = "<group>"; };
+		91FE762A27047EB700E035D9 /* MXKURLPreviewDataProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKURLPreviewDataProtocol.h; sourceTree = "<group>"; };
 		92663A6A1EF6E5B3005FB712 /* MXKSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSoundPlayer.h; sourceTree = "<group>"; };
 		92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSoundPlayer.m; sourceTree = "<group>"; };
 		A82C7BAE25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXKRoomDataSourceTests.swift; sourceTree = "<group>"; };
@@ -399,8 +402,8 @@
 		B13652F6221E9E7A00313B09 /* MXKMessageTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKMessageTextView.h; sourceTree = "<group>"; };
 		B13652F7221E9E7A00313B09 /* MXKMessageTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKMessageTextView.m; sourceTree = "<group>"; };
 		B13AC545246447ED00A6B899 /* MatrixKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = MatrixKit.podspec; sourceTree = "<group>"; };
-		B164380A210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKSendReplyEventStringLocalizations.h; sourceTree = "<group>"; };
-		B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKSendReplyEventStringLocalizations.m; sourceTree = "<group>"; };
+		B164380A210603CD00DBB3FD /* MXKSendReplyEventStringLocalizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKSendReplyEventStringLocalizer.h; sourceTree = "<group>"; };
+		B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXKSendReplyEventStringLocalizer.m; sourceTree = "<group>"; };
 		B1668ABE21072F93002B14F1 /* MXKSlashCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSlashCommands.h; sourceTree = "<group>"; };
 		B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSlashCommands.m; sourceTree = "<group>"; };
 		B455B95A7B9ECAD75BA21E12 /* Pods_MatrixKitSamplePods_MatrixKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MatrixKitSamplePods_MatrixKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -717,6 +720,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18BA7B4B26FDAC19001C25DF /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				18BA7B4C26FDAC19001C25DF /* Strings.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 		3203F2691D2E9CAE0021F170 /* MatrixKitTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -787,6 +798,7 @@
 				F09E28921AC2007000C51E44 /* Assets */,
 				F07E18111ABC563900DE3766 /* Categories */,
 				3219CBBB1AA6FB1C0027D7E2 /* Controllers */,
+				18BA7B4B26FDAC19001C25DF /* Generated */,
 				3219CBBC1AA6FB1C0027D7E2 /* Models */,
 				32CEE21C1AB1A57E00F7C74D /* Utils */,
 				3219CBBD1AA6FB1C0027D7E2 /* Views */,
@@ -1035,8 +1047,8 @@
 				32BA86B921538FFC008F277E /* MXKEventFormatter.h */,
 				32BA86B821538FFC008F277E /* MXKEventFormatter.m */,
 				EC6DC7BA24F9562600B6C40F /* MarkdownToHTMLRenderer.swift */,
-				32BA86B521538B35008F277E /* MXKRoomNameStringLocalizations.h */,
-				32BA86B621538B35008F277E /* MXKRoomNameStringLocalizations.m */,
+				32BA86B521538B35008F277E /* MXKRoomNameStringLocalizer.h */,
+				32BA86B621538B35008F277E /* MXKRoomNameStringLocalizer.m */,
 			);
 			path = EventFormatter;
 			sourceTree = "<group>";
@@ -1307,10 +1319,11 @@
 				F07E180C1ABC2EDA00DE3766 /* MXKRoomDataSource.m */,
 				3230A3731ACADC1800CC57F5 /* MXKRoomDataSourceManager.h */,
 				3230A3741ACADC1800CC57F5 /* MXKRoomDataSourceManager.m */,
-				B164380A210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.h */,
-				B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m */,
+				B164380A210603CD00DBB3FD /* MXKSendReplyEventStringLocalizer.h */,
+				B164380B210603CD00DBB3FD /* MXKSendReplyEventStringLocalizer.m */,
 				B1668ABE21072F93002B14F1 /* MXKSlashCommands.h */,
 				B1668ABF21072F93002B14F1 /* MXKSlashCommands.m */,
+				91FE762A27047EB700E035D9 /* MXKURLPreviewDataProtocol.h */,
 			);
 			path = Room;
 			sourceTree = "<group>";
@@ -1584,6 +1597,7 @@
 			buildConfigurationList = 3219CB8E1AA6F2790027D7E2 /* Build configuration list for PBXNativeTarget "MatrixKitSample" */;
 			buildPhases = (
 				C4EF25314B5653164693070B /* [CP] Check Pods Manifest.lock */,
+				18BA7B5426FDACD3001C25DF /* 🛠 SwiftGen */,
 				3219CB641AA6F2780027D7E2 /* Sources */,
 				3219CB651AA6F2780027D7E2 /* Frameworks */,
 				3219CB661AA6F2780027D7E2 /* Resources */,
@@ -1747,6 +1761,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		18BA7B5426FDACD3001C25DF /* 🛠 SwiftGen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "🛠 SwiftGen";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftGen/bin/swiftgen\" config run --config \"Tools/SwiftGen/swiftgen-config.yml\"\n";
+		};
 		377905BE14B160E84117ED22 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1861,13 +1893,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F07B9C2B1D3587D3000CB20E /* MXKAppSettings.m in Sources */,
+				18BA7B5526FDFFBB001C25DF /* Strings.swift in Sources */,
+				1873680526FE058B0018959C /* MXKRoomDataSource+Tests.m in Sources */,
+				1873680426FE05890018959C /* MXKRoomDataSourceTests.swift in Sources */,
+				1873680326FE05860018959C /* MXKEventFormatterTests.m in Sources */,
 				550A36BD1DE484DB005C1647 /* EncryptedAttachmentsTest.m in Sources */,
-				A82C7BAF25F0BA900059F7F1 /* MXKRoomDataSourceTests.swift in Sources */,
 				328E410424CB135100DC4490 /* MatrixKitVersion.m in Sources */,
 				B125D10522D62A4900570CA4 /* MXKUTITests.swift in Sources */,
-				F07B9C2C1D3587E5000CB20E /* MXKTools.m in Sources */,
-				A8C4035B25F0C34D00B3F18B /* MXKRoomDataSource+Tests.m in Sources */,
-				32538D081D2EA100009FE744 /* MXKEventFormatterTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1911,7 +1943,7 @@
 				328E410324CB135100DC4490 /* MatrixKitVersion.m in Sources */,
 				F095E5101B25899F009606CE /* MXKEmail.m in Sources */,
 				321313C91AEFC2D500A9B035 /* MXKRoomIOSOutgoingBubbleTableViewCell.m in Sources */,
-				B164380C210603CD00DBB3FD /* MXKSendReplyEventStringLocalizations.m in Sources */,
+				B164380C210603CD00DBB3FD /* MXKSendReplyEventStringLocalizer.m in Sources */,
 				F0FDF2671E53586A00D23C47 /* MXKCountryPickerViewController.m in Sources */,
 				B12C471020BED312004FBF96 /* MXKErrorPresentableBuilder.m in Sources */,
 				F00FA85C1C0867F900E25826 /* MXKRoomIncomingAttachmentBubbleCell.m in Sources */,
@@ -1972,7 +2004,7 @@
 				F095E50F1B25899F009606CE /* MXKContactManager.m in Sources */,
 				F09617C31DE881D800093E9D /* MXKEncryptionInfoView.m in Sources */,
 				F0CE56EB1AA8BB5E003BE77A /* MXKSampleMainTableViewController.m in Sources */,
-				32BA86B721538B35008F277E /* MXKRoomNameStringLocalizations.m in Sources */,
+				32BA86B721538B35008F277E /* MXKRoomNameStringLocalizer.m in Sources */,
 				F0AD3CC71B289441002E0899 /* MXKInterleavedRecentTableViewCell.m in Sources */,
 				F0DB1AC51B025D9400A3FA54 /* MXKSampleRoomMemberTableViewCell.m in Sources */,
 				F08D35211FD0134900A0C2FB /* MXKPieChartHUD.m in Sources */,
@@ -1994,6 +2026,7 @@
 				F00C252B1ADBC60300065077 /* MXKTableViewController.m in Sources */,
 				F0316E431B7E469C00F03620 /* MXKTableViewCellWithLabelAndImageView.m in Sources */,
 				F09E288F1AC1FEDA00C51E44 /* MXKPieChartView.m in Sources */,
+				18BA7B5126FDAC19001C25DF /* Strings.swift in Sources */,
 				F05927B21FDDA09D009F2A68 /* MXKGroupListViewController.m in Sources */,
 				F0CF98DC1B0B7FDC00EAE373 /* MXKTableViewCellWithLabelAndSlider.m in Sources */,
 				F080B4311BD6991A00DE095E /* MXKMediaCollectionViewCell.m in Sources */,

@@ -841,18 +841,18 @@
             MXError *mxError = [[MXError alloc] initWithNSError:error];
             if ([mxError.errcode isEqualToString:kMXErrCodeStringNotFound])
             {
-                errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_timeline_event_not_found_title"];
-                errorMessage = [NSBundle mxk_localizedStringForKey:@"room_error_timeline_event_not_found"];
+                errorTitle = [MatrixKitL10n roomErrorTimelineEventNotFoundTitle];
+                errorMessage = [MatrixKitL10n roomErrorTimelineEventNotFound];
             }
             else
             {
-                errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_cannot_load_timeline"];
+                errorTitle = [MatrixKitL10n roomErrorCannotLoadTimeline];
                 errorMessage = mxError.error;
             }
         }
         else
         {
-            errorTitle = [NSBundle mxk_localizedStringForKey:@"room_error_cannot_load_timeline"];
+            errorTitle = [MatrixKitL10n roomErrorCannotLoadTimeline];
         }
 
         // And show it
@@ -861,7 +861,7 @@
         __weak typeof(self) weakSelf = self;
         currentAlert = [UIAlertController alertControllerWithTitle:errorTitle message:errorMessage preferredStyle:UIAlertControllerStyleAlert];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
                                                     
@@ -971,15 +971,15 @@
     {
         // minging kludge until https://matrix.org/jira/browse/SYN-678 is fixed
         // 'Error when trying to join an empty room should be more explicit'
-        msg = [NSBundle mxk_localizedStringForKey:@"room_error_join_failed_empty_room"];
+        msg = [MatrixKitL10n roomErrorJoinFailedEmptyRoom];
     }
     
     MXWeakify(self);
     [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
     
-    self->currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_error_join_failed_title"] message:msg preferredStyle:UIAlertControllerStyleAlert];
+    self->currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n roomErrorJoinFailedTitle] message:msg preferredStyle:UIAlertControllerStyleAlert];
     
-    [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+    [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                            style:UIAlertActionStyleDefault
                                                          handler:^(UIAlertAction * action) {
         
@@ -1014,11 +1014,11 @@
     {
         if (self.roomDataSource.room.isDirect)
         {
-            reason = [NSBundle mxk_localizedStringForKey:@"room_left_for_dm"];
+            reason = [MatrixKitL10n roomLeftForDm];
         }
         else
         {
-            reason = [NSBundle mxk_localizedStringForKey:@"room_left"];
+            reason = [MatrixKitL10n roomLeft];
         }
     }
     
@@ -2203,9 +2203,9 @@
         
         __weak typeof(self) weakSelf = self;
         
-        currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"resend_message"] message:textMessage preferredStyle:UIAlertControllerStyleAlert];
+        currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n resendMessage] message:textMessage preferredStyle:UIAlertControllerStyleAlert];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
                                                            
@@ -2214,7 +2214,7 @@
                                                            
                                                        }]];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
                                                            
@@ -2645,9 +2645,9 @@
             }
             
             __weak __typeof(self) weakSelf = self;
-            currentAlert = [UIAlertController alertControllerWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"attachment_cancel_download"] preferredStyle:UIAlertControllerStyleAlert];
+            currentAlert = [UIAlertController alertControllerWithTitle:nil message:[MatrixKitL10n attachmentCancelDownload] preferredStyle:UIAlertControllerStyleAlert];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -2656,7 +2656,7 @@
                                                                
                                                            }]];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -2692,9 +2692,9 @@
                 }
                 
                 __weak __typeof(self) weakSelf = self;
-                currentAlert = [UIAlertController alertControllerWithTitle:nil message:[NSBundle mxk_localizedStringForKey:@"attachment_cancel_upload"] preferredStyle:UIAlertControllerStyleAlert];
+                currentAlert = [UIAlertController alertControllerWithTitle:nil message:[MatrixKitL10n attachmentCancelUpload] preferredStyle:UIAlertControllerStyleAlert];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -2703,7 +2703,7 @@
                                                                    
                                                                }]];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -2763,7 +2763,7 @@
             // Add actions for a failed event
             if (selectedEvent.sentState == MXEventSentStateFailed)
             {
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"resend"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n resend]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -2775,7 +2775,7 @@
                                                                    
                                                                }]];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"delete"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n delete]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -2805,7 +2805,7 @@
                     selectedComponent = nil;
                 }
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n copy]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -2829,7 +2829,7 @@
                 
                 if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+                    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n share]
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                         
@@ -2856,7 +2856,7 @@
                 
                 if (components.count > 1)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"select_all"]
+                    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n selectAll]
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                                                                        
@@ -2874,7 +2874,7 @@
                 {
                     if ([MXKAppSettings standardAppSettings].messageDetailsAllowSaving)
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n save]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                             
@@ -2907,7 +2907,7 @@
                 
                 if (attachment.type != MXKAttachmentTypeSticker)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
+                    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n copyButtonName]
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                                                                        
@@ -2938,7 +2938,7 @@
                     
                     if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n share]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                             
@@ -2982,7 +2982,7 @@
                     NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.contentURL;
                     if ([MXMediaManager existingUploaderWithId:uploadId])
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_upload"]
+                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancelUpload]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                                                                            
@@ -3023,7 +3023,7 @@
                     NSString *downloadId = roomBubbleTableViewCell.bubbleData.attachment.downloadId;
                     if ([MXMediaManager existingDownloaderWithIdentifier:downloadId])
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"]
+                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancelDownload]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                                                                            
@@ -3043,7 +3043,7 @@
                     }
                 }
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"show_details"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n showDetails]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -3059,7 +3059,7 @@
                                                                }]];
             }
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                              style:UIAlertActionStyleCancel
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -3131,7 +3131,7 @@
             
             [self becomeFirstResponder];
             UIMenuController *menu = [UIMenuController sharedMenuController];
-            menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"share"] action:@selector(share:)]];
+            menu.menuItems = @[[[UIMenuItem alloc] initWithTitle:[MatrixKitL10n share] action:@selector(share:)]];
             [menu setTargetRect:roomBubbleTableViewCell.messageTextView.frame inView:roomBubbleTableViewCell];
             [menu setMenuVisible:YES animated:YES];
         });
@@ -3713,9 +3713,9 @@
                         [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
 
                         __weak typeof(self) weakSelf = self;
-                        self->currentAlert = [UIAlertController alertControllerWithTitle:@"" message:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_file_prompt"] preferredStyle:UIAlertControllerStyleAlert];
+                        self->currentAlert = [UIAlertController alertControllerWithTitle:@"" message:[MatrixKitL10n attachmentE2eKeysFilePrompt] preferredStyle:UIAlertControllerStyleAlert];
                         
-                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"view"]
+                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n view]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                                                                            
@@ -3730,7 +3730,7 @@
                                                                            
                                                                        }]];
                         
-                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_e2e_keys_import"]
+                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n attachmentE2eKeysImport]
                                                                          style:UIAlertActionStyleDefault
                                                                        handler:^(UIAlertAction * action) {
                                                                            

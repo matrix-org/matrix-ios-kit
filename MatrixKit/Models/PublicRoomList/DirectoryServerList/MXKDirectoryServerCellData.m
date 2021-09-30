@@ -19,6 +19,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKDirectoryServerCellData;
 @synthesize desc, icon;
 @synthesize homeserver, includeAllNetworks;
@@ -41,7 +43,7 @@
         else
         {
             // Use the Matrix name and logo when looking for Matrix rooms only
-            desc = [NSBundle mxk_localizedStringForKey:@"matrix"];
+            desc = [MatrixKitL10n matrix];
             icon = [NSBundle mxk_imageFromMXKAssetsBundleWithName:@"network_matrix"];
         }
     }

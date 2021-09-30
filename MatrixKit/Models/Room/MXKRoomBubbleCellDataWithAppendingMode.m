@@ -344,8 +344,8 @@ static NSAttributedString *messageSeparator = nil;
         // Insert new component
         [bubbleComponents insertObject:addedComponent atIndex:index];
         
-        // Reset the current attributed string (This will reset rendering attributes).
-        self.attributedTextMessage = nil;
+        // Indicate that the data's text message layout should be recomputed.
+        [self invalidateTextLayout];
     }
 }
 

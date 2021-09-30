@@ -21,6 +21,8 @@
 
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKEncryptionKeysImportView ()
 {
     MXSession *mxSession;
@@ -37,7 +39,7 @@
     {
         mxSession = matrixSession;
         
-        _alertController = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_import_room_keys"] message:[NSBundle mxk_localizedStringForKey:@"e2e_import_prompt"] preferredStyle:UIAlertControllerStyleAlert];
+        _alertController = [UIAlertController alertControllerWithTitle:[MatrixKitL10n e2eImportRoomKeys] message:[MatrixKitL10n e2eImportPrompt] preferredStyle:UIAlertControllerStyleAlert];
     }
     return self;
 }
@@ -50,11 +52,11 @@
     [_alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
      {
          textField.secureTextEntry = YES;
-         textField.placeholder = [NSBundle mxk_localizedStringForKey:@"e2e_passphrase_enter"];
+         textField.placeholder = [MatrixKitL10n e2ePassphraseEnter];
          [textField resignFirstResponder];
      }];
     
-    [_alertController addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+    [_alertController addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
                                                            
@@ -65,7 +67,7 @@
                                                            
                                                        }]];
     
-    [_alertController addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"e2e_import"]
+    [_alertController addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n e2eImport]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
                                                            
@@ -94,9 +96,9 @@
                                                                        [mxkViewController stopActivityIndicator];
                                                                        
                                                                        // TODO: i18n the error
-                                                                       UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+                                                                       UIAlertController *otherAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n error] message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
                                                                        
-                                                                       [otherAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                       [otherAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
                                                                            
                                                                            if (weakSelf)
                                                                            {

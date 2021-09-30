@@ -24,6 +24,7 @@
 
 #import "NSBundle+MatrixKit.h"
 #import <MatrixSDK/MXTools.h>
+#import "MXKSwiftHeader.h"
 
 #pragma mark - Constants definitions
 
@@ -184,22 +185,22 @@ static NSRegularExpression *htmlTagsRegex;
     
     if (secondsInterval < 1)
     {
-        [formattedString appendFormat:@"< 1%@", [NSBundle mxk_localizedStringForKey:@"format_time_s"]];;
+        [formattedString appendFormat:@"< 1%@", [MatrixKitL10n formatTimeS]];
     }
     else if (secondsInterval < 60)
     {
-        [formattedString appendFormat:@"%d%@", (int)secondsInterval, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
+        [formattedString appendFormat:@"%d%@", (int)secondsInterval, [MatrixKitL10n formatTimeS]];
     }
     else if (secondsInterval < 3600)
     {
-        [formattedString appendFormat:@"%d%@ %2d%@", (int)(secondsInterval/60), [NSBundle mxk_localizedStringForKey:@"format_time_m"],
-         ((int)secondsInterval) % 60, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
+        [formattedString appendFormat:@"%d%@ %2d%@", (int)(secondsInterval/60), [MatrixKitL10n formatTimeM],
+         ((int)secondsInterval) % 60, [MatrixKitL10n formatTimeS]];
     }
     else if (secondsInterval >= 3600)
     {
-        [formattedString appendFormat:@"%d%@ %d%@ %d%@", (int)(secondsInterval / 3600), [NSBundle mxk_localizedStringForKey:@"format_time_h"],
-         ((int)(secondsInterval) % 3600) / 60, [NSBundle mxk_localizedStringForKey:@"format_time_m"],
-         (int)(secondsInterval) % 60, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
+        [formattedString appendFormat:@"%d%@ %d%@ %d%@", (int)(secondsInterval / 3600), [MatrixKitL10n formatTimeH],
+         ((int)(secondsInterval) % 3600) / 60, [MatrixKitL10n formatTimeM],
+         (int)(secondsInterval) % 60, [MatrixKitL10n formatTimeS]];
     }
     [formattedString appendString:@" left"];
     
@@ -212,26 +213,26 @@ static NSRegularExpression *htmlTagsRegex;
 
     if (secondsInterval < 0)
     {
-        formattedString = [NSString stringWithFormat:@"0%@", [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
+        formattedString = [NSString stringWithFormat:@"0%@", [MatrixKitL10n formatTimeS]];
     }
     else
     {
         NSUInteger seconds = secondsInterval;
         if (seconds < 60)
         {
-            formattedString = [NSString stringWithFormat:@"%tu%@", seconds, [NSBundle mxk_localizedStringForKey:@"format_time_s"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds, [MatrixKitL10n formatTimeS]];
         }
         else if (secondsInterval < 3600)
         {
-            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 60, [NSBundle mxk_localizedStringForKey:@"format_time_m"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 60, [MatrixKitL10n formatTimeM]];
         }
         else if (secondsInterval < 86400)
         {
-            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 3600, [NSBundle mxk_localizedStringForKey:@"format_time_h"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 3600, [MatrixKitL10n formatTimeH]];
         }
         else
         {
-            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 86400, [NSBundle mxk_localizedStringForKey:@"format_time_d"]];
+            formattedString = [NSString stringWithFormat:@"%tu%@", seconds / 86400, [MatrixKitL10n formatTimeD]];
         }
     }
 
@@ -712,15 +713,15 @@ static NSMutableDictionary* backgroundByImageNameDict;
 + (UIAlertController*)videoConversionPromptForVideoAsset:(AVAsset *)videoAsset
                                            withCompletion:(void (^)(NSString * _Nullable presetName))completion
 {
-    UIAlertController *compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_title"]
-                                                                               message:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_message"]
+    UIAlertController *compressionPrompt = [UIAlertController alertControllerWithTitle:[MatrixKitL10n attachmentSizePromptTitle]
+                                                                               message:[MatrixKitL10n attachmentSizePromptMessage]
                                                                         preferredStyle:UIAlertControllerStyleActionSheet];
     
     CGSize naturalSize = [videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize;
     
     // Provide 480p as the baseline preset.
     NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset640x480];
-    NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small_with_resolution"], @"480p", fileSizeString];
+    NSString *title = [MatrixKitL10n attachmentSmallWithResolution:@"480p" :fileSizeString];
     [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
@@ -732,7 +733,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
     if (naturalSize.height > 480)
     {
         NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset1280x720];
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium_with_resolution"], @"720p", fileSizeString];
+        NSString *title = [MatrixKitL10n attachmentMediumWithResolution:@"720p" :fileSizeString];
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction * action) {
@@ -745,7 +746,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
     if (naturalSize.height > 720)
     {
         NSString *fileSizeString = [MXKTools estimatedFileSizeStringForVideoAsset:videoAsset withPresetName:AVAssetExportPreset1920x1080];
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large_with_resolution"], @"1080p", fileSizeString];
+        NSString *title = [MatrixKitL10n attachmentLargeWithResolution:@"1080p" :fileSizeString];
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction * action) {
@@ -754,7 +755,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
         }]];
     }
     
-    [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+    [compressionPrompt addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                           style:UIAlertActionStyleCancel
                                                         handler:^(UIAlertAction * action) {
         // Cancelled. Call the completion with nil.
@@ -797,7 +798,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
                 UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
                 if (sharedApplication && UIApplicationOpenSettingsURLString)
                 {
-                    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+                    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n settings]
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * action) {
                                                                        
@@ -811,7 +812,7 @@ static NSMutableDictionary* backgroundByImageNameDict;
                                                                    }]];
                 }
                 
-                [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+                [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             
@@ -899,7 +900,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
         UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
         if (sharedApplication && UIApplicationOpenSettingsURLString)
         {
-            [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"settings"]
+            [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n settings]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
@@ -912,7 +913,7 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
                                                         
                                                     }]];
         }
-        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+        [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
                                                     

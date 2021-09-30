@@ -21,6 +21,8 @@
 
 #import "MXKConstants.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKEventDetailsView ()
 {
     /**
@@ -55,10 +57,10 @@
     [super awakeFromNib];
     
     // Localize string
-    [_redactButton setTitle:[NSBundle mxk_localizedStringForKey:@"redact"] forState:UIControlStateNormal];
-    [_redactButton setTitle:[NSBundle mxk_localizedStringForKey:@"redact"] forState:UIControlStateHighlighted];
-    [_closeButton setTitle:[NSBundle mxk_localizedStringForKey:@"close"] forState:UIControlStateNormal];
-    [_closeButton setTitle:[NSBundle mxk_localizedStringForKey:@"close"] forState:UIControlStateHighlighted];
+    [_redactButton setTitle:[MatrixKitL10n redact] forState:UIControlStateNormal];
+    [_redactButton setTitle:[MatrixKitL10n redact] forState:UIControlStateHighlighted];
+    [_closeButton setTitle:[MatrixKitL10n close] forState:UIControlStateNormal];
+    [_closeButton setTitle:[MatrixKitL10n close] forState:UIControlStateHighlighted];
 }
 
 - (instancetype)initWithEvent:(MXEvent*)event andMatrixSession:(MXSession*)session
