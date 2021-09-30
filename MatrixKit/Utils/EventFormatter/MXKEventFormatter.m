@@ -1948,7 +1948,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         {
             // Temporarily fallback to the room joined notice when the last event is for the room's creation.
             // This will be improved as part of https://github.com/vector-im/element-ios/issues/4918
-            lastMessageString = [NSBundle mxk_localizedStringForKey:@"notice_room_join_by_you"];
+            lastMessageString = MatrixKitL10n.noticeRoomJoinByYou;
         }
         
         if (0 == lastMessageString.length)
