@@ -33,6 +33,8 @@
 
 #import <MatrixSDK/MXBackgroundModeHandler.h>
 
+#import "MXKSwiftHeader.h"
+
 NSString *const kMXKAccountUserInfoDidChangeNotification = @"kMXKAccountUserInfoDidChangeNotification";
 NSString *const kMXKAccountAPNSActivityDidChangeNotification = @"kMXKAccountAPNSActivityDidChangeNotification";
 NSString *const kMXKAccountPushKitActivityDidChangeNotification = @"kMXKAccountPushKitActivityDidChangeNotification";
@@ -454,7 +456,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                                                  code:0
                                              userInfo:@{
                                                         NSLocalizedDescriptionKey:
-                                                            [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
+                                                            [MatrixKitL10n accountErrorPushNotAllowed]
                                                         }];
             if (failure)
             {
@@ -531,7 +533,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
                                                  code:0
                                              userInfo:@{
                                                         NSLocalizedDescriptionKey:
-                                                            [NSBundle mxk_localizedStringForKey:@"account_error_push_not_allowed"]
+                                                            [MatrixKitL10n accountErrorPushNotAllowed]
                                                         }];
             failure (error);
         }
@@ -648,7 +650,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [MatrixKitL10n accountErrorMatrixSessionIsNotOpened]}]);
     }
 }
 
@@ -668,7 +670,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [MatrixKitL10n accountErrorMatrixSessionIsNotOpened]}]);
     }
 }
 
@@ -689,7 +691,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     }
     else if (failure)
     {
-        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [NSBundle mxk_localizedStringForKey:@"account_error_matrix_session_is_not_opened"]}]);
+        failure ([NSError errorWithDomain:kMXKAccountErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: [MatrixKitL10n accountErrorMatrixSessionIsNotOpened]}]);
     }
 }
 

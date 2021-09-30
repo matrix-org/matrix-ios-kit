@@ -31,7 +31,7 @@
 
 #import "MXKAppSettings.h"
 
-#import "MXKSendReplyEventStringLocalizations.h"
+#import "MXKSendReplyEventStringLocalizer.h"
 #import "MXKSlashCommands.h"
 
 
@@ -1399,7 +1399,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     {
         for (id<MXKRoomBubbleCellDataStoring> bubble in bubbles)
         {
-            bubble.attributedTextMessage = nil;
+            [bubble invalidateTextLayout];
         }
     }
 }
@@ -1736,9 +1736,9 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     NSString *sanitizedText = [self sanitizedMessageText:text];
     NSString *html = [self htmlMessageFromSanitizedText:sanitizedText];
     
-    id<MXSendReplyEventStringsLocalizable> stringLocalizations = [MXKSendReplyEventStringLocalizations new];
+    id<MXSendReplyEventStringLocalizerProtocol> stringLocalizer = [MXKSendReplyEventStringLocalizer new];
     
-    [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizations:stringLocalizations localEcho:&localEchoEvent success:success failure:failure];
+    [_room sendReplyToEvent:eventToReply withTextMessage:sanitizedText formattedTextMessage:html stringLocalizer:stringLocalizer localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
     {
@@ -3899,8 +3899,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         roomBubbleCellData.reactions[eventId] = nil;
     }
 
-    // Recompute the text message layout
-    roomBubbleCellData.attributedTextMessage = nil;
+    // Indicate that the text message layout should be recomputed.
+    [roomBubbleCellData invalidateTextLayout];
 }
 
 - (BOOL)canReactToEventWithId:(NSString*)eventId
@@ -4074,7 +4074,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             }
 
             [bubbleCellData updateEvent:eventId withEvent:editedEvent];
-            bubbleCellData.attributedTextMessage = nil;
+            [bubbleCellData invalidateTextLayout];
             hasChanged = YES;
         }
     }

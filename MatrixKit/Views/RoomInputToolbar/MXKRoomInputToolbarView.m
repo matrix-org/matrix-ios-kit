@@ -95,8 +95,8 @@
     self.editable = YES;
     
     // Localize string
-    [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateNormal];
-    [_rightInputToolbarButton setTitle:[NSBundle mxk_localizedStringForKey:@"send"] forState:UIControlStateHighlighted];
+    [_rightInputToolbarButton setTitle:[MatrixKitL10n send] forState:UIControlStateNormal];
+    [_rightInputToolbarButton setTitle:[MatrixKitL10n send] forState:UIControlStateHighlighted];
     
     validationViews = [NSMutableArray array];
 }
@@ -142,7 +142,7 @@
         {
             optionsListView = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
             
-            [optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"attach_media"]
+            [optionsListView addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n attachMedia]
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * action) {
                                                                   
@@ -162,7 +162,7 @@
                                                                   
                                                               }]];
             
-            [optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"capture_media"]
+            [optionsListView addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n captureMedia]
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * action) {
                                                                   
@@ -195,7 +195,7 @@
                 optionsListView = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
             }
             
-            [optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite_user"]
+            [optionsListView addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n inviteUser]
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * action) {
                                                                   
@@ -204,10 +204,10 @@
                                                                       typeof(self) self = weakSelf;
                                                                       
                                                                       // Ask for userId to invite
-                                                                      self->optionsListView = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"user_id_title"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                                                      self->optionsListView = [UIAlertController alertControllerWithTitle:[MatrixKitL10n userIdTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
                                                                       
                                                                       
-                                                                      [self->optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                      [self->optionsListView addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
                                                                           
                                                                           if (weakSelf)
                                                                           {
@@ -220,11 +220,11 @@
                                                                       [self->optionsListView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                                                           
                                                                            textField.secureTextEntry = NO;
-                                                                           textField.placeholder = [NSBundle mxk_localizedStringForKey:@"user_id_placeholder"];
+                                                                           textField.placeholder = [MatrixKitL10n userIdPlaceholder];
                                                                           
                                                                        }];
                                                                       
-                                                                      [self->optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"invite"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                      [self->optionsListView addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n invite] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
                                                                           
                                                                           if (weakSelf)
                                                                           {
@@ -256,7 +256,7 @@
         if (optionsListView)
         {
             
-            [self->optionsListView addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            [self->optionsListView addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
                 
                 if (weakSelf)
                 {
@@ -609,15 +609,15 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
     {
         __weak typeof(self) weakSelf = self;
         
-        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_title"]
-                                                                message:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_message"]
+        compressionPrompt = [UIAlertController alertControllerWithTitle:[MatrixKitL10n attachmentSizePromptTitle]
+                                                                message:[MatrixKitL10n attachmentSizePromptMessage]
                                                          preferredStyle:UIAlertControllerStyleActionSheet];
         
         if (compressionSizes.small.fileSize)
         {
             NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.small.fileSize];
 
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], fileSizeString];
+            NSString *title = [MatrixKitL10n attachmentSmall:fileSizeString];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -641,7 +641,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         {
             NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.medium.fileSize];
 
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], fileSizeString];
+            NSString *title = [MatrixKitL10n attachmentMedium:fileSizeString];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -665,7 +665,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         {
             NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.large.fileSize];
 
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], fileSizeString];
+            NSString *title = [MatrixKitL10n attachmentLarge:fileSizeString];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -686,8 +686,8 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         }
         
         NSString *fileSizeString = [MXTools fileSizeToString:compressionSizes.original.fileSize];
-
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], fileSizeString];
+        
+        NSString *title = [MatrixKitL10n attachmentOriginal:fileSizeString];
         
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
@@ -705,7 +705,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                                 
                                                             }]];
         
-        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                               style:UIAlertActionStyleCancel
                                                             handler:^(UIAlertAction * action) {
                                                                 
@@ -838,15 +838,15 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
         && (fileSizes.small || fileSizes.medium || fileSizes.large))
     {
         // Ask the user for the compression value
-        compressionPrompt = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_title"]
-                                                                message:[NSBundle mxk_localizedStringForKey:@"attachment_size_prompt_message"]
+        compressionPrompt = [UIAlertController alertControllerWithTitle:[MatrixKitL10n attachmentSizePromptTitle]
+                                                                message:[MatrixKitL10n attachmentSizePromptMessage]
                                                          preferredStyle:UIAlertControllerStyleActionSheet];
         
         __weak typeof(self) weakSelf = self;
 
         if (fileSizes.small)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_small"], [MXTools fileSizeToString:fileSizes.small]];
+            NSString *title = [MatrixKitL10n attachmentSmall:[MXTools fileSizeToString:fileSizes.small]];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -866,7 +866,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.medium)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_medium"], [MXTools fileSizeToString:fileSizes.medium]];
+            NSString *title = [MatrixKitL10n attachmentMedium:[MXTools fileSizeToString:fileSizes.medium]];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -886,7 +886,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
 
         if (fileSizes.large)
         {
-            NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_large"], [MXTools fileSizeToString:fileSizes.large]];
+            NSString *title = [MatrixKitL10n attachmentLarge:[MXTools fileSizeToString:fileSizes.large]];
             
             [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                                   style:UIAlertActionStyleDefault
@@ -904,7 +904,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                                 }]];
         }
 
-        NSString *title = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"attachment_original"], [MXTools fileSizeToString:fileSizes.original]];
+        NSString *title = [MatrixKitL10n attachmentOriginal:[MXTools fileSizeToString:fileSizes.original]];
         
         [compressionPrompt addAction:[UIAlertAction actionWithTitle:title
                                                               style:UIAlertActionStyleDefault
@@ -921,7 +921,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                                                                 
                                                             }]];
         
-        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+        [compressionPrompt addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                               style:UIAlertActionStyleCancel
                                                             handler:^(UIAlertAction * action) {
                                                                 
@@ -1040,7 +1040,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 imageValidationView.stretchable = YES;
                 
                 // the user validates the image
-                [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                [imageValidationView setRightButtonTitle:[MatrixKitL10n ok] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                  {
                      if (weakSelf)
                      {
@@ -1066,7 +1066,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                  }];
                 
                 // the user wants to use an other image
-                [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                [imageValidationView setLeftButtonTitle:[MatrixKitL10n cancel] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                  {
                      if (weakSelf)
                      {
@@ -1188,7 +1188,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         imageValidationView.stretchable = YES;
                         
                         // the user validates the image
-                        [imageValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                        [imageValidationView setRightButtonTitle:[MatrixKitL10n ok] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
                              if (weakSelf)
                              {
@@ -1199,7 +1199,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                          }];
                         
                         // the user wants to use an other image
-                        [imageValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                        [imageValidationView setLeftButtonTitle:[MatrixKitL10n cancel] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
                              // Dismiss the image validation view.
                              if (weakSelf)
@@ -1241,7 +1241,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         videoValidationView.stretchable = YES;
                         
                         // the user validates the image
-                        [videoValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                        [videoValidationView setRightButtonTitle:[MatrixKitL10n ok] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
                              if (weakSelf)
                              {
@@ -1253,7 +1253,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                          }];
                         
                         // the user wants to use an other image
-                        [videoValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                        [videoValidationView setLeftButtonTitle:[MatrixKitL10n cancel] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
                              // Dismiss the video validation view.
                              if (weakSelf)
@@ -1291,7 +1291,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                         docValidationView.stretchable = YES;
                         
                         // the user validates the image
-                        [docValidationView setRightButtonTitle:[NSBundle mxk_localizedStringForKey:@"ok"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                        [docValidationView setRightButtonTitle:[MatrixKitL10n ok] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
                              if (weakSelf)
                              {
@@ -1303,7 +1303,7 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                          }];
                         
                         // the user wants to use an other image
-                        [docValidationView setLeftButtonTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] handler:^(MXKImageView* imageView, NSString* buttonTitle)
+                        [docValidationView setLeftButtonTitle:[MatrixKitL10n cancel] handler:^(MXKImageView* imageView, NSString* buttonTitle)
                          {
                              // Dismiss the validation view.
                              if (weakSelf)

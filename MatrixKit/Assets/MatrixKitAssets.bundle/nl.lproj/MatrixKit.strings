@@ -193,7 +193,7 @@
 // Room
 "room_please_select" = "Selecteer een gesprek";
 "room_error_join_failed_title" = "Toetreden tot het gesprek is mislukt";
-"room_error_join_failed_empty_room" = "Het is momenteel niet mogelijk om opnieuw tot een leeg gesprek toe te treden.";
+"room_error_join_failed_empty_room" = "Het is momenteel niet mogelijk om tot een leeg gesprek toe te treden.";
 "room_error_name_edition_not_authorized" = "U bent niet bevoegd om de naam van dit gesprek te wijzigen";
 "room_error_topic_edition_not_authorized" = "U bent niet bevoegd om het onderwerp van dit gesprek te wijzigen";
 "room_error_cannot_load_timeline" = "Laden van tijdslijn is mislukt";
@@ -316,7 +316,7 @@
 "save" = "Opslaan";
 "leave" = "Verlaten";
 "send" = "Versturen";
-"copy" = "Kopiëren";
+"copy_button_name" = "Kopiëren";
 "resend" = "Opnieuw versturen";
 "redact" = "Verwijderen";
 "share" = "Delen";

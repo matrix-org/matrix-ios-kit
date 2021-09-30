@@ -28,6 +28,8 @@
 
 #import "MXKConstants.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKRoomMemberDetailsViewController ()
 {
     id membersListener;
@@ -318,9 +320,9 @@
                     [currentAlert dismissViewControllerAnimated:NO completion:nil];
                 }
                 
-                currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_ignore_prompt"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+                currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n roomMemberIgnorePrompt] message:nil preferredStyle:UIAlertControllerStyleAlert];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -355,7 +357,7 @@
                                                                    
                                                                }]];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"]
+                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
                                                                  style:UIAlertActionStyleDefault
                                                                handler:^(UIAlertAction * action) {
                                                                    
@@ -766,49 +768,49 @@
     switch (action)
     {
         case MXKRoomMemberDetailsActionInvite:
-            title = [NSBundle mxk_localizedStringForKey:@"invite"];
+            title = [MatrixKitL10n invite];
             break;
         case MXKRoomMemberDetailsActionLeave:
-            title = [NSBundle mxk_localizedStringForKey:@"leave"];
+            title = [MatrixKitL10n leave];
             break;
         case MXKRoomMemberDetailsActionKick:
-            title = [NSBundle mxk_localizedStringForKey:@"kick"];
+            title = [MatrixKitL10n kick];
             break;
         case MXKRoomMemberDetailsActionBan:
-            title = [NSBundle mxk_localizedStringForKey:@"ban"];
+            title = [MatrixKitL10n ban];
             break;
         case MXKRoomMemberDetailsActionUnban:
-            title = [NSBundle mxk_localizedStringForKey:@"unban"];
+            title = [MatrixKitL10n unban];
             break;
         case MXKRoomMemberDetailsActionIgnore:
-            title = [NSBundle mxk_localizedStringForKey:@"ignore"];
+            title = [MatrixKitL10n ignore];
             break;
         case MXKRoomMemberDetailsActionUnignore:
-            title = [NSBundle mxk_localizedStringForKey:@"unignore"];
+            title = [MatrixKitL10n unignore];
             break;
         case MXKRoomMemberDetailsActionSetDefaultPowerLevel:
-            title = [NSBundle mxk_localizedStringForKey:@"set_default_power_level"];
+            title = [MatrixKitL10n setDefaultPowerLevel];
             break;
         case MXKRoomMemberDetailsActionSetModerator:
-            title = [NSBundle mxk_localizedStringForKey:@"set_moderator"];
+            title = [MatrixKitL10n setModerator];
             break;
         case MXKRoomMemberDetailsActionSetAdmin:
-            title = [NSBundle mxk_localizedStringForKey:@"set_admin"];
+            title = [MatrixKitL10n setAdmin];
             break;
         case MXKRoomMemberDetailsActionSetCustomPowerLevel:
-            title = [NSBundle mxk_localizedStringForKey:@"set_power_level"];
+            title = [MatrixKitL10n setPowerLevel];
             break;
         case MXKRoomMemberDetailsActionStartChat:
-            title = [NSBundle mxk_localizedStringForKey:@"start_chat"];
+            title = [MatrixKitL10n startChat];
             break;
         case MXKRoomMemberDetailsActionStartVoiceCall:
-            title = [NSBundle mxk_localizedStringForKey:@"start_voice_call"];
+            title = [MatrixKitL10n startVoiceCall];
             break;
         case MXKRoomMemberDetailsActionStartVideoCall:
-            title = [NSBundle mxk_localizedStringForKey:@"start_video_call"];
+            title = [MatrixKitL10n startVideoCall];
             break;
         case MXKRoomMemberDetailsActionMention:
-            title = [NSBundle mxk_localizedStringForKey:@"mention"];
+            title = [MatrixKitL10n mention];
             break;
         default:
             break;
@@ -916,9 +918,9 @@
                 [currentAlert dismissViewControllerAnimated:NO completion:nil];
             }
             
-            currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"room_member_power_level_prompt"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+            currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n roomMemberPowerLevelPrompt] message:nil preferredStyle:UIAlertControllerStyleAlert];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"no"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -930,7 +932,7 @@
                                                                
                                                            }]];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"yes"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -981,12 +983,12 @@
         [currentAlert dismissViewControllerAnimated:NO completion:nil];
     }
     
-    currentAlert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"power_level"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n powerLevel] message:nil preferredStyle:UIAlertControllerStyleAlert];
     
     
     if (![self.mainSession.myUser.userId isEqualToString:_mxRoomMember.userId])
     {
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"reset_to_default"]
+        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n resetToDefault]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * action) {
                                                            
@@ -1011,7 +1013,7 @@
         textField.keyboardType = UIKeyboardTypeDecimalPad;
     }];
     
-    [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        

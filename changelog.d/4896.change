@@ -1,0 +1,1 @@
+Adds `invalidateTextLayout` method to MXKRoomBubbleCellData along with `urlPreviewData` and `showURLPreview` to MXKBubbleComponent

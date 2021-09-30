@@ -277,7 +277,7 @@
 // button names 
 "ok" = "OK";
 "send" = "Envoyer";
-"copy" = "Copier";
+"copy_button_name" = "Copier";
 "resend" = "Renvoyer";
 "redact" = "Effacer";
 "share" = "Partager";

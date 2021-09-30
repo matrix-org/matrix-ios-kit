@@ -116,6 +116,16 @@
 @property (nonatomic, readonly) BOOL containsBubbleComponentWithEncryptionBadge;
 
 /**
+ Indicate that the current text message layout is no longer valid and should be recomputed
+ before presentation in a bubble cell. This could be due to the content changing, or the
+ available space for the cell has been updated.
+ 
+ This will clear the current `attributedTextMessage` allowing it to be
+ rebuilt on demand when requested.
+ */
+- (void)invalidateTextLayout;
+
+/**
  Check and refresh the position of each component.
  */
 - (void)prepareBubbleComponentsPosition;

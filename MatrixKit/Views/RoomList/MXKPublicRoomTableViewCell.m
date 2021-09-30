@@ -18,6 +18,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKPublicRoomTableViewCell
 
 - (void)render:(MXPublicRoom*)publicRoom
@@ -39,11 +41,11 @@
     // Set member count
     if (publicRoom.numJoinedMembers > 1)
     {
-        _memberCount.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"num_members_other"], @(publicRoom.numJoinedMembers)];
+        _memberCount.text = [MatrixKitL10n numMembersOther:@(publicRoom.numJoinedMembers).stringValue];
     }
     else if (publicRoom.numJoinedMembers == 1)
     {
-        _memberCount.text = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"num_members_one"], @1];
+        _memberCount.text = [MatrixKitL10n numMembersOne:@(1).stringValue];
     }
     else
     {

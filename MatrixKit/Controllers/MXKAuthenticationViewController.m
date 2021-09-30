@@ -28,6 +28,8 @@
 #import <AFNetworking/AFNetworking.h>
 #import "MXKAppSettings.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKAuthenticationViewController ()
 {
     /**
@@ -164,14 +166,14 @@
     [self updateRESTClient];
     
     // Localize labels
-    _homeServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_title"];
-    _homeServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
-    _homeServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_home_server_info"];
-    _identityServerLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_title"];
-    _identityServerTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_server_url_placeholder"];
-    _identityServerInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_identity_server_info"];
-    [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateNormal];
-    [_cancelAuthFallbackButton setTitle:[NSBundle mxk_localizedStringForKey:@"cancel"] forState:UIControlStateHighlighted];
+    _homeServerLabel.text = [MatrixKitL10n loginHomeServerTitle];
+    _homeServerTextField.placeholder = [MatrixKitL10n loginServerUrlPlaceholder];
+    _homeServerInfoLabel.text = [MatrixKitL10n loginHomeServerInfo];
+    _identityServerLabel.text = [MatrixKitL10n loginIdentityServerTitle];
+    _identityServerTextField.placeholder = [MatrixKitL10n loginServerUrlPlaceholder];
+    _identityServerInfoLabel.text = [MatrixKitL10n loginIdentityServerInfo];
+    [_cancelAuthFallbackButton setTitle:[MatrixKitL10n cancel] forState:UIControlStateNormal];
+    [_cancelAuthFallbackButton setTitle:[MatrixKitL10n cancel] forState:UIControlStateHighlighted];
 }
 
 - (void)didReceiveMemoryWarning
@@ -300,10 +302,10 @@
     if (authType == MXKAuthenticationTypeLogin)
     {
         _subTitleLabel.hidden = YES;
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateNormal];
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"login"] forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"create_account"] forState:UIControlStateHighlighted];
+        [_submitButton setTitle:[MatrixKitL10n login] forState:UIControlStateNormal];
+        [_submitButton setTitle:[MatrixKitL10n login] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[MatrixKitL10n createAccount] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[MatrixKitL10n createAccount] forState:UIControlStateHighlighted];
         
         // Update supported authentication flow and associated information (defined in authentication session)
         [self refreshAuthenticationSession];
@@ -311,11 +313,11 @@
     else if (authType == MXKAuthenticationTypeRegister)
     {
         _subTitleLabel.hidden = NO;
-        _subTitleLabel.text = [NSBundle mxk_localizedStringForKey:@"login_create_account"];
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateNormal];
-        [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"sign_up"] forState:UIControlStateHighlighted];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
+        _subTitleLabel.text = [MatrixKitL10n loginCreateAccount];
+        [_submitButton setTitle:[MatrixKitL10n signUp] forState:UIControlStateNormal];
+        [_submitButton setTitle:[MatrixKitL10n signUp] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[MatrixKitL10n back] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[MatrixKitL10n back] forState:UIControlStateHighlighted];
         
         // Update supported authentication flow and associated information (defined in authentication session)
         [self refreshAuthenticationSession];
@@ -326,19 +328,19 @@
         
         if (isPasswordReseted)
         {
-            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
-            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
+            [_submitButton setTitle:[MatrixKitL10n back] forState:UIControlStateNormal];
+            [_submitButton setTitle:[MatrixKitL10n back] forState:UIControlStateHighlighted];
         }
         else
         {
-            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"submit"] forState:UIControlStateNormal];
-            [_submitButton setTitle:[NSBundle mxk_localizedStringForKey:@"submit"] forState:UIControlStateHighlighted];
+            [_submitButton setTitle:[MatrixKitL10n submit] forState:UIControlStateNormal];
+            [_submitButton setTitle:[MatrixKitL10n submit] forState:UIControlStateHighlighted];
             
             [self refreshForgotPasswordSession];
         }
         
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateNormal];
-        [_authSwitchButton setTitle:[NSBundle mxk_localizedStringForKey:@"back"] forState:UIControlStateHighlighted];
+        [_authSwitchButton setTitle:[MatrixKitL10n back] forState:UIControlStateNormal];
+        [_authSwitchButton setTitle:[MatrixKitL10n back] forState:UIControlStateHighlighted];
     }
 
     [self checkIdentityServer];
@@ -756,7 +758,7 @@
             }
             else
             {
-                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n notSupportedYet]}]];
                 
                 _externalRegistrationParameters = nil;
                 
@@ -781,23 +783,23 @@
         // Notify user that no flow is supported
         if (_authType == MXKAuthenticationTypeLogin)
         {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_do_not_support_login_flows"];
+            _noFlowLabel.text = [MatrixKitL10n loginErrorDoNotSupportLoginFlows];
         }
         else
         {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_registration_is_not_supported"];
+            _noFlowLabel.text = [MatrixKitL10n loginErrorRegistrationIsNotSupported];
         }
         MXLogDebug(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
         if (authenticationFallback.length)
         {
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"login_use_fallback"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[MatrixKitL10n loginUseFallback] forState:UIControlStateNormal];
+            [_retryButton setTitle:[MatrixKitL10n loginUseFallback] forState:UIControlStateNormal];
         }
         else
         {
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
-            [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+            [_retryButton setTitle:[MatrixKitL10n retry] forState:UIControlStateNormal];
+            [_retryButton setTitle:[MatrixKitL10n retry] forState:UIControlStateNormal];
         }
         
         _noFlowLabel.hidden = NO;
@@ -984,7 +986,7 @@
                             // Sanity check
                             if (!credentials.userId || !credentials.accessToken)
                             {
-                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n notSupportedYet]}]];
                             }
                             else
                             {
@@ -1045,7 +1047,7 @@
                             if (isUserNameInUse)
                             {
                                 MXLogDebug(@"[MXKAuthenticationVC] User name is already use");
-                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_username_in_use"]}]];
+                                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n authUsernameInUse]}]];
                             }
                             else
                             {
@@ -1092,7 +1094,7 @@
                 else
                 {
                     MXLogDebug(@"[MXKAuthenticationVC] User name is missing");
-                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"auth_invalid_user_name"]}]];
+                    [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n authInvalidUserName]}]];
                 }
             }
             else if (_authType == MXKAuthenticationTypeForgotPassword)
@@ -1207,15 +1209,15 @@
     {
         if (self.authType == MXKAuthenticationTypeLogin)
         {
-            title = [NSBundle mxk_localizedStringForKey:@"login_error_title"];
+            title = [MatrixKitL10n loginErrorTitle];
         }
         else if (self.authType == MXKAuthenticationTypeRegister)
         {
-            title = [NSBundle mxk_localizedStringForKey:@"register_error_title"];
+            title = [MatrixKitL10n registerErrorTitle];
         }
         else
         {
-            title = [NSBundle mxk_localizedStringForKey:@"error"];
+            title = [MatrixKitL10n error];
         }
     }
     NSString* message = error.localizedDescription;
@@ -1236,31 +1238,31 @@
         {
             if ([errCode isEqualToString:kMXErrCodeStringForbidden])
             {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_forbidden"];
+                message = [MatrixKitL10n loginErrorForbidden];
             }
             else if ([errCode isEqualToString:kMXErrCodeStringUnknownToken])
             {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_unknown_token"];
+                message = [MatrixKitL10n loginErrorUnknownToken];
             }
             else if ([errCode isEqualToString:kMXErrCodeStringBadJSON])
             {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_bad_json"];
+                message = [MatrixKitL10n loginErrorBadJson];
             }
             else if ([errCode isEqualToString:kMXErrCodeStringNotJSON])
             {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_not_json"];
+                message = [MatrixKitL10n loginErrorNotJson];
             }
             else if ([errCode isEqualToString:kMXErrCodeStringLimitExceeded])
             {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_limit_exceeded"];
+                message = [MatrixKitL10n loginErrorLimitExceeded];
             }
             else if ([errCode isEqualToString:kMXErrCodeStringUserInUse])
             {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_user_in_use"];
+                message = [MatrixKitL10n loginErrorUserInUse];
             }
             else if ([errCode isEqualToString:kMXErrCodeStringLoginEmailURLNotYet])
             {
-                message = [NSBundle mxk_localizedStringForKey:@"login_error_login_email_not_yet"];
+                message = [MatrixKitL10n loginErrorLoginEmailNotYet];
             }
             else if ([errCode isEqualToString:kMXErrCodeStringResourceLimitExceeded])
             {
@@ -1282,7 +1284,7 @@
     
     alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
@@ -1325,20 +1327,20 @@
         adminContact = [NSURL URLWithString:adminContactString];
     }
 
-    NSString *title = [NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_title"];
+    NSString *title = [MatrixKitL10n loginErrorResourceLimitExceededTitle];
 
     // Build the message content
     NSMutableString *message = [NSMutableString new];
     if ([limitType isEqualToString:kMXErrorResourceLimitExceededLimitTypeMonthlyActiveUserValue])
     {
-        [message appendString:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_message_monthly_active_user"]];
+        [message appendString:[MatrixKitL10n loginErrorResourceLimitExceededMessageMonthlyActiveUser]];
     }
     else
     {
-        [message appendString:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_message_default"]];
+        [message appendString:[MatrixKitL10n loginErrorResourceLimitExceededMessageDefault]];
     }
 
-    [message appendString:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_message_contact"]];
+    [message appendString:[MatrixKitL10n loginErrorResourceLimitExceededMessageContact]];
 
     // Build the alert
     alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -1346,7 +1348,7 @@
     MXWeakify(self);
     if (adminContact && onAdminContactTapped)
     {
-        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_resource_limit_exceeded_contact_button"]
+        [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n loginErrorResourceLimitExceededContactButton]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action)
                           {
@@ -1359,7 +1361,7 @@
                           }]];
     }
 
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action)
                       {
@@ -1401,9 +1403,9 @@
             [alert dismissViewControllerAnimated:NO completion:nil];
         }
         
-        alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"login_error_already_logged_in"] message:nil preferredStyle:UIAlertControllerStyleAlert];
+        alert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n loginErrorAlreadyLoggedIn] message:nil preferredStyle:UIAlertControllerStyleAlert];
         
-        [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+        [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
                                                     
@@ -1520,9 +1522,9 @@
     }
     
 #if TARGET_OS_IPHONE
-    NSString *deviceName = [[UIDevice currentDevice].model isEqualToString:@"iPad"] ? [NSBundle mxk_localizedStringForKey:@"login_tablet_device"] : [NSBundle mxk_localizedStringForKey:@"login_mobile_device"];
+    NSString *deviceName = [[UIDevice currentDevice].model isEqualToString:@"iPad"] ? [MatrixKitL10n loginTabletDevice] : [MatrixKitL10n loginMobileDevice];
 #elif TARGET_OS_OSX
-    NSString *deviceName = [NSBundle mxk_localizedStringForKey:@"login_desktop_device"];
+    NSString *deviceName = [MatrixKitL10n loginDesktopDevice];
 #endif
     
     return deviceName;
@@ -1567,7 +1569,7 @@
         // Remove the potential auth inputs view
         self.authInputsView = nil;
         
-        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_forgot_password_is_not_supported"];
+        _noFlowLabel.text = [MatrixKitL10n loginErrorForgotPasswordIsNotSupported];
         
         MXLogDebug(@"[MXKAuthenticationVC] Warning: %@", _noFlowLabel.text);
         
@@ -1596,12 +1598,12 @@
                 __block BOOL isTrusted;
                 dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
                 
-                NSString *title = [NSBundle mxk_localizedStringForKey:@"ssl_could_not_verify"];
-                NSString *homeserverURLStr = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"ssl_homeserver_url"], homeserverURL];
-                NSString *fingerprint = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"ssl_fingerprint_hash"], @"SHA256"];
+                NSString *title = [MatrixKitL10n sslCouldNotVerify];
+                NSString *homeserverURLStr = [MatrixKitL10n sslHomeserverUrl:homeserverURL];
+                NSString *fingerprint = [MatrixKitL10n sslFingerprintHash:@"SHA256"];
                 NSString *certFingerprint = [certificate mx_SHA256AsHexString];
                 
-                NSString *msg = [NSString stringWithFormat:@"%@\n\n%@\n\n%@\n\n%@\n\n%@\n\n%@", [NSBundle mxk_localizedStringForKey:@"ssl_cert_not_trust"], [NSBundle mxk_localizedStringForKey:@"ssl_cert_new_account_expl"], homeserverURLStr, fingerprint, certFingerprint, [NSBundle mxk_localizedStringForKey:@"ssl_only_accept"]];
+                NSString *msg = [NSString stringWithFormat:@"%@\n\n%@\n\n%@\n\n%@\n\n%@\n\n%@", [MatrixKitL10n sslCertNotTrust], [MatrixKitL10n sslCertNewAccountExpl], homeserverURLStr, fingerprint, certFingerprint, [MatrixKitL10n sslOnlyAccept]];
                 
                 if (self->alert)
                 {
@@ -1610,7 +1612,7 @@
                 
                 self->alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
                 
-                [self->alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+                [self->alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             
@@ -1620,7 +1622,7 @@
                                                             
                                                         }]];
                 
-                [self->alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ssl_trust"]
+                [self->alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n sslTrust]
                                                           style:UIAlertActionStyleDefault
                                                         handler:^(UIAlertAction * action) {
                                                             
@@ -1679,7 +1681,7 @@
         // Sanity check
         if (!credentials.userId || !credentials.accessToken)
         {
-            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n notSupportedYet]}]];
         }
         else
         {
@@ -1721,7 +1723,7 @@
         // Sanity check
         if (!credentials.userId || !credentials.accessToken)
         {
-            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+            [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n notSupportedYet]}]];
         }
         else
         {
@@ -1787,7 +1789,7 @@
                     return;
                 }
                 
-                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]];
+                [self onFailureDuringAuthRequest:[NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n notSupportedYet]}]];
             }
             else
             {
@@ -1838,9 +1840,9 @@
                 [self->alert dismissViewControllerAnimated:NO completion:nil];
             }
             
-            self->alert = [UIAlertController alertControllerWithTitle:[NSBundle mxk_localizedStringForKey:@"error"] message:[NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_unauthorized"] preferredStyle:UIAlertControllerStyleAlert];
+            self->alert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n error] message:[MatrixKitL10n authResetPasswordErrorUnauthorized] preferredStyle:UIAlertControllerStyleAlert];
             
-            [self->alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"ok"]
+            [self->alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
                                                       style:UIAlertActionStyleDefault
                                                     handler:^(UIAlertAction * action) {
                                                         
@@ -1864,7 +1866,7 @@
             {
                 userInfo = [NSMutableDictionary dictionary];
             }
-            userInfo[NSLocalizedDescriptionKey] = [NSBundle mxk_localizedStringForKey:@"auth_reset_password_error_not_found"];
+            userInfo[NSLocalizedDescriptionKey] = [MatrixKitL10n authResetPasswordErrorNotFound];
             
             [self onFailureDuringAuthRequest:[NSError errorWithDomain:kMXNSErrorDomain code:0 userInfo:userInfo]];
         }
@@ -1898,7 +1900,7 @@
     NSString *title = [error.userInfo valueForKey:NSLocalizedFailureReasonErrorKey];
     if (!title)
     {
-        title = [NSBundle mxk_localizedStringForKey:@"error"];
+        title = [MatrixKitL10n error];
     }
     NSString *msg = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
     
@@ -1909,7 +1911,7 @@
     
     alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
     
-    [alert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"dismiss"]
+    [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n dismiss]
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction * action) {
                                                 
@@ -1955,10 +1957,10 @@
         _noFlowLabel.text = [error.userInfo valueForKey:NSLocalizedDescriptionKey];
         if (!_noFlowLabel.text.length)
         {
-            _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"login_error_no_login_flow"];
+            _noFlowLabel.text = [MatrixKitL10n loginErrorNoLoginFlow];
         }
-        [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
-        [_retryButton setTitle:[NSBundle mxk_localizedStringForKey:@"retry"] forState:UIControlStateNormal];
+        [_retryButton setTitle:[MatrixKitL10n retry] forState:UIControlStateNormal];
+        [_retryButton setTitle:[MatrixKitL10n retry] forState:UIControlStateNormal];
         _retryButton.hidden = NO;
     }
 }
@@ -1976,7 +1978,7 @@
     }
     else if (status == AFNetworkReachabilityStatusNotReachable)
     {
-        _noFlowLabel.text = [NSBundle mxk_localizedStringForKey:@"network_error_not_reachable"];
+        _noFlowLabel.text = [MatrixKitL10n networkErrorNotReachable];
     }
 }
 
@@ -2089,7 +2091,7 @@
     {
         if (!cancelFallbackBarButton)
         {
-            cancelFallbackBarButton = [[UIBarButtonItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"login_leave_fallback"] style:UIBarButtonItemStylePlain target:self action:@selector(hideRegistrationFallbackView)];
+            cancelFallbackBarButton = [[UIBarButtonItem alloc] initWithTitle:[MatrixKitL10n loginLeaveFallback] style:UIBarButtonItemStylePlain target:self action:@selector(hideRegistrationFallbackView)];
         }
         
         // Add cancel button in right bar items

@@ -293,7 +293,7 @@
 "save" = "Guardar";
 "leave" = "Salir";
 "send" = "Enviar";
-"copy" = "Copiar";
+"copy_button_name" = "Copiar";
 "resend" = "Reenviar";
 "redact" = "Eliminar";
 "share" = "Compartir";

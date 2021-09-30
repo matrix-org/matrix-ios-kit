@@ -20,6 +20,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKSearchViewController ()
 {
     /**
@@ -113,7 +115,7 @@
     self.searchSearchBarHeightConstraint.constant = 0;
     [self.view setNeedsUpdateConstraints];
 
-    self.noResultsLabel.text = [NSBundle mxk_localizedStringForKey:@"search_no_results"];
+    self.noResultsLabel.text = [MatrixKitL10n searchNoResults];
     self.noResultsLabel.hidden = YES;
 
     searchBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchBar:)];

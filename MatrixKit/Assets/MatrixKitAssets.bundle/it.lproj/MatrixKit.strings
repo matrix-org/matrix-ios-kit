@@ -188,7 +188,7 @@
 // Room
 "room_please_select" = "Seleziona un canale";
 "room_error_join_failed_title" = "Accesso al canale fallito";
-"room_error_join_failed_empty_room" = "Non è possibile al momento rientrare in un canale senza partecipanti.";
+"room_error_join_failed_empty_room" = "Al momento non è possibile entrare in una stanza vuota.";
 "room_error_name_edition_not_authorized" = "Non sei autorizzato a modificare il nome di questo canale";
 "room_error_topic_edition_not_authorized" = "Non sei autorizzato a modificare l'argomento di questo canale";
 "room_error_cannot_load_timeline" = "Caricamento storico dei messaggi fallito";
@@ -301,7 +301,7 @@
 "save" = "Salva";
 "leave" = "Esci";
 "send" = "Invia";
-"copy" = "Copia";
+"copy_button_name" = "Copia";
 "resend" = "Invia di nuovo";
 "redact" = "Cancella";
 "share" = "Condividi";
