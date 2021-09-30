@@ -1,0 +1,1 @@
+MXKEventFormatter: Filter the last message events of the defaultRoomSummaryUpdater to only show messages, calls and stickers.
