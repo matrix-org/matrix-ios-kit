@@ -40,10 +40,6 @@
  The `MXRoomSummaryProtocol` instance of the room for the recent displayed by the cell.
  */
 @property (nonatomic, readonly) id<MXRoomSummaryProtocol> roomSummary;
-/**
- In case of suggested rooms we store the `MXSpaceChildInfo` instance of the room
- */
-@property (nonatomic, readonly) MXSpaceChildInfo *spaceChildInfo;
 
 @property (nonatomic, readonly) NSString *roomIdentifier;
 @property (nonatomic, readonly) NSString *roomDisplayname;
@@ -69,21 +65,6 @@
  */
 - (instancetype)initWithRoomSummary:(id<MXRoomSummaryProtocol>)roomSummary
                          dataSource:(MXKDataSource*)dataSource;
-
-/**
- Create a new `MXKCellData` object for a new recent cell.
-
- @param spaceChildInfo the `MXSpaceChildInfo` object that has data about the room.
- @param recentListDataSource the `MXKSessionRecentsDataSource` object that will use this instance.
- @return the newly created instance.
- */
-- (instancetype)initWithSpaceChildInfo:(MXSpaceChildInfo*)spaceChildInfo
-                            dataSource:(MXKDataSource*)dataSource;
-
-/**
- The `MXKSessionRecentsDataSource` object calls this method when it detects a change in the room.
- */
-- (void)update;
 
 @optional
 /**

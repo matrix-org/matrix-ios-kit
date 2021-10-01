@@ -300,8 +300,9 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     
     for (MXSpaceChildInfo *childInfo in _suggestedRooms)
     {
-        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithSpaceChildInfo:childInfo
-                                                                           dataSource:self];
+        id<MXRoomSummaryProtocol> summary = [[MXRoomSummary alloc] initWithSpaceChildInfo:childInfo];
+        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:summary
+                                                                        dataSource:self];
         if (cellData)
         {
             [internalCellDataArray addObject:cellData];
