@@ -664,17 +664,7 @@ static BOOL _disableLongPressGestureOnEvent;
                                                                                                 attribute:NSLayoutAttributeNotAnAttribute
                                                                                                multiplier:1.0
                                                                                                  constant:15];
-                            if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-                            {
-                                [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
-                            }
-                            else
-                            {
-                                [self.bubbleInfoContainer addConstraint:leftConstraint];
-                                [self.bubbleInfoContainer addConstraint:rightConstraint];
-                                [self.bubbleInfoContainer addConstraint:topConstraint];
-                                [dateTimeLabel addConstraint:heightConstraint];
-                            }
+                            [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
                             
                             timeLabelOffset += 15;
                         }
@@ -748,17 +738,7 @@ static BOOL _disableLongPressGestureOnEvent;
                                                                                                    multiplier:1.0
                                                                                                      constant:15];
                                 
-                                if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-                                {
-                                    [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
-                                }
-                                else
-                                {
-                                    [self.bubbleInfoContainer addConstraint:leftConstraint];
-                                    [self.bubbleInfoContainer addConstraint:rightConstraint];
-                                    [self.bubbleInfoContainer addConstraint:topConstraint];
-                                    [avatarsContainer addConstraint:heightConstraint];
-                                }
+                                [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
                             }
                         }
                     }
