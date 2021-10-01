@@ -78,7 +78,7 @@
     NSTimer* registrationTimer;
 
     /**
-     Identity Server discovery.
+     Identity server discovery.
      */
     MXAutoDiscovery *autoDiscovery;
 
