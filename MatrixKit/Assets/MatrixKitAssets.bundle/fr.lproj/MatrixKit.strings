@@ -179,7 +179,7 @@
 // Room
 "room_please_select" = "Sélectionnez un salon";
 "room_error_join_failed_title" = "Échec de l’inscription au salon";
-"room_error_join_failed_empty_room" = "Il est impossible pour le moment de revenir dans un salon vide.";
+"room_error_join_failed_empty_room" = "Il est impossible pour le moment de rejoindre un salon vide.";
 "room_error_name_edition_not_authorized" = "Vous n’êtes pas autorisé à modifier le nom du salon";
 "room_error_topic_edition_not_authorized" = "Vous n’êtes pas autorisé à modifier le sujet du salon";
 "room_error_cannot_load_timeline" = "Échec du chargement du fil de discussion";
@@ -193,10 +193,10 @@
 "room_member_power_level_prompt" = "Vous ne pourrez pas annuler cette modification car vous promouvez cet utilisateur au même rang que le vôtre.\nEn êtes-vous sûr ?";
 // Attachment
 "attachment_size_prompt" = "Voulez-vous envoyer au format :";
-"attachment_original" = "Taille réelle : %@";
-"attachment_small" = "Petit : %@";
-"attachment_medium" = "Moyen : %@";
-"attachment_large" = "Grand : %@";
+"attachment_original" = "Taille réelle (%@)";
+"attachment_small" = "Petit (~%@)";
+"attachment_medium" = "Moyen (~%@)";
+"attachment_large" = "Grand (~%@)";
 "attachment_cancel_download" = "Annuler le téléchargement ?";
 "attachment_cancel_upload" = "Annuler l’envoi ?";
 "attachment_multiselection_size_prompt" = "Voulez-vous envoyer l’image au format :";
@@ -465,3 +465,8 @@
 "e2e_passphrase_too_short" = "La phrase secrète est trop courte, elle doit compter au moins %d caractères";
 "microphone_access_not_granted_for_voice_message" = "Pour les messages vocaux, l’accès au microphone est indispensable mais %@ n’a pas les permissions nécessaires";
 "message_reply_to_sender_sent_a_voice_message" = "envoyer un message vocal.";
+"attachment_large_with_resolution" = "Grand %@ (~%@)";
+"attachment_medium_with_resolution" = "Moyen %@ (~%@)";
+"attachment_small_with_resolution" = "Petit %@ (~%@)";
+"attachment_size_prompt_message" = "Vous pouvez désactiver ceci dans les paramètres.";
+"attachment_size_prompt_title" = "Préciser la taille pour l’envoi";
