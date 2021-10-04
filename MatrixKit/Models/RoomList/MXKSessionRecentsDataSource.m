@@ -291,6 +291,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 
     NSDate *startDate = [NSDate date];
     
+    BOOL enableShowAllRoomsInHome = [MXKAppSettings standardAppSettings].enableShowAllRoomsInHome;
+    
     for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {
         // Filter out private rooms with conference users
@@ -300,9 +302,18 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
             if (cellData)
             {
-                if (self.currentSpace == nil || [self.mxSession.spaceService isRoomWithId:roomSummary.roomId descendantOf:self.currentSpace.spaceId])
+                if (self.currentSpace == nil)
                 {
-                    [internalCellDataArray addObject:cellData];
+                    if (enableShowAllRoomsInHome || roomSummary.isDirect || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
+                        [internalCellDataArray addObject:cellData];
+                    }
+                }
+                else
+                {
+                    if ([self.mxSession.spaceService isRoomWithId:roomSummary.roomId descendantOf:self.currentSpace.spaceId])
+                    {
+                        [internalCellDataArray addObject:cellData];
+                    }
                 }
             }
         }
