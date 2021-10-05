@@ -451,3 +451,14 @@
 "room_event_encryption_verify_ok" = "Звірити";
 "room_event_encryption_info_device_not_verified" = "НЕ звірений";
 "room_event_encryption_info_device_verified" = "Звірений";
+"room_event_encryption_verify_title" = "Звірити сеанс\n\n";
+"room_event_encryption_info_unverify" = "Скасувати перевірку";
+"room_event_encryption_info_verify" = "Звірити...";
+"room_event_encryption_info_device_verification" = "Перевірка\n";
+"room_event_encryption_info_event_none" = "нічого";
+"room_event_encryption_info_event_fingerprint_key" = "Потрібен ключ цифрового відбитка Ed25519\n";
+"device_details_delete_prompt_message" = "Виконання цієї дії вимагає додаткової автентифікації.\nЩоб продовжити, введіть свій пароль.";
+"device_details_rename_prompt_message" = "Загальнодоступну назву сеансу бачать люди, з якими ви спілкуєтесь";
+"device_details_last_seen" = "Останні відвідини\n";
+"notice_room_aliases_for_dm" = "Псевдоніми: %@";
+"notice_room_aliases" = "Псевдо кімнати: %@";
