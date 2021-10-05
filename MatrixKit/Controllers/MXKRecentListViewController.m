@@ -99,15 +99,7 @@
     // Adjust search bar Top constraint to take into account potential navBar.
     if (_recentsSearchBarTopConstraint)
     {
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-        {
-            [NSLayoutConstraint deactivateConstraints:@[_recentsSearchBarTopConstraint]];
-        }
-        else
-        {
-            [self.view removeConstraint:_recentsSearchBarTopConstraint];
-        }
-        
+        _recentsSearchBarTopConstraint.active = NO;
         _recentsSearchBarTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLayoutGuide
                                                                       attribute:NSLayoutAttributeBottom
                                                                       relatedBy:NSLayoutRelationEqual
@@ -115,29 +107,14 @@
                                                                       attribute:NSLayoutAttributeTop
                                                                      multiplier:1.0f
                                                                        constant:0.0f];
-        
-        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-        {
-            [NSLayoutConstraint activateConstraints:@[_recentsSearchBarTopConstraint]];
-        }
-        else
-        {
-            [self.view addConstraint:_recentsSearchBarTopConstraint];
-        }
+
+        _recentsSearchBarTopConstraint.active = YES;
     }
     
     // Adjust table view Bottom constraint to take into account tabBar.
     if (_recentsTableViewBottomConstraint)
     {
-        if ([NSLayoutConstraint respondsToSelector:@selector(deactivateConstraints:)])
-        {
-            [NSLayoutConstraint deactivateConstraints:@[_recentsTableViewBottomConstraint]];
-        }
-        else
-        {
-            [self.view removeConstraint:_recentsTableViewBottomConstraint];
-        }
-        
+        _recentsTableViewBottomConstraint.active = NO;
         _recentsTableViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomLayoutGuide
                                                                          attribute:NSLayoutAttributeTop
                                                                          relatedBy:NSLayoutRelationEqual
@@ -145,15 +122,8 @@
                                                                          attribute:NSLayoutAttributeBottom
                                                                         multiplier:1.0f
                                                                           constant:0.0f];
-        
-        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-        {
-            [NSLayoutConstraint activateConstraints:@[_recentsTableViewBottomConstraint]];
-        }
-        else
-        {
-            [self.view addConstraint:_recentsTableViewBottomConstraint];
-        }
+
+        _recentsTableViewBottomConstraint.active = YES;
     }
     
     // Hide search bar by default
