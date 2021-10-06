@@ -51,7 +51,15 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
      */
     NSMutableDictionary<NSString*, NSArray<MXSpaceChildInfo *> *> *lastSuggestedRooms;
     
+    /**
+     Event listener of the current space used to update the UI if an event occurs.
+     */
     id spaceEventsListener;
+    
+    /**
+     Observer used to reload data when the space service is initialised
+     */
+    id spaceServiceDidInitialisedObserver;
 }
 
 /**
@@ -90,6 +98,10 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
+    
+    if (spaceServiceDidInitialisedObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:spaceServiceDidInitialisedObserver];
+    }
     
     [roomSummaryChangeThrottler cancelAll];
     roomSummaryChangeThrottler = nil;
@@ -282,6 +294,14 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
     
+    if (!self.mxSession.spaceService.isInitialised && !spaceServiceDidInitialisedObserver) {
+        MXWeakify(self);
+        spaceServiceDidInitialisedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:MXSpaceService.didInitialised object:self.mxSession.spaceService queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            MXStrongifyAndReturnIfNil(self);
+            [self loadData];
+        }];
+    }
+    
     // Reset the table
     [internalCellDataArray removeAllObjects];
     
@@ -304,7 +324,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             {
                 if (self.currentSpace == nil)
                 {
-                    if (enableShowAllRoomsInHome || roomSummary.isDirect || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
+                    if (enableShowAllRoomsInHome || roomSummary.isDirect || !self.mxSession.spaceService.isInitialised || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
                         [internalCellDataArray addObject:cellData];
                     }
                 }
