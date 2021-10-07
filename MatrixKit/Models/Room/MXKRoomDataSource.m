@@ -2275,6 +2275,9 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (void)updateCellData:(MXKRoomBubbleCellData*)cellData withReadReceipts:(NSArray<MXReceiptData*>*)readReceipts forEventId:(NSString*)eventId
 {
     cellData.readReceipts[eventId] = readReceipts;
+    
+    // Indicate that the text message layout should be recomputed.
+    [cellData invalidateTextLayout];
 }
 
 - (void)handleUnsentMessages
