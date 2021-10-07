@@ -87,6 +87,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
         
         roomSummaryChangeThrottler = [[MXThrottler alloc] initWithMinimumDelay:roomSummaryChangeThrottlerDelay];
+        
+        [[MXKAppSettings standardAppSettings] addObserver:self forKeyPath:@"enableShowAllRoomsInHome" options:0 context:nil];
     }
     return self;
 }
@@ -113,6 +115,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     
     searchPatternsList = nil;
     
+    [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"enableShowAllRoomsInHome" context:nil];
+
     [super destroy];
 }
 
@@ -283,7 +287,6 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     
     return 0;
 }
-
 
 #pragma mark - Events processing
 - (void)loadData
@@ -549,6 +552,22 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         }
     }
     return theRoomData;
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    if (object == [MXKAppSettings standardAppSettings] && [keyPath isEqualToString:@"enableShowAllRoomsInHome"])
+    {
+        if (self.currentSpace == nil)
+        {
+            [self loadData];
+        }
+    }
 }
 
 @end
