@@ -324,7 +324,13 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             {
                 if (self.currentSpace == nil)
                 {
-                    if (enableShowAllRoomsInHome || roomSummary.isDirect || !self.mxSession.spaceService.isInitialised || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
+                    // In case of home space we show a room if one of the following conditions is true:
+                    // - Show All Rooms is enabled
+                    // - the space service has not been initialised (prevents to have empty rooms list while the space service is loading)
+                    // - It's a direct room
+                    // - The room is a favourite
+                    // - The room is orphaned
+                    if (enableShowAllRoomsInHome || !self.mxSession.spaceService.isInitialised || roomSummary.isDirect || roomSummary.room.accountData.tags[kMXRoomTagFavourite] || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
                         [internalCellDataArray addObject:cellData];
                     }
                 }
