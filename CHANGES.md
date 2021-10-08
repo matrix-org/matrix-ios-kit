@@ -1,3 +1,27 @@
+## Changes in 0.16.5 (2021-10-08)
+
+🙌 Improvements
+
+- Maintenance: Remove iOS 7 auto layout code paths. ([#768](https://github.com/matrix-org/matrix-ios-kit/pull/768))
+- Upgrade MatrixSDK version ([v0.20.5](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.5)).
+- MXKEventFormatter: Filter the last message events of the defaultRoomSummaryUpdater to only show messages, calls and stickers. ([#4451](https://github.com/vector-im/element-ios/issues/4451))
+- Adds `invalidateTextLayout` method to MXKRoomBubbleCellData along with `urlPreviewData` and `showURLPreview` to MXKBubbleComponent ([#4896](https://github.com/vector-im/element-ios/issues/4896))
+- Replaced localizable strings with generated ones throughout the code. Fixed various translation issues. ([#4899](https://github.com/vector-im/element-ios/issues/4899))
+- MXKTools: Track an analytics value on accept/decline of contacts access. ([#4955](https://github.com/vector-im/element-ios/issues/4955))
+
+🐛 Bugfixes
+
+- MXKRoomDataSource: Invalidate the cell data's text layout when updating read receipts. ([#4950](https://github.com/vector-im/element-ios/issues/4950))
+
+🧱 Build
+
+- Bundler: Update CocoaPods and fastlane. ([#4951](https://github.com/vector-im/element-ios/issues/4951))
+
+Others
+
+- MXKAuthenticationViewController: Standardise spelling and casing of homeserver and identity server ([#857](https://github.com/vector-im/element-ios/issues/857))
+
+
 ## Changes in 0.16.4 (2021-09-30)
 
 🙌 Improvements
