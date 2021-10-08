@@ -22,6 +22,7 @@
 @import libPhoneNumber_iOS;
 @import DTCoreText;
 
+#import "MXKConstants.h"
 #import "NSBundle+MatrixKit.h"
 #import "MXKAppSettings.h"
 #import <MatrixSDK/MXTools.h>
@@ -881,6 +882,11 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
     {
         // Request address book access
         [[CNContactStore new] requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            
+            [MXSDKOptions.sharedInstance.analyticsDelegate trackValue:[NSNumber numberWithBool:granted]
+                                                             category:kMXKAnalyticsContactsCategory
+                                                                 name:kMXKAnalyticsContactsAccessGranted];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 handler(granted);
