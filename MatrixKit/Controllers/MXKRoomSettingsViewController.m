@@ -18,6 +18,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKRoomSettingsViewController()
 {    
     // the room events listener
@@ -180,7 +182,7 @@
         }];
     }
     
-    self.title = [NSBundle mxk_localizedStringForKey:@"room_details_title"];
+    self.title = [MatrixKitL10n roomDetailsTitle];
 }
 
 - (void)refreshRoomSettings

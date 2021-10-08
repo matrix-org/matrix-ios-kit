@@ -23,6 +23,8 @@
 #import "NSBundle+MatrixKit.h"
 #import "MXRoom+Sync.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKRoomTitleViewWithTopic ()
 {
     id roomTopicListener;
@@ -370,7 +372,7 @@
             }
             else
             {
-                alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_name_edition_not_authorized"];
+                alertMsg = [MatrixKitL10n roomErrorNameEditionNotAuthorized];
             }
             
             // Check whether the user is allowed to change room topic
@@ -399,7 +401,7 @@
             }
             else
             {
-                alertMsg = [NSBundle mxk_localizedStringForKey:@"room_error_topic_edition_not_authorized"];
+                alertMsg = [MatrixKitL10n roomErrorTopicEditionNotAuthorized];
             }
         }
         
@@ -413,7 +415,7 @@
             }
             currentAlert = [UIAlertController alertControllerWithTitle:nil message:alertMsg preferredStyle:UIAlertControllerStyleAlert];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                

@@ -16,11 +16,11 @@
 
 @import Foundation;
 
-#import <MatrixSDK/MXRoomNameStringsLocalizable.h>
+#import <MatrixSDK/MXRoomNameStringLocalizerProtocol.h>
 
 /**
- The `MXKRoomNameStringLocalizations` implements localization strings for `MXRoomNameStringsLocalizable`.
+ The `MXKRoomNameStringLocalizer` implements localization strings for `MXRoomNameStringLocalizerProtocol`.
  */
-@interface MXKRoomNameStringLocalizations : NSObject <MXRoomNameStringsLocalizable>
+@interface MXKRoomNameStringLocalizer : NSObject <MXRoomNameStringLocalizerProtocol>
 
 @end

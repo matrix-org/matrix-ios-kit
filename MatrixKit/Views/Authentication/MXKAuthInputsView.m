@@ -19,6 +19,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
 
 @implementation MXKAuthInputsView
@@ -85,7 +87,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Do nothing by default
     if (callback)
     {
-        callback (nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]);
+        callback (nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n notSupportedYet]}]);
     }
 }
 
@@ -94,7 +96,7 @@ NSString *const MXKAuthErrorDomain = @"MXKAuthErrorDomain";
     // Do nothing by default
     if (callback)
     {
-        callback (nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"not_supported_yet"]}]);
+        callback (nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n notSupportedYet]}]);
     }
 }
 

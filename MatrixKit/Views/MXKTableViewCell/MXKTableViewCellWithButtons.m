@@ -100,19 +100,8 @@
                                                          attribute:NSLayoutAttributeBottom
                                                         multiplier:1
                                                           constant:0];
-        
-        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-        {
-            [NSLayoutConstraint activateConstraints:@[leftConstraint, widthConstraint, topConstraint, bottomConstraint]];
-        }
-        else
-        {
-            [self.contentView addConstraint:leftConstraint];
-            [self.contentView addConstraint:widthConstraint];
-            [self.contentView addConstraint:topConstraint];
-            [self.contentView addConstraint:bottomConstraint];
-            
-        }
+
+        [NSLayoutConstraint activateConstraints:@[leftConstraint, widthConstraint, topConstraint, bottomConstraint]];
         previousContainer = buttonContainer;
         
         // Add Button
@@ -154,17 +143,7 @@
                                                        multiplier:1
                                                          constant:-8];
         
-        if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-        {
-            [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, bottomConstraint]];
-        }
-        else
-        {
-            [buttonContainer addConstraint:leftConstraint];
-            [buttonContainer addConstraint:rightConstraint];
-            [buttonContainer addConstraint:topConstraint];
-            [buttonContainer addConstraint:bottomConstraint];
-        }
+        [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, bottomConstraint]];
     }
 }
 

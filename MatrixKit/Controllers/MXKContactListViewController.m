@@ -20,6 +20,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKContactListViewController ()
 {
     // YES -> only matrix users
@@ -115,8 +117,8 @@
     }
     
     // Localize string
-    [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_mx_users"] forSegmentAtIndex:0];
-    [_contactsControls setTitle:[NSBundle mxk_localizedStringForKey:@"contact_local_contacts"] forSegmentAtIndex:1];
+    [_contactsControls setTitle:[MatrixKitL10n contactMxUsers] forSegmentAtIndex:0];
+    [_contactsControls setTitle:[MatrixKitL10n contactLocalContacts] forSegmentAtIndex:1];
     
     // Apply search option in navigation bar
     self.enableBarButtonSearch = _enableBarButtonSearch;

@@ -294,7 +294,7 @@
 "save" = "保存";
 "leave" = "保存しない";
 "send" = "送信";
-"copy" = "コピー";
+"copy_button_name" = "コピー";
 "resend" = "再送信";
 "redact" = "編集";
 "share" = "共有";

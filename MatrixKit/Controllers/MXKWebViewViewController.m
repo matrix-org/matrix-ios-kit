@@ -22,6 +22,8 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
+#import "MXKSwiftHeader.h"
+
 NSString *const kMXKWebViewViewControllerPostMessageJSLog = @"jsLog";
 
 // Override console.* logs methods to send WebKit postMessage events to native code.
@@ -146,19 +148,9 @@ NSString *const kMXKWebViewViewControllerJavaScriptEnableLog =
                                                                        multiplier:1.0
                                                                          constant:0];
     
-    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-    {
-        [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, bottomConstraint]];
-    }
-    else
-    {
-        [self.view addConstraint:leftConstraint];
-        [self.view addConstraint:rightConstraint];
-        [self.view addConstraint:topConstraint];
-        [self.view addConstraint:bottomConstraint];
-    }
+    [NSLayoutConstraint activateConstraints:@[leftConstraint, rightConstraint, topConstraint, bottomConstraint]];
     
-    backButton = [[UIBarButtonItem alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(goBack)];
+    backButton = [[UIBarButtonItem alloc] initWithTitle:[MatrixKitL10n back] style:UIBarButtonItemStylePlain target:self action:@selector(goBack)];
     
     if (_URL.length)
     {

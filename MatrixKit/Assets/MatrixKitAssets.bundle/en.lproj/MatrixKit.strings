@@ -26,7 +26,7 @@
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
 "login_home_server_title" = "Homeserver URL:";
 "login_home_server_info" = "Your homeserver stores all your conversations and account data";
-"login_identity_server_title" = "Identity Server URL:";
+"login_identity_server_title" = "Identity server URL:";
 "login_identity_server_info" = "Matrix provides identity servers to track which emails etc. belong to which Matrix IDs. Only https://matrix.org currently exists.";
 "login_user_id_placeholder" = "Matrix ID (e.g. @bob:matrix.org or bob)";
 "login_password_placeholder" = "Password";
@@ -36,8 +36,8 @@
 "login_email_placeholder" = "Email address";
 "login_prompt_email_token" = "Please enter your email validation token:";
 "login_error_title" = "Login Failed";
-"login_error_no_login_flow" = "We failed to retrieve authentication information from this Home Server";
-"login_error_do_not_support_login_flows" = "Currently we do not support any or all login flows defined by this Home Server";
+"login_error_no_login_flow" = "We failed to retrieve authentication information from this homeserver";
+"login_error_do_not_support_login_flows" = "Currently we do not support any or all login flows defined by this homeserver";
 "login_error_registration_is_not_supported" = "Registration is not currently supported";
 "login_error_forbidden" = "Invalid username/password";
 "login_error_unknown_token" = "The access token specified was not recognised";
@@ -158,7 +158,7 @@
 "room_displayname_empty_room" = "Empty room";
 "room_displayname_two_members" = "%@ and %@";
 "room_displayname_more_than_two_members" = "%@ and %@ others";
-"room_displayname_all_other_participants_left" = "%@ (Left)";
+"room_displayname_all_other_members_left" = "%@ (Left)";
 
 // Settings
 "settings" = "Settings";
@@ -457,12 +457,13 @@
 "save" = "Save";
 "leave" = "Leave";
 "send" = "Send";
-"copy" = "Copy";
+"copy_button_name" = "Copy";
 "resend" = "Resend";
 "redact" = "Remove";
 "share" = "Share";
 "delete" = "Delete";
 "view" = "View";
+"rename" = "Rename";
 
 // actions 
 "action_logout" = "Logout";
@@ -571,3 +572,8 @@
 "ssl_unexpected_existing_expl" = "The certificate has changed from one that was trusted by your phone. This is HIGHLY UNUSUAL. It is recommended that you DO NOT ACCEPT this new certificate.";
 "ssl_expected_existing_expl" = "The certificate has changed from a previously trusted one to one that is not trusted. The server may have renewed its certificate. Contact the server administrator for the expected fingerprint.";
 "ssl_only_accept" = "ONLY accept the certificate if the server administrator has published a fingerprint that matches the one above.";
+
+"auth_invalid_user_name" = "Invalid username";
+"auth_username_in_use" = "Username in use";
+"auth_reset_password_error_unauthorized" = "Unauthorized";
+"auth_reset_password_error_not_found" = "Not found";

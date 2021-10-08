@@ -27,7 +27,7 @@
 #import "MXKTools.h"
 #import "MXRoom+Sync.h"
 
-#import "MXKRoomNameStringLocalizations.h"
+#import "MXKRoomNameStringLocalizer.h"
 
 static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 
@@ -99,9 +99,9 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         _settings = [MXKAppSettings standardAppSettings];
 
         defaultRoomSummaryUpdater = [MXRoomSummaryUpdater roomSummaryUpdaterForSession:matrixSession];
-        defaultRoomSummaryUpdater.ignoreMemberProfileChanges = YES;
+        defaultRoomSummaryUpdater.lastMessageEventTypesAllowList = MXKAppSettings.standardAppSettings.lastMessageEventTypesAllowList;
         defaultRoomSummaryUpdater.ignoreRedactedEvent = !_settings.showRedactionsInRoomHistory;
-        defaultRoomSummaryUpdater.roomNameStringLocalizations = [MXKRoomNameStringLocalizations new];
+        defaultRoomSummaryUpdater.roomNameStringLocalizer = [MXKRoomNameStringLocalizer new];
 
         linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
         
@@ -123,13 +123,6 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateStyle:NSDateFormatterNoStyle];
     [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
-}
-
-- (void)setEventTypesFilterForMessages:(NSArray<NSString *> *)eventTypesFilterForMessages
-{
-    _eventTypesFilterForMessages = eventTypesFilterForMessages;
-    
-    defaultRoomSummaryUpdater.eventsFilterForMessages = eventTypesFilterForMessages;
 }
 
 #pragma mark - Event formatter settings
@@ -351,29 +344,27 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if ([redactorId isEqualToString:mxSession.myUserId])
                 {
-                    NSString *formatString = [NSString stringWithFormat:@"%@%@", [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by_you"], [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"]];
-                    redactedBy = [NSString stringWithFormat:formatString, redactedReason];
+                    redactedBy = [NSString stringWithFormat:@"%@%@", [MatrixKitL10n noticeEventRedactedByYou], [MatrixKitL10n noticeEventRedactedReason:redactedReason]];
                 }
                 else if (redactedBy.length)
                 {
-                    NSString *formatString = [NSString stringWithFormat:@"%@%@", [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by"], [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"]];
-                    redactedBy = [NSString stringWithFormat:formatString, redactedBy, redactedReason];
+                    redactedBy = [NSString stringWithFormat:@"%@%@", [MatrixKitL10n noticeEventRedactedBy:redactedBy], [MatrixKitL10n noticeEventRedactedReason:redactedReason]];
                 }
                 else
                 {
-                    redactedBy = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_event_redacted_reason"], redactedReason];
+                    redactedBy = [MatrixKitL10n noticeEventRedactedReason:redactedReason];
                 }
             }
             else if ([redactorId isEqualToString:mxSession.myUserId])
             {
-                redactedBy = [NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by_you"];
+                redactedBy = [MatrixKitL10n noticeEventRedactedByYou];
             }
             else if (redactedBy.length)
             {
-                redactedBy = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_event_redacted_by"], redactedBy];
+                redactedBy = [MatrixKitL10n noticeEventRedactedBy:redactedBy];
             }
             
-            redactedInfo = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_event_redacted"], redactedBy];
+            redactedInfo = [MatrixKitL10n noticeEventRedacted:redactedBy];
         }
     }
     
@@ -409,22 +400,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_by_you_for_dm"], roomName];
+                        displayText = [MatrixKitL10n noticeRoomNameChangedByYouForDm:roomName];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_by_you"], roomName];
+                        displayText = [MatrixKitL10n noticeRoomNameChangedByYou:roomName];
                     }
                 }
                 else
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed_for_dm"], senderDisplayName, roomName];
+                        displayText = [MatrixKitL10n noticeRoomNameChangedForDm:senderDisplayName :roomName];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_changed"], senderDisplayName, roomName];
+                        displayText = [MatrixKitL10n noticeRoomNameChanged:senderDisplayName :roomName];
                     }
                 }
             }
@@ -434,22 +425,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you_for_dm"];
+                        displayText = [MatrixKitL10n noticeRoomNameRemovedByYouForDm];
                     }
                     else
                     {
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_by_you"];
+                        displayText = [MatrixKitL10n noticeRoomNameRemovedByYou];
                     }
                 }
                 else
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed_for_dm"], senderDisplayName];
+                        displayText = [MatrixKitL10n noticeRoomNameRemovedForDm:senderDisplayName];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_name_removed"], senderDisplayName];
+                        displayText = [MatrixKitL10n noticeRoomNameRemoved:senderDisplayName];
                     }
                 }
             }
@@ -474,22 +465,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_topic_changed_by_you"], roomTopic];
+                    displayText = [MatrixKitL10n noticeTopicChangedByYou:roomTopic];
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_topic_changed"], senderDisplayName, roomTopic];
+                    displayText = [MatrixKitL10n noticeTopicChanged:senderDisplayName :roomTopic];
                 }
             }
             else
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_topic_removed_by_you"];
+                    displayText = [MatrixKitL10n noticeRoomTopicRemovedByYou];
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_topic_removed"], senderDisplayName];
+                    displayText = [MatrixKitL10n noticeRoomTopicRemoved:senderDisplayName];
                 }
             }
             
@@ -512,11 +503,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     }
                     if (isEventSenderMyUser)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_profile_change_redacted_by_you"], redactedInfo];
+                        displayText = [MatrixKitL10n noticeProfileChangeRedactedByYou:redactedInfo];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_profile_change_redacted"], senderDisplayName, redactedInfo];
+                        displayText = [MatrixKitL10n noticeProfileChangeRedacted:senderDisplayName :redactedInfo];
                     }
                 }
                 else
@@ -541,33 +532,33 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set_by_you"], displayname];
+                                displayText = [MatrixKitL10n noticeDisplayNameSetByYou:displayname];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_set"], event.sender, displayname];
+                                displayText = [MatrixKitL10n noticeDisplayNameSet:event.sender :displayname];
                             }
                         }
                         else if (!displayname)
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_display_name_removed_by_you"];
+                                displayText = [MatrixKitL10n noticeDisplayNameRemovedByYou];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_removed"], event.sender];
+                                displayText = [MatrixKitL10n noticeDisplayNameRemoved:event.sender];
                             }
                         }
                         else
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from_by_you"], prevDisplayname, displayname];
+                                displayText = [MatrixKitL10n noticeDisplayNameChangedFromByYou:prevDisplayname :displayname];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_display_name_changed_from"], event.sender, prevDisplayname, displayname];
+                                displayText = [MatrixKitL10n noticeDisplayNameChangedFrom:event.sender :prevDisplayname :displayname];
                             }
                         }
                     }
@@ -590,17 +581,17 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if (displayText)
                         {
-                            displayText = [NSString stringWithFormat:@"%@ %@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_avatar_changed_too"]];
+                            displayText = [NSString stringWithFormat:@"%@ %@", displayText, [MatrixKitL10n noticeAvatarChangedToo]];
                         }
                         else
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_avatar_url_changed_by_you"];
+                                displayText = [MatrixKitL10n noticeAvatarUrlChangedByYou];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_avatar_url_changed"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeAvatarUrlChanged:senderDisplayName];
                             }
                         }
                     }
@@ -628,11 +619,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if ([event.stateKey isEqualToString:mxSession.myUserId])
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite_by_you"], event.content[@"third_party_invite"][@"display_name"]];
+                            displayText = [MatrixKitL10n noticeRoomThirdPartyRegisteredInviteByYou:event.content[@"third_party_invite"][@"display_name"]];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_registered_invite"], targetDisplayName, event.content[@"third_party_invite"][@"display_name"]];
+                            displayText = [MatrixKitL10n noticeRoomThirdPartyRegisteredInvite:targetDisplayName :event.content[@"third_party_invite"][@"display_name"]];
                         }
                     }
                     else
@@ -641,11 +632,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_request_by_you"];
+                                displayText = [MatrixKitL10n noticeConferenceCallRequestByYou];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_conference_call_request"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeConferenceCallRequest:senderDisplayName];
                             }
                         }
                         else
@@ -653,11 +644,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                             // The targeted member display name (if any) is available in content
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite_by_you"], targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomInviteByYou:targetDisplayName];
                             }
                             else if ([targetDisplayName isEqualToString:mxSession.myUserId])
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite_you"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomInviteYou:senderDisplayName];
                             }
                             else
                             {
@@ -666,7 +657,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                                     targetDisplayName = contentDisplayname;
                                 }
                                 
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_invite"], senderDisplayName, targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomInvite:senderDisplayName :targetDisplayName];
                             }
                         }
                     }
@@ -675,14 +666,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if ([MXCallManager isConferenceUser:event.stateKey])
                     {
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_started"];
+                        displayText = [MatrixKitL10n noticeConferenceCallStarted];
                     }
                     else
                     {
                         // The targeted member display name (if any) is available in content
                         if (isEventSenderMyUser)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_by_you"];
+                            displayText = [MatrixKitL10n noticeRoomJoinByYou];
                         }
                         else
                         {
@@ -691,7 +682,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                                 targetDisplayName = contentDisplayname;
                             }
                             
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join"], targetDisplayName];
+                            displayText = [MatrixKitL10n noticeRoomJoin:targetDisplayName];
                         }
                     }
                 }
@@ -713,7 +704,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if ([MXCallManager isConferenceUser:event.stateKey])
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_conference_call_finished"];
+                            displayText = [MatrixKitL10n noticeConferenceCallFinished];
                         }
                         else
                         {
@@ -721,22 +712,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                             {
                                 if (isEventSenderMyUser)
                                 {
-                                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_reject_by_you"];
+                                    displayText = [MatrixKitL10n noticeRoomRejectByYou];
                                 }
                                 else
                                 {
-                                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reject"], targetDisplayName];
+                                    displayText = [MatrixKitL10n noticeRoomReject:targetDisplayName];
                                 }
                             }
                             else
                             {
                                 if (isEventSenderMyUser)
                                 {
-                                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_leave_by_you"];
+                                    displayText = [MatrixKitL10n noticeRoomLeaveByYou];
                                 }
                                 else
                                 {
-                                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_leave"], targetDisplayName];
+                                    displayText = [MatrixKitL10n noticeRoomLeave:targetDisplayName];
                                 }
                             }
                         }
@@ -747,15 +738,15 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_withdraw_by_you"], targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomWithdrawByYou:targetDisplayName];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_withdraw"], senderDisplayName, targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomWithdraw:senderDisplayName :targetDisplayName];
                             }
                             if (event.content[@"reason"])
                             {
-                                displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
+                                displayText = [displayText stringByAppendingString:[MatrixKitL10n noticeRoomReason:event.content[@"reason"]]];
                             }
 
                         }
@@ -763,28 +754,28 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick_by_you"], targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomKickByYou:targetDisplayName];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_kick"], senderDisplayName, targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomKick:senderDisplayName :targetDisplayName];
                             }
                             
                             //  add reason if exists
                             if (event.content[@"reason"])
                             {
-                                displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
+                                displayText = [displayText stringByAppendingString:[MatrixKitL10n noticeRoomReason:event.content[@"reason"]]];
                             }
                         }
                         else if ([prevMembership isEqualToString:@"ban"])
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_unban_by_you"], targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomUnbanByYou:targetDisplayName];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_unban"], senderDisplayName, targetDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomUnban:senderDisplayName :targetDisplayName];
                             }
                         }
                     }
@@ -799,15 +790,15 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     
                     if (isEventSenderMyUser)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban_by_you"], targetDisplayName];
+                        displayText = [MatrixKitL10n noticeRoomBanByYou:targetDisplayName];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_ban"], senderDisplayName, targetDisplayName];
+                        displayText = [MatrixKitL10n noticeRoomBan:senderDisplayName :targetDisplayName];
                     }
                     if (event.content[@"reason"])
                     {
-                        displayText = [displayText stringByAppendingString:[NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_reason"], event.content[@"reason"]]];
+                        displayText = [displayText stringByAppendingString:[MatrixKitL10n noticeRoomReason:event.content[@"reason"]]];
                     }
                 }
                 
@@ -835,22 +826,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you_for_dm"];
+                        displayText = [MatrixKitL10n noticeRoomCreatedByYouForDm];
                     }
                     else
                     {
-                        displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_created_by_you"];
+                        displayText = [MatrixKitL10n noticeRoomCreatedByYou];
                     }
                 }
                 else
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created_for_dm"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                        displayText = [MatrixKitL10n noticeRoomCreatedForDm:(roomState ? [roomState.members memberName:creatorId] : creatorId)];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_created"], (roomState ? [roomState.members memberName:creatorId] : creatorId)];
+                        displayText = [MatrixKitL10n noticeRoomCreated:(roomState ? [roomState.members memberName:creatorId] : creatorId)];
                     }
                 }
                 // Append redacted info if any
@@ -874,22 +865,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if (isRoomDirect)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public_by_you_for_dm"];
+                            displayText = [MatrixKitL10n noticeRoomJoinRulePublicByYouForDm];
                         }
                         else
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public_by_you"];
+                            displayText = [MatrixKitL10n noticeRoomJoinRulePublicByYou];
                         }
                     }
                     else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
                     {
                         if (isRoomDirect)
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_by_you_for_dm"];
+                            displayText = [MatrixKitL10n noticeRoomJoinRuleInviteByYouForDm];
                         }
                         else
                         {
-                            displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_by_you"];
+                            displayText = [MatrixKitL10n noticeRoomJoinRuleInviteByYou];
                         }
                     }
                 }
@@ -900,22 +891,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                     {
                         if (isRoomDirect)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public_for_dm"], displayName];
+                            displayText = [MatrixKitL10n noticeRoomJoinRulePublicForDm:displayName];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_public"], displayName];
+                            displayText = [MatrixKitL10n noticeRoomJoinRulePublic:displayName];
                         }
                     }
                     else if ([joinRule isEqualToString:kMXRoomJoinRuleInvite])
                     {
                         if (isRoomDirect)
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite_for_dm"], displayName];
+                            displayText = [MatrixKitL10n noticeRoomJoinRuleInviteForDm:displayName];
                         }
                         else
                         {
-                            displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule_invite"], displayName];
+                            displayText = [MatrixKitL10n noticeRoomJoinRuleInvite:displayName];
                         }
                     }
                 }
@@ -923,7 +914,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 if (!displayText)
                 {
                     //  use old string for non-handled cases: "knock" and "private"
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_join_rule"], joinRule];
+                    displayText = [MatrixKitL10n noticeRoomJoinRule:joinRule];
                 }
                 
                 // Append redacted info if any
@@ -938,11 +929,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         {
             if (isRoomDirect)
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro_for_dm"];
+                displayText = [MatrixKitL10n noticeRoomPowerLevelIntroForDm];
             }
             else
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_intro"];
+                displayText = [MatrixKitL10n noticeRoomPowerLevelIntro];
             }
             NSDictionary *users;
             MXJSONModelSetDictionary(users, event.content[@"users"]);
@@ -953,10 +944,10 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             }
             if (event.content[@"users_default"])
             {
-                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, [NSBundle mxk_localizedStringForKey:@"default"], event.content[@"users_default"]];
+                displayText = [NSString stringWithFormat:@"%@\n\u2022 %@: %@", displayText, [MatrixKitL10n default], event.content[@"users_default"]];
             }
             
-            displayText = [NSString stringWithFormat:@"%@\n%@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_acting_requirement"]];
+            displayText = [NSString stringWithFormat:@"%@\n%@", displayText, [MatrixKitL10n noticeRoomPowerLevelActingRequirement]];
             if (event.content[@"ban"])
             {
                 displayText = [NSString stringWithFormat:@"%@\n\u2022 ban: %@", displayText, event.content[@"ban"]];
@@ -974,7 +965,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 displayText = [NSString stringWithFormat:@"%@\n\u2022 invite: %@", displayText, event.content[@"invite"]];
             }
             
-            displayText = [NSString stringWithFormat:@"%@\n%@", displayText, [NSBundle mxk_localizedStringForKey:@"notice_room_power_level_event_requirement"]];
+            displayText = [NSString stringWithFormat:@"%@\n%@", displayText, [MatrixKitL10n noticeRoomPowerLevelEventRequirement]];
             
             NSDictionary *events;
             MXJSONModelSetDictionary(events, event.content[@"events"]);
@@ -1006,11 +997,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isRoomDirect)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases_for_dm"], aliases];
+                    displayText = [MatrixKitL10n noticeRoomAliasesForDm:aliases];
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_aliases"], aliases];
+                    displayText = [MatrixKitL10n noticeRoomAliases:aliases];
                 }
                 // Append redacted info if any
                 if (redactedInfo)
@@ -1026,7 +1017,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             MXJSONModelSetArray(groups, event.content[@"groups"]);
             if (groups)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_related_groups"], groups];
+                displayText = [MatrixKitL10n noticeRoomRelatedGroups:groups];
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -1065,7 +1056,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         && event.decryptionError.code == MXDecryptingErrorUnknownInboundSessionIdCode)
                     {
                         // Make the unknown inbound session id error description more user friendly
-                        errorDescription = [NSBundle mxk_localizedStringForKey:@"notice_crypto_error_unknown_inbound_session_id"];
+                        errorDescription = [MatrixKitL10n noticeCryptoErrorUnknownInboundSessionId];
                     }
                     else if ([event.decryptionError.domain isEqualToString:MXDecryptingErrorDomain]
                            && event.decryptionError.code == MXDecryptingErrorDuplicateMessageIndexCode)
@@ -1081,12 +1072,12 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
 
                     if (errorDescription)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_crypto_unable_to_decrypt"], errorDescription];
+                        displayText = [MatrixKitL10n noticeCryptoUnableToDecrypt:errorDescription];
                     }
                 }
                 else
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_encrypted_message"];
+                    displayText = [MatrixKitL10n noticeEncryptedMessage];
                 }
             }
             
@@ -1111,22 +1102,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_ok_by_you"];
+                    displayText = [MatrixKitL10n noticeEncryptionEnabledOkByYou];
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_ok"], senderDisplayName];
+                    displayText = [MatrixKitL10n noticeEncryptionEnabledOk:senderDisplayName];
                 }
             }
             else
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_unknown_algorithm_by_you"], algorithm];
+                    displayText = [MatrixKitL10n noticeEncryptionEnabledUnknownAlgorithmByYou:algorithm];
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_encryption_enabled_unknown_algorithm"], senderDisplayName, algorithm];
+                    displayText = [MatrixKitL10n noticeEncryptionEnabledUnknownAlgorithm:senderDisplayName :algorithm];
                 }
             }
             
@@ -1151,11 +1142,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isEventSenderMyUser)
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone_by_you"];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToAnyoneByYou];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_anyone"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToAnyone:senderDisplayName];
                             }
                         }
                     }
@@ -1165,22 +1156,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isRoomDirect)
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_by_you_for_dm"];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersByYouForDm];
                             }
                             else
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_by_you"];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersByYou];
                             }
                         }
                         else
                         {
                             if (isRoomDirect)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_for_dm"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersForDm:senderDisplayName];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembers:senderDisplayName];
                             }
                         }
                     }
@@ -1190,22 +1181,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isRoomDirect)
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm"];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromInvitedPointByYouForDm];
                             }
                             else
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_by_you"];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromInvitedPointByYou];
                             }
                         }
                         else
                         {
                             if (isRoomDirect)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point_for_dm"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromInvitedPointForDm:senderDisplayName];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_invited_point"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromInvitedPoint:senderDisplayName];
                             }
                         }
                     }
@@ -1215,22 +1206,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                         {
                             if (isRoomDirect)
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm"];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromJoinedPointByYouForDm];
                             }
                             else
                             {
-                                displayText = [NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_by_you"];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromJoinedPointByYou];
                             }
                         }
                         else
                         {
                             if (isRoomDirect)
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point_for_dm"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromJoinedPointForDm:senderDisplayName];
                             }
                             else
                             {
-                                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_history_visible_to_members_from_joined_point"], senderDisplayName];
+                                displayText = [MatrixKitL10n noticeRoomHistoryVisibleToMembersFromJoinedPoint:senderDisplayName];
                             }
                         }
                     }
@@ -1277,74 +1268,74 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if ([msgtype isEqualToString:kMXMessageTypeImage])
                     {
-                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_image_attachment"];
+                        body = body? body : [MatrixKitL10n noticeImageAttachment];
                         // Check attachment validity
                         if (![self isSupportedAttachment:event])
                         {
                             MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                            body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            body = [MatrixKitL10n noticeInvalidAttachment];
                             *error = MXKEventFormatterErrorUnsupported;
                         }
                     }
                     else if ([msgtype isEqualToString:kMXMessageTypeAudio])
                     {
-                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_audio_attachment"];
+                        body = body? body : [MatrixKitL10n noticeAudioAttachment];
                         if (![self isSupportedAttachment:event])
                         {
                             MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                             {
-                                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                                body = [MatrixKitL10n noticeInvalidAttachment];
                             }
                             else
                             {
-                                body = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
+                                body = [MatrixKitL10n noticeUnsupportedAttachment:event.description];
                             }
                             *error = MXKEventFormatterErrorUnsupported;
                         }
                     }
                     else if ([msgtype isEqualToString:kMXMessageTypeVideo])
                     {
-                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_video_attachment"];
+                        body = body? body : [MatrixKitL10n noticeVideoAttachment];
                         if (![self isSupportedAttachment:event])
                         {
                             MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                             {
-                                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                                body = [MatrixKitL10n noticeInvalidAttachment];
                             }
                             else
                             {
-                                body = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
+                                body = [MatrixKitL10n noticeUnsupportedAttachment:event.description];
                             }
                             *error = MXKEventFormatterErrorUnsupported;
                         }
                     }
                     else if ([msgtype isEqualToString:kMXMessageTypeLocation])
                     {
-                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_location_attachment"];
+                        body = body? body : [MatrixKitL10n noticeLocationAttachment];
                         if (![self isSupportedAttachment:event])
                         {
                             MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
                             if (_isForSubtitle || !_settings.showUnsupportedEventsInRoomHistory)
                             {
-                                body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                                body = [MatrixKitL10n noticeInvalidAttachment];
                             }
                             else
                             {
-                                body = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_unsupported_attachment"], event.description];
+                                body = [MatrixKitL10n noticeUnsupportedAttachment:event.description];
                             }
                             *error = MXKEventFormatterErrorUnsupported;
                         }
                     }
                     else if ([msgtype isEqualToString:kMXMessageTypeFile])
                     {
-                        body = body? body : [NSBundle mxk_localizedStringForKey:@"notice_file_attachment"];
+                        body = body? body : [MatrixKitL10n noticeFileAttachment];
                         // Check attachment validity
                         if (![self isSupportedAttachment:event])
                         {
                             MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported attachment %@", event.description);
-                            body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                            body = [MatrixKitL10n noticeInvalidAttachment];
                             *error = MXKEventFormatterErrorUnsupported;
                         }
                     }
@@ -1410,7 +1401,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             
             if (type && eventId)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_feedback"], eventId, type];
+                displayText = [MatrixKitL10n noticeFeedback:eventId :type];
                 // Append redacted info if any
                 if (redactedInfo)
                 {
@@ -1424,11 +1415,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             NSString *eventId = event.redacts;
             if (isEventSenderMyUser)
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_redaction_by_you"], eventId];
+                displayText = [MatrixKitL10n noticeRedactionByYou:eventId];
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_redaction"], senderDisplayName, eventId];
+                displayText = [MatrixKitL10n noticeRedaction:senderDisplayName :eventId];
             }
             break;
         }
@@ -1442,22 +1433,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you_for_dm"], displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyInviteByYouForDm:displayname];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_by_you"], displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyInviteByYou:displayname];
                     }
                 }
                 else
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite_for_dm"], senderDisplayName, displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyInviteForDm:senderDisplayName :displayname];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_invite"], senderDisplayName, displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyInvite:senderDisplayName :displayname];
                     }
                 }
             }
@@ -1469,22 +1460,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you_for_dm"], displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyRevokedInviteByYouForDm:displayname];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_by_you"], displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyRevokedInviteByYou:displayname];
                     }
                 }
                 else
                 {
                     if (isRoomDirect)
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite_for_dm"], senderDisplayName, displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyRevokedInviteForDm:senderDisplayName :displayname];
                     }
                     else
                     {
-                        displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_room_third_party_revoked_invite"], senderDisplayName, displayname];
+                        displayText = [MatrixKitL10n noticeRoomThirdPartyRevokedInvite:senderDisplayName :displayname];
                     }
                 }
             }
@@ -1498,22 +1489,22 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_placed_video_call_by_you"];
+                    displayText = [MatrixKitL10n noticePlacedVideoCallByYou];
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_video_call"], senderDisplayName];
+                    displayText = [MatrixKitL10n noticePlacedVideoCall:senderDisplayName];
                 }
             }
             else
             {
                 if (isEventSenderMyUser)
                 {
-                    displayText = [NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call_by_you"];
+                    displayText = [MatrixKitL10n noticePlacedVoiceCallByYou];
                 }
                 else
                 {
-                    displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_placed_voice_call"], senderDisplayName];
+                    displayText = [MatrixKitL10n noticePlacedVoiceCall:senderDisplayName];
                 }
             }
             break;
@@ -1522,11 +1513,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         {
             if (isEventSenderMyUser)
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_answered_video_call_by_you"];
+                displayText = [MatrixKitL10n noticeAnsweredVideoCallByYou];
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_answered_video_call"], senderDisplayName];
+                displayText = [MatrixKitL10n noticeAnsweredVideoCall:senderDisplayName];
             }
             break;
         }
@@ -1534,11 +1525,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         {
             if (isEventSenderMyUser)
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_ended_video_call_by_you"];
+                displayText = [MatrixKitL10n noticeEndedVideoCallByYou];
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_ended_video_call"], senderDisplayName];
+                displayText = [MatrixKitL10n noticeEndedVideoCall:senderDisplayName];
             }
             break;
         }
@@ -1546,11 +1537,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         {
             if (isEventSenderMyUser)
             {
-                displayText = [NSBundle mxk_localizedStringForKey:@"notice_declined_video_call_by_you"];
+                displayText = [MatrixKitL10n noticeDeclinedVideoCallByYou];
             }
             else
             {
-                displayText = [NSString stringWithFormat:[NSBundle mxk_localizedStringForKey:@"notice_declined_video_call"], senderDisplayName];
+                displayText = [MatrixKitL10n noticeDeclinedVideoCall:senderDisplayName];
             }
             break;
         }
@@ -1575,11 +1566,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 if (![self isSupportedAttachment:event])
                 {
                     MXLogDebug(@"[MXKEventFormatter] Warning: Unsupported sticker %@", event.description);
-                    body = [NSBundle mxk_localizedStringForKey:@"notice_invalid_attachment"];
+                    body = [MatrixKitL10n noticeInvalidAttachment];
                     *error = MXKEventFormatterErrorUnsupported;
                 }
                 
-                displayText = body? body : [NSBundle mxk_localizedStringForKey:@"notice_sticker"];
+                displayText = body? body : [MatrixKitL10n noticeSticker];
             }
             break;
         }
@@ -1610,13 +1601,13 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             switch (*error)
             {
                 case MXKEventFormatterErrorUnsupported:
-                    shortDescription = [NSBundle mxk_localizedStringForKey:@"notice_error_unsupported_event"];
+                    shortDescription = [MatrixKitL10n noticeErrorUnsupportedEvent];
                     break;
                 case MXKEventFormatterErrorUnexpected:
-                    shortDescription = [NSBundle mxk_localizedStringForKey:@"notice_error_unexpected_event"];
+                    shortDescription = [MatrixKitL10n noticeErrorUnexpectedEvent];
                     break;
                 case MXKEventFormatterErrorUnknownEventType:
-                    shortDescription = [NSBundle mxk_localizedStringForKey:@"notice_error_unknown_event_type"];
+                    shortDescription = [MatrixKitL10n noticeErrorUnknownEventType];
                     break;
                     
                 default:
@@ -1820,7 +1811,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     
     if (inReplyToTextRange.location != NSNotFound)
     {
-        html = [html stringByReplacingCharactersInRange:inReplyToTextRange withString:[NSBundle mxk_localizedStringForKey:@"notice_in_reply_to"]];
+        html = [html stringByReplacingCharactersInRange:inReplyToTextRange withString:[MatrixKitL10n noticeInReplyTo]];
     }
     
     if (inReplyToLinkRange.location != NSNotFound)
@@ -1952,6 +1943,14 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         // users displaynames, we want current displaynames
         MXKEventFormatterError error;
         NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
+        
+        if ([event.type isEqualToString:kMXEventTypeStringRoomCreate])
+        {
+            // Temporarily fallback to the room joined notice when the last event is for the room's creation.
+            // This will be improved as part of https://github.com/vector-im/element-ios/issues/4918
+            lastMessageString = MatrixKitL10n.noticeRoomJoinByYou;
+        }
+        
         if (0 == lastMessageString.length)
         {
             // @TODO: there is a conflict with what [defaultRoomSummaryUpdater updateRoomSummary] did :/
