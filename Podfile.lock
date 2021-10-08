@@ -56,6 +56,7 @@ PODS:
   - Realm (10.7.6):
     - Realm/Headers (= 10.7.6)
   - Realm/Headers (10.7.6)
+  - SwiftGen (6.5.1)
   - SwiftyBeaver (1.9.5)
 
 DEPENDENCIES:
@@ -65,6 +66,7 @@ DEPENDENCIES:
   - JSQMessagesViewController (~> 7.3.5)
   - libPhoneNumber-iOS (~> 0.9.13)
   - MatrixSDK (= 0.20.4)
+  - SwiftGen (~> 6.3)
 
 SPEC REPOS:
   trunk:
@@ -78,13 +80,11 @@ SPEC REPOS:
     - JSQSystemSoundPlayer
     - libbase58
     - libPhoneNumber-iOS
+    - MatrixSDK
     - OLMKit
     - Realm
+    - SwiftGen
     - SwiftyBeaver
-
-EXTERNAL SOURCES:
-  MatrixSDK:
-    :path: "../matrix-ios-sdk/MatrixSDK.podspec"
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
@@ -100,8 +100,9 @@ SPEC CHECKSUMS:
   MatrixSDK: 317928f6ef7bbffebbf7dbf9ca9dad4920695f1e
   OLMKit: 9fb4799c4a044dd2c06bda31ec31a12191ad30b5
   Realm: ed860452717c8db8f4bf832b6807f7f2ce708839
+  SwiftGen: a6d22010845f08fe18fbdf3a07a8e380fd22e0ea
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
 
-PODFILE CHECKSUM: a2a9b1e23c0e1fa628bfb188c6cf75de2b89676a
+PODFILE CHECKSUM: f0a39c91b74a47c44e43cf246f2608d396306796
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.10.1
