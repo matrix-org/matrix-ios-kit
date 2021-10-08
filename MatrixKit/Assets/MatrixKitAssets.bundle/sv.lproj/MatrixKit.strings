@@ -187,7 +187,7 @@
 // Room
 "room_please_select" = "Vänligen välj ett rum";
 "room_error_join_failed_title" = "Misslyckades att gå med i rum";
-"room_error_join_failed_empty_room" = "Det går för närvarande inte att gå med i ett tomt rum igen.";
+"room_error_join_failed_empty_room" = "Det går för närvarande inte att gå med i ett tomt rum.";
 "room_error_name_edition_not_authorized" = "Du är inte auktoriserad att redigera det här rummets namn";
 "room_error_topic_edition_not_authorized" = "Du är inte auktoriserad att ändra det här rummets ämne";
 "room_error_cannot_load_timeline" = "Misslyckades att ladda tidslinjen";
@@ -469,3 +469,4 @@
 "attachment_small_with_resolution" = "Liten %@ (~%@)";
 "attachment_size_prompt_message" = "Du kan stänga av detta i inställningarna.";
 "attachment_size_prompt_title" = "Bekräfta storlek att skicka";
+"room_displayname_all_other_participants_left" = "%@ (Kvar)";
