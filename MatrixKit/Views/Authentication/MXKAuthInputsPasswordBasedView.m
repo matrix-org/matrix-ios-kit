@@ -23,6 +23,8 @@
 
 #import "NSBundle+MatrixKit.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKAuthInputsPasswordBasedView
 
 + (UINib *)nib
@@ -35,12 +37,12 @@
 {
     [super awakeFromNib];
     
-    _userLoginTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_user_id_placeholder"];
-    _passWordTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_password_placeholder"];
-    _emailTextField.placeholder = [NSString stringWithFormat:@"%@ (%@)", [NSBundle mxk_localizedStringForKey:@"login_email_placeholder"], [NSBundle mxk_localizedStringForKey:@"login_optional_field"]];
-    _emailInfoLabel.text = [NSBundle mxk_localizedStringForKey:@"login_email_info"];
+    _userLoginTextField.placeholder = [MatrixKitL10n loginUserIdPlaceholder];
+    _passWordTextField.placeholder = [MatrixKitL10n loginPasswordPlaceholder];
+    _emailTextField.placeholder = [NSString stringWithFormat:@"%@ (%@)", [MatrixKitL10n loginEmailPlaceholder], [MatrixKitL10n loginOptionalField]];
+    _emailInfoLabel.text = [MatrixKitL10n loginEmailInfo];
     
-    _displayNameTextField.placeholder = [NSBundle mxk_localizedStringForKey:@"login_display_name_placeholder"];
+    _displayNameTextField.placeholder = [MatrixKitL10n loginDisplayNamePlaceholder];
 }
 
 #pragma mark -
@@ -89,7 +91,7 @@
         // Check user login and pass fields
         if (!self.areAllRequiredFieldsSet)
         {
-            errorMsg = [NSBundle mxk_localizedStringForKey:@"login_invalid_param"];
+            errorMsg = [MatrixKitL10n loginInvalidParam];
         }
     }
     
@@ -103,7 +105,7 @@
         // Sanity check on required fields
         if (!self.areAllRequiredFieldsSet)
         {
-            callback(nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[NSBundle mxk_localizedStringForKey:@"login_invalid_param"]}]);
+            callback(nil, [NSError errorWithDomain:MXKAuthErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey:[MatrixKitL10n loginInvalidParam]}]);
             return;
         }
         

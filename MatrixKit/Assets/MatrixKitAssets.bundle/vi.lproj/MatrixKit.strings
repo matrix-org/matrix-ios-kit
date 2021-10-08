@@ -276,7 +276,7 @@
 "save" = "Lưu";
 "leave" = "Rời khỏi";
 "send" = "Gửi";
-"copy" = "Sao chép";
+"copy_button_name" = "Sao chép";
 "resend" = "Gửi lại";
 "redact" = "Biên tập lại";
 "share" = "Chia sẻ";

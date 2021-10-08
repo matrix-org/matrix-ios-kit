@@ -4,3 +4,4 @@
 
 #import "MXKAppSettings.h"
 #import "MXKTools.h"
+#import "NSBundle+MatrixKit.h"

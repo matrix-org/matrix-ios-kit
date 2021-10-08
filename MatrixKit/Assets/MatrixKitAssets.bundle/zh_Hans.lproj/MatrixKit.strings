@@ -218,7 +218,7 @@
 // button names 
 "ok" = "确定";
 "send" = "发送";
-"copy" = "复制";
+"copy_button_name" = "复制";
 "resend" = "重新发送";
 "share" = "分享";
 "redact" = "移除";
@@ -471,3 +471,4 @@
 "attachment_small_with_resolution" = "小 %@ (~%@)";
 "attachment_size_prompt_message" = "你可以在设置中关闭这个。";
 "attachment_size_prompt_title" = "确认要发送的大小";
+"room_displayname_all_other_participants_left" = "%@ (离开)";

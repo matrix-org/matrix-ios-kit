@@ -239,7 +239,7 @@
 "share" = "اشتراک گذاری";
 "redact" = "حذف";
 "resend" = "ارسال مجدد";
-"copy" = "کپی";
+"copy_button_name" = "کپی";
 "send" = "ارسال";
 "leave" = "ترک";
 "save" = "ذخیره";

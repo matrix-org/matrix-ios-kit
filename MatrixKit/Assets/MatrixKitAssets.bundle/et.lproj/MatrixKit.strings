@@ -334,7 +334,7 @@
 // button names 
 "ok" = "Sobib";
 "send" = "Saada";
-"copy" = "Kopeeri";
+"copy_button_name" = "Kopeeri";
 "membership_leave" = "Lahkus";
 "ban" = "Keela ligipääs";
 "message_unsaved_changes" = "Osa muudatusi on salvestamata. Lahkudes need kaovad.";
@@ -469,3 +469,4 @@
 "attachment_small_with_resolution" = "Väiksena %@ (~%@)";
 "attachment_size_prompt_message" = "Seadistustest saad määrata, et see funktsionaalsus pole kasutusel.";
 "attachment_size_prompt_title" = "Saatmiseks kinnita meedia suurus";
+"room_displayname_all_other_participants_left" = "%@ (lahkus(id))";

@@ -19,6 +19,8 @@
 #import "NSBundle+MatrixKit.h"
 #import "MXKErrorViewModel.h"
 
+#import "MXKSwiftHeader.h"
+
 @implementation MXKErrorPresentableBuilder
 
 - (id <MXKErrorPresentable>)errorPresentableFromError:(NSError*)error
@@ -34,12 +36,12 @@
     
     if (!title)
     {
-        title = [NSBundle mxk_localizedStringForKey:@"error"];
+        title = [MatrixKitL10n error];
     }
     
     if (!message)
     {
-        message = [NSBundle mxk_localizedStringForKey:@"error_common_message"];
+        message = [MatrixKitL10n errorCommonMessage];
     }
     
     return  [[MXKErrorViewModel alloc] initWithTitle:title message:message];
@@ -47,8 +49,8 @@
 
 - (id <MXKErrorPresentable>)commonErrorPresentable
 {
-    return  [[MXKErrorViewModel alloc] initWithTitle:[NSBundle mxk_localizedStringForKey:@"error"]
-                                             message:[NSBundle mxk_localizedStringForKey:@"error_common_message"]];
+    return  [[MXKErrorViewModel alloc] initWithTitle:[MatrixKitL10n error]
+                                             message:[MatrixKitL10n errorCommonMessage]];
 }
 
 @end

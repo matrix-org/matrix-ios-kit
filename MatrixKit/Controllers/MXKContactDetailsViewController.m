@@ -19,6 +19,7 @@
 #import "MXKTableViewCellWithLabelAndButton.h"
 
 #import "NSBundle+MatrixKit.h"
+#import "MXKSwiftHeader.h"
 
 @interface MXKContactDetailsViewController ()
 {
@@ -151,8 +152,8 @@
         cell.mxkLabel.text = @"";
     }
     
-    [cell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"start_chat"] forState:UIControlStateNormal];
-    [cell.mxkButton setTitle:[NSBundle mxk_localizedStringForKey:@"start_chat"] forState:UIControlStateHighlighted];
+    [cell.mxkButton setTitle:[MatrixKitL10n startChat] forState:UIControlStateNormal];
+    [cell.mxkButton setTitle:[MatrixKitL10n startChat] forState:UIControlStateHighlighted];
     cell.mxkButton.tag = row;
     [cell.mxkButton addTarget:self action:@selector(startChat:) forControlEvents:UIControlEventTouchUpInside];
     

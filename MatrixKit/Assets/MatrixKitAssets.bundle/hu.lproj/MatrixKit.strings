@@ -287,7 +287,7 @@
 "cancel" = "Mégse";
 "save" = "Ment";
 "send" = "Küld";
-"copy" = "Másol";
+"copy_button_name" = "Másol";
 "resend" = "Újraküld";
 "redact" = "Töröl";
 "share" = "Megosztás";
@@ -470,3 +470,4 @@
 "attachment_small_with_resolution" = "Kicsi %@ (~%@)";
 "attachment_size_prompt_message" = "Ezt a beállításokban kikapcsolhatod.";
 "attachment_size_prompt_title" = "Méret megerősítése küldéshez";
+"room_displayname_all_other_participants_left" = "%@ (Bal)";

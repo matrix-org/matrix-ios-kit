@@ -36,6 +36,8 @@
 
 #import "MXKAttachmentInteractionController.h"
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKAttachmentsViewController () <UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 {
     /**
@@ -902,19 +904,7 @@
                     
                     selectedCell.moviePlayer.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-                    if ([NSLayoutConstraint respondsToSelector:@selector(activateConstraints:)])
-                    {
-                        [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, bottomConstraint, trailingConstraint]];
-                    }
-                    else
-                    {
-                        // iOS < 8 support
-                        [self.view addConstraint:topConstraint];
-                        [self.view addConstraint:leadingConstraint];
-                        [self.view addConstraint:bottomConstraint];
-                        [self.view addConstraint:trailingConstraint];
-                    }
-
+                    [NSLayoutConstraint activateConstraints:@[topConstraint, leadingConstraint, bottomConstraint, trailingConstraint]];
                     [[NSNotificationCenter defaultCenter] addObserver:self
                                                              selector:@selector(moviePlayerPlaybackDidFinishWithErrorNotification:)
                                                                  name:AVPlayerItemFailedToPlayToEndTimeNotification
@@ -1192,7 +1182,7 @@
         
         if ([MXKAppSettings standardAppSettings].messageDetailsAllowSaving)
         {
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"save"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n save]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                 
@@ -1221,7 +1211,7 @@
         
         if ([MXKAppSettings standardAppSettings].messageDetailsAllowCopyingMedia)
         {
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"copy"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n copyButtonName]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                 
@@ -1250,7 +1240,7 @@
         
         if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
         {
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"share"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n share]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                 
@@ -1293,7 +1283,7 @@
         
         if ([MXMediaManager existingDownloaderWithIdentifier:attachment.downloadId])
         {
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel_download"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancelDownload]
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction * action) {
                                                                
@@ -1312,7 +1302,7 @@
         
         if (currentAlert.actions.count)
         {
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[NSBundle mxk_localizedStringForKey:@"cancel"]
+            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
                                                              style:UIAlertActionStyleCancel
                                                            handler:^(UIAlertAction * action) {
                                                                

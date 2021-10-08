@@ -37,3 +37,15 @@ FOUNDATION_EXPORT NSString *const kMXKErrorNotification;
  */
 FOUNDATION_EXPORT NSString *const kMXKErrorUserIdKey;
 
+
+#pragma mark - Analytics
+
+/**
+ The analytics category for local contacts.
+ */
+FOUNDATION_EXPORT NSString *const kMXKAnalyticsContactsCategory;
+
+/**
+ The analytics value for accept/decline of local contacts access.
+ */
+FOUNDATION_EXPORT NSString *const kMXKAnalyticsContactsAccessGranted;
