@@ -470,3 +470,9 @@
 "attachment_size_prompt_message" = "Seadistustest saad määrata, et see funktsionaalsus pole kasutusel.";
 "attachment_size_prompt_title" = "Saatmiseks kinnita meedia suurus";
 "room_displayname_all_other_participants_left" = "%@ (lahkus(id))";
+"auth_reset_password_error_not_found" = "Pole leitav";
+"auth_reset_password_error_unauthorized" = "Tegevus pole lubatud";
+"auth_username_in_use" = "Selline kasutajanimi on juba olemas";
+"auth_invalid_user_name" = "Vigane kasutajanimi";
+"rename" = "Muuda nime";
+"room_displayname_all_other_members_left" = "%@ (lahkus(id))";

@@ -504,3 +504,16 @@
 "notice_answered_video_call" = "%@ відповідає на виклик";
 "notice_placed_video_call" = "%@ здійснює відеовиклик";
 "notice_placed_voice_call" = "%@ здійснює голосовий виклик";
+
+// Room members
+"room_member_ignore_prompt" = "Ви впевнені, що хочете сховати всі повідомлення від цього користувача?";
+"room_no_conference_call_in_encrypted_rooms" = "Кімнати з шифруванням не підтримують конференцвиклики";
+"room_error_topic_edition_not_authorized" = "Ви не маєте повноважень змінювати тему цієї кімнати";
+"room_error_name_edition_not_authorized" = "Ви не маєте повноважень змінювати назву цієї кімнати";
+"room_error_join_failed_empty_room" = "На цю мить неможливо приєднатися до порожньої кімнати.";
+"room_creation_alias_placeholder_with_homeserver" = "(напр. #foo%@)";
+"room_creation_alias_placeholder" = "(напр. #foo:example.org)";
+"account_email_validation_message" = "Перевірте свою електронну пошту та натисніть на посилання у ній. Після цього натисніть кнопку Продовжити.";
+"room_displayname_all_other_members_left" = "%@ (виходять)";
+"auth_username_in_use" = "Ім'я користувача зайняте";
+"rename" = "Перейменувати";
