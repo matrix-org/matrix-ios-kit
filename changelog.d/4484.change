@@ -1,0 +1,1 @@
+MXKContactManager: The contacts manager will no longer present a prompt for contacts access for you. This should be done elsewhere.

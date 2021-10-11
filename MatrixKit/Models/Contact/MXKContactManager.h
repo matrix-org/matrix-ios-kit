@@ -17,6 +17,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <Contacts/Contacts.h>
 
 #import <MatrixSDK/MatrixSDK.h>
 
@@ -155,6 +156,13 @@ typedef void(^MXKContactManagerDiscoverUsersBoundTo3PIDs)(NSArray<NSArray<NSStri
  */
 - (void)addMatrixSession:(MXSession* _Nonnull)mxSession;
 - (void)removeMatrixSession:(MXSession* _Nonnull)mxSession;
+
+/**
+ Takes into account the state of the identity service's terms, local contacts access authorization along with
+ whether the user has left the app for the Settings app to update the contacts access, and enables/disables
+ the `syncLocalContacts` property of `MXKAppSettings` when necessary.
+ */
+- (void)validateSyncLocalContactsState;
 
 /**
  Load and/or refresh the local contacts. Observe kMXKContactManagerDidUpdateLocalContactsNotification to know when local contacts are available.

@@ -499,6 +499,44 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 
 #pragma mark -
 
+- (void)validateSyncLocalContactsState
+{
+    if (!self.allowLocalContactsAccess)
+    {
+        return;
+    }
+    
+    // Get the status of the identity service terms.
+    BOOL areAllTermsAgreed = self.identityService.areAllTermsAgreed;
+    
+    if (MXKAppSettings.standardAppSettings.syncLocalContacts)
+    {
+        // Disable local contact sync when all terms are no longer accepted or if contacts access has been revoked.
+        if (!areAllTermsAgreed || [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] != CNAuthorizationStatusAuthorized)
+        {
+            MXLogDebug(@"[MXKContactManager] validateSyncLocalContactsState : Disabling contacts sync.");
+            MXKAppSettings.standardAppSettings.syncLocalContacts = false;
+            return;
+        }
+    }
+    else
+    {
+        // Check whether the user has been directed to the Settings app to enable contact access.
+        if (MXKAppSettings.standardAppSettings.syncLocalContactsPermissionOpenedSystemSettings)
+        {
+            // Reset the system settings app flag as they are back in the app.
+            MXKAppSettings.standardAppSettings.syncLocalContactsPermissionOpenedSystemSettings = false;
+            
+            // And if all other conditions are met for contacts sync enable it.
+            if (areAllTermsAgreed && [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] == CNAuthorizationStatusAuthorized)
+            {
+                MXLogDebug(@"[MXKContactManager] validateSyncLocalContactsState : Enabling contacts sync after user visited Settings app.");
+                MXKAppSettings.standardAppSettings.syncLocalContacts = true;
+            }
+        }
+    }
+}
+
 - (void)refreshLocalContacts
 {
     MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Started");
@@ -511,182 +549,177 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
     
     NSDate *startDate = [NSDate date];
     
-    MXWeakify(self);
-    
-    [MXKTools checkAccessForContacts:nil showPopUpInViewController:nil completionHandler:^(BOOL granted) {
-
-        MXStrongifyAndReturnIfNil(self);
-        
-        if (!granted)
+    if ([CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] != CNAuthorizationStatusAuthorized)
+    {
+        if ([MXKAppSettings standardAppSettings].syncLocalContacts)
         {
-            if ([MXKAppSettings standardAppSettings].syncLocalContacts)
-            {
-                // The user authorised syncLocalContacts and allowed access to his contacts
-                // but he then removed contacts access from app permissions.
-                // So, reset syncLocalContacts value
-                [MXKAppSettings standardAppSettings].syncLocalContacts = NO;
-            }
-            
-            // Local contacts list is empty if the access is denied.
-            self->localContactByContactID = nil;
-            self->localContactsWithMethods = nil;
-            self->splitLocalContacts = nil;
-            [self cacheLocalContacts];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
-            
-            MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Complete");
-            MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Local contacts access denied");
+            // The user authorised syncLocalContacts and allowed access to his contacts
+            // but he then removed contacts access from app permissions.
+            // So, reset syncLocalContacts value
+            [MXKAppSettings standardAppSettings].syncLocalContacts = NO;
         }
-        else
+        
+        // Local contacts list is empty if the access is denied.
+        self->localContactByContactID = nil;
+        self->localContactsWithMethods = nil;
+        self->splitLocalContacts = nil;
+        [self cacheLocalContacts];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
+        
+        MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Complete");
+        MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Local contacts access denied");
+    }
+    else
+    {
+        self->isLocalContactListRefreshing = YES;
+        
+        // Reset the internal contact lists (These arrays will be prepared only if need).
+        self->localContactsWithMethods = self->splitLocalContacts = nil;
+        
+        BOOL isColdStart = NO;
+        
+        // Check whether the local contacts sync has been disabled.
+        if (self->matrixIDBy3PID && ![MXKAppSettings standardAppSettings].syncLocalContacts)
         {
-            self->isLocalContactListRefreshing = YES;
+            // The user changed his mind and disabled the local contact sync, remove the cached data.
+            self->matrixIDBy3PID = nil;
+            [self cacheMatrixIDsDict];
             
-            // Reset the internal contact lists (These arrays will be prepared only if need).
-            self->localContactsWithMethods = self->splitLocalContacts = nil;
+            // Reload the local contacts from the system
+            self->localContactByContactID = nil;
+            [self cacheLocalContacts];
+        }
+        
+        // Check whether this is a cold start.
+        if (!self->matrixIDBy3PID)
+        {
+            isColdStart = YES;
             
-            BOOL isColdStart = NO;
+            // Load the dictionary from the file system. It is cached to improve UX.
+            [self loadCachedMatrixIDsDict];
+        }
+        
+        MXWeakify(self);
+        
+        dispatch_async(self->processingQueue, ^{
             
-            // Check whether the local contacts sync has been disabled.
-            if (self->matrixIDBy3PID && ![MXKAppSettings standardAppSettings].syncLocalContacts)
+            MXStrongifyAndReturnIfNil(self);
+
+            // In case of cold start, retrieve the data from the file system
+            if (isColdStart)
             {
-                // The user changed his mind and disabled the local contact sync, remove the cached data.
-                self->matrixIDBy3PID = nil;
-                [self cacheMatrixIDsDict];
-                
-                // Reload the local contacts from the system
-                self->localContactByContactID = nil;
+                [self loadCachedLocalContacts];
+                [self loadCachedContactBookInfo];
+
+                // no local contact -> assume that the last sync date is useless
+                if (self->localContactByContactID.count == 0)
+                {
+                    self->lastSyncDate = nil;
+                }
+            }
+
+            BOOL didContactBookChange = NO;
+
+            NSMutableArray* deletedContactIDs = [NSMutableArray arrayWithArray:[self->localContactByContactID allKeys]];
+
+            // can list local contacts?
+            if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+            {
+                NSString* countryCode = [[MXKAppSettings standardAppSettings] phonebookCountryCode];
+
+                ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
+                ABRecordRef      contactRecord;
+                CFIndex          index;
+                CFMutableArrayRef people = (CFMutableArrayRef)ABAddressBookCopyArrayOfAllPeople(ab);
+
+                if (nil != people)
+                {
+                    CFIndex peopleCount = CFArrayGetCount(people);
+
+                    for (index = 0; index < peopleCount; index++)
+                    {
+                        contactRecord = (ABRecordRef)CFArrayGetValueAtIndex(people, index);
+
+                        NSString* contactID = [MXKContact contactID:contactRecord];
+
+                        // the contact still exists
+                        [deletedContactIDs removeObject:contactID];
+
+                        if (self->lastSyncDate)
+                        {
+                            // ignore unchanged contacts since the previous sync
+                            CFDateRef lastModifDate = ABRecordCopyValue(contactRecord, kABPersonModificationDateProperty);
+                            if (lastModifDate)
+                            {
+                                if (kCFCompareGreaterThan != CFDateCompare(lastModifDate, (__bridge CFDateRef)self->lastSyncDate, nil))
+
+                                {
+                                    CFRelease(lastModifDate);
+                                    continue;
+                                }
+                                CFRelease(lastModifDate);
+                            }
+                        }
+
+                        didContactBookChange = YES;
+
+                        MXKContact* contact = [[MXKContact alloc] initLocalContactWithABRecord:contactRecord];
+
+                        if (countryCode)
+                        {
+                            contact.defaultCountryCode = countryCode;
+                        }
+
+                        // update the local contacts list
+                        [self->localContactByContactID setValue:contact forKey:contactID];
+                    }
+
+                    CFRelease(people);
+                }
+
+                if (ab)
+                {
+                    CFRelease(ab);
+                }
+            }
+
+            // some contacts have been deleted
+            for (NSString* contactID in deletedContactIDs)
+            {
+                didContactBookChange = YES;
+                [self->localContactByContactID removeObjectForKey:contactID];
+            }
+
+            // something has been modified in the local contact book
+            if (didContactBookChange)
+            {
                 [self cacheLocalContacts];
             }
             
-            // Check whether this is a cold start.
-            if (!self->matrixIDBy3PID)
-            {
-                isColdStart = YES;
-                
-                // Load the dictionary from the file system. It is cached to improve UX.
-                [self loadCachedMatrixIDsDict];
-            }
+            self->lastSyncDate = [NSDate date];
+            [self cacheContactBookInfo];
             
-            dispatch_async(self->processingQueue, ^{
+            // Update loaded contacts with the known dict 3PID -> matrix ID
+            [self updateAllLocalContactsMatrixIDs];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
                 
-                MXStrongifyAndReturnIfNil(self);
-
-                // In case of cold start, retrieve the data from the file system
-                if (isColdStart)
+                // Contacts are loaded, post a notification
+                self->isLocalContactListRefreshing = NO;
+                [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
+                
+                // Check the conditions required before triggering a matrix users lookup.
+                if (isColdStart || didContactBookChange)
                 {
-                    [self loadCachedLocalContacts];
-                    [self loadCachedContactBookInfo];
-
-                    // no local contact -> assume that the last sync date is useless
-                    if (self->localContactByContactID.count == 0)
-                    {
-                        self->lastSyncDate = nil;
-                    }
-                }
-
-                BOOL didContactBookChange = NO;
-
-                NSMutableArray* deletedContactIDs = [NSMutableArray arrayWithArray:[self->localContactByContactID allKeys]];
-
-                // can list local contacts?
-                if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-                {
-                    NSString* countryCode = [[MXKAppSettings standardAppSettings] phonebookCountryCode];
-
-                    ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
-                    ABRecordRef      contactRecord;
-                    CFIndex          index;
-                    CFMutableArrayRef people = (CFMutableArrayRef)ABAddressBookCopyArrayOfAllPeople(ab);
-
-                    if (nil != people)
-                    {
-                        CFIndex peopleCount = CFArrayGetCount(people);
-
-                        for (index = 0; index < peopleCount; index++)
-                        {
-                            contactRecord = (ABRecordRef)CFArrayGetValueAtIndex(people, index);
-
-                            NSString* contactID = [MXKContact contactID:contactRecord];
-
-                            // the contact still exists
-                            [deletedContactIDs removeObject:contactID];
-
-                            if (self->lastSyncDate)
-                            {
-                                // ignore unchanged contacts since the previous sync
-                                CFDateRef lastModifDate = ABRecordCopyValue(contactRecord, kABPersonModificationDateProperty);
-                                if (lastModifDate)
-                                {
-                                    if (kCFCompareGreaterThan != CFDateCompare(lastModifDate, (__bridge CFDateRef)self->lastSyncDate, nil))
-
-                                    {
-                                        CFRelease(lastModifDate);
-                                        continue;
-                                    }
-                                    CFRelease(lastModifDate);
-                                }
-                            }
-
-                            didContactBookChange = YES;
-
-                            MXKContact* contact = [[MXKContact alloc] initLocalContactWithABRecord:contactRecord];
-
-                            if (countryCode)
-                            {
-                                contact.defaultCountryCode = countryCode;
-                            }
-
-                            // update the local contacts list
-                            [self->localContactByContactID setValue:contact forKey:contactID];
-                        }
-
-                        CFRelease(people);
-                    }
-
-                    if (ab)
-                    {
-                        CFRelease(ab);
-                    }
-                }
-
-                // some contacts have been deleted
-                for (NSString* contactID in deletedContactIDs)
-                {
-                    didContactBookChange = YES;
-                    [self->localContactByContactID removeObjectForKey:contactID];
-                }
-
-                // something has been modified in the local contact book
-                if (didContactBookChange)
-                {
-                    [self cacheLocalContacts];
+                    [self updateMatrixIDsForAllLocalContacts];
                 }
                 
-                self->lastSyncDate = [NSDate date];
-                [self cacheContactBookInfo];
-                
-                // Update loaded contacts with the known dict 3PID -> matrix ID
-                [self updateAllLocalContactsMatrixIDs];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    // Contacts are loaded, post a notification
-                    self->isLocalContactListRefreshing = NO;
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kMXKContactManagerDidUpdateLocalContactsNotification object:nil userInfo:nil];
-                    
-                    // Check the conditions required before triggering a matrix users lookup.
-                    if (isColdStart || didContactBookChange)
-                    {
-                        [self updateMatrixIDsForAllLocalContacts];
-                    }
-                    
-                    MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Complete");
-                    MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Refresh %tu local contacts in %.0fms", self->localContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
-                });
+                MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Complete");
+                MXLogDebug(@"[MXKContactManager] refreshLocalContacts : Refresh %tu local contacts in %.0fms", self->localContactByContactID.count, [[NSDate date] timeIntervalSinceDate:startDate] * 1000);
             });
-        }
-    }];
+        });
+    }
 }
 
 - (void)updateMatrixIDsForLocalContact:(MXKContact *)contact
