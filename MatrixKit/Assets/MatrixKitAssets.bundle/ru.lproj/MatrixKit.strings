@@ -4,7 +4,7 @@
 "login_server_url_placeholder" = "URL (например https://matrix.org)";
 "login_home_server_title" = "URL домашнего сервера:";
 "login_home_server_info" = "Ваш домашний сервер хранит все ваши разговоры и данные о аккаунте";
-"login_identity_server_title" = "URL сервера идентификации:";
+"login_identity_server_title" = "Cервер идентификации URL:";
 "login_identity_server_info" = "Серверы идентификации Matrix обеспечивают определение соответствия между email и Matrix ID. В настоящее время существует только https://matrix.org.";
 "login_user_id_placeholder" = "Matrix ID (например, @bob:matrix.org или bob)";
 "login_password_placeholder" = "Пароль";
@@ -181,7 +181,7 @@
 // Room creation
 "room_creation_name_title" = "Название комнаты:";
 "login_use_fallback" = "Использовать резервную страницу";
-"login_error_do_not_support_login_flows" = "В настоящее время мы не поддерживаем один или несколько потоков авторизации, определенных данным домашним сервером";
+"login_error_do_not_support_login_flows" = "В настоящее время мы не поддерживаем потоки авторизации, определенных данным домашним сервером";
 "login_error_forgot_password_is_not_supported" = "\"Забытый пароль\" в настоящее время не поддерживается";
 "notice_event_redacted" = "<отредактировано%@>";
 "notice_event_redacted_by" = " от %@";
@@ -458,7 +458,7 @@
 "notice_declined_video_call" = "%@ отменил(а) этот вызов";
 "resume_call" = "Возобновить";
 "call_transfer_to_user" = "Передача с %@";
-"call_consulting_with_user" = "Общение с %@";
+"call_consulting_with_user" = "Консультация с %@";
 "call_video_with_user" = "Видеовызов с %@";
 "call_voice_with_user" = "Голосовой вызов с %@";
 "call_ringing" = "Звонок…";
@@ -470,3 +470,9 @@
 "attachment_small_with_resolution" = "Маленький %@ (~%@)";
 "attachment_size_prompt_message" = "Это можно отключить в настройках.";
 "attachment_size_prompt_title" = "Подтвердите размер для отправки";
+"auth_reset_password_error_not_found" = "Не найдено";
+"auth_reset_password_error_unauthorized" = "Неавторизованный";
+"auth_invalid_user_name" = "Недопустимое имя пользователя";
+"auth_username_in_use" = "Имя пользователя занято";
+"rename" = "Переименовать";
+"room_displayname_all_other_members_left" = "%@ (Вышел)";
