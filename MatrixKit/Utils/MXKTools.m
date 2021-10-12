@@ -18,14 +18,16 @@
 #import "MXKTools.h"
 
 @import MatrixSDK;
-@import AddressBook;
+@import Contacts;
 @import libPhoneNumber_iOS;
 @import DTCoreText;
 
 #import "MXKConstants.h"
 #import "NSBundle+MatrixKit.h"
+#import "MXKAppSettings.h"
 #import <MatrixSDK/MXTools.h>
 #import "MXKSwiftHeader.h"
+#import "MXKAnalyticsConstants.h"
 
 #pragma mark - Constants definitions
 
@@ -863,69 +865,72 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
      showPopUpInViewController:(UIViewController *)viewController
              completionHandler:(void (^)(BOOL granted))handler
 {
+    [self checkAccessForContacts:nil withManualChangeMessage:manualChangeMessage showPopUpInViewController:viewController completionHandler:handler];
+}
+
++ (void)checkAccessForContacts:(NSString *)manualChangeTitle
+       withManualChangeMessage:(NSString *)manualChangeMessage
+     showPopUpInViewController:(UIViewController *)viewController
+             completionHandler:(void (^)(BOOL granted))handler
+{
     // Check if the application is allowed to list the contacts
-    ABAuthorizationStatus cbStatus = ABAddressBookGetAuthorizationStatus();
-    if (cbStatus == kABAuthorizationStatusAuthorized)
+    CNAuthorizationStatus authStatus = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+    if (authStatus == CNAuthorizationStatusAuthorized)
     {
         handler(YES);
     }
-    else if (cbStatus == kABAuthorizationStatusNotDetermined)
+    else if (authStatus == CNAuthorizationStatusNotDetermined)
     {
         // Request address book access
-        ABAddressBookRef ab = ABAddressBookCreateWithOptions(nil, nil);
-        if (ab)
-        {
-            ABAddressBookRequestAccessWithCompletion(ab, ^(bool granted, CFErrorRef error) {
+        [[CNContactStore new] requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            
+            [MXSDKOptions.sharedInstance.analyticsDelegate trackValue:[NSNumber numberWithBool:granted]
+                                                             category:MXKAnalyticsCategoryContacts
+                                                                 name:MXKAnalyticsNameContactsAccessGranted];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
                 
-                [MXSDKOptions.sharedInstance.analyticsDelegate trackValue:[NSNumber numberWithBool:granted]
-                                                                 category:kMXKAnalyticsContactsCategory
-                                                                     name:kMXKAnalyticsContactsAccessGranted];
+                handler(granted);
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-
-                    handler(granted);
-
-                });
             });
-
-            CFRelease(ab);
-        }
-        else
-        {
-            // No phonebook
-            handler(YES);
-        }
+        }];
     }
-    else if (cbStatus == kABAuthorizationStatusDenied && viewController && manualChangeMessage)
+    else if (authStatus == CNAuthorizationStatusDenied && viewController && manualChangeMessage)
     {
         // Access not granted to the local contacts
         // Display manualChangeMessage
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:manualChangeTitle message:manualChangeMessage preferredStyle:UIAlertControllerStyleAlert];
 
-        // On iOS >= 8, add a shortcut to the app settings (This requires the shared application instance)
-        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-        if (sharedApplication && UIApplicationOpenSettingsURLString)
-        {
-            [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n settings]
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction * action) {
-                                                        
-                                                        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                                                        [sharedApplication performSelector:@selector(openURL:) withObject:url];
-                                                        
-                                                        // Note: it does not worth to check if the user changes the permission
-                                                        // because iOS restarts the app in case of change of app privacy settings
-                                                        handler(NO);
-                                                        
-                                                    }]];
-        }
-        [alert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
+        [alert addAction:[UIAlertAction actionWithTitle:MatrixKitL10n.cancel
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
-                                                    
-                                                    handler(NO);
-                                                    
-                                                }]];
+            
+            handler(NO);
+            
+        }]];
+        
+        // Add a shortcut to the app settings (This requires the shared application instance)
+        UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (sharedApplication)
+        {
+            UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:MatrixKitL10n.settings
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * action) {
+                [MXKAppSettings standardAppSettings].syncLocalContactsPermissionOpenedSystemSettings = YES;
+                // Wait for the setting to be saved as the app could be killed imminently.
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                
+                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                [sharedApplication performSelector:@selector(openURL:) withObject:url];
+                
+                // Note: it does not worth to check if the user changes the permission
+                // because iOS restarts the app in case of change of app privacy settings
+                handler(NO);
+            }];
+            
+            [alert addAction: settingsAction];
+            alert.preferredAction = settingsAction;
+        }
         
         [viewController presentViewController:alert animated:YES completion:nil];
     }

@@ -227,8 +227,6 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
         _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
-        _showDecryptedContentInNotifications = [coder decodeBoolForKey:@"showDecryptedContentInNotifications"];
-        
         _others = [coder decodeObjectForKey:@"others"];
         
         // Refresh device information
@@ -288,8 +286,6 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     [coder encodeBool:_isSoftLogout forKey:@"isSoftLogout"];
 
     [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
-    
-    [coder encodeBool:_showDecryptedContentInNotifications forKey:@"showDecryptedContentInNotifications"];
     
     [coder encodeObject:_others forKey:@"others"];
 }
@@ -610,14 +606,6 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 {
     _warnedAboutEncryption = warnedAboutEncryption;
 
-    // Archive updated field
-    [[MXKAccountManager sharedManager] saveAccounts];
-}
-
-- (void)setShowDecryptedContentInNotifications:(BOOL)showDecryptedContentInNotifications
-{
-    _showDecryptedContentInNotifications = showDecryptedContentInNotifications;
-    
     // Archive updated field
     [[MXKAccountManager sharedManager] saveAccounts];
 }
