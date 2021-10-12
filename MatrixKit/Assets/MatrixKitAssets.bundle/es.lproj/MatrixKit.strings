@@ -4,7 +4,7 @@
 "login_server_url_placeholder" = "URL (p.ej. https://matrix.org)";
 "login_home_server_title" = "Servidor Local:";
 "login_home_server_info" = "Tu servidor local almacena todas tus conversaciones y los datos de tu cuenta";
-"login_identity_server_title" = "URL de Servidor de Identidades:";
+"login_identity_server_title" = "URL de servidor de identidad:";
 "login_identity_server_info" = "Matrix proporciona servidores de identidades para rastrear qué correos electrónicos, etc. pertenecen a qué IDs de Matrix. Actualmente solo existe https://matrix.org.";
 "login_user_id_placeholder" = "ID de Matrix (p.ej. @juan:matrix.org o juan)";
 "login_password_placeholder" = "Contraseña";
@@ -82,7 +82,7 @@
 "notice_event_redacted_by" = " por %@";
 "notice_event_redacted_reason" = " [motivo: %@]";
 "notice_profile_change_redacted" = "%@ actualizó su perfil %@";
-"notice_room_created" = "%@ creó la sala";
+"notice_room_created" = "%@ ha creado y configurado la sala.";
 "notice_room_join_rule" = "La regla para unirse es: %@";
 "notice_room_power_level_intro" = "El nivel de permisos de los miembros de la sala es:";
 "notice_room_power_level_acting_requirement" = "Los niveles de permisos mínimos que un usuario debe tener antes de actuar son:";
@@ -184,7 +184,7 @@
 // Room
 "room_please_select" = "Por favor selecciona una sala";
 "room_error_join_failed_title" = "No se pudo unir a la sala";
-"room_error_join_failed_empty_room" = "Actualmente no es posible volver a unirse a una sala vacía.";
+"room_error_join_failed_empty_room" = "Ahora mismo no es posible volver a unirse a una sala vacía.";
 "room_error_name_edition_not_authorized" = "No estás autorizado a editar el nombre de esta sala";
 "room_error_topic_edition_not_authorized" = "No estás autorizado a editar el tema de esta sala";
 "room_error_cannot_load_timeline" = "No se pudo cargar la línea de tiempo";
@@ -204,10 +204,10 @@
 "room_member_power_level_prompt" = "No podrás deshacer este cambio porque estás promoviendo al usuario para tener el mismo nivel de autoridad que tú.\n¿Estás seguro?";
 // Attachment
 "attachment_size_prompt" = "Quieres enviar como:";
-"attachment_original" = "Tamaño Real: %@";
-"attachment_small" = "Pequeño: %@";
-"attachment_medium" = "Mediano: %@";
-"attachment_large" = "Grande: %@";
+"attachment_original" = "Tamaño real: %@";
+"attachment_small" = "Pequeño (~%@)";
+"attachment_medium" = "Mediano (~%@)";
+"attachment_large" = "Grande (~%@)";
 "attachment_cancel_download" = "¿Cancelar la descarga?";
 "attachment_cancel_upload" = "¿Cancelar la subida?";
 "attachment_multiselection_size_prompt" = "Quieres enviar imágenes como:";
@@ -381,3 +381,19 @@
 "device_details_rename_prompt_title" = "Nombre de Sesión";
 "account_error_push_not_allowed" = "No se permite notificaciones";
 "notice_room_third_party_revoked_invite" = "%@ revocó la invitación para %@ de unirse a la sala";
+"attachment_size_prompt_message" = "Puedes desactivar esto en ajustes.";
+"attachment_size_prompt_title" = "Confirma el tamaño para enviar";
+"message_reply_to_sender_sent_a_voice_message" = "ha enviado un mensaje de voz.";
+"room_left_for_dm" = "Te has salido";
+"room_displayname_all_other_members_left" = "%@ (ha salido)";
+"notice_room_join_rule_public_by_you_for_dm" = "Has hecho esta conversación pública.";
+"notice_room_join_rule_public_by_you" = "Has hecho la sala pública.";
+"notice_room_join_rule_public_for_dm" = "%@ ha hecho esta conversación pública.";
+"notice_room_join_rule_public" = "%@ ha hecho pública la sala.";
+"notice_room_join_rule_invite_by_you" = "Has hecho que solo se pueda unir a la sala por invitación.";
+"notice_room_name_removed_for_dm" = "%@ ha quitado el nombre";
+"notice_room_created_for_dm" = "%@ se ha unido.";
+"notice_room_join_rule_invite_for_dm" = "%@ ha hecho que solo sea posible unirse por invitación.";
+//  New
+"notice_room_join_rule_invite" = "%@ ha hecho que la sala solo sea accesible por invitación.";
+"resume_call" = "Volver a la llamada";
