@@ -24,6 +24,7 @@
 #import "MXKEventFormatter.h"
 
 #import "MXKTools.h"
+#import "MXKContactManager.h"
 
 #import "MXKConstants.h"
 
@@ -844,6 +845,11 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         
         // Complete session registration by launching live stream
         MXStrongifyAndReturnIfNil(self);
+        
+        // Validate the availability of local contact sync for any changes to the
+        // authorization of contacts access that may have occurred since the last launch.
+        // The session is passed in as the contacts manager may not have had a session added yet.
+        [MXKContactManager.sharedManager validateSyncLocalContactsStateForSession:self.mxSession];
         
         // Refresh pusher state
         [self refreshAPNSPusher];
