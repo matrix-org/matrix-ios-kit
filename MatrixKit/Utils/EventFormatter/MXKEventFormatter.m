@@ -997,11 +997,11 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             {
                 if (isRoomDirect)
                 {
-                    displayText = [MatrixKitL10n noticeRoomAliasesForDm:aliases];
+                    displayText = [MatrixKitL10n noticeRoomAliasesForDm:[aliases componentsJoinedByString:@", "]];
                 }
                 else
                 {
-                    displayText = [MatrixKitL10n noticeRoomAliases:aliases];
+                    displayText = [MatrixKitL10n noticeRoomAliases:[aliases componentsJoinedByString:@", "]];
                 }
                 // Append redacted info if any
                 if (redactedInfo)
@@ -1017,7 +1017,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
             MXJSONModelSetArray(groups, event.content[@"groups"]);
             if (groups)
             {
-                displayText = [MatrixKitL10n noticeRoomRelatedGroups:groups];
+                displayText = [MatrixKitL10n noticeRoomRelatedGroups:[groups componentsJoinedByString:@", "]];
                 // Append redacted info if any
                 if (redactedInfo)
                 {

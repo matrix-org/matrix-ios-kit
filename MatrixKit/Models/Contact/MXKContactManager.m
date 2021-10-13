@@ -499,7 +499,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
 
 #pragma mark -
 
-- (void)validateSyncLocalContactsState
+- (void)validateSyncLocalContactsStateForSession:(MXSession *)mxSession
 {
     if (!self.allowLocalContactsAccess)
     {
@@ -507,7 +507,7 @@ NSString *const MXKContactManagerDataType = @"org.matrix.kit.MXKContactManagerDa
     }
     
     // Get the status of the identity service terms.
-    BOOL areAllTermsAgreed = self.identityService.areAllTermsAgreed;
+    BOOL areAllTermsAgreed = mxSession.identityService.areAllTermsAgreed;
     
     if (MXKAppSettings.standardAppSettings.syncLocalContacts)
     {
