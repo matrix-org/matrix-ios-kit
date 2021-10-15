@@ -88,7 +88,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         
         roomSummaryChangeThrottler = [[MXThrottler alloc] initWithMinimumDelay:roomSummaryChangeThrottlerDelay];
         
-        [[MXKAppSettings standardAppSettings] addObserver:self forKeyPath:@"enableShowAllRoomsInHome" options:0 context:nil];
+        [[MXKAppSettings standardAppSettings] addObserver:self forKeyPath:@"showAllRoomsInHomeSpace" options:0 context:nil];
     }
     return self;
 }
@@ -115,7 +115,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     
     searchPatternsList = nil;
     
-    [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"enableShowAllRoomsInHome" context:nil];
+    [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"showAllRoomsInHomeSpace" context:nil];
 
     [super destroy];
 }
@@ -314,7 +314,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 
     NSDate *startDate = [NSDate date];
     
-    BOOL enableShowAllRoomsInHome = [MXKAppSettings standardAppSettings].showAllRoomsInHomeSpace;
+    BOOL showAllRoomsInHomeSpace = [MXKAppSettings standardAppSettings].showAllRoomsInHomeSpace;
     
     for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {
@@ -333,7 +333,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
                     // - It's a direct room
                     // - The room is a favourite
                     // - The room is orphaned
-                    if (enableShowAllRoomsInHome || !self.mxSession.spaceService.isInitialised || roomSummary.isDirect || roomSummary.room.accountData.tags[kMXRoomTagFavourite] || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
+                    if (showAllRoomsInHomeSpace || !self.mxSession.spaceService.isInitialised || roomSummary.isDirect || roomSummary.room.accountData.tags[kMXRoomTagFavourite] || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
                         [internalCellDataArray addObject:cellData];
                     }
                 }
@@ -561,7 +561,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    if (object == [MXKAppSettings standardAppSettings] && [keyPath isEqualToString:@"enableShowAllRoomsInHome"])
+    if (object == [MXKAppSettings standardAppSettings] && [keyPath isEqualToString:@"showAllRoomsInHomeSpace"])
     {
         if (self.currentSpace == nil)
         {
