@@ -1,3 +1,21 @@
+## Changes in 0.16.7 (2021-10-13)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.7](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.7)).
+
+
+## Changes in 0.16.6 (2021-10-12)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.6](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.6)).
+
+🐛 Bugfixes
+
+- MXKEventFormatter: Fixed invalid parameters passed to generated localization functions. ([#4899](https://github.com/vector-im/element-ios/issues/4899))
+
+
 ## Changes in 0.16.5 (2021-10-08)
 
 🙌 Improvements

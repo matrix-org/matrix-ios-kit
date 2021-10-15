@@ -21,9 +21,3 @@
 NSString *const kMXKErrorNotification = @"kMXKErrorNotification";
 
 NSString *const kMXKErrorUserIdKey = @"kMXKErrorUserIdKey";
-
-
-#pragma mark - Analytics
-
-NSString *const kMXKAnalyticsContactsCategory = @"localContacts";
-NSString *const kMXKAnalyticsContactsAccessGranted = @"accessGranted";
