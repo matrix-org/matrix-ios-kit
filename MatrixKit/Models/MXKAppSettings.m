@@ -871,7 +871,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     }
     else
     {
-        enableCallKit = enable;
+        enableShowAllRoomsInHome = enable;
     }
 }
 
