@@ -59,7 +59,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     /**
      Observer used to reload data when the space service is initialised
      */
-    id spaceServiceDidInitialisedObserver;
+    id spaceServiceDidInitialiseObserver;
 }
 
 /**
