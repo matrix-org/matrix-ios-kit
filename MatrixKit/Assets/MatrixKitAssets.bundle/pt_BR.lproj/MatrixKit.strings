@@ -323,7 +323,7 @@
 // room details dialog screen
 "room_details_title" = "Detalhes de Sala";
 // contacts list screen 
-"invitation_message" = "Eu gostaria de fazer chat com você com matrix. Por favor, visite o website http://matrix.org para ter mais informação.";
+"invitation_message" = "Eu gostaria de conversar com você com matrix. Por favor, visite o website http://matrix.org para ter mais informação.";
 // Settings screen 
 "settings_title_config" = "Configuração";
 "settings_title_notifications" = "Notificações";
