@@ -257,10 +257,10 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
 /**
  Return YES if the user wants to display all rooms in home
  
- This boolean value is defined in shared settings object with the key: `enableShowAllRoomsInHome`.
+ This boolean value is defined in shared settings object with the key: `showAllRoomsInHomeSpace`.
  Return NO if no value is defined.
  */
-@property (nonatomic, getter=isShowAllRoomsInHomeEnabled) BOOL enableShowAllRoomsInHome;
+@property (nonatomic, getter=isShowAllRoomsInHomeEnabled) BOOL showAllRoomsInHomeSpace;
 
 #pragma mark - Shared userDefaults
 

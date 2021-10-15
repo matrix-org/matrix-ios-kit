@@ -101,8 +101,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
     
-    if (spaceServiceDidInitialisedObserver) {
-        [[NSNotificationCenter defaultCenter] removeObserver:spaceServiceDidInitialisedObserver];
+    if (spaceServiceDidInitialiseObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:spaceServiceDidInitialiseObserver];
     }
     
     [roomSummaryChangeThrottler cancelAll];
@@ -297,9 +297,9 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
     
-    if (!self.mxSession.spaceService.isInitialised && !spaceServiceDidInitialisedObserver) {
+    if (!self.mxSession.spaceService.isInitialised && !spaceServiceDidInitialiseObserver) {
         MXWeakify(self);
-        spaceServiceDidInitialisedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:MXSpaceService.didInitialised object:self.mxSession.spaceService queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        spaceServiceDidInitialiseObserver = [[NSNotificationCenter defaultCenter] addObserverForName:MXSpaceService.didInitialise object:self.mxSession.spaceService queue:nil usingBlock:^(NSNotification * _Nonnull note) {
             MXStrongifyAndReturnIfNil(self);
             [self loadData];
         }];
@@ -314,7 +314,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 
     NSDate *startDate = [NSDate date];
     
-    BOOL enableShowAllRoomsInHome = [MXKAppSettings standardAppSettings].enableShowAllRoomsInHome;
+    BOOL enableShowAllRoomsInHome = [MXKAppSettings standardAppSettings].showAllRoomsInHomeSpace;
     
     for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {

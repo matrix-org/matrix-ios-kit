@@ -48,7 +48,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 @synthesize enableCallKit;
-@synthesize enableShowAllRoomsInHome;
+@synthesize showAllRoomsInHomeSpace;
 @synthesize sharedUserDefaults;
 
 + (MXKAppSettings *)standardAppSettings
@@ -126,7 +126,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         _allowPushKitPushers = NO;
         _notificationBodyLocalizationKey = @"MESSAGE";
         enableCallKit = YES;
-        enableShowAllRoomsInHome = NO;
+        showAllRoomsInHomeSpace = NO;
         
         eventsFilterForMessages = @[
             kMXEventTypeStringRoomCreate,
@@ -227,7 +227,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"firstURLDetectionIgnoredHosts"];
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableShowAllRoomsInHome"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllRoomsInHomeSpace"];
 	}
     else
     {
@@ -252,7 +252,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         httpsLinkScheme = @"https";
         
         enableCallKit = YES;
-        enableShowAllRoomsInHome = NO;
+        showAllRoomsInHomeSpace = NO;
     }
 }
 
@@ -847,31 +847,23 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        id storedValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"enableShowAllRoomsInHome"];
-        if (storedValue)
-        {
-            return [(NSNumber *)storedValue boolValue];
-        }
-        else
-        {
-            return NO;
-        }
+        return [[NSUserDefaults standardUserDefaults] boolForKey:@"showAllRoomsInHomeSpace"];
     }
     else
     {
-        return enableShowAllRoomsInHome;
+        return showAllRoomsInHomeSpace;
     }
 }
 
-- (void)setEnableShowAllRoomsInHome:(BOOL)enable
+- (void)setShowAllRoomsInHomeSpace:(BOOL)enable
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
-        [[NSUserDefaults standardUserDefaults] setBool:enable forKey:@"enableShowAllRoomsInHome"];
+        [[NSUserDefaults standardUserDefaults] setBool:enable forKey:@"showAllRoomsInHomeSpace"];
     }
     else
     {
-        enableShowAllRoomsInHome = enable;
+        showAllRoomsInHomeSpace = enable;
     }
 }
 
