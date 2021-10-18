@@ -867,7 +867,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 
 #pragma mark - Spaces
 
-- (BOOL)isShowAllRoomsInHomeEnabled
+- (BOOL)showAllRoomsInHomeSpace
 {
     if (self == [MXKAppSettings standardAppSettings])
     {
