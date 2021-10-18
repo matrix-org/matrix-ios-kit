@@ -519,7 +519,7 @@ public class MatrixKitL10n: NSObject {
   public static var loginErrorBadJson: String { 
     return MatrixKitL10n.tr("login_error_bad_json") 
   }
-  /// Currently we do not support any or all login flows defined by this Home Server
+  /// Currently we do not support any or all login flows defined by this homeserver
   public static var loginErrorDoNotSupportLoginFlows: String { 
     return MatrixKitL10n.tr("login_error_do_not_support_login_flows") 
   }
@@ -543,7 +543,7 @@ public class MatrixKitL10n: NSObject {
   public static var loginErrorMustStartHttp: String { 
     return MatrixKitL10n.tr("login_error_must_start_http") 
   }
-  /// We failed to retrieve authentication information from this Home Server
+  /// We failed to retrieve authentication information from this homeserver
   public static var loginErrorNoLoginFlow: String { 
     return MatrixKitL10n.tr("login_error_no_login_flow") 
   }
@@ -599,7 +599,7 @@ public class MatrixKitL10n: NSObject {
   public static var loginIdentityServerInfo: String { 
     return MatrixKitL10n.tr("login_identity_server_info") 
   }
-  /// Identity Server URL:
+  /// Identity server URL:
   public static var loginIdentityServerTitle: String { 
     return MatrixKitL10n.tr("login_identity_server_title") 
   }
