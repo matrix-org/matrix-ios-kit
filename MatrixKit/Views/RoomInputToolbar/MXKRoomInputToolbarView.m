@@ -1181,7 +1181,20 @@ NSString* MXKFileSizes_description(MXKFileSizes sizes)
                 NSString* MIMEType = (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)key, kUTTagClassMIMEType);
                 if ([MIMEType hasPrefix:@"image/"] && [self.delegate respondsToSelector:@selector(roomInputToolbarView:sendImage:)])
                 {
-                    UIImage *pasteboardImage = [dict objectForKey:key];
+                    UIImage *pasteboardImage;
+                    if ([[dict objectForKey:key] isKindOfClass:UIImage.class])
+                    {
+                        pasteboardImage = [dict objectForKey:key];
+                    }
+                    // WebP images from Safari appear on the pasteboard as NSData rather than UIImages.
+                    else if ([[dict objectForKey:key] isKindOfClass:NSData.class])
+                    {
+                        pasteboardImage = [UIImage imageWithData:[dict objectForKey:key]];
+                    }
+                    else {
+                        MXLogError(@"[MXKRoomInputToolbarView] Unsupported image format %@ for mimetype %@ pasted.", MIMEType, NSStringFromClass([[dict objectForKey:key] class]));
+                    }
+                    
                     if (pasteboardImage)
                     {
                         MXKImageView *imageValidationView = [[MXKImageView alloc] initWithFrame:CGRectZero];
