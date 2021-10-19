@@ -51,7 +51,15 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
      */
     NSMutableDictionary<NSString*, NSArray<MXSpaceChildInfo *> *> *lastSuggestedRooms;
     
+    /**
+     Event listener of the current space used to update the UI if an event occurs.
+     */
     id spaceEventsListener;
+    
+    /**
+     Observer used to reload data when the space service is initialised
+     */
+    id spaceServiceDidInitialiseObserver;
 }
 
 /**
@@ -79,6 +87,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         [self registerCellDataClass:MXKRecentCellData.class forCellIdentifier:kMXKRecentCellIdentifier];
         
         roomSummaryChangeThrottler = [[MXThrottler alloc] initWithMinimumDelay:roomSummaryChangeThrottlerDelay];
+        
+        [[MXKAppSettings standardAppSettings] addObserver:self forKeyPath:@"showAllRoomsInHomeSpace" options:0 context:nil];
     }
     return self;
 }
@@ -91,6 +101,10 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
     
+    if (spaceServiceDidInitialiseObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:spaceServiceDidInitialiseObserver];
+    }
+    
     [roomSummaryChangeThrottler cancelAll];
     roomSummaryChangeThrottler = nil;
     
@@ -101,6 +115,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     
     searchPatternsList = nil;
     
+    [[MXKAppSettings standardAppSettings] removeObserver:self forKeyPath:@"showAllRoomsInHomeSpace" context:nil];
+
     [super destroy];
 }
 
@@ -262,7 +278,6 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     return 0;
 }
 
-
 #pragma mark - Events processing
 - (void)loadData
 {
@@ -271,6 +286,14 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionNewRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDidLeaveRoomNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXSessionDirectRoomsDidChangeNotification object:nil];
+    
+    if (!self.mxSession.spaceService.isInitialised && !spaceServiceDidInitialiseObserver) {
+        MXWeakify(self);
+        spaceServiceDidInitialiseObserver = [[NSNotificationCenter defaultCenter] addObserverForName:MXSpaceService.didInitialise object:self.mxSession.spaceService queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            MXStrongifyAndReturnIfNil(self);
+            [self loadData];
+        }];
+    }
     
     // Reset the table
     [internalCellDataArray removeAllObjects];
@@ -281,6 +304,8 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 
     NSDate *startDate = [NSDate date];
     
+    BOOL showAllRoomsInHomeSpace = [MXKAppSettings standardAppSettings].showAllRoomsInHomeSpace;
+    
     for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {
         // Filter out private rooms with conference users
@@ -290,9 +315,24 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
             if (cellData)
             {
-                if (self.currentSpace == nil || [self.mxSession.spaceService isRoomWithId:roomSummary.roomId descendantOf:self.currentSpace.spaceId])
+                if (self.currentSpace == nil)
                 {
-                    [internalCellDataArray addObject:cellData];
+                    // In case of home space we show a room if one of the following conditions is true:
+                    // - Show All Rooms is enabled
+                    // - the space service has not been initialised (prevents to have empty rooms list while the space service is loading)
+                    // - It's a direct room
+                    // - The room is a favourite
+                    // - The room is orphaned
+                    if (showAllRoomsInHomeSpace || !self.mxSession.spaceService.isInitialised || roomSummary.isDirect || roomSummary.room.accountData.tags[kMXRoomTagFavourite] || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
+                        [internalCellDataArray addObject:cellData];
+                    }
+                }
+                else
+                {
+                    if ([self.mxSession.spaceService isRoomWithId:roomSummary.roomId descendantOf:self.currentSpace.spaceId])
+                    {
+                        [internalCellDataArray addObject:cellData];
+                    }
                 }
             }
         }
@@ -504,6 +544,22 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
         }
     }
     return theRoomData;
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    if (object == [MXKAppSettings standardAppSettings] && [keyPath isEqualToString:@"showAllRoomsInHomeSpace"])
+    {
+        if (self.currentSpace == nil)
+        {
+            [self loadData];
+        }
+    }
 }
 
 @end
