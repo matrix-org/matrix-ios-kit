@@ -48,7 +48,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
 @synthesize syncLocalContacts, syncLocalContactsPermissionRequested, syncLocalContactsPermissionOpenedSystemSettings, phonebookCountryCode;
 @synthesize presenceColorForOnlineUser, presenceColorForUnavailableUser, presenceColorForOfflineUser;
 @synthesize enableCallKit;
-@synthesize showAllRoomsInHomeSpace;
 @synthesize sharedUserDefaults;
 
 + (MXKAppSettings *)standardAppSettings
@@ -126,7 +125,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         _allowPushKitPushers = NO;
         _notificationBodyLocalizationKey = @"MESSAGE";
         enableCallKit = YES;
-        showAllRoomsInHomeSpace = NO;
         
         eventsFilterForMessages = @[
             kMXEventTypeStringRoomCreate,
@@ -227,7 +225,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"firstURLDetectionIgnoredHosts"];
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"enableCallKit"];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"showAllRoomsInHomeSpace"];
 	}
     else
     {
@@ -252,7 +249,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         httpsLinkScheme = @"https";
         
         enableCallKit = YES;
-        showAllRoomsInHomeSpace = NO;
     }
 }
 
@@ -862,32 +858,6 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
     else
     {
         enableCallKit = enable;
-    }
-}
-
-#pragma mark - Spaces
-
-- (BOOL)showAllRoomsInHomeSpace
-{
-    if (self == [MXKAppSettings standardAppSettings])
-    {
-        return [[NSUserDefaults standardUserDefaults] boolForKey:@"showAllRoomsInHomeSpace"];
-    }
-    else
-    {
-        return showAllRoomsInHomeSpace;
-    }
-}
-
-- (void)setShowAllRoomsInHomeSpace:(BOOL)enable
-{
-    if (self == [MXKAppSettings standardAppSettings])
-    {
-        [[NSUserDefaults standardUserDefaults] setBool:enable forKey:@"showAllRoomsInHomeSpace"];
-    }
-    else
-    {
-        showAllRoomsInHomeSpace = enable;
     }
 }
 

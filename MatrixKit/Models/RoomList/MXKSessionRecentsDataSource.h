@@ -18,6 +18,7 @@
 #import <UIKit/UIKit.h>
 #import <MatrixSDK/MatrixSDK.h>
 
+#import "MXKConstants.h"
 #import "MXKDataSource.h"
 #import "MXKRecentCellData.h"
 
@@ -31,6 +32,7 @@ extern NSString *const kMXKRecentCellIdentifier;
 /**
  The recents data source based on a unique matrix session.
  */
+MXK_DEPRECATED_ATTRIBUTE_WITH_MSG("See MXSession.roomListDataManager")
 @interface MXKSessionRecentsDataSource : MXKDataSource {
 
 @protected

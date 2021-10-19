@@ -17,6 +17,9 @@
 
 #import <UIKit/UIKit.h>
 
+#define MXK_DEPRECATED_ATTRIBUTE                __attribute__((deprecated))
+#define MXK_DEPRECATED_ATTRIBUTE_WITH_MSG(msg)  __attribute((deprecated((msg))))
+
 /**
  The Matrix iOS Kit version.
  */

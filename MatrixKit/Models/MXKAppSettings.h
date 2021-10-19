@@ -261,16 +261,6 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
  */
 @property (nonatomic, getter=isCallKitEnabled) BOOL enableCallKit;
 
-#pragma mark - Spaces
-
-/**
- Return YES if the user wants to display all rooms in home
- 
- This boolean value is defined in shared settings object with the key: `showAllRoomsInHomeSpace`.
- Return NO if no value is defined.
- */
-@property (nonatomic) BOOL showAllRoomsInHomeSpace;
-
 #pragma mark - Shared userDefaults
 
 /**
