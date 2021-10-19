@@ -212,16 +212,6 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     return NO;
 }
 
-- (void)markAllAsRead
-{
-    // Clear unread count on all recent cells
-    for (NSUInteger i = 0; i < self.numberOfCells; i++)
-    {
-        id<MXKRecentCellDataStoring> cellData = [self cellDataAtIndex:i];
-        [cellData markAllAsRead];
-    }
-}
-
 - (void)searchWithPatterns:(NSArray*)patternsList
 {
     if (patternsList.count)
@@ -289,6 +279,10 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 }
 
 #pragma mark - Events processing
+
+/**
+ Filtering in this method won't have any effect anymore. This class is not maintained.
+ */
 - (void)loadData
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:nil];
@@ -314,43 +308,25 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
 
     NSDate *startDate = [NSDate date];
     
-    BOOL showAllRoomsInHomeSpace = [MXKAppSettings standardAppSettings].showAllRoomsInHomeSpace;
-    
     for (MXRoomSummary *roomSummary in self.mxSession.roomsSummaries)
     {
         // Filter out private rooms with conference users
         if (!roomSummary.isConferenceUserRoom // @TODO Abstract this condition with roomSummary.hiddenFromUser
             && !roomSummary.hiddenFromUser)
         {
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
             if (cellData)
             {
-                if (self.currentSpace == nil)
-                {
-                    // In case of home space we show a room if one of the following conditions is true:
-                    // - Show All Rooms is enabled
-                    // - the space service has not been initialised (prevents to have empty rooms list while the space service is loading)
-                    // - It's a direct room
-                    // - The room is a favourite
-                    // - The room is orphaned
-                    if (showAllRoomsInHomeSpace || !self.mxSession.spaceService.isInitialised || roomSummary.isDirect || roomSummary.room.accountData.tags[kMXRoomTagFavourite] || [self.mxSession.spaceService isOrphanedRoomWithId:roomSummary.roomId]) {
-                        [internalCellDataArray addObject:cellData];
-                    }
-                }
-                else
-                {
-                    if ([self.mxSession.spaceService isRoomWithId:roomSummary.roomId descendantOf:self.currentSpace.spaceId])
-                    {
-                        [internalCellDataArray addObject:cellData];
-                    }
-                }
+                [internalCellDataArray addObject:cellData];
             }
         }
     }
     
     for (MXSpaceChildInfo *childInfo in _suggestedRooms)
     {
-        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithSpaceChildInfo:childInfo andRecentListDataSource:self];
+        id<MXRoomSummaryProtocol> summary = [[MXRoomSummary alloc] initWithSpaceChildInfo:childInfo];
+        id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:summary
+                                                                        dataSource:self];
         if (cellData)
         {
             [internalCellDataArray addObject:cellData];
@@ -420,7 +396,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             {
                 // Create a new instance to not modify the content of 'cellDataArray' (the copy is not a deep copy).
                 Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
-                id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
+                id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
                 if (cellData)
                 {
                     [internalCellDataArray replaceObjectAtIndex:index withObject:cellData];
@@ -462,7 +438,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
             Class class = [self cellDataClassForCellIdentifier:kMXKRecentCellIdentifier];
 
             MXRoomSummary *roomSummary = [mxSession roomSummaryWithRoomId:roomId];
-            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary andRecentListDataSource:self];
+            id<MXKRecentCellDataStoring> cellData = [[class alloc] initWithRoomSummary:roomSummary dataSource:self];
             if (cellData)
             {
                 [internalCellDataArray addObject:cellData];

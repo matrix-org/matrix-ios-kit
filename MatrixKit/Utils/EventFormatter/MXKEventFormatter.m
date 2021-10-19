@@ -1922,7 +1922,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         }
         else if (event.eventType == MXEventTypeRoomJoinRules)
         {
-            summary.others[@"mxkEventFormatterisJoinRulePublic"] = @(roomState.isJoinRulePublic);
+            summary.joinRule = roomState.joinRule;
         }
     }
 
