@@ -1,1 +1,0 @@
-MXKRoomInputToolbarView: Fix crash when pasting images backed by NSData (such as WebP from Safari).
