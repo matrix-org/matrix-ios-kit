@@ -14,8 +14,8 @@
 "login_email_placeholder" = "Indirizzo email";
 "login_prompt_email_token" = "Inserisci il token di validazione della tua email:";
 "login_error_title" = "Accesso fallito";
-"login_error_no_login_flow" = "Impossibile ottenere i dati di autenticazione da questo Home Server";
-"login_error_do_not_support_login_flows" = "Al momento non è supportato alcuno dei flussi di accesso definiti da questo Home Server";
+"login_error_no_login_flow" = "Impossibile ottenere i dati di autenticazione da questo homeserver";
+"login_error_do_not_support_login_flows" = "Al momento non è supportato alcuno dei flussi di accesso definiti da questo homeserver";
 "login_error_registration_is_not_supported" = "La registrazione non è consentita al momento";
 "login_error_forbidden" = "Nome utente o password errati";
 "login_error_unknown_token" = "Il token di accesso inserito non è stato riconosciuto";
@@ -470,3 +470,9 @@
 "attachment_small_with_resolution" = "Piccolo %@ (~%@)";
 "attachment_size_prompt_message" = "Puoi disattivarlo nelle impostazioni.";
 "attachment_size_prompt_title" = "Conferma dimensione da inviare";
+"auth_reset_password_error_not_found" = "Non trovato";
+"auth_reset_password_error_unauthorized" = "Non autorizzato";
+"auth_invalid_user_name" = "Nome utente non valido";
+"room_displayname_all_other_members_left" = "%@ (Uscito)";
+"auth_username_in_use" = "Nome utente in uso";
+"rename" = "Rinomina";

@@ -17,61 +17,33 @@
 
 #import "MXKRecentCellData.h"
 
-#import "MXKSessionRecentsDataSource.h"
+#import "MXKDataSource.h"
 #import "MXEvent+MatrixKit.h"
 #import <MatrixSDK/MatrixSDK-Swift.h>
 
 @implementation MXKRecentCellData
-@synthesize roomSummary, spaceChildInfo, recentsDataSource, roomDisplayname, lastEventTextMessage, lastEventAttributedTextMessage, lastEventDate;
+@synthesize roomSummary, dataSource, lastEventDate;
 
-- (instancetype)initWithRoomSummary:(MXRoomSummary*)theRoomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource
+- (instancetype)initWithRoomSummary:(id<MXRoomSummaryProtocol>)theRoomSummary
+                         dataSource:(MXKDataSource*)theDataSource;
 {
     self = [self init];
     if (self)
     {
         roomSummary = theRoomSummary;
-        recentsDataSource = recentListDataSource;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(update) name:kMXRoomSummaryDidChangeNotification object:roomSummary];
-
-        [self update];
+        dataSource = theDataSource;
     }
     return self;
-}
-
-- (instancetype)initWithSpaceChildInfo:(MXSpaceChildInfo*)theSpaceChildInfo andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource
-{
-    self = [self init];
-    if (self)
-    {
-        spaceChildInfo = theSpaceChildInfo;
-        recentsDataSource = recentListDataSource;
-
-        [self update];
-    }
-    return self;
-}
-
-- (void)update
-{
-    // Keep ref on displayed last event
-    roomDisplayname = spaceChildInfo ? spaceChildInfo.name : roomSummary.displayname;
-
-    lastEventTextMessage = spaceChildInfo ? spaceChildInfo.topic : roomSummary.lastMessage.text;
-    lastEventAttributedTextMessage = spaceChildInfo ? nil : roomSummary.lastMessage.attributedText;
 }
 
 - (void)dealloc
 {
-    if (roomSummary)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kMXRoomSummaryDidChangeNotification object:roomSummary];
-    }
     roomSummary = nil;
-    spaceChildInfo = nil;
+}
 
-    lastEventTextMessage = nil;
-    lastEventAttributedTextMessage = nil;
+- (MXSession *)mxSession
+{
+    return dataSource.mxSession;
 }
 
 - (NSString*)lastEventDate
@@ -82,6 +54,51 @@
 - (BOOL)hasUnread
 {
     return (roomSummary.localUnreadEventCount != 0);
+}
+
+- (NSString *)roomIdentifier
+{
+    if (self.isSuggestedRoom)
+    {
+        return self.roomSummary.spaceChildInfo.childRoomId;
+    }
+    return roomSummary.roomId;
+}
+
+- (NSString *)roomDisplayname
+{
+    if (self.isSuggestedRoom)
+    {
+        return self.roomSummary.spaceChildInfo.displayName;
+    }
+    return roomSummary.displayname;
+}
+
+- (NSString *)avatarUrl
+{
+    if (self.isSuggestedRoom)
+    {
+        return self.roomSummary.spaceChildInfo.avatarUrl;
+    }
+    return roomSummary.avatar;
+}
+
+- (NSString *)lastEventTextMessage
+{
+    if (self.isSuggestedRoom)
+    {
+        return roomSummary.spaceChildInfo.topic;
+    }
+    return roomSummary.lastMessage.text;
+}
+
+- (NSAttributedString *)lastEventAttributedTextMessage
+{
+    if (self.isSuggestedRoom)
+    {
+        return nil;
+    }
+    return roomSummary.lastMessage.attributedText;
 }
 
 - (NSUInteger)notificationCount
@@ -99,11 +116,6 @@
     return [NSString stringWithFormat:@"%tu", self.notificationCount];
 }
 
-- (void)markAllAsRead
-{
-    [roomSummary markAllAsRead];
-}
-
 - (NSString*)description
 {
     return [NSString stringWithFormat:@"%@ %@: %@ - %@", super.description, self.roomSummary.roomId, self.roomDisplayname, self.lastEventTextMessage];
@@ -112,7 +124,7 @@
 - (BOOL)isSuggestedRoom
 {
     // As off now, we only store MXSpaceChildInfo in case of suggested rooms
-    return self.spaceChildInfo != nil;
+    return self.roomSummary.spaceChildInfo != nil;
 }
 
 @end

@@ -49,7 +49,7 @@
     // Highlight the room owner by using his tint color.
     if (roomCellData)
     {
-        MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:roomCellData.roomSummary.room.mxSession.myUser.userId];
+        MXKAccount *account = [[MXKAccountManager sharedManager] accountForUserId:roomCellData.mxSession.myUserId];
         if (account)
         {
             _userFlag.backgroundColor = account.userTintColor;

@@ -164,10 +164,13 @@ extension MXKUTI {
     public static let data = MXKUTI(cfRawValue: kUTTypeData)!
     public static let text = MXKUTI(cfRawValue: kUTTypeText)!
     public static let audio = MXKUTI(cfRawValue: kUTTypeAudio)!
+    public static let video = MXKUTI(cfRawValue: kUTTypeVideo)!
     public static let movie = MXKUTI(cfRawValue: kUTTypeMovie)!
     public static let image = MXKUTI(cfRawValue: kUTTypeImage)!
     public static let png = MXKUTI(cfRawValue: kUTTypePNG)!
     public static let jpeg = MXKUTI(cfRawValue: kUTTypeJPEG)!
+    public static let url = MXKUTI(cfRawValue: kUTTypeURL)!
+    public static let fileUrl = MXKUTI(cfRawValue: kUTTypeFileURL)!
 }
 
 // MARK: - Convenients static methods

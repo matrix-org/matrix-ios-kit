@@ -186,10 +186,19 @@ typedef NS_ENUM(NSUInteger, MXKKeyPreSharingStrategy)
 /**
  Return YES if the user has been already asked for local contacts sync permission.
 
- This boolean value is defined in shared settings object with the key: `syncLocalContactsRequested`.
+ This boolean value is defined in shared settings object with the key: `syncLocalContactsPermissionRequested`.
  Return NO if no value is defined.
  */
 @property (nonatomic) BOOL syncLocalContactsPermissionRequested;
+
+/**
+ Return YES if after the user has been asked for local contacts sync permission and choose to open
+ the system's Settings app to enable contacts access.
+
+ This boolean value is defined in shared settings object with the key: `syncLocalContactsPermissionOpenedSystemSettings`.
+ Return NO if no value is defined.
+ */
+@property (nonatomic) BOOL syncLocalContactsPermissionOpenedSystemSettings;
 
 /**
  The current selected country code for the phonebook.

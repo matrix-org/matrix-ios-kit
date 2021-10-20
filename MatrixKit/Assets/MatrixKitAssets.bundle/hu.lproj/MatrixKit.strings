@@ -19,8 +19,8 @@
 "login_email_placeholder" = "E-mail cím";
 "login_prompt_email_token" = "Kérlek add meg az e-mail érvényesítő kódot:";
 "login_error_title" = "A bejelentkezés sikertelen";
-"login_error_no_login_flow" = "Nem sikerült letölteni az azonosítási információkat erről a Saját szerverről";
-"login_error_do_not_support_login_flows" = "Jelenleg nem támogatunk egyetlen bejelentkezési sémát sem azok közül amit a Saját szerver ismer";
+"login_error_no_login_flow" = "Nem sikerült letölteni az azonosítási információkat erről a saját szerverről";
+"login_error_do_not_support_login_flows" = "Jelenleg nem támogatunk egyetlen bejelentkezési sémát sem azok közül amit a saját szerver ismer";
 "login_error_registration_is_not_supported" = "A regisztráció jelenleg nem támogatott";
 "login_error_forbidden" = "Érvénytelen felhasználói név/jelszó";
 "login_error_unknown_token" = "A megadott hozzáférési kód nem ismert";
@@ -471,3 +471,9 @@
 "attachment_size_prompt_message" = "Ezt a beállításokban kikapcsolhatod.";
 "attachment_size_prompt_title" = "Méret megerősítése küldéshez";
 "room_displayname_all_other_participants_left" = "%@ (Bal)";
+"auth_reset_password_error_not_found" = "Nem található";
+"auth_reset_password_error_unauthorized" = "Nem engedélyezett";
+"auth_username_in_use" = "A felhasználónév foglalt";
+"auth_invalid_user_name" = "Érvénytelen felhasználónév";
+"rename" = "Átnevez";
+"room_displayname_all_other_members_left" = "%@ (Bal)";
