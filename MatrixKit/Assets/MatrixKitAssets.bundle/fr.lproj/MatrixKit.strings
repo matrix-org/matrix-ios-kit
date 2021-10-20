@@ -470,3 +470,6 @@
 "attachment_small_with_resolution" = "Petit %@ (~%@)";
 "attachment_size_prompt_message" = "Vous pouvez désactiver ceci dans les paramètres.";
 "attachment_size_prompt_title" = "Préciser la taille pour l’envoi";
+"auth_username_in_use" = "";
+"auth_invalid_user_name" = "Nom d’utilisateur invalide";
+"rename" = "Renommer";

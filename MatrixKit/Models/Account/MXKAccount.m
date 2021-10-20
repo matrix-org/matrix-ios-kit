@@ -24,6 +24,7 @@
 #import "MXKEventFormatter.h"
 
 #import "MXKTools.h"
+#import "MXKContactManager.h"
 
 #import "MXKConstants.h"
 
@@ -227,8 +228,6 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
 
         _warnedAboutEncryption = [coder decodeBoolForKey:@"warnedAboutEncryption"];
         
-        _showDecryptedContentInNotifications = [coder decodeBoolForKey:@"showDecryptedContentInNotifications"];
-        
         _others = [coder decodeObjectForKey:@"others"];
         
         // Refresh device information
@@ -288,8 +287,6 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     [coder encodeBool:_isSoftLogout forKey:@"isSoftLogout"];
 
     [coder encodeBool:_warnedAboutEncryption forKey:@"warnedAboutEncryption"];
-    
-    [coder encodeBool:_showDecryptedContentInNotifications forKey:@"showDecryptedContentInNotifications"];
     
     [coder encodeObject:_others forKey:@"others"];
 }
@@ -614,14 +611,6 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
     [[MXKAccountManager sharedManager] saveAccounts];
 }
 
-- (void)setShowDecryptedContentInNotifications:(BOOL)showDecryptedContentInNotifications
-{
-    _showDecryptedContentInNotifications = showDecryptedContentInNotifications;
-    
-    // Archive updated field
-    [[MXKAccountManager sharedManager] saveAccounts];
-}
-
 - (NSMutableDictionary<NSString *, id<NSCoding>> *)others
 {
     if(_others == nil) 
@@ -857,6 +846,11 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
         // Complete session registration by launching live stream
         MXStrongifyAndReturnIfNil(self);
         
+        // Validate the availability of local contact sync for any changes to the
+        // authorization of contacts access that may have occurred since the last launch.
+        // The session is passed in as the contacts manager may not have had a session added yet.
+        [MXKContactManager.sharedManager validateSyncLocalContactsStateForSession:self.mxSession];
+        
         // Refresh pusher state
         [self refreshAPNSPusher];
         [self refreshPushKitPusher];
@@ -883,7 +877,7 @@ static NSArray<NSNumber*> *initialSyncSilentErrorsHTTPStatusCodes;
  */
 - (void)closeSession:(BOOL)clearStore
 {
-    MXLogDebug(@"[MXKAccount] closeSession (%tu)", clearStore);
+    MXLogDebug(@"[MXKAccount] closeSession (%u)", clearStore);
     
     if (NSCurrentLocaleDidChangeNotificationObserver)
     {

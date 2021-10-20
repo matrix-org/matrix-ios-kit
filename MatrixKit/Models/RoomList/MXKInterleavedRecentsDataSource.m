@@ -221,9 +221,10 @@
             id<MXKRecentCellDataStoring> recentCellData = interleavedCellDataArray[indexPath.row];
             
             // Select the related recent data source
-            MXKSessionRecentsDataSource *recentsDataSource = recentCellData.recentsDataSource;
-            if (recentsDataSource)
+            MXKDataSource *dataSource = recentCellData.dataSource;
+            if ([dataSource isKindOfClass:[MXKSessionRecentsDataSource class]])
             {
+                MXKSessionRecentsDataSource *recentsDataSource = (MXKSessionRecentsDataSource*)dataSource;
                 // Count the index of this cell data in original data source array
                 NSInteger rank = 0;
                 for (NSInteger index = 0; index < indexPath.row; index++)
@@ -257,7 +258,7 @@
             for (NSInteger index = 0; index < recentsDataSource.numberOfCells; index ++)
             {
                 id<MXKRecentCellDataStoring> recentCellData = [recentsDataSource cellDataAtIndex:index];
-                if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
+                if ([roomId isEqualToString:recentCellData.roomIdentifier])
                 {
                     // Got it
                     indexPath = [NSIndexPath indexPathForRow:index inSection:0];
@@ -280,7 +281,7 @@
                     for (NSInteger index = 0; index < interleavedCellDataArray.count; index ++)
                     {
                         id<MXKRecentCellDataStoring> recentCellData = interleavedCellDataArray[index];
-                        if ([roomId isEqualToString:recentCellData.roomSummary.roomId])
+                        if ([roomId isEqualToString:recentCellData.roomIdentifier])
                         {
                             // Got it
                             indexPath = [NSIndexPath indexPathForRow:index inSection:0];
@@ -408,7 +409,7 @@
             id<MXKRecentCellDataStoring> currentCellData = interleavedCellDataArray[currentCellIndex];
             
             // Remove existing cell data of the updated data source
-            if (currentCellData.recentsDataSource == dataSource)
+            if (currentCellData.dataSource == dataSource)
             {
                 [interleavedCellDataArray removeObjectAtIndex:currentCellIndex];
             }

@@ -45,8 +45,7 @@
         }
         
         // Set in bold public room name
-        if (roomCellData.roomSummary.others[@"mxkEventFormatterisJoinRulePublic"]
-            && [(NSNumber*)roomCellData.roomSummary.others[@"mxkEventFormatterisJoinRulePublic"] boolValue])
+        if ([roomCellData.roomSummary.joinRule isEqualToString:kMXRoomJoinRulePublic])
         {
             _roomTitle.font = [UIFont boldSystemFontOfSize:20];
         }

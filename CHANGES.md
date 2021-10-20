@@ -1,3 +1,26 @@
+## Changes in 0.16.8 (2021-10-20)
+
+✨ Features
+
+- M10.4.1 Home space data filtering ([#4570](https://github.com/vector-im/element-ios/issues/4570))
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.8](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.8)).
+- MXKRecentCellDataStoring: New initializer & `roomIdentifier` and `avatarUrl` properties. ([#4384](https://github.com/vector-im/element-ios/issues/4384))
+- MXKContactManager: The contacts manager will no longer present a prompt for contacts access for you. This should be done elsewhere. ([#4484](https://github.com/vector-im/element-ios/issues/4484))
+
+🐛 Bugfixes
+
+- MXKRoomInputToolbarView: Fix crash when pasting images backed by NSData (such as WebP from Safari). ([#2076](https://github.com/vector-im/element-ios/issues/2076))
+- MXKContactManager: Add an MXSession parameter to validateSyncLocalContactsState and call from MXKAccount. ([#4989](https://github.com/vector-im/element-ios/issues/4989))
+
+⚠️ API Changes
+
+- MXKRecentsDataSource & MXKSessionRecentsDataSource: Remove `markAllAsRead` methods. ([#4384](https://github.com/vector-im/element-ios/issues/4384))
+- MXKAccount: Remove unused showDecryptedContentInNotifications property. ([#4519](https://github.com/vector-im/element-ios/issues/4519))
+
+
 ## Changes in 0.16.7 (2021-10-13)
 
 🙌 Improvements

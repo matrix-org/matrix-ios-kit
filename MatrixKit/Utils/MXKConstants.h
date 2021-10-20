@@ -17,6 +17,9 @@
 
 #import <UIKit/UIKit.h>
 
+#define MXK_DEPRECATED_ATTRIBUTE                __attribute__((deprecated))
+#define MXK_DEPRECATED_ATTRIBUTE_WITH_MSG(msg)  __attribute((deprecated((msg))))
+
 /**
  The Matrix iOS Kit version.
  */
@@ -36,16 +39,3 @@ FOUNDATION_EXPORT NSString *const kMXKErrorNotification;
  The key in notification userInfo dictionary representating the account userId.
  */
 FOUNDATION_EXPORT NSString *const kMXKErrorUserIdKey;
-
-
-#pragma mark - Analytics
-
-/**
- The analytics category for local contacts.
- */
-FOUNDATION_EXPORT NSString *const kMXKAnalyticsContactsCategory;
-
-/**
- The analytics value for accept/decline of local contacts access.
- */
-FOUNDATION_EXPORT NSString *const kMXKAnalyticsContactsAccessGranted;
