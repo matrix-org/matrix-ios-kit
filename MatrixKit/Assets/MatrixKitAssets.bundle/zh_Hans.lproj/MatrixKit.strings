@@ -92,8 +92,8 @@
 "notice_invalid_attachment" = "无效附件";
 "notice_unsupported_attachment" = "不支持的附件：%@";
 "login_email_info" = "指定邮箱地址可以让其他 Matrix 用户更容易找到您，并允许您可以在未来重置密码。";
-"login_error_no_login_flow" = "从此主服务器获取认证信息失败";
-"login_error_do_not_support_login_flows" = "当前我们不支持任何或者所有此主服务器定义的登录流";
+"login_error_no_login_flow" = "我们未能从此主服务器获取认证信息";
+"login_error_do_not_support_login_flows" = "当前我们不支持此主服务器定义的任何或者所有登录流";
 "notice_feedback" = "反馈事件 (id: %@)：%@";
 "notice_redaction" = "%@ 取消了一个事件 (id: %@)";
 "notice_error_unsupported_event" = "不支持的事件";
@@ -472,3 +472,9 @@
 "attachment_size_prompt_message" = "你可以在设置中关闭这个。";
 "attachment_size_prompt_title" = "确认要发送的大小";
 "room_displayname_all_other_participants_left" = "%@ (离开)";
+"auth_reset_password_error_not_found" = "未找到";
+"auth_reset_password_error_unauthorized" = "未经授权";
+"auth_invalid_user_name" = "用户名无效";
+"room_displayname_all_other_members_left" = "%@ (离开)";
+"auth_username_in_use" = "用户名被占用";
+"rename" = "重命名";
