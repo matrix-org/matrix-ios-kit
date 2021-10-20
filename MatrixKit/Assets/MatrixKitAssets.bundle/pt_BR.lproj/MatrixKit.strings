@@ -4,7 +4,7 @@
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
 "login_home_server_title" = "URL de Servidorcasa:";
 "login_home_server_info" = "Seu servidorcasa armazena todas as suas conversas e dados de conta";
-"login_identity_server_title" = "URL de Servidor de Identidade:";
+"login_identity_server_title" = "URL de servidor de identidade:";
 "login_identity_server_info" = "Matrix provê servidores de identidade para rastrear quais emails, etc. pertencem a quais IDs Matrix. Somente https://matrix.org existe atualmente.";
 "login_user_id_placeholder" = "ID Matrix (e.g. @bob:matrix.org ou bob)";
 "login_password_placeholder" = "Senha";
@@ -14,9 +14,9 @@
 "login_email_placeholder" = "Endereço de email";
 "login_prompt_email_token" = "Por favor entre seu token de validação de email:";
 "login_error_title" = "Login Falhou";
-"login_error_no_login_flow" = "Nós falhamos para recuperar informação de autenticação deste Servidor de Casa";
+"login_error_no_login_flow" = "Nós falhamos para recuperar informação de autenticação deste servidorcasa";
 "view" = "Visualizar";
-"login_error_do_not_support_login_flows" = "Atualmente nós não suportamos qualquer ou todos os fluxos de login definidos por este Servidor de Casa";
+"login_error_do_not_support_login_flows" = "Atualmente nós não suportamos qualquer ou todos os fluxos de login definidos por este servidorcasa";
 "back" = "Voltar";
 "continue" = "Continuar";
 "leave" = "Sair";
@@ -323,7 +323,7 @@
 // room details dialog screen
 "room_details_title" = "Detalhes de Sala";
 // contacts list screen 
-"invitation_message" = "Eu gostaria de fazer chat com você com matrix. Por favor, visite o website http://matrix.org para ter mais informação.";
+"invitation_message" = "Eu gostaria de conversar com você com matrix. Por favor, visite o website http://matrix.org para ter mais informação.";
 // Settings screen 
 "settings_title_config" = "Configuração";
 "settings_title_notifications" = "Notificações";
@@ -471,3 +471,9 @@
 "attachment_size_prompt_message" = "Você pode desligar isto em configurações.";
 "attachment_size_prompt_title" = "Confirmar tamanho para enviar";
 "room_displayname_all_other_participants_left" = "%@ (Saiu)";
+"auth_reset_password_error_not_found" = "Não encontrado";
+"auth_reset_password_error_unauthorized" = "Não-autorizada(o)";
+"auth_username_in_use" = "Nome de usuária(o) em uso";
+"auth_invalid_user_name" = "Nome de usuária(o) inválido";
+"rename" = "Renomear";
+"room_displayname_all_other_members_left" = "%@ (Saiu)";
