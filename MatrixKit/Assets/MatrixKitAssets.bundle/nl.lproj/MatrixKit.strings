@@ -34,8 +34,8 @@
 "login_email_placeholder" = "E-mailadres";
 "login_prompt_email_token" = "Voer uw e-mailadres-validatiebewijs in:";
 "login_error_title" = "Aanmelden Mislukt";
-"login_error_no_login_flow" = "Ophalen van authenticatie-informatie van deze thuisserver is mislukt";
-"login_error_do_not_support_login_flows" = "Momenteel bieden we geen ondersteuning voor sommige of alle aanmeldingsmethoden van deze thuisserver";
+"login_error_no_login_flow" = "Ophalen van authenticatie-informatie van deze server is mislukt";
+"login_error_do_not_support_login_flows" = "Momenteel bieden we geen ondersteuning voor sommige of alle aanmeldingsmethoden van deze server";
 "login_error_registration_is_not_supported" = "Registratie wordt momenteel niet ondersteund";
 "login_error_forbidden" = "Ongeldige gebruikersnaam/wachtwoord";
 "login_error_unknown_token" = "Het gespecificeerde toegangsbewijs is niet herkend";
@@ -532,3 +532,9 @@
 "attachment_size_prompt_message" = "U kunt dit uitzetten in uw instellingen.";
 "attachment_size_prompt_title" = "Bevestig de afmeting om te versturen";
 "room_displayname_all_other_participants_left" = "%@ (vertrok)";
+"auth_reset_password_error_not_found" = "Niet gevonden";
+"auth_reset_password_error_unauthorized" = "Niet toegestaan";
+"auth_username_in_use" = "Inlognaam al in gebruik";
+"auth_invalid_user_name" = "Ongeldige inlognaam";
+"rename" = "Hernoemen";
+"room_displayname_all_other_members_left" = "%@ (Vertrok)";
