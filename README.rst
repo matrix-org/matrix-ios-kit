@@ -1,3 +1,10 @@
+Deprecated
+=========
+
+The MatrixKit will no longer be supported, the code will be merged into [https://github.com/vector-im/element-ios](https://github.com/vector-im/element-ios) repository.
+
+Please avoid to create issues or PR in this repository, report them to [Element iOS](https://github.com/vector-im/element-ios) instead.
+
 MatrixKit
 =========
 
