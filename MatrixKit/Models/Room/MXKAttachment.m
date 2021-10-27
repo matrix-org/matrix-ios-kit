@@ -671,6 +671,7 @@ NSString *const kMXKAttachmentFileNameBase = @"attatchment";
             if ([[NSFileManager defaultManager] copyItemAtPath:path toPath:self->documentCopyPath error:nil])
             {
                 fileUrl = [NSURL fileURLWithPath:self->documentCopyPath];
+                [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
             }
         }
         
@@ -678,6 +679,7 @@ NSString *const kMXKAttachmentFileNameBase = @"attatchment";
         {
             // Use the cached file by default
             fileUrl = [NSURL fileURLWithPath:path];
+            self->documentCopyPath = path;
         }
         
         onReadyToShare (fileUrl);
@@ -687,7 +689,6 @@ NSString *const kMXKAttachmentFileNameBase = @"attatchment";
     {
         [self decryptToTempFile:^(NSString *path) {
             haveFile(path);
-            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
         } failure:onFailure];
     }
     else

@@ -20,7 +20,7 @@
 
 #import "MXKCellData.h"
 
-@class MXKSessionRecentsDataSource;
+@class MXKDataSource;
 @class MXSpaceChildInfo;
 
 /**
@@ -34,18 +34,16 @@
 /**
  The original data source of the recent displayed by the cell.
  */
-@property (nonatomic, readonly) MXKSessionRecentsDataSource *recentsDataSource;
+@property (nonatomic, weak, readonly) MXKDataSource *dataSource;
 
 /**
- The `MXRoomSummary` instance of the room for the recent displayed by the cell.
+ The `MXRoomSummaryProtocol` instance of the room for the recent displayed by the cell.
  */
-@property (nonatomic, readonly) MXRoomSummary *roomSummary;
-/**
- In case of suggested rooms we store the `MXSpaceChildInfo` instance of the room
- */
-@property (nonatomic, readonly) MXSpaceChildInfo *spaceChildInfo;
+@property (nonatomic, readonly) id<MXRoomSummaryProtocol> roomSummary;
 
+@property (nonatomic, readonly) NSString *roomIdentifier;
 @property (nonatomic, readonly) NSString *roomDisplayname;
+@property (nonatomic, readonly) NSString *avatarUrl;
 @property (nonatomic, readonly) NSString *lastEventTextMessage;
 @property (nonatomic, readonly) NSString *lastEventDate;
 
@@ -55,34 +53,18 @@
 @property (nonatomic, readonly) NSString *notificationCountStringValue;
 @property (nonatomic, readonly) BOOL isSuggestedRoom;
 
+@property (nonatomic, readonly) MXSession *mxSession;
+
 #pragma mark - Public methods
 /**
  Create a new `MXKCellData` object for a new recent cell.
 
- @param roomSummary the `MXRoomSummary` object that has data about the room.
- @param recentListDataSource the `MXKSessionRecentsDataSource` object that will use this instance.
+ @param roomSummary the `id<MXRoomSummaryProtocol>` object that has data about the room.
+ @param dataSource the `MXKDataSource` object that will use this instance.
  @return the newly created instance.
  */
-- (instancetype)initWithRoomSummary:(MXRoomSummary*)roomSummary andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource;
-
-/**
- Create a new `MXKCellData` object for a new recent cell.
-
- @param spaceChildInfo the `MXSpaceChildInfo` object that has data about the room.
- @param recentListDataSource the `MXKSessionRecentsDataSource` object that will use this instance.
- @return the newly created instance.
- */
-- (instancetype)initWithSpaceChildInfo:(MXSpaceChildInfo*)spaceChildInfo andRecentListDataSource:(MXKSessionRecentsDataSource*)recentListDataSource;
-
-/**
- The `MXKSessionRecentsDataSource` object calls this method when it detects a change in the room.
- */
-- (void)update;
-
-/**
- Mark all messages as read
- */
-- (void)markAllAsRead;
+- (instancetype)initWithRoomSummary:(id<MXRoomSummaryProtocol>)roomSummary
+                         dataSource:(MXKDataSource*)dataSource;
 
 @optional
 /**

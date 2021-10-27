@@ -64,7 +64,7 @@ typedef enum : NSUInteger {
 /**
  The matrix session.
  */
-@property (nonatomic, readonly) MXSession *mxSession;
+@property (nonatomic, weak, readonly) MXSession *mxSession;
 
 /**
  The data source state

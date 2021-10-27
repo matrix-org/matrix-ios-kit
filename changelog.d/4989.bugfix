@@ -1,1 +1,0 @@
-MXKContactManager: Add an MXSession parameter to validateSyncLocalContactsState and call from MXKAccount.
