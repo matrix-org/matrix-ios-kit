@@ -39,7 +39,7 @@
     /**
      The reconnection animated view.
      */
-    UIView* reconnectingView;
+    __weak UIView* reconnectingView;
     
     /**
      The current table view header if any.

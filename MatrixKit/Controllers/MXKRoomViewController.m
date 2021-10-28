@@ -284,8 +284,6 @@
     {
         [self shareEncryptionKeys];
     }
-    
-    self.navigationController.delegate = self;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -911,10 +909,15 @@
         self->joinRoomRequest = nil;
         [self stopActivityIndicator];
         
+        MXWeakify(self);
+        
         // The room is now part of the user's room
         MXKRoomDataSourceManager *roomDataSourceManager = [MXKRoomDataSourceManager sharedManagerForMatrixSession:self.mainSession];
         
         [roomDataSourceManager roomDataSourceForRoom:room.roomId create:YES onComplete:^(MXKRoomDataSource *newRoomDataSource) {
+            
+            MXStrongifyAndReturnIfNil(self);
+            
             // And can be displayed
             [self displayRoom:newRoomDataSource];
             
@@ -1799,12 +1802,16 @@
     // Trigger back pagination to fill all the screen
     CGRect frame = [[UIScreen mainScreen] bounds];
     
+    MXWeakify(self);
+    
     isPaginationInProgress = YES;
     [self startActivityIndicator];
     [roomDataSource paginateToFillRect:frame
                              direction:MXTimelineDirectionBackwards
            withMinRequestMessagesCount:_paginationLimit
                                success:^{
+        
+                                   MXStrongifyAndReturnIfNil(self);
 
                                    // Stop spinner
                                    self->isPaginationInProgress = NO;
@@ -1866,6 +1873,8 @@
                                    self.bubbleTableViewDisplayInTransition = NO;
                                }
                                failure:^(NSError *error) {
+        
+                                   MXStrongifyAndReturnIfNil(self);
 
                                    // Stop spinner
                                    self->isPaginationInProgress = NO;
@@ -1906,8 +1915,12 @@
     
     isPaginationInProgress = YES;
     
+    MXWeakify(self);
+    
     // Trigger pagination
     [roomDataSource paginate:limit direction:direction onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+        
+        MXStrongifyAndReturnIfNil(self);
         
         // We will adjust the vertical offset in order to unchange the current display (pagination should be inconspicuous)
         CGFloat verticalOffset = 0;
@@ -1979,6 +1992,8 @@
 
     } failure:^(NSError *error) {
         
+        MXStrongifyAndReturnIfNil(self);
+        
         self.bubbleTableViewDisplayInTransition = YES;
         
         // Reload table on failure because some changes may have been ignored during pagination (see[dataSource:didCellChange:])
@@ -2002,8 +2017,12 @@
     
     isPaginationInProgress = YES;
     
+    MXWeakify(self);
+    
     // Trigger back pagination to find previous attachments
     [roomDataSource paginate:_paginationLimit direction:MXTimelineDirectionBackwards onlyFromStore:NO success:^(NSUInteger addedCellNumber) {
+        
+        MXStrongifyAndReturnIfNil(self);
         
         // Check whether attachments viewer is still visible
         if (self.attachmentsViewer)
@@ -2051,6 +2070,8 @@
         }
         
     } failure:^(NSError *error) {
+        
+        MXStrongifyAndReturnIfNil(self);
         
         // Reload table on failure because some changes may have been ignored during back pagination (see[dataSource:didCellChange:])
         self.bubbleTableViewDisplayInTransition = YES;
@@ -3521,14 +3542,20 @@
         lastTypingDate = nil;
     }
     
+    MXWeakify(self);
+    
     // Send typing notification to server
     [roomDataSource.room sendTypingNotification:typing
                                         timeout:notificationTimeoutMS
                                         success:^{
+        
+        MXStrongifyAndReturnIfNil(self);
                                             // Reset last typing date
                                             self->lastTypingDate = nil;
                                         } failure:^(NSError *error)
     {
+        MXStrongifyAndReturnIfNil(self);
+        
         MXLogDebug(@"[MXKRoomVC] Failed to send typing notification (%d)", typing);
         
         // Cancel timer (if any)

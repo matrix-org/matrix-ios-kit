@@ -34,7 +34,7 @@
     /**
      The data source owner of this instance.
      */
-    MXKRoomDataSource *roomDataSource;
+    __weak MXKRoomDataSource *roomDataSource;
     
     /**
      Array of bubble components. Each bubble is supposed to have at least one component.
