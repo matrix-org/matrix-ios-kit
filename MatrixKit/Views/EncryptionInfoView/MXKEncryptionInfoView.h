@@ -48,7 +48,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *blockButton;
 @property (weak, nonatomic) IBOutlet UIButton *confirmVerifyButton;
 
-@property (nonatomic) id<MXKEncryptionInfoViewDelegate> delegate;
+@property (nonatomic, weak) id<MXKEncryptionInfoViewDelegate> delegate;
 
 /**
  Initialise an `MXKEncryptionInfoView` instance based on an encrypted event
