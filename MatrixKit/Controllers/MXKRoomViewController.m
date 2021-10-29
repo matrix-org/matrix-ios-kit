@@ -2109,6 +2109,8 @@
     // Remove potential existing subviews
     [self dismissTemporarySubViews];
     
+    MXKEventDetailsView *eventDetailsView;
+    
     if (customEventDetailsViewClass)
     {
         eventDetailsView = [[customEventDetailsViewClass alloc] initWithEvent:event andMatrixSession:roomDataSource.mxSession];
@@ -2125,6 +2127,8 @@
     
     // Add the view and define edge constraints
     [self.view addSubview:eventDetailsView];
+    
+    self->eventDetailsView = eventDetailsView;
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:eventDetailsView
                                                           attribute:NSLayoutAttributeTop
