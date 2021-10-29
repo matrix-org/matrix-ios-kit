@@ -26,7 +26,7 @@
  */
 @protocol MXKGroupCellDataStoring <NSObject>
 
-@property (nonatomic, readonly) MXKSessionGroupsDataSource *groupsDataSource;
+@property (nonatomic, weak, readonly) MXKSessionGroupsDataSource *groupsDataSource;
 
 @property (nonatomic, readonly) MXGroup *group;
 
