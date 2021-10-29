@@ -145,10 +145,11 @@
     
     // Add a top view which will be displayed in case of vertical bounce.
     CGFloat height = self.groupsTableView.frame.size.height;
-    topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.groupsTableView.frame.size.width,height)];
+    UIView *topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.groupsTableView.frame.size.width,height)];
     topview.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     topview.backgroundColor = [UIColor groupTableViewBackgroundColor];
     [self.groupsTableView addSubview:topview];
+    self->topview = topview;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -513,8 +514,13 @@
 {
     latestServerSync = [NSDate date];
     
+    MXWeakify(self);
+    
     // Refresh all groups summary
     [self.dataSource refreshGroupsSummary:^{
+        
+        MXStrongifyAndReturnIfNil(self);
+        
         [self removeReconnectingView];
     }];
 }
