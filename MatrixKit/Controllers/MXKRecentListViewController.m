@@ -39,7 +39,7 @@
     /**
      The reconnection animated view.
      */
-    UIView* reconnectingView;
+    __weak UIView* reconnectingView;
     
     /**
      The current table view header if any.
@@ -146,10 +146,11 @@
     
     // Add a top view which will be displayed in case of vertical bounce.
     CGFloat height = self.recentsTableView.frame.size.height;
-    topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.recentsTableView.frame.size.width,height)];
+    UIView *topview = [[UIView alloc] initWithFrame:CGRectMake(0,-height,self.recentsTableView.frame.size.width,height)];
     topview.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     topview.backgroundColor = [UIColor groupTableViewBackgroundColor];
     [self.recentsTableView addSubview:topview];
+    self->topview = topview;
 }
 
 - (void)viewWillAppear:(BOOL)animated

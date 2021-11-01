@@ -48,7 +48,7 @@
     /**
      The fake top view displayed in case of vertical bounce.
      */
-    UIView *topview;
+    __weak UIView *topview;
 }
 
 @property (weak, nonatomic) IBOutlet UISearchBar *groupsSearchBar;
@@ -65,7 +65,7 @@
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKGroupListViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKGroupListViewControllerDelegate> delegate;
 
 /**
  Enable the search option by adding a navigation item in the navigation bar (YES by default).

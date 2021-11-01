@@ -470,3 +470,8 @@
 "attachment_small_with_resolution" = "E vogël %@ (~%@)";
 "attachment_size_prompt_message" = "Këtë mund ta çaktivizoni te rregullimet.";
 "attachment_size_prompt_title" = "Ripohoni madhësi për dërgim";
+"auth_reset_password_error_not_found" = "S’u gjet";
+"auth_reset_password_error_unauthorized" = "I paautorizuar";
+"auth_username_in_use" = "Emër përdoruesi i përdorur";
+"auth_invalid_user_name" = "Emër i pavlefshëm përdoruesi";
+"rename" = "Riemërtojeni";

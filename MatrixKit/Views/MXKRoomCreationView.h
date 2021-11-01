@@ -68,7 +68,7 @@
 /**
  The delegate.
  */
-@property (nonatomic) id<MXKRoomCreationViewDelegate> delegate;
+@property (nonatomic, weak) id<MXKRoomCreationViewDelegate> delegate;
 
 /**
  Hide room name field (NO by default).

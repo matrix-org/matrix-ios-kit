@@ -122,7 +122,7 @@ typedef enum {
 /**
  The view delegate.
  */
-@property (nonatomic) id <MXKAuthInputsViewDelegate> delegate;
+@property (nonatomic, weak) id <MXKAuthInputsViewDelegate> delegate;
 
 /**
  The current authentication type (`MXKAuthenticationTypeLogin` by default).
