@@ -1065,8 +1065,7 @@
         [titleView destroy];
     }
     
-    titleView = [roomTitleViewClass roomTitleView];
-    
+    titleView = self.navigationItem.titleView = [roomTitleViewClass roomTitleView];
     titleView.delegate = self;
     
     // Define directly the navigation titleView with the custom title view instance. Do not use anymore a container.
@@ -1109,9 +1108,9 @@
         
         MXLogDebug(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView to class %@", roomInputToolbarViewClass);
         
-        inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
-        
-        inputToolbarView.delegate = self;
+        id inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
+        self->inputToolbarView = inputToolbarView;
+        self->inputToolbarView.delegate = self;
         
         // Add the input toolbar view and define edge constraints
         [_roomInputToolbarContainer addSubview:inputToolbarView];
