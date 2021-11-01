@@ -54,12 +54,12 @@ typedef NS_ENUM(NSUInteger, MXKRoomViewControllerJoinRoomResult) {
     /**
      Potential event details view.
      */
-    MXKEventDetailsView *eventDetailsView;
+    __weak MXKEventDetailsView *eventDetailsView;
     
     /**
      Current alert (if any).
      */
-    UIAlertController *currentAlert;
+    __weak UIAlertController *currentAlert;
     
     /**
      The document interaction Controller used to share attachment
@@ -138,12 +138,12 @@ typedef NS_ENUM(NSUInteger, MXKRoomViewControllerJoinRoomResult) {
 /**
  The current title view defined into the view controller.
  */
-@property (nonatomic, readonly) MXKRoomTitleView* titleView;
+@property (nonatomic, weak, readonly) MXKRoomTitleView* titleView;
 
 /**
  The current input toolbar view defined into the view controller.
  */
-@property (nonatomic, readonly) MXKRoomInputToolbarView* inputToolbarView;
+@property (nonatomic, weak, readonly) MXKRoomInputToolbarView* inputToolbarView;
 
 /**
  The current extra info view defined into the view controller.
@@ -197,12 +197,12 @@ typedef NS_ENUM(NSUInteger, MXKRoomViewControllerJoinRoomResult) {
  This object is defined when the displayed room is left. It is added into the bubbles table header.
  This label is used to display the reason why the room has been left.
  */
-@property (nonatomic, readonly) UILabel *leftRoomReasonLabel;
+@property (nonatomic, weak, readonly) UILabel *leftRoomReasonLabel;
 
-@property (nonatomic) IBOutlet UITableView *bubblesTableView;
-@property (nonatomic) IBOutlet UIView *roomTitleViewContainer;
-@property (nonatomic) IBOutlet UIView *roomInputToolbarContainer;
-@property (nonatomic) IBOutlet UIView *roomActivitiesContainer;
+@property (weak, nonatomic) IBOutlet UITableView *bubblesTableView;
+@property (weak, nonatomic) IBOutlet UIView *roomTitleViewContainer;
+@property (weak, nonatomic) IBOutlet UIView *roomInputToolbarContainer;
+@property (weak, nonatomic) IBOutlet UIView *roomActivitiesContainer;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubblesTableViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bubblesTableViewBottomConstraint;

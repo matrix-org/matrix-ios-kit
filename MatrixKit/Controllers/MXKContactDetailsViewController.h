@@ -56,7 +56,7 @@
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKContactDetailsViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKContactDetailsViewControllerDelegate> delegate;
 
 #pragma mark - Class methods
 

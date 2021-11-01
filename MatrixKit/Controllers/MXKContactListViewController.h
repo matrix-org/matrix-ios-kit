@@ -62,7 +62,7 @@
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKContactListViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKContactListViewControllerDelegate> delegate;
 
 /**
  Enable the search option by adding a navigation item in the navigation bar (YES by default).

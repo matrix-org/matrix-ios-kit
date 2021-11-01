@@ -1,0 +1,1 @@
+MXKRoomViewController: Fix retain cycles that prevents deallocation.

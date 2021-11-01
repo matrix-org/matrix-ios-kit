@@ -142,7 +142,7 @@ typedef enum : NSUInteger
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKRoomMemberDetailsViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKRoomMemberDetailsViewControllerDelegate> delegate;
 
 #pragma mark - Class methods
 
