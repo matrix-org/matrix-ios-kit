@@ -169,6 +169,11 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 @property (nonatomic) NSString *partialTextMessage;
 
+/**
+ The current thread id for the data source. If provided, data source displays the specified thread, otherwise the whole room messages.
+ */
+@property (nonatomic, readonly) NSString *threadId;
+
 #pragma mark - Configuration
 /**
  The text formatter applied on the events.
@@ -269,10 +274,15 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
  @param roomId the id of the room to get data from.
  @param initialEventId the id of the event where to start the timeline.
+ @param threadId the id of the thread to load.
  @param mxSession the Matrix session to get data from.
  @param onComplete a block providing the newly created instance.
  */
-+ (void)loadRoomDataSourceWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete;
++ (void)loadRoomDataSourceWithRoomId:(NSString*)roomId
+                      initialEventId:(NSString*)initialEventId
+                            threadId:(NSString*)threadId
+                    andMatrixSession:(MXSession*)mxSession
+                          onComplete:(void (^)(id roomDataSource))onComplete;
 
 /**
  Asynchronously create a data source to peek into a room.
@@ -306,10 +316,14 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
  @param roomId the id of the room to get data from.
  @param initialEventId the id of the event where to start the timeline.
+ @param threadId the id of the thread to initialize.
  @param mxSession the Matrix session to get data from.
  @return the newly created instance.
  */
-- (instancetype)initWithRoomId:(NSString*)roomId initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession;
+- (instancetype)initWithRoomId:(NSString*)roomId
+                initialEventId:(NSString*)initialEventId
+                      threadId:(NSString*)threadId
+              andMatrixSession:(MXSession*)mxSession;
 
 /**
  Initialise the data source to peek into a room.
