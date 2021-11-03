@@ -841,18 +841,21 @@
         [currentAlert dismissViewControllerAnimated:NO completion:nil];
 
         __weak typeof(self) weakSelf = self;
-        currentAlert = [UIAlertController alertControllerWithTitle:errorTitle message:errorMessage preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *errorAlert = [UIAlertController alertControllerWithTitle:errorTitle
+                                                                            message:errorMessage
+                                                                     preferredStyle:UIAlertControllerStyleAlert];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction * action) {
+        [errorAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * action) {
                                                     
                                                     typeof(self) self = weakSelf;
                                                     self->currentAlert = nil;
                                                     
                                                 }]];
 
-        [self presentViewController:currentAlert animated:YES completion:nil];
+        [self presentViewController:errorAlert animated:YES completion:nil];
+        currentAlert = errorAlert;
     }
 }
 
@@ -964,11 +967,13 @@
     MXWeakify(self);
     [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
     
-    self->currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n roomErrorJoinFailedTitle] message:msg preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *errorAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n roomErrorJoinFailedTitle]
+                                                                        message:msg
+                                                                 preferredStyle:UIAlertControllerStyleAlert];
     
-    [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
-                                                           style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * action) {
+    [errorAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction * action) {
         
         MXStrongifyAndReturnIfNil(self);
         self->currentAlert = nil;
@@ -979,7 +984,8 @@
         }
     }]];
     
-    [self presentViewController:self->currentAlert animated:YES completion:nil];
+    [self presentViewController:errorAlert animated:YES completion:nil];
+    currentAlert = errorAlert;
 }
 
 - (void)leaveRoomOnEvent:(MXEvent*)event
@@ -1059,8 +1065,7 @@
         [titleView destroy];
     }
     
-    titleView = [roomTitleViewClass roomTitleView];
-    
+    titleView = self.navigationItem.titleView = [roomTitleViewClass roomTitleView];
     titleView.delegate = self;
     
     // Define directly the navigation titleView with the custom title view instance. Do not use anymore a container.
@@ -1103,9 +1108,9 @@
         
         MXLogDebug(@"[MXKRoomVC] setRoomInputToolbarViewClass: Set inputToolbarView to class %@", roomInputToolbarViewClass);
         
-        inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
-        
-        inputToolbarView.delegate = self;
+        id inputToolbarView = [roomInputToolbarViewClass roomInputToolbarView];
+        self->inputToolbarView = inputToolbarView;
+        self->inputToolbarView.delegate = self;
         
         // Add the input toolbar view and define edge constraints
         [_roomInputToolbarContainer addSubview:inputToolbarView];
@@ -2188,20 +2193,22 @@
         
         __weak typeof(self) weakSelf = self;
         
-        currentAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n resendMessage] message:textMessage preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *resendAlert = [UIAlertController alertControllerWithTitle:[MatrixKitL10n resendMessage]
+                                                                             message:textMessage
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * action) {
+        [resendAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction * action) {
                                                            
                                                            typeof(self) self = weakSelf;
                                                            self->currentAlert = nil;
                                                            
                                                        }]];
         
-        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * action) {
+        [resendAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n ok]
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction * action) {
                                                            
                                                            typeof(self) self = weakSelf;
                                                            self->currentAlert = nil;
@@ -2211,7 +2218,8 @@
                                                            
                                                        }]];
         
-        [self presentViewController:currentAlert animated:YES completion:nil];
+        [self presentViewController:resendAlert animated:YES completion:nil];
+        currentAlert = resendAlert;
     }
 }
 
@@ -2630,20 +2638,22 @@
             }
             
             __weak __typeof(self) weakSelf = self;
-            currentAlert = [UIAlertController alertControllerWithTitle:nil message:[MatrixKitL10n attachmentCancelDownload] preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *cancelAlert = [UIAlertController alertControllerWithTitle:nil
+                                                                                 message:[MatrixKitL10n attachmentCancelDownload]
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
+            [cancelAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
                                                                
                                                                typeof(self) self = weakSelf;
                                                                self->currentAlert = nil;
                                                                
                                                            }]];
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction * action) {
+            [cancelAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
                                                                
                                                                typeof(self) self = weakSelf;
                                                                self->currentAlert = nil;
@@ -2660,7 +2670,8 @@
                                                                
                                                            }]];
             
-            [self presentViewController:currentAlert animated:YES completion:nil];
+            [self presentViewController:cancelAlert animated:YES completion:nil];
+            currentAlert = cancelAlert;
         }
         else if (roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStatePreparing ||
                  roomBubbleTableViewCell.bubbleData.attachment.eventSentState == MXEventSentStateEncrypting ||
@@ -2677,20 +2688,22 @@
                 }
                 
                 __weak __typeof(self) weakSelf = self;
-                currentAlert = [UIAlertController alertControllerWithTitle:nil message:[MatrixKitL10n attachmentCancelUpload] preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController *cancelAlert = [UIAlertController alertControllerWithTitle:nil
+                                                                                     message:[MatrixKitL10n attachmentCancelUpload]
+                                                                              preferredStyle:UIAlertControllerStyleAlert];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
+                [cancelAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n no]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
                                                                    
                                                                    typeof(self) self = weakSelf;
                                                                    self->currentAlert = nil;
                                                                    
                                                                }]];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
+                [cancelAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n yes]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
                                                                    
                                                                    // TODO cancel the attachment encryption if it is in progress.
                                                                    
@@ -2717,7 +2730,8 @@
                                                                    
                                                                }]];
                 
-                [self presentViewController:currentAlert animated:YES completion:nil];
+                [self presentViewController:cancelAlert animated:YES completion:nil];
+                currentAlert = cancelAlert;
             }
         }
     }
@@ -2734,6 +2748,7 @@
             if (currentAlert)
             {
                 [currentAlert dismissViewControllerAnimated:NO completion:nil];
+                currentAlert = nil;
                 
                 // Cancel potential text selection in other bubbles
                 for (MXKRoomBubbleTableViewCell *bubble in self.bubblesTableView.visibleCells)
@@ -2743,14 +2758,14 @@
             }
             
             __weak __typeof(self) weakSelf = self;
-            currentAlert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+            UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
             
             // Add actions for a failed event
             if (selectedEvent.sentState == MXEventSentStateFailed)
             {
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n resend]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
+                [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n resend]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
                                                                    
                                                                    typeof(self) self = weakSelf;
                                                                    self->currentAlert = nil;
@@ -2760,9 +2775,9 @@
                                                                    
                                                                }]];
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n delete]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
+                [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n delete]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
                                                                    
                                                                    typeof(self) self = weakSelf;
                                                                    self->currentAlert = nil;
@@ -2790,9 +2805,9 @@
                     selectedComponent = nil;
                 }
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n copy]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
+                [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n copy]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
                                                                    
                                                                    typeof(self) self = weakSelf;
                                                                    self->currentAlert = nil;
@@ -2814,9 +2829,9 @@
                 
                 if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n share]
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * action) {
+                    [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n share]
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
                         
                         typeof(self) self = weakSelf;
                         self->currentAlert = nil;
@@ -2841,9 +2856,9 @@
                 
                 if (components.count > 1)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n selectAll]
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * action) {
+                    [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n selectAll]
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
                                                                        
                                                                        typeof(self) self = weakSelf;
                                                                        self->currentAlert = nil;
@@ -2859,9 +2874,9 @@
                 {
                     if ([MXKAppSettings standardAppSettings].messageDetailsAllowSaving)
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n save]
-                                                                         style:UIAlertActionStyleDefault
-                                                                       handler:^(UIAlertAction * action) {
+                        [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n save]
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * action) {
                             
                             typeof(self) self = weakSelf;
                             self->currentAlert = nil;
@@ -2892,9 +2907,9 @@
                 
                 if (attachment.type != MXKAttachmentTypeSticker)
                 {
-                    [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n copyButtonName]
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * action) {
+                    [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n copyButtonName]
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
                                                                        
                                                                        typeof(self) self = weakSelf;
                                                                        self->currentAlert = nil;
@@ -2923,9 +2938,9 @@
                     
                     if ([MXKAppSettings standardAppSettings].messageDetailsAllowSharing)
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n share]
-                                                                         style:UIAlertActionStyleDefault
-                                                                       handler:^(UIAlertAction * action) {
+                        [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n share]
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * action) {
                             
                             typeof(self) self = weakSelf;
                             self->currentAlert = nil;
@@ -2967,9 +2982,9 @@
                     NSString *uploadId = roomBubbleTableViewCell.bubbleData.attachment.contentURL;
                     if ([MXMediaManager existingUploaderWithId:uploadId])
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancelUpload]
-                                                                         style:UIAlertActionStyleDefault
-                                                                       handler:^(UIAlertAction * action) {
+                        [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancelUpload]
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * action) {
                                                                            
                                                                            // TODO cancel the attachment encryption if it is in progress.
                                                                            
@@ -3008,9 +3023,9 @@
                     NSString *downloadId = roomBubbleTableViewCell.bubbleData.attachment.downloadId;
                     if ([MXMediaManager existingDownloaderWithIdentifier:downloadId])
                     {
-                        [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancelDownload]
-                                                                         style:UIAlertActionStyleDefault
-                                                                       handler:^(UIAlertAction * action) {
+                        [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancelDownload]
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * action) {
                                                                            
                                                                            typeof(self) self = weakSelf;
                                                                            self->currentAlert = nil;
@@ -3028,9 +3043,9 @@
                     }
                 }
                 
-                [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n showDetails]
-                                                                 style:UIAlertActionStyleDefault
-                                                               handler:^(UIAlertAction * action) {
+                [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n showDetails]
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
                                                                    
                                                                    typeof(self) self = weakSelf;
                                                                    self->currentAlert = nil;
@@ -3044,9 +3059,9 @@
                                                                }]];
             }
             
-            [currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
-                                                             style:UIAlertActionStyleCancel
-                                                           handler:^(UIAlertAction * action) {
+            [actionSheet addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n cancel]
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:^(UIAlertAction * action) {
                                                                
                                                                typeof(self) self = weakSelf;
                                                                self->currentAlert = nil;
@@ -3057,15 +3072,12 @@
                                                            }]];
             
             // Do not display empty action sheet
-            if (currentAlert.actions.count > 1)
+            if (actionSheet.actions.count > 1)
             {
-                [currentAlert popoverPresentationController].sourceView = roomBubbleTableViewCell;
-                [currentAlert popoverPresentationController].sourceRect = roomBubbleTableViewCell.bounds;
-                [self presentViewController:currentAlert animated:YES completion:nil];
-            }
-            else
-            {
-                currentAlert = nil;
+                [actionSheet popoverPresentationController].sourceView = roomBubbleTableViewCell;
+                [actionSheet popoverPresentationController].sourceRect = roomBubbleTableViewCell.bounds;
+                [self presentViewController:actionSheet animated:YES completion:nil];
+                currentAlert = actionSheet;
             }
         }
     }
@@ -3704,11 +3716,13 @@
                         [self->currentAlert dismissViewControllerAnimated:NO completion:nil];
 
                         __weak typeof(self) weakSelf = self;
-                        self->currentAlert = [UIAlertController alertControllerWithTitle:@"" message:[MatrixKitL10n attachmentE2eKeysFilePrompt] preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertController *keysPrompt = [UIAlertController alertControllerWithTitle:@""
+                                                                                            message:[MatrixKitL10n attachmentE2eKeysFilePrompt]
+                                                                                     preferredStyle:UIAlertControllerStyleAlert];
                         
-                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n view]
-                                                                         style:UIAlertActionStyleDefault
-                                                                       handler:^(UIAlertAction * action) {
+                        [keysPrompt addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n view]
+                                                                       style:UIAlertActionStyleDefault
+                                                                     handler:^(UIAlertAction * action) {
                                                                            
                                                                            // View file content
                                                                            if (weakSelf)
@@ -3721,9 +3735,9 @@
                                                                            
                                                                        }]];
                         
-                        [self->currentAlert addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n attachmentE2eKeysImport]
-                                                                         style:UIAlertActionStyleDefault
-                                                                       handler:^(UIAlertAction * action) {
+                        [keysPrompt addAction:[UIAlertAction actionWithTitle:[MatrixKitL10n attachmentE2eKeysImport]
+                                                                       style:UIAlertActionStyleDefault
+                                                                     handler:^(UIAlertAction * action) {
                                                                            
                                                                            if (weakSelf)
                                                                            {
@@ -3747,7 +3761,8 @@
                                                                            
                                                                        }]];
                         
-                        [self presentViewController:self->currentAlert animated:YES completion:nil];                        
+                        [self presentViewController:keysPrompt animated:YES completion:nil];
+                        currentAlert = keysPrompt;
                     }
                     else
                     {
