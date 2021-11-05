@@ -16,8 +16,16 @@
 
 #import "MXKRoomBubbleComponent.h"
 
+#import <MatrixSDK/MatrixSDK.h>
+
 #import "MXEvent+MatrixKit.h"
 #import "MXKSwiftHeader.h"
+
+@interface MXKRoomBubbleComponent ()
+
+@property (nonatomic, readwrite) MXThread *thread;
+
+@end
 
 @implementation MXKRoomBubbleComponent
 
@@ -62,6 +70,8 @@
         _showEncryptionBadge = [self shouldShowWarningBadgeForEvent:event roomState:(MXRoomState*)roomState session:session];
         
         [self updateLinkWithRoomState:roomState];
+        
+        self.thread = [session.threadingService threadWithId:event.eventId];
     }
     return self;
 }
