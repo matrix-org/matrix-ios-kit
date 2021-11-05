@@ -3955,7 +3955,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 - (void)addReaction:(NSString *)reaction forEventId:(NSString *)eventId success:(void (^)(void))success failure:(void (^)(NSError *))failure
 {
-    [self.mxSession.aggregations addReaction:reaction forEvent:eventId inRoom:self.roomId threadId:self.threadId success:success failure:^(NSError * _Nonnull error) {
+    [self.mxSession.aggregations addReaction:reaction forEvent:eventId inRoom:self.roomId success:success failure:^(NSError * _Nonnull error) {
         MXLogDebug(@"[MXKRoomDataSource][%p] Fail to send reaction on eventId: %@", self, eventId);
         if (failure)
         {
