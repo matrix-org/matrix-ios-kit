@@ -226,7 +226,7 @@
     button.enabled = NO;
     
     // Send message to the room
-    [roomDataSource.room sendTextMessage:text success:^(NSString *eventId)
+    [roomDataSource.room sendTextMessage:text threadId:nil success:^(NSString *eventId)
     {
         MXLogDebug(@"Succeed to send text message");
         [self finishSendingMessage];
