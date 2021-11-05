@@ -2803,18 +2803,29 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         // Check whether the event has a value for the 'url' key in its content.
         if (!event.getMediaURLs.count)
         {
-            // Ignore the event
+            // ignore the event
             return;
         }
     }
     
     if (self.threadId)
     {
-        //  if in a thread, ignore un-threaded events or events from other threads
+        //  if in a thread, ignore non-root event or events from other threads
         if (![event.eventId isEqualToString:self.threadId] && ![event.threadIdentifier isEqualToString:self.threadId])
         {
             //  Ignore the event
             return;
+        }
+        //  also ignore events related to un-threaded or events from other threads
+        if (!event.isInThread && event.relatesTo.eventId)
+        {
+            MXEvent *relatedEvent = [self.mxSession.store eventWithEventId:event.relatesTo.eventId
+                                                                    inRoom:event.roomId];
+            if (![relatedEvent.threadIdentifier isEqualToString:self.threadId])
+            {
+                //  ignore the event
+                return;
+            }
         }
     }
     else
@@ -2822,8 +2833,19 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         //  if not in a thread, ignore all threaded events
         if (event.threadIdentifier)
         {
-            //  Ignore the event
+            //  ignore the event
             return;
+        }
+        //  also ignore events related to threaded events
+        if (event.relatesTo.eventId)
+        {
+            MXEvent *relatedEvent = [self.mxSession.store eventWithEventId:event.relatesTo.eventId
+                                                                    inRoom:event.roomId];
+            if (relatedEvent.threadIdentifier)
+            {
+                //  ignore the event
+                return;
+            }
         }
     }
     
