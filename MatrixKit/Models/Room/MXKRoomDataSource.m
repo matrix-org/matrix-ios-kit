@@ -3010,7 +3010,6 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 {
                     @synchronized(self->bubbles)
                     {
-                        [self->bubbles removeAllObjects];
                         [self->bubblesSnapshot removeAllObjects];
                     }
                 }
