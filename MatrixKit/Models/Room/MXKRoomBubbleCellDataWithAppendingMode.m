@@ -230,7 +230,7 @@ static NSAttributedString *messageSeparator = nil;
         {
             for (MXKRoomBubbleComponent* component in bubbleComponents)
             {
-                if(component.textMessage == nil)
+                if (component.textMessage == nil)
                 {
                     continue;
                 }
