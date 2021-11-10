@@ -692,6 +692,20 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
  */
 + (dispatch_queue_t)processingQueue;
 
+/**
+ Decides an event should be considered for asynchronous event processing.
+ Default implementation checks for `filterMessagesithURL` and undecryptable events sent before the user joined.
+ Subclasses must call super at some point.
+ 
+ @param event event to be processed or not
+ @param roomState the state of the room when the event fired
+ @param direction the direction of the event
+ @return YES to process the event, NO otherwise
+ */
+- (BOOL)shouldQueueEventForProcessing:(MXEvent*)event
+                            roomState:(MXRoomState*)roomState
+                            direction:(MXTimelineDirection)direction;
+
 #pragma mark - Bubble collapsing
 
 /**

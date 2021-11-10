@@ -1327,6 +1327,34 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     
 }
 
+- (BOOL)shouldQueueEventForProcessing:(MXEvent*)event roomState:(MXRoomState*)roomState direction:(MXTimelineDirection)direction
+{
+    if (self.filterMessagesWithURL)
+    {
+        // Check whether the event has a value for the 'url' key in its content.
+        if (!event.getMediaURLs.count)
+        {
+            // ignore the event
+            return NO;
+        }
+    }
+    
+    // Check for undecryptable messages that were sent while the user was not in the room and hide them
+    if ([MXKAppSettings standardAppSettings].hidePreJoinedUndecryptableEvents
+        && direction == MXTimelineDirectionBackwards)
+    {
+        [self checkForPreJoinUTDWithEvent:event roomState:roomState];
+        
+        // Hide pre joint UTD events
+        if (self.shouldStopBackPagination)
+        {
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -2798,68 +2826,9 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         MXLogVerbose(@"[MXKRoomDataSource][%p] queueEventForProcessing: %@", self, event.eventId);
     }
     
-    if (self.filterMessagesWithURL)
+    if (![self shouldQueueEventForProcessing:event roomState:roomState direction:direction])
     {
-        // Check whether the event has a value for the 'url' key in its content.
-        if (!event.getMediaURLs.count)
-        {
-            // ignore the event
-            return;
-        }
-    }
-    
-    if (self.threadId)
-    {
-        //  if in a thread, ignore non-root event or events from other threads
-        if (![event.eventId isEqualToString:self.threadId] && ![event.threadIdentifier isEqualToString:self.threadId])
-        {
-            //  Ignore the event
-            return;
-        }
-        //  also ignore events related to un-threaded or events from other threads
-        if (!event.isInThread && event.relatesTo.eventId)
-        {
-            MXEvent *relatedEvent = [self.mxSession.store eventWithEventId:event.relatesTo.eventId
-                                                                    inRoom:event.roomId];
-            if (![relatedEvent.threadIdentifier isEqualToString:self.threadId])
-            {
-                //  ignore the event
-                return;
-            }
-        }
-    }
-    else
-    {
-        //  if not in a thread, ignore all threaded events
-        if (event.threadIdentifier)
-        {
-            //  ignore the event
-            return;
-        }
-        //  also ignore events related to threaded events
-        if (event.relatesTo.eventId)
-        {
-            MXEvent *relatedEvent = [self.mxSession.store eventWithEventId:event.relatesTo.eventId
-                                                                    inRoom:event.roomId];
-            if (relatedEvent.threadIdentifier)
-            {
-                //  ignore the event
-                return;
-            }
-        }
-    }
-    
-    // Check for undecryptable messages that were sent while the user was not in the room and hide them
-    if ([MXKAppSettings standardAppSettings].hidePreJoinedUndecryptableEvents
-        && direction == MXTimelineDirectionBackwards)
-    {
-        [self checkForPreJoinUTDWithEvent:event roomState:roomState];
-        
-        // Hide pre joint UTD events
-        if (self.shouldStopBackPagination)
-        {
-            return;
-        }
+        return;
     }
     
     MXKQueuedEvent *queuedEvent = [[MXKQueuedEvent alloc] initWithEvent:event andRoomState:roomState direction:direction];
