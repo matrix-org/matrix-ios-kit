@@ -234,7 +234,7 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     //  In order to successfully fetch the room, we should wait for store to be ready.
     if (mxSession.state >= MXSessionStateStoreDataReady)
     {
-        [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
+        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
     }
     else
     {
@@ -243,40 +243,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
             if (mxSession.state >= MXSessionStateStoreDataReady)
             {
                 [[NSNotificationCenter defaultCenter] removeObserver:sessionStateObserver];
-                [self ensureInitialEventExistenceForDataSource:roomDataSource initialEventId:initialEventId andMatrixSession:mxSession onComplete:onComplete];
+                [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
             }
-        }];
-    }
-}
-
-/// Ensure initial event existence for the roomDataSource.
-+ (void)ensureInitialEventExistenceForDataSource:(MXKRoomDataSource*)roomDataSource initialEventId:(NSString*)initialEventId andMatrixSession:(MXSession*)mxSession onComplete:(void (^)(id roomDataSource))onComplete
-{
-    if (roomDataSource.room)
-    {
-        //  already finalized
-        return;
-    }
-    
-    if (initialEventId == nil)
-    {
-        //  if an initialEventId not provided, finalize
-        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
-        return;
-    }
-    
-    //  ensure event with id 'initialEventId' exists in the session store
-    if ([mxSession.store eventExistsWithEventId:initialEventId inRoom:roomDataSource.roomId])
-    {
-        [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
-    }
-    else
-    {
-        //  give a chance for the specific event to be existent, for only one sync
-        //  use kMXSessionDidSyncNotification here instead of MXSessionStateRunning, because session does not send this state update if it's already in this state
-        __block id syncObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXSessionDidSyncNotification object:mxSession queue:nil usingBlock:^(NSNotification * _Nonnull note) {
-            [[NSNotificationCenter defaultCenter] removeObserver:syncObserver];
-            [self finalizeRoomDataSource:roomDataSource onComplete:onComplete];
         }];
     }
 }
@@ -290,7 +258,6 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         // Asynchronously preload data here so that the data will be ready later
         // to synchronously respond to that request
         [roomDataSource.room liveTimeline:^(MXEventTimeline *liveTimeline) {
-
             onComplete(roomDataSource);
         }];
     }
