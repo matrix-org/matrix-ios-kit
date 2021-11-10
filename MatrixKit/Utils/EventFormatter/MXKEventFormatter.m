@@ -1942,14 +1942,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         // Note that we use the current room state (roomState) because when we display
         // users displaynames, we want current displaynames
         MXKEventFormatterError error;
-        NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
-        
-        if ([event.type isEqualToString:kMXEventTypeStringRoomCreate])
-        {
-            // Temporarily fallback to the room joined notice when the last event is for the room's creation.
-            // This will be improved as part of https://github.com/vector-im/element-ios/issues/4918
-            lastMessageString = MatrixKitL10n.noticeRoomJoinByYou;
-        }
+        NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];        
         
         if (0 == lastMessageString.length)
         {
