@@ -171,6 +171,7 @@ extension MXKUTI {
     public static let jpeg = MXKUTI(cfRawValue: kUTTypeJPEG)!
     public static let url = MXKUTI(cfRawValue: kUTTypeURL)!
     public static let fileUrl = MXKUTI(cfRawValue: kUTTypeFileURL)!
+    public static let html = MXKUTI(cfRawValue: kUTTypeHTML)!
 }
 
 // MARK: - Convenients static methods

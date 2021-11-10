@@ -3678,7 +3678,45 @@
                     
                     [self stopActivityIndicator];
 
+                    MXWeakify(self);
                     void(^viewAttachment)(void) = ^() {
+                        
+                        MXStrongifyAndReturnIfNil(self);
+                        if ([selectedAttachment conformsToUTI:MXKUTI.html] && UIDevice.currentDevice.systemVersion.floatValue < 13)
+                        {
+                            // We don't support previewing HTML files on iOS 12. Show a share
+                            // sheet if allowed, otherwise display an error to inform the user.
+                            if (self.allowActionsInDocumentPreview)
+                            {
+                                UIActivityViewController *shareSheet = [[UIActivityViewController alloc] initWithActivityItems:@[fileURL]
+                                                                                                         applicationActivities:nil];
+                                MXWeakify(self);
+                                shareSheet.completionWithItemsHandler = ^(UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+                                    MXStrongifyAndReturnIfNil(self);
+                                    [selectedAttachment onShareEnded];
+                                    self->currentSharedAttachment = nil;
+                                };
+                                
+                                self->currentSharedAttachment = selectedAttachment;
+                                [self presentViewController:shareSheet animated:YES completion:nil];
+                            }
+                            else
+                            {
+                                UIAlertController *alert = [UIAlertController alertControllerWithTitle:MatrixKitL10n.attachmentUnsupportedPreviewTitle
+                                                                                               message:MatrixKitL10n.attachmentUnsupportedPreviewMessage
+                                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                                MXWeakify(self);
+                                [alert addAction:[UIAlertAction actionWithTitle:MatrixKitL10n.ok style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                                    MXStrongifyAndReturnIfNil(self);
+                                    self->currentAlert = nil;
+                                }]];
+
+                                [self presentViewController:alert animated:YES completion:nil];
+                                self->currentAlert = alert;
+                            }
+                            
+                            return;
+                        }
 
                         if (self.allowActionsInDocumentPreview)
                         {
