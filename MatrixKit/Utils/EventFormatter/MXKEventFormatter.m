@@ -1942,7 +1942,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         // Note that we use the current room state (roomState) because when we display
         // users displaynames, we want current displaynames
         MXKEventFormatterError error;
-        NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];        
+        NSString *lastMessageString = [self stringFromEvent:event withRoomState:roomState error:&error];
         
         if (0 == lastMessageString.length)
         {
