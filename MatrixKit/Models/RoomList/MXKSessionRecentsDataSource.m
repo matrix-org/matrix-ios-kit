@@ -173,7 +173,7 @@ static NSTimeInterval const roomSummaryChangeThrottlerDelay = .5;
     {
         NSString *currentSpaceId = self.currentSpace.spaceId;
         MXWeakify(self);
-        [self.mxSession.spaceService getSpaceChildrenForSpaceWithId:currentSpaceId suggestedOnly:YES limit:5 success:^(MXSpaceChildrenSummary * _Nonnull childrenSummary) {
+        [self.mxSession.spaceService getSpaceChildrenForSpaceWithId:currentSpaceId suggestedOnly:YES limit:5 maxDepth:1 paginationToken:nil success:^(MXSpaceChildrenSummary * _Nonnull childrenSummary) {
             MXLogDebug(@"[MXKSessionRecentsDataSource] getSpaceChildrenForSpaceWithId %@: %ld found", self.currentSpace.spaceId, childrenSummary.childInfos.count);
             MXStrongifyAndReturnIfNil(self);
             self->lastSuggestedRooms[currentSpaceId] = childrenSummary.childInfos;
