@@ -17,6 +17,7 @@
 #import "MXKRoomBubbleComponent.h"
 
 #import <MatrixSDK/MatrixSDK.h>
+#import <MatrixSDK/MatrixSDK-Swift.h>
 
 #import "MXEvent+MatrixKit.h"
 #import "MXKSwiftHeader.h"
