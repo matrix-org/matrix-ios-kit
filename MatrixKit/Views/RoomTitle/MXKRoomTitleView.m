@@ -96,6 +96,12 @@
 {
     self.delegate = nil;
     self.mxRoom = nil;
+    
+    if (mxRoomSummaryDidChangeObserver)
+    {
+        [NSNotificationCenter.defaultCenter removeObserver:mxRoomSummaryDidChangeObserver];
+        mxRoomSummaryDidChangeObserver = nil;
+    }
 }
 
 - (void)dismissKeyboard
