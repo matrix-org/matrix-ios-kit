@@ -104,6 +104,20 @@ open class MXKUTI: NSObject, RawRepresentable {
     public func conforms(to otherUTI: MXKUTI) -> Bool {
         return self.utiWrapper.conforms(to: otherUTI.utiWrapper)
     }
+    
+    /// Check whether the current UTI conforms to any UTIs within an array.
+    ///
+    /// - Parameter otherUTIs: UTI which to conform with.
+    /// - Returns: true if self conforms to any of the other UTIs.
+    public func conformsToAny(of otherUTIs: [MXKUTI]) -> Bool {
+        for uti in otherUTIs {
+            if conforms(to: uti) {
+                return true
+            }
+        }
+        
+        return false
+    }
 }
 
 // MARK: - Other convenients initializers
@@ -169,12 +183,14 @@ extension MXKUTI {
     public static let image = MXKUTI(cfRawValue: kUTTypeImage)!
     public static let png = MXKUTI(cfRawValue: kUTTypePNG)!
     public static let jpeg = MXKUTI(cfRawValue: kUTTypeJPEG)!
+    public static let svg = MXKUTI(cfRawValue: kUTTypeScalableVectorGraphics)!
     public static let url = MXKUTI(cfRawValue: kUTTypeURL)!
     public static let fileUrl = MXKUTI(cfRawValue: kUTTypeFileURL)!
     public static let html = MXKUTI(cfRawValue: kUTTypeHTML)!
+    public static let xml = MXKUTI(cfRawValue: kUTTypeXML)!
 }
 
-// MARK: - Convenients static methods
+// MARK: - Convenience static methods
 extension MXKUTI {
     
     public static func mimeType(from fileExtension: String) -> String? {

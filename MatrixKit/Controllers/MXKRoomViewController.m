@@ -3682,9 +3682,10 @@
                     void(^viewAttachment)(void) = ^() {
                         
                         MXStrongifyAndReturnIfNil(self);
-                        if ([selectedAttachment conformsToUTI:MXKUTI.html] && UIDevice.currentDevice.systemVersion.floatValue < 13)
+                        
+                        if (![self canPreviewFileAttachment:selectedAttachment withLocalFileURL:fileURL])
                         {
-                            // We don't support previewing HTML files on iOS 12. Show a share
+                            // When we don't support showing a preview for a file, show a share
                             // sheet if allowed, otherwise display an error to inform the user.
                             if (self.allowActionsInDocumentPreview)
                             {
@@ -3708,6 +3709,7 @@
                                 MXWeakify(self);
                                 [alert addAction:[UIAlertAction actionWithTitle:MatrixKitL10n.ok style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
                                     MXStrongifyAndReturnIfNil(self);
+                                    [selectedAttachment onShareEnded];
                                     self->currentAlert = nil;
                                 }]];
 
@@ -3800,7 +3802,7 @@
                                                                        }]];
                         
                         [self presentViewController:keysPrompt animated:YES completion:nil];
-                        currentAlert = keysPrompt;
+                        self->currentAlert = keysPrompt;
                     }
                     else
                     {
@@ -3825,6 +3827,35 @@
             }
         }
     }
+}
+
+- (BOOL)canPreviewFileAttachment:(MXKAttachment *)attachment withLocalFileURL:(NSURL *)localFileURL
+{
+    // Sanity check.
+    if (![NSFileManager.defaultManager isReadableFileAtPath:localFileURL.path])
+    {
+        return NO;
+    }
+    
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 13)
+    {
+        return YES;
+    }
+    
+    MXKUTI *attachmentUTI = attachment.uti;
+    MXKUTI *fileUTI = [[MXKUTI alloc] initWithLocalFileURL:localFileURL];
+    if (!attachmentUTI || !fileUTI)
+    {
+        return NO;
+    }
+    
+    NSArray<MXKUTI *> *unsupportedUTIs = @[MXKUTI.html, MXKUTI.xml, MXKUTI.svg];
+    if ([attachmentUTI conformsToAnyOf:unsupportedUTIs] || [fileUTI conformsToAnyOf:unsupportedUTIs])
+    {
+        return NO;
+    }
+    
+    return YES;
 }
 
 #pragma mark - MXKAttachmentsViewControllerDelegate

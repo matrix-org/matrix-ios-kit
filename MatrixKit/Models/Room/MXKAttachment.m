@@ -653,9 +653,9 @@ NSString *const kMXKAttachmentFileNameBase = @"attatchment";
     } failure:onFailure];
 }
 
-- (BOOL)conformsToUTI:(MXKUTI *)uti
+- (MXKUTI *)uti
 {
-    return [[[MXKUTI alloc] initWithMimeType:mimetype] conformsTo:uti];
+    return [[MXKUTI alloc] initWithMimeType:mimetype];
 }
 
 - (void)prepareShare:(void (^)(NSURL *fileURL))onReadyToShare failure:(void (^)(NSError *error))onFailure
