@@ -169,12 +169,14 @@ extension MXKUTI {
     public static let image = MXKUTI(cfRawValue: kUTTypeImage)!
     public static let png = MXKUTI(cfRawValue: kUTTypePNG)!
     public static let jpeg = MXKUTI(cfRawValue: kUTTypeJPEG)!
+    public static let svg = MXKUTI(cfRawValue: kUTTypeScalableVectorGraphics)!
     public static let url = MXKUTI(cfRawValue: kUTTypeURL)!
     public static let fileUrl = MXKUTI(cfRawValue: kUTTypeFileURL)!
     public static let html = MXKUTI(cfRawValue: kUTTypeHTML)!
+    public static let xml = MXKUTI(cfRawValue: kUTTypeXML)!
 }
 
-// MARK: - Convenients static methods
+// MARK: - Convenience static methods
 extension MXKUTI {
     
     public static func mimeType(from fileExtension: String) -> String? {
