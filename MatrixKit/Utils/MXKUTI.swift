@@ -104,6 +104,20 @@ open class MXKUTI: NSObject, RawRepresentable {
     public func conforms(to otherUTI: MXKUTI) -> Bool {
         return self.utiWrapper.conforms(to: otherUTI.utiWrapper)
     }
+    
+    /// Check whether the current UTI conforms to any UTIs within an array.
+    ///
+    /// - Parameter otherUTIs: UTI which to conform with.
+    /// - Returns: true if self conforms to any of the other UTIs.
+    public func conformsToAny(of otherUTIs: [MXKUTI]) -> Bool {
+        for uti in otherUTIs {
+            if conforms(to: uti) {
+                return true
+            }
+        }
+        
+        return false
+    }
 }
 
 // MARK: - Other convenients initializers

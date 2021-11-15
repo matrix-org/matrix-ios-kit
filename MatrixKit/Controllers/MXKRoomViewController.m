@@ -3842,14 +3842,15 @@
         return YES;
     }
     
+    MXKUTI *attachmentUTI = attachment.uti;
     MXKUTI *fileUTI = [[MXKUTI alloc] initWithLocalFileURL:localFileURL];
-    if (!fileUTI)
+    if (!attachmentUTI || !fileUTI)
     {
         return NO;
     }
     
-    if ([attachment conformsToUTI:MXKUTI.html] || [attachment conformsToUTI:MXKUTI.xml] || [attachment conformsToUTI:MXKUTI.svg]
-        || [fileUTI conformsTo:MXKUTI.html] || [fileUTI conformsTo:MXKUTI.xml] || [fileUTI conformsTo:MXKUTI.svg])
+    NSArray<MXKUTI *> *unsupportedUTIs = @[MXKUTI.html, MXKUTI.xml, MXKUTI.svg];
+    if ([attachmentUTI conformsToAnyOf:unsupportedUTIs] || [fileUTI conformsToAnyOf:unsupportedUTIs])
     {
         return NO;
     }

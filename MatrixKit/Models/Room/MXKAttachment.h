@@ -117,6 +117,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) BOOL isEncrypted;
 
 /**
+ The UTI of this attachment.
+ */
+@property (nonatomic, readonly, nullable) MXKUTI *uti;
+
+/**
  Create a `MXKAttachment` instance for the passed event.
  The created instance copies the current data of the event (content, event id, sent state...).
  It will ignore any future changes of these data.
@@ -188,12 +193,6 @@ typedef enum : NSUInteger {
  @param onFailure the block called on failure.
  */
 - (void)copy:(void (^_Nullable)(void))onSuccess failure:(void (^_Nullable)(NSError * _Nullable error))onFailure;
-
-/**
- Whether or not the attachment conforms to the specified UTI.
- @param uti The UTI to check for conformance of.
- */
-- (BOOL)conformsToUTI:(MXKUTI *)uti;
 
 /**
  Prepare the attachment data to share it. The original name of the attachment (if any) is used
