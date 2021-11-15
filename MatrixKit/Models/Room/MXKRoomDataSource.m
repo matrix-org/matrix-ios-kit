@@ -2977,7 +2977,6 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 {
                     @synchronized(self->bubbles)
                     {
-                        [self->bubbles removeAllObjects];
                         [self->bubblesSnapshot removeAllObjects];
                     }
                 }
@@ -3487,7 +3486,33 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                             [[NSNotificationCenter defaultCenter] postNotificationName:kMXKRoomDataSourceSyncStatusChanged object:self userInfo:nil];
                         }
                     }
-                    
+                    if (self.secondaryRoom) {
+                        [self->bubblesSnapshot sortWithOptions:NSSortStable
+                                               usingComparator:^NSComparisonResult(MXKRoomBubbleCellData * _Nonnull bubbleData1, MXKRoomBubbleCellData * _Nonnull bubbleData2) {
+                            if (bubbleData1.date)
+                            {
+                                if (bubbleData2.date)
+                                {
+                                    return [bubbleData1.date compare:bubbleData2.date];
+                                }
+                                else
+                                {
+                                    return NSOrderedDescending;
+                                }
+                            }
+                            else
+                            {
+                                if (bubbleData2.date)
+                                {
+                                    return NSOrderedAscending;
+                                }
+                                else
+                                {
+                                    return NSOrderedSame;
+                                }
+                            }
+                        }];
+                    }
                     self->bubbles = self->bubblesSnapshot;
                     self->bubblesSnapshot = nil;
                     
