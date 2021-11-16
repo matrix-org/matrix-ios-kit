@@ -1717,11 +1717,16 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         html = [self renderReplyTo:html withRoomState:roomState];
     }
 
-    // Do some sanitisation before rendering the string
-    html = [MXKTools sanitiseHTML:html withAllowedHTMLTags:_allowedHTMLTags imageHandler:nil];
-
     // Apply the css style that corresponds to the event state
     UIFont *font = [self fontForEvent:event];
+    
+    // Do some sanitisation before finalizing the string
+    MXWeakify(self);
+    DTHTMLAttributedStringBuilderWillFlushCallback sanitizeCallback = ^(DTHTMLElement *element) {
+        MXStrongifyAndReturnIfNil(self);
+        [element sanitizeWith:self.allowedHTMLTags bodyFont:font];
+    };
+
     NSDictionary *options = @{
                               DTUseiOS6Attributes: @(YES),              // Enable it to be able to display the attributed string in a UITextView
                               DTDefaultFontFamily: font.familyName,
@@ -1729,7 +1734,8 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                               DTDefaultFontSize: @(font.pointSize),
                               DTDefaultTextColor: [self textColorForEvent:event],
                               DTDefaultLinkDecoration: @(NO),
-                              DTDefaultStyleSheet: dtCSS
+                              DTDefaultStyleSheet: dtCSS,
+                              DTWillFlushBlockCallBack: sanitizeCallback
                               };
 
     // Do not use the default HTML renderer of NSAttributedString because this method

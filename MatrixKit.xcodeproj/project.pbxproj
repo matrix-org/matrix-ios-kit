@@ -63,6 +63,7 @@
 		8EE45E64044E107FAB59C7D1 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */; };
 		9135FFD926DE8EFD000E6D84 /* NSString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */; };
 		918DAB9F26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */; };
+		91B72DC32743CAD0002867CD /* DTHTMLElement+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91B72DC22743CAD0002867CD /* DTHTMLElement+MatrixKit.swift */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
 		B11D3C7E20C032BD00938BCB /* MXKBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B11D3C7D20C032BD00938BCB /* MXKBarButtonItem.m */; };
 		B125D0FD22D5D2C200570CA4 /* MXKUTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B125D0FC22D5D2C200570CA4 /* MXKUTI.swift */; };
@@ -375,6 +376,7 @@
 		9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSString+MatrixKit.swift"; sourceTree = "<group>"; };
 		915B171C27105C5700225111 /* MXKAnalyticsConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKAnalyticsConstants.h; sourceTree = "<group>"; };
 		918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+MatrixKit.swift"; sourceTree = "<group>"; };
+		91B72DC22743CAD0002867CD /* DTHTMLElement+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DTHTMLElement+MatrixKit.swift"; sourceTree = "<group>"; };
 		91FE762A27047EB700E035D9 /* MXKURLPreviewDataProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKURLPreviewDataProtocol.h; sourceTree = "<group>"; };
 		92663A6A1EF6E5B3005FB712 /* MXKSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXKSoundPlayer.h; sourceTree = "<group>"; };
 		92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXKSoundPlayer.m; sourceTree = "<group>"; };
@@ -1353,6 +1355,7 @@
 				B12C56F12396D75500FAC6DE /* UITextView+MatrixKit.m */,
 				EC12E227268DD94100934C7D /* MXSession+MatrixKit.h */,
 				EC12E228268DD94100934C7D /* MXSession+MatrixKit.m */,
+				91B72DC22743CAD0002867CD /* DTHTMLElement+MatrixKit.swift */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -1958,6 +1961,7 @@
 				F049FC201B2B878A00DD9D3C /* NSBundle+MatrixKit.m in Sources */,
 				F0868E121B1CAD58004CBE80 /* MXKPublicRoomTableViewCell.m in Sources */,
 				F09617BD1DE8478C00093E9D /* MXKDeviceView.m in Sources */,
+				91B72DC32743CAD0002867CD /* DTHTMLElement+MatrixKit.swift in Sources */,
 				B11D3C7E20C032BD00938BCB /* MXKBarButtonItem.m in Sources */,
 				32CEE2301AB1EE0900F7C74D /* MXKRecentTableViewCell.m in Sources */,
 				F00FA8771C08A51B00E25826 /* MXKRoomOutgoingTextMsgBubbleCell.m in Sources */,
