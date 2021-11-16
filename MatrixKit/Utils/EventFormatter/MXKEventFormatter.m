@@ -60,8 +60,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         _allowedHTMLTags = @[
                              @"font", // custom to matrix for IRC-style font coloring
                              @"del", // for markdown
-                             // deliberately no h1/h2 to stop people shouting.
-                             @"h3", @"h4", @"h5", @"h6", @"blockquote", @"p", @"a", @"ul", @"ol",
+                             @"h1", @"h2", @"h3", @"h4", @"h5", @"h6", @"blockquote", @"p", @"a", @"ul", @"ol",
                              @"nl", @"li", @"b", @"i", @"u", @"strong", @"em", @"strike", @"code", @"hr", @"br", @"div",
                              @"table", @"thead", @"caption", @"tbody", @"tr", @"th", @"td", @"pre"
                              ];
@@ -74,7 +73,10 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 white-space: pre; \
                 -coretext-fontname: Menlo-Regular; \
                 font-size: small; \
-            }";
+            } \
+            h1,h2 { \
+                font-size: 1.2em; \
+            }"; // match the size of h1/h2 to h3 to stop people shouting.
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];

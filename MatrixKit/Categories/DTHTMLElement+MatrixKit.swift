@@ -17,34 +17,44 @@
 import DTCoreText
 
 public extension DTHTMLElement {
-    @objc func recursivelyInheritAttributes(from element: DTHTMLElement) {
-        inheritAttributes(from: element)
-        
-        guard let childNodes = childNodes as? [DTHTMLElement] else { return }
-        
-        for child in childNodes {
-            child.recursivelyInheritAttributes(from: element)
-        }
-    }
-    
     @objc func sanitize(with allowedHTMLTags: [String], bodyFont font: UIFont) {
         if let name = name, !allowedHTMLTags.contains(name) {
-            let element = DTTextHTMLElement(name: nil, attributes: nil)
-            element?.setText(attributedString()?.string)
-            removeAllChildNodes()
-            addChildNode(element)
             
-            fontDescriptor = DTCoreTextFontDescriptor()
-            fontDescriptor.fontFamily = font.familyName
-            fontDescriptor.fontName = font.fontName
-            fontDescriptor.pointSize = font.pointSize
-            paragraphStyle = DTCoreTextParagraphStyle.default()
+            // This is an unsupported tag.
+            // Remove any attachments to fix rendering.
+            textAttachment = nil
             
-            element?.inheritAttributes(from: self)
+            // If the element has plan text content show that,
+            // otherwise prevent the tag from displaying.
+            if let stringContent = attributedString()?.string,
+               !stringContent.isEmpty,
+               let element = DTTextHTMLElement(name: nil, attributes: nil) {
+                element.setText(stringContent)
+                removeAllChildNodes()
+                addChildNode(element)
+                
+                fontDescriptor = DTCoreTextFontDescriptor()
+                fontDescriptor.fontFamily = font.familyName
+                fontDescriptor.fontName = font.fontName
+                fontDescriptor.pointSize = font.pointSize
+                paragraphStyle = DTCoreTextParagraphStyle.default()
+                
+                element.inheritAttributes(from: self)
+                element.interpretAttributes()
+            } else if let parent = parent() {
+                parent.removeChildNode(self)
+            } else {
+                didOutput = true
+            }
+            
         } else if let childNodes = childNodes as? [DTHTMLElement] {
+            
+            // This element is a supported tag, but it may contain children that aren't,
+            // so santize all child nodes to ensure correct tags.
             for child in childNodes {
                 child.sanitize(with: allowedHTMLTags, bodyFont: font)
             }
+            
         }
     }
 }

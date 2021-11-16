@@ -24,6 +24,7 @@
 {
     MXKEventFormatter *eventFormatter;
     MXEvent *anEvent;
+    CGFloat maxHeaderSize;
 }
 
 @end
@@ -52,18 +53,13 @@
                             @"msgtype": kMXMessageTypeText,
                             @"body": @"deded",
                             };
+    
+    maxHeaderSize = ceil(eventFormatter.defaultTextFont.pointSize * 1.2);
 }
 
 - (void)tearDown
 {
     [super tearDown];
-}
-
-- (BOOL)defaultFontIsEqualToFont:(UIFont *)font
-{
-    // FIXME: SF font isn't returned in MatrixKit as the swizzling occurs in Element
-    // Compare to eventFormatter.defaultTextFont when MatrixKit has been integrated
-    return [font.familyName isEqualToString:@"Times New Roman"] && [font.fontName isEqualToString:@"TimesNewRomanPSMT"] && font.pointSize == eventFormatter.defaultTextFont.pointSize;
 }
 
 - (void)testRenderHTMLStringWithHeaders
@@ -84,21 +80,23 @@
                                          options:0
                                       usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attributes, NSRange range, BOOL * _Nonnull stop) {
         UIFont *font = attributes[NSFontAttributeName];
-        XCTAssertTrue([self defaultFontIsEqualToFont:font], @"H1 tags should be ignored and use the default font.");
+        XCTAssertGreaterThan(font.pointSize, eventFormatter.defaultTextFont.pointSize, @"H1 tags should be larger than the default body size.");
+        XCTAssertLessThanOrEqual(font.pointSize, maxHeaderSize, @"H1 tags shouldn't exceed the max header size.");
     }];
     
     [h2AttributedString enumerateAttributesInRange:NSMakeRange(0, h2AttributedString.length)
                                          options:0
                                       usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attributes, NSRange range, BOOL * _Nonnull stop) {
         UIFont *font = attributes[NSFontAttributeName];
-        XCTAssertTrue([self defaultFontIsEqualToFont:font], @"H2 tags should be ignored and use the default font.");
+        XCTAssertGreaterThan(font.pointSize, eventFormatter.defaultTextFont.pointSize, @"H2 tags should be larger than the default body size.");
+        XCTAssertLessThanOrEqual(font.pointSize, maxHeaderSize, @"H2 tags shouldn't exceed the max header size.");
     }];
     
     [h3AttributedString enumerateAttributesInRange:NSMakeRange(0, h3AttributedString.length)
                                          options:0
                                       usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attributes, NSRange range, BOOL * _Nonnull stop) {
         UIFont *font = attributes[NSFontAttributeName];
-        XCTAssertGreaterThan(font.pointSize, eventFormatter.defaultTextFont.pointSize, @"H3 tags should be included and be larger than the default.");
+        XCTAssertGreaterThan(font.pointSize, eventFormatter.defaultTextFont.pointSize, @"H3 tags should be included and be larger than the default body size.");
     }];
 }
 
@@ -163,9 +161,11 @@
         
         if (font)
         {
-            XCTAssertTrue([self defaultFontIsEqualToFont:font], @"H1 tags should be ignored and use the default font.");
+            XCTAssertGreaterThan(font.pointSize, eventFormatter.defaultTextFont.pointSize, @"H1 tags should be larger than the default body size.");
+            XCTAssertLessThanOrEqual(font.pointSize, maxHeaderSize, @"H1 tags shouldn't exceed the max header size.");
         }
-        else if (url)
+        
+        if (url)
         {
             XCTAssertEqualObjects(url, [NSURL URLWithString:@"https://www.matrix.org/"], @"href links should be included in the text.");
             didFindH1Link = YES;
@@ -193,6 +193,25 @@
     
     XCTAssertTrue(didFindH1Link, @"There should be a link in the sanitised attributed string.");
     XCTAssertTrue(didFindH3Link, @"There should be a link in the attributed string.");
+}
+
+- (void)testRenderHTMLStringWithIFrame
+{
+    NSString *html = @"<iframe src=\"https://www.matrix.org/\"></iframe>";
+    NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
+    
+    __block BOOL hasAttachment = NO;
+    [attributedString enumerateAttribute:NSAttachmentAttributeName
+                                 inRange:NSMakeRange(0, attributedString.length)
+                                 options:0
+                              usingBlock:^(id value, NSRange range, BOOL *stop) {
+        if (value)
+        {
+            hasAttachment = YES;
+        }
+    }];
+    
+    XCTAssertFalse(hasAttachment, @"iFrame attachments should be removed as they're not included in the allowedHTMLTags array.");
 }
     
 - (void)testMarkdownFormatting
