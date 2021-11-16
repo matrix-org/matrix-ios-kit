@@ -20,6 +20,8 @@
 #import "MatrixKit.h"
 #import "MXKEventFormatter+Tests.h"
 
+@import DTCoreText;
+
 @interface MXEventFormatterTests : XCTestCase
 {
     MXKEventFormatter *eventFormatter;
@@ -212,6 +214,71 @@
     }];
     
     XCTAssertFalse(hasAttachment, @"iFrame attachments should be removed as they're not included in the allowedHTMLTags array.");
+}
+
+- (void)testRenderHTMLStringWithMXReply
+{
+    NSString *html = @"<mx-reply><blockquote><a href=\"https://matrix.to/#/someroom/someevent\">In reply to</a> <a href=\"https://matrix.to/#/@alice:matrix.org\">@alice:matrix.org</a><br>Original message.</blockquote></mx-reply>This is a reply.";
+    NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
+    
+    NSString *plainString = [attributedString.string stringByReplacingOccurrencesOfString:@"\U00002028" withString:@"\n"];
+    XCTAssertEqualObjects(plainString, @"In reply to @alice:matrix.org\nOriginal message.\nThis is a reply.",
+                          @"The reply string should include who the original message was from, what they said, and the reply itself.");
+    
+    __block BOOL didTestReplyText = NO;
+    __block BOOL didTestQuoteBlock = NO;
+    [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length)
+                                         options:0
+                                      usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attributes, NSRange range, BOOL * _Nonnull stop) {
+        
+        NSString *substring = [attributedString attributedSubstringFromRange:range].string;
+        
+        if ([substring isEqualToString:@"This is a reply."])
+        {
+            XCTAssertNil(attributes[DTTextBlocksAttribute], @"The reply text should not appear within a block");
+            didTestReplyText = YES;
+        }
+        else
+        {
+            XCTAssertNotNil(attributes[DTTextBlocksAttribute], @"The rest of the string should be within a block");
+            didTestQuoteBlock = YES;
+        }
+    }];
+    
+    XCTAssertTrue(didTestReplyText && didTestQuoteBlock, @"Both a quote and a reply should be in the attributed string.");
+}
+
+- (void)testRenderHTMLStringWithMXReplyQuotingInvalidMessage
+{
+    NSString *html = @"<mx-reply><blockquote><a href=\"https://matrix.to/#/someroom/someevent\">In reply to</a> <a href=\"https://matrix.to/#/@alice:matrix.org\">@alice:matrix.org</a><br><h1>Heading with <badtag>invalid</badtag> content</h1></blockquote></mx-reply>This is a reply.";
+    NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
+    
+    NSString *plainString = [attributedString.string stringByReplacingOccurrencesOfString:@"\U00002028" withString:@"\n"];
+    XCTAssertEqualObjects(plainString, @"In reply to @alice:matrix.org\nHeading with invalid content\nThis is a reply.",
+                          @"The reply string should include who the original message was from, what they said, and the reply itself.");
+    
+    __block BOOL didTestReplyText = NO;
+    __block BOOL didTestQuoteBlock = NO;
+    [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length)
+                                         options:0
+                                      usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attributes, NSRange range, BOOL * _Nonnull stop) {
+        
+        NSString *substring = [attributedString attributedSubstringFromRange:range].string;
+        
+        if ([substring isEqualToString:@"This is a reply."])
+        {
+            XCTAssertNil(attributes[DTTextBlocksAttribute], @"The reply text should not appear within a block");
+            didTestReplyText = YES;
+        }
+        else
+        {
+            XCTAssertNotNil(attributes[DTTextBlocksAttribute], @"The rest of the string should be within a block");
+            XCTAssertNotNil(attributes[kMXKToolsBlockquoteMarkAttribute], @"The block should have the blockquote style applied");
+            didTestQuoteBlock = YES;
+        }
+    }];
+    
+    XCTAssertTrue(didTestReplyText && didTestQuoteBlock, @"Both a quote and a reply should be in the attributed string.");
 }
     
 - (void)testMarkdownFormatting

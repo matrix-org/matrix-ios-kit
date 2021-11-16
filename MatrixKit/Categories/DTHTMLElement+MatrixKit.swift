@@ -33,14 +33,19 @@ public extension DTHTMLElement {
                 removeAllChildNodes()
                 addChildNode(element)
                 
-                fontDescriptor = DTCoreTextFontDescriptor()
-                fontDescriptor.fontFamily = font.familyName
-                fontDescriptor.fontName = font.fontName
-                fontDescriptor.pointSize = font.pointSize
-                paragraphStyle = DTCoreTextParagraphStyle.default()
-                
-                element.inheritAttributes(from: self)
+                if let parent = parent() {
+                    element.inheritAttributes(from: parent)
+                } else {
+                    fontDescriptor = DTCoreTextFontDescriptor()
+                    fontDescriptor.fontFamily = font.familyName
+                    fontDescriptor.fontName = font.fontName
+                    fontDescriptor.pointSize = font.pointSize
+                    paragraphStyle = DTCoreTextParagraphStyle.default()
+                    
+                    element.inheritAttributes(from: self)
+                }
                 element.interpretAttributes()
+                
             } else if let parent = parent() {
                 parent.removeChildNode(self)
             } else {
