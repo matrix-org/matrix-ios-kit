@@ -1,3 +1,19 @@
+## Changes in 0.16.10 (2021-11-17)
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.10](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.10)).
+
+🐛 Bugfixes
+
+- MXKRoomViewController: Share sheet is properly presented on iOS 12 when necessary. ([#949](https://github.com/matrix-org/matrix-ios-kit/pull/949))
+- MXKRoomTitleView: Remove room summary observer on destroy. ([#951](https://github.com/matrix-org/matrix-ios-kit/pull/951))
+- MXKRoomViewController: Fix retain cycles that prevents deallocation. ([#5055](https://github.com/vector-im/element-ios/issues/5055))
+- Fix retain cycles that prevents deallocation in several classes. ([#5058](https://github.com/vector-im/element-ios/issues/5058))
+- Ensure alerts with weak references are retained until they've been presented. ([#5071](https://github.com/vector-im/element-ios/issues/5071))
+- Fix room ordering regression. ([#5105](https://github.com/vector-im/element-ios/issues/5105))
+
+
 ## Changes in 0.16.9 (2021-10-21)
 
 🙌 Improvements
