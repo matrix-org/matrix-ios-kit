@@ -8,7 +8,7 @@ abstract_target 'MatrixKitSamplePods' do
     
     # Different flavours of pods to Matrix SDK
     # The tagged version on which this version of MatrixKit has been built
-    pod 'MatrixSDK', '= 0.20.9'
+    pod 'MatrixSDK', '= 0.20.10'
     
     # The lastest release available on the CocoaPods repository
     #pod 'MatrixSDK'

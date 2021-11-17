@@ -146,7 +146,7 @@
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKAuthenticationViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKAuthenticationViewControllerDelegate> delegate;
 
 /**
  current ongoing MXHTTPOperation. Nil if none.

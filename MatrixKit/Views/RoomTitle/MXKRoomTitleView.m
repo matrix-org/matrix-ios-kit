@@ -28,7 +28,7 @@
 @interface MXKRoomTitleView ()
 {
     // Observer kMXRoomSummaryDidChangeNotification to keep updated the room name.
-    id mxRoomSummaryDidChangeObserver;
+    __weak id mxRoomSummaryDidChangeObserver;
 }
 @end
 
@@ -96,6 +96,12 @@
 {
     self.delegate = nil;
     self.mxRoom = nil;
+    
+    if (mxRoomSummaryDidChangeObserver)
+    {
+        [NSNotificationCenter.defaultCenter removeObserver:mxRoomSummaryDidChangeObserver];
+        mxRoomSummaryDidChangeObserver = nil;
+    }
 }
 
 - (void)dismissKeyboard
@@ -120,8 +126,12 @@
         
         if (mxRoom)
         {
+            MXWeakify(self);
+            
             // Register a listener to handle the room name change
             mxRoomSummaryDidChangeObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kMXRoomSummaryDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif) {
+                
+                MXStrongifyAndReturnIfNil(self);
                 
                 // Check whether the text field is editing before refreshing title view
                 if (!self.isEditing)

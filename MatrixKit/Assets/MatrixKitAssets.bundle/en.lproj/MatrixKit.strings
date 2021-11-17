@@ -281,6 +281,8 @@
 "attachment_multiselection_original" = "Actual Size";
 "attachment_e2e_keys_file_prompt" = "This file contains encryption keys exported from a Matrix client.\nDo you want to view the file content or import the keys it contains?";
 "attachment_e2e_keys_import" = "Import...";
+"attachment_unsupported_preview_title" = "Unable to preview";
+"attachment_unsupported_preview_message" = "This file type is not supported.";
 
 // Contacts
 "contact_mx_users" = "Matrix Users";

@@ -159,6 +159,14 @@ public class MatrixKitL10n: NSObject {
   public static func attachmentSmallWithResolution(_ p1: String, _ p2: String) -> String {
     return MatrixKitL10n.tr("attachment_small_with_resolution", p1, p2)
   }
+  /// This file type is not supported.
+  public static var attachmentUnsupportedPreviewMessage: String { 
+    return MatrixKitL10n.tr("attachment_unsupported_preview_message") 
+  }
+  /// Unable to preview
+  public static var attachmentUnsupportedPreviewTitle: String { 
+    return MatrixKitL10n.tr("attachment_unsupported_preview_title") 
+  }
   /// Invalid username
   public static var authInvalidUserName: String { 
     return MatrixKitL10n.tr("auth_invalid_user_name") 

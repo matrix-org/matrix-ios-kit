@@ -69,7 +69,7 @@
 /**
  The delegate.
  */
-@property (nonatomic) id<MXKDeviceViewDelegate> delegate;
+@property (nonatomic, weak) id<MXKDeviceViewDelegate> delegate;
 
 /**
  The default text color in the text view. [UIColor blackColor] by default.
