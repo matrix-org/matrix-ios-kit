@@ -57,7 +57,7 @@ limitations under the License.
     /**
      The fake top view displayed in case of vertical bounce.
      */
-    UIView *topview;
+    __weak UIView *topview;
 }
 
 @property (weak, nonatomic) IBOutlet UISearchBar *recentsSearchBar;
@@ -74,7 +74,7 @@ limitations under the License.
 /**
  The delegate for the view controller.
  */
-@property (nonatomic) id<MXKRecentListViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MXKRecentListViewControllerDelegate> delegate;
 
 /**
  Enable the search option by adding a navigation item in the navigation bar (YES by default).
