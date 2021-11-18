@@ -18,6 +18,8 @@
 #import <Foundation/Foundation.h>
 #import <MatrixSDK/MatrixSDK.h>
 
+@class MXKUTI;
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * const kMXKAttachmentErrorDomain;
@@ -113,6 +115,11 @@ typedef enum : NSUInteger {
  whether this peoperty is true or false.
  */
 @property (nonatomic, readonly) BOOL isEncrypted;
+
+/**
+ The UTI of this attachment.
+ */
+@property (nonatomic, readonly, nullable) MXKUTI *uti;
 
 /**
  Create a `MXKAttachment` instance for the passed event.
