@@ -17,14 +17,21 @@
 import DTCoreText
 
 public extension DTHTMLElement {
-    @objc func sanitize(with allowedHTMLTags: [String], bodyFont font: UIFont) {
+    typealias ImageHandler = (_ sourceURL: String, _ width: CGFloat, _ height: CGFloat) -> URL?
+    
+    /// Sanitize the element using the given parameters.
+    /// - Parameters:
+    ///   - allowedHTMLTags: An array of tags that are allowed. All other tags will be removed.
+    ///   - font: The default font to use when resetting the content of any unsupported tags.
+    ///   - imageHandler: An optional image handler to be run on `img` tags (if allowed) to update the `src` attribute.
+    @objc func sanitize(with allowedHTMLTags: [String], bodyFont font: UIFont, imageHandler: ImageHandler?) {
         if let name = name, !allowedHTMLTags.contains(name) {
             
             // This is an unsupported tag.
             // Remove any attachments to fix rendering.
             textAttachment = nil
             
-            // If the element has plan text content show that,
+            // If the element has plain text content show that,
             // otherwise prevent the tag from displaying.
             if let stringContent = attributedString()?.string,
                !stringContent.isEmpty,
@@ -52,14 +59,39 @@ public extension DTHTMLElement {
                 didOutput = true
             }
             
-        } else if let childNodes = childNodes as? [DTHTMLElement] {
+        } else {
+            // Process images with the handler when self is an image tag.
+            if name == "img", let imageHandler = imageHandler {
+                process(with: imageHandler)
+            }
             
             // This element is a supported tag, but it may contain children that aren't,
             // so santize all child nodes to ensure correct tags.
-            for child in childNodes {
-                child.sanitize(with: allowedHTMLTags, bodyFont: font)
+            if let childNodes = childNodes as? [DTHTMLElement] {
+                childNodes.forEach { $0.sanitize(with: allowedHTMLTags, bodyFont: font, imageHandler: imageHandler) }
             }
-            
         }
+    }
+    
+    /// Process the element with the supplied image handler.
+    private func process(with imageHandler: ImageHandler) {
+        // Get the values required to pass to the image handler
+        guard let sourceURL = attributes["src"] as? String else { return }
+        
+        var width: CGFloat = -1
+        if let widthString = attributes["width"] as? String,
+           let widthDouble = Double(widthString) {
+            width = CGFloat(widthDouble)
+        }
+        
+        var height: CGFloat = -1
+        if let heightString = attributes["height"] as? String,
+           let heightDouble = Double(heightString) {
+            height = CGFloat(heightDouble)
+        }
+        
+        // If the handler returns an updated URL, update the text attachment.
+        guard let localSourceURL = imageHandler(sourceURL, width, height) else { return }
+        textAttachment.contentURL = localSourceURL
     }
 }

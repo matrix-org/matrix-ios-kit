@@ -1728,7 +1728,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     MXWeakify(self);
     DTHTMLAttributedStringBuilderWillFlushCallback sanitizeCallback = ^(DTHTMLElement *element) {
         MXStrongifyAndReturnIfNil(self);
-        [element sanitizeWith:self.allowedHTMLTags bodyFont:font];
+        [element sanitizeWith:self.allowedHTMLTags bodyFont:font imageHandler:self.htmlImageHandler];
     };
 
     NSDictionary *options = @{

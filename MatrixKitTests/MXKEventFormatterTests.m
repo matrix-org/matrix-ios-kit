@@ -66,14 +66,17 @@
 
 - (void)testRenderHTMLStringWithHeaders
 {
+    // Given HTML strings with h1/h2/h3 tags
     NSString *h1HTML = @"<h1>Large Heading</h1>";
     NSString *h2HTML = @"<h2>Smaller Heading</h2>";
     NSString *h3HTML = @"<h3>Acceptable Heading</h3>";
     
+    // When rendering these strings as attributed strings
     NSAttributedString *h1AttributedString = [eventFormatter renderHTMLString:h1HTML forEvent:anEvent withRoomState:nil];
     NSAttributedString *h2AttributedString = [eventFormatter renderHTMLString:h2HTML forEvent:anEvent withRoomState:nil];
     NSAttributedString *h3AttributedString = [eventFormatter renderHTMLString:h3HTML forEvent:anEvent withRoomState:nil];
     
+    // Then the h1/h2 fonts should be reduced in size to match h3.
     XCTAssertEqualObjects(h1AttributedString.string, @"Large Heading", @"The text from an H1 tag should be preserved when removing formatting.");
     XCTAssertEqualObjects(h2AttributedString.string, @"Smaller Heading", @"The text from an H2 tag should be preserved when removing formatting.");
     XCTAssertEqualObjects(h3AttributedString.string, @"Acceptable Heading", @"The text from an H3 tag should not change.");
@@ -99,6 +102,7 @@
                                       usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attributes, NSRange range, BOOL * _Nonnull stop) {
         UIFont *font = attributes[NSFontAttributeName];
         XCTAssertGreaterThan(font.pointSize, eventFormatter.defaultTextFont.pointSize, @"H3 tags should be included and be larger than the default body size.");
+        XCTAssertLessThanOrEqual(font.pointSize, maxHeaderSize, @"H3 tags shouldn't exceed the max header size.");
     }];
 }
 
@@ -122,11 +126,16 @@
 
 - (void)testRenderHTMLStringWithLink
 {
+    // Given an HTML string with a link inside of it.
     NSString *html = @"This text contains a <a href=\"https://www.matrix.org/\">link</a>.";
+    
+    // When rendering this string as an attributed string.
     NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
     
+    // Then the attributed string should contain all of the text,
     XCTAssertEqualObjects(attributedString.string, @"This text contains a link.", @"The text should be preserved when adding a link.");
     
+    // and the link should be added as an attachment.
     __block BOOL didFindLink = NO;
     [attributedString enumerateAttribute:NSLinkAttributeName
                                  inRange:NSMakeRange(0, attributedString.length)
@@ -145,15 +154,19 @@
 
 - (void)testRenderHTMLStringWithLinkInHeader
 {
+    // Given HTML strings with links contained within h1/h2 tags.
     NSString *h1HTML = @"<h1><a href=\"https://www.matrix.org/\">Matrix.org</a></h1>";
     NSString *h3HTML = @"<h3><a href=\"https://www.matrix.org/\">Matrix.org</a></h3>";
     
+    // When rendering these strings as attributed strings.
     NSAttributedString *h1AttributedString = [eventFormatter renderHTMLString:h1HTML forEvent:anEvent withRoomState:nil];
     NSAttributedString *h3AttributedString = [eventFormatter renderHTMLString:h3HTML forEvent:anEvent withRoomState:nil];
     
+    // Then the attributed string should contain all of the text,
     XCTAssertEqualObjects(h1AttributedString.string, @"Matrix.org", @"The text from an H1 tag should be preserved when removing formatting.");
     XCTAssertEqualObjects(h3AttributedString.string, @"Matrix.org", @"The text from an H3 tag should not change.");
     
+    // and be formatted as a header with the link added as an attachment.
     __block BOOL didFindH1Link = NO;
     [h1AttributedString enumerateAttributesInRange:NSMakeRange(0, h1AttributedString.length)
                                          options:0
@@ -199,38 +212,36 @@
 
 - (void)testRenderHTMLStringWithIFrame
 {
+    // Given an HTML string containing an unsupported iframe.
     NSString *html = @"<iframe src=\"https://www.matrix.org/\"></iframe>";
+    
+    // When rendering this string as an attributed string.
     NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
     
-    __block BOOL hasAttachment = NO;
-    [attributedString enumerateAttribute:NSAttachmentAttributeName
-                                 inRange:NSMakeRange(0, attributedString.length)
-                                 options:0
-                              usingBlock:^(id value, NSRange range, BOOL *stop) {
-        if (value)
-        {
-            hasAttachment = YES;
-        }
-    }];
-    
+    // Then the attributed string should have the iframe stripped and not include any attachments.
+    BOOL hasAttachment = [attributedString containsAttachmentsInRange:NSMakeRange(0, attributedString.length)];
     XCTAssertFalse(hasAttachment, @"iFrame attachments should be removed as they're not included in the allowedHTMLTags array.");
 }
 
 - (void)testRenderHTMLStringWithMXReply
 {
+    // Given an HTML string representing a matrix reply.
     NSString *html = @"<mx-reply><blockquote><a href=\"https://matrix.to/#/someroom/someevent\">In reply to</a> <a href=\"https://matrix.to/#/@alice:matrix.org\">@alice:matrix.org</a><br>Original message.</blockquote></mx-reply>This is a reply.";
+    
+    // When rendering this string as an attributed string.
     NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
     
+    // Then the attributed string should contain all of the text,
     NSString *plainString = [attributedString.string stringByReplacingOccurrencesOfString:@"\U00002028" withString:@"\n"];
     XCTAssertEqualObjects(plainString, @"In reply to @alice:matrix.org\nOriginal message.\nThis is a reply.",
                           @"The reply string should include who the original message was from, what they said, and the reply itself.");
     
+    // and format the author and original message inside of a quotation block.
     __block BOOL didTestReplyText = NO;
     __block BOOL didTestQuoteBlock = NO;
     [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length)
                                          options:0
                                       usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attributes, NSRange range, BOOL * _Nonnull stop) {
-        
         NSString *substring = [attributedString attributedSubstringFromRange:range].string;
         
         if ([substring isEqualToString:@"This is a reply."])
@@ -250,13 +261,20 @@
 
 - (void)testRenderHTMLStringWithMXReplyQuotingInvalidMessage
 {
+    // Given an HTML string representing a matrix reply where the original message has invalid HTML.
     NSString *html = @"<mx-reply><blockquote><a href=\"https://matrix.to/#/someroom/someevent\">In reply to</a> <a href=\"https://matrix.to/#/@alice:matrix.org\">@alice:matrix.org</a><br><h1>Heading with <badtag>invalid</badtag> content</h1></blockquote></mx-reply>This is a reply.";
+    
+    // When rendering this string as an attributed string.
     NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
     
+    // Then the attributed string should contain all of the text,
     NSString *plainString = [attributedString.string stringByReplacingOccurrencesOfString:@"\U00002028" withString:@"\n"];
     XCTAssertEqualObjects(plainString, @"In reply to @alice:matrix.org\nHeading with invalid content\nThis is a reply.",
                           @"The reply string should include who the original message was from, what they said, and the reply itself.");
     
+    // and format the author and original message inside of a quotation block. This check
+    // is to catch any incorrectness in the sanitizing where the original message becomes
+    // indented but is missing the block quote mark attribute.
     __block BOOL didTestReplyText = NO;
     __block BOOL didTestQuoteBlock = NO;
     [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length)
@@ -279,6 +297,44 @@
     }];
     
     XCTAssertTrue(didTestReplyText && didTestQuoteBlock, @"Both a quote and a reply should be in the attributed string.");
+}
+
+- (void)testRenderHTMLStringWithImageHandler
+{
+    MXWeakify(self);
+    
+    // Given an HTML string that contains an image tag inline.
+    NSURL *imageURL = [NSURL URLWithString:@"https://matrix.org/images/matrix-logo.svg"];
+    NSString *html = [NSString stringWithFormat:@"Look at this logo: <img src=\"%@\"> Very nice.", imageURL.absoluteString];
+    
+    // When rendering this string as an attributed string using an appropriate image handler block.
+    eventFormatter.allowedHTMLTags = [eventFormatter.allowedHTMLTags arrayByAddingObject:@"img"];
+    eventFormatter.htmlImageHandler = ^NSURL *(NSString *sourceURL, CGFloat width, CGFloat height) {
+        MXStrongifyAndReturnValueIfNil(self, nil);
+        
+        // Replace the image URL with one from the tests bundle
+        NSBundle *bundle = [NSBundle bundleForClass:self.class];;
+        return [bundle URLForResource:@"test" withExtension:@"png"];
+    };
+    NSAttributedString *attributedString = [eventFormatter renderHTMLString:html forEvent:anEvent withRoomState:nil];
+    
+    // Then the attributed string should contain all of the text,
+    NSString *plainString = [attributedString.string stringByReplacingOccurrencesOfString:@"\U0000fffc" withString:@""];
+    XCTAssertEqualObjects(plainString, @"Look at this logo:  Very nice.", @"The string should include the original text.");
+    
+    // and have the image included as an attachment.
+    __block BOOL hasImageAttachment = NO;
+    [attributedString enumerateAttribute:NSAttachmentAttributeName
+                                 inRange:NSMakeRange(0, attributedString.length)
+                                 options:0
+                              usingBlock:^(id value, NSRange range, BOOL *stop) {
+        if ([value image])
+        {
+            hasImageAttachment = YES;
+        }
+    }];
+    
+    XCTAssertTrue(hasImageAttachment, @"There should be an attachment that contains the image.");
 }
     
 - (void)testMarkdownFormatting

@@ -62,6 +62,7 @@
 		71EBE6631C04608100E7D953 /* MXKRoomActivitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71EBE6621C04608100E7D953 /* MXKRoomActivitiesView.m */; };
 		8EE45E64044E107FAB59C7D1 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5891CE7965783A3890D40ED9 /* Pods_MatrixKitSamplePods_MatrixKitSample.framework */; };
 		9135FFD926DE8EFD000E6D84 /* NSString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */; };
+		9137E95727467F8E00A6D02D /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = 9137E95627467F8E00A6D02D /* test.png */; };
 		918DAB9F26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */; };
 		91B72DC32743CAD0002867CD /* DTHTMLElement+MatrixKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91B72DC22743CAD0002867CD /* DTHTMLElement+MatrixKit.swift */; };
 		92663A6C1EF6E5B3005FB712 /* MXKSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92663A6B1EF6E5B3005FB712 /* MXKSoundPlayer.m */; };
@@ -374,6 +375,7 @@
 		8878281C260C85BB00429B35 /* MXKEventFormatter+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MXKEventFormatter+Tests.h"; sourceTree = "<group>"; };
 		8C751E43C4D87B309065E3C8 /* Pods-MatrixKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MatrixKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MatrixKitTests/Pods-MatrixKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		9135FFD826DE8EFD000E6D84 /* NSString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSString+MatrixKit.swift"; sourceTree = "<group>"; };
+		9137E95627467F8E00A6D02D /* test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test.png; sourceTree = "<group>"; };
 		915B171C27105C5700225111 /* MXKAnalyticsConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXKAnalyticsConstants.h; sourceTree = "<group>"; };
 		918DAB9E26E622BF00CE20A9 /* NSAttributedString+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+MatrixKit.swift"; sourceTree = "<group>"; };
 		91B72DC22743CAD0002867CD /* DTHTMLElement+MatrixKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DTHTMLElement+MatrixKit.swift"; sourceTree = "<group>"; };
@@ -734,6 +736,7 @@
 		3203F2691D2E9CAE0021F170 /* MatrixKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				9137E95527467F8500A6D02D /* Assets */,
 				B125D10222D62A4800570CA4 /* UTI */,
 				32538D071D2EA100009FE744 /* MXKEventFormatterTests.m */,
 				8878281C260C85BB00429B35 /* MXKEventFormatter+Tests.h */,
@@ -1137,6 +1140,14 @@
 				1099FE41E4156DB223718DB2 /* Pods-MatrixKitSamplePods-MatrixKitTests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		9137E95527467F8500A6D02D /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				9137E95627467F8E00A6D02D /* test.png */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 		B11D3C7B20C0329B00938BCB /* BarButtonItem */ = {
@@ -1666,6 +1677,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B125D10722D62AB900570CA4 /* Text.txt in Resources */,
+				9137E95727467F8E00A6D02D /* test.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
