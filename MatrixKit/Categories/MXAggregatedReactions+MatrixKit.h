@@ -14,8 +14,6 @@
  limitations under the License.
  */
 
-#import <MatrixSDK/MatrixSDK.h>
-
 #import "MXKEventFormatter.h"
 
 NS_ASSUME_NONNULL_BEGIN
