@@ -2,10 +2,10 @@
 // Login Screen
 "login_create_account" = "Tạo tài khoản:";
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
-"login_home_server_title" = "Máy chủ nhà:";
-"login_home_server_info" = "Máy chủ nhà của bạn lưu trữ tất cả dữ liệu cần giữ gìn và tài khoản";
-"login_identity_server_title" = "Máy chủ xác thực:";
-"login_identity_server_info" = "Matrix cung cấp máy chủ xác thực để theo dõi email nào thuộc về Matrix IDs nào. Chỉ https://matrix.org hiện đang tồn tại.";
+"login_home_server_title" = "Homeserver URL:";
+"login_home_server_info" = "Homeserver của bạn lưu trữ tất cả dữ liệu các cuộc trò chuyện và tài khoản";
+"login_identity_server_title" = "URL máy chủ xác thực:";
+"login_identity_server_info" = "Matrix cung cấp các máy chủ xác thực để theo dõi email nào thuộc về Matrix IDs nào. Chỉ https://matrix.org hiện đang tồn tại.";
 "login_user_id_placeholder" = "Matrix ID (ví dụ: @bob:matrix.org hoặc bob)";
 "login_password_placeholder" = "Mật khẩu";
 "login_optional_field" = "không bắt buộc";
