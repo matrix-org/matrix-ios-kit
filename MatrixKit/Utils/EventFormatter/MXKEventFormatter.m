@@ -328,8 +328,8 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     BOOL isRedacted = (event.redactedBecause != nil);
     if (isRedacted)
     {
-        // Check whether redacted information is required
-        if (_settings.showRedactionsInRoomHistory)
+        // Check whether the event is a thread root or redacted information is required
+        if ([mxSession.threadingService isEventThreadRoot:event] || _settings.showRedactionsInRoomHistory)
         {
             MXLogDebug(@"[MXKEventFormatter] Redacted event %@ (%@)", event.description, event.redactedBecause);
             
