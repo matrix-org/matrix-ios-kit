@@ -147,6 +147,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
             kMXEventTypeStringKeyVerificationCancel,
             kMXEventTypeStringKeyVerificationDone,
             kMXEventTypeStringPollStart,
+            kMXEventTypeStringPollStartMSC3381,
         ].mutableCopy;
         
 
@@ -178,6 +179,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
             kMXEventTypeStringKeyVerificationCancel,
             kMXEventTypeStringKeyVerificationDone,
             kMXEventTypeStringPollStart,
+            kMXEventTypeStringPollStartMSC3381,
         ].mutableCopy;
         
         lastMessageEventTypesAllowList = @[
@@ -190,6 +192,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
             kMXEventTypeStringCallHangup,
             kMXEventTypeStringSticker,
             kMXEventTypeStringPollStart,
+            kMXEventTypeStringPollStartMSC3381,
         ].mutableCopy;
         
         _messageDetailsAllowSharing = YES;
