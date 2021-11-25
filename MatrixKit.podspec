@@ -33,12 +33,16 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |core|
     core.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}", "Libs/**/*.{h,m,swift}"
+    core.exclude_files = ['MatrixKit/MatrixKit-Bridging-Header.h']
+    core.private_header_files = ['MatrixKit/Utils/MXKSwiftHeader.h']
     core.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     core.dependency 'DTCoreText'
   end
 
   s.subspec 'AppExtension' do |ext|
     ext.source_files  = "MatrixKit", "MatrixKit/**/*.{h,m,swift}", "Libs/**/*.{h,m,swift}"
+    ext.exclude_files = ['MatrixKit/MatrixKit-Bridging-Header.h']
+    ext.private_header_files = ['MatrixKit/Utils/MXKSwiftHeader.h']
     ext.resources = ["MatrixKit/**/*.{xib}", "MatrixKit/Assets/MatrixKitAssets.bundle"]
     ext.dependency 'DTCoreText/Extension'
   end
