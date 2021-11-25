@@ -17,8 +17,11 @@
 
 #import "MXKSessionRecentsDataSource.h"
 
+@import MatrixSDK;
+
 #import "MXKRoomDataSourceManager.h"
-#import <MatrixSDK/MatrixSDK-Swift.h>
+
+#import "MXKSwiftHeader.h"
 
 #pragma mark - Constant definitions
 NSString *const kMXKRecentCellIdentifier = @"kMXKRecentCellIdentifier";

@@ -21,7 +21,8 @@
 
 #import "MXKInterleavedRecentsDataSource.h"
 #import "MXKInterleavedRecentTableViewCell.h"
-#import <MatrixSDK/MatrixSDK-Swift.h>
+
+#import "MXKSwiftHeader.h"
 
 @interface MXKRecentListViewController ()
 {
