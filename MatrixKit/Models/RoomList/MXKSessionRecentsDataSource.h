@@ -16,7 +16,6 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <MatrixSDK/MatrixSDK.h>
 
 #import "MXKConstants.h"
 #import "MXKDataSource.h"
