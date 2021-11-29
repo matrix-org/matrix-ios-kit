@@ -2594,7 +2594,8 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
                 BOOL eventIsFirstInBubble = NO;
                 NSInteger bubbleDataIndex =  [bubbles indexOfObject:bubbleData];
                 
-                if (NSNotFound == bubbleDataIndex) {
+                if (NSNotFound == bubbleDataIndex)
+                {
                     // If bubbleData is not in bubbles there is nothing to update for this event, its not displayed.
                     return;
                 }
