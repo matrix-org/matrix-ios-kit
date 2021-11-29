@@ -283,7 +283,7 @@
     MXKSectionedContacts* sectionedContacts = contactsSearchBar ? sectionedFilteredContacts : (displayMatrixUsers ? sectionedMatrixContacts : sectionedLocalContacts);
     
     if (section < sectionedContacts.sectionedContacts.count)
-    {        
+    {
         return [sectionedContacts.sectionedContacts[section] count];
     }
     return 0;
