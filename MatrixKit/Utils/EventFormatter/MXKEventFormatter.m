@@ -60,8 +60,9 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         _allowedHTMLTags = @[
                              @"font", // custom to matrix for IRC-style font coloring
                              @"del", // for markdown
-                             // deliberately no h1/h2 to stop people shouting.
-                             @"h3", @"h4", @"h5", @"h6", @"blockquote", @"p", @"a", @"ul", @"ol",
+                             @"body", // added internally by DTCoreText
+                             @"mx-reply",
+                             @"h1", @"h2", @"h3", @"h4", @"h5", @"h6", @"blockquote", @"p", @"a", @"ul", @"ol",
                              @"nl", @"li", @"b", @"i", @"u", @"strong", @"em", @"strike", @"code", @"hr", @"br", @"div",
                              @"table", @"thead", @"caption", @"tbody", @"tr", @"th", @"td", @"pre"
                              ];
@@ -74,7 +75,10 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                 white-space: pre; \
                 -coretext-fontname: Menlo-Regular; \
                 font-size: small; \
-            }";
+            } \
+            h1,h2 { \
+                font-size: 1.2em; \
+            }"; // match the size of h1/h2 to h3 to stop people shouting.
 
         // Set default colors
         _defaultTextColor = [UIColor blackColor];
@@ -1717,11 +1721,16 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
         html = [self renderReplyTo:html withRoomState:roomState];
     }
 
-    // Do some sanitisation before rendering the string
-    html = [MXKTools sanitiseHTML:html withAllowedHTMLTags:_allowedHTMLTags imageHandler:nil];
-
     // Apply the css style that corresponds to the event state
     UIFont *font = [self fontForEvent:event];
+    
+    // Do some sanitisation before finalizing the string
+    MXWeakify(self);
+    DTHTMLAttributedStringBuilderWillFlushCallback sanitizeCallback = ^(DTHTMLElement *element) {
+        MXStrongifyAndReturnIfNil(self);
+        [element sanitizeWith:self.allowedHTMLTags bodyFont:font imageHandler:self.htmlImageHandler];
+    };
+
     NSDictionary *options = @{
                               DTUseiOS6Attributes: @(YES),              // Enable it to be able to display the attributed string in a UITextView
                               DTDefaultFontFamily: font.familyName,
@@ -1729,7 +1738,8 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
                               DTDefaultFontSize: @(font.pointSize),
                               DTDefaultTextColor: [self textColorForEvent:event],
                               DTDefaultLinkDecoration: @(NO),
-                              DTDefaultStyleSheet: dtCSS
+                              DTDefaultStyleSheet: dtCSS,
+                              DTWillFlushBlockCallBack: sanitizeCallback
                               };
 
     // Do not use the default HTML renderer of NSAttributedString because this method
