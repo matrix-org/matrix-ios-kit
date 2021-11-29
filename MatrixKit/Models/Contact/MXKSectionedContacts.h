@@ -16,16 +16,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import "MXKContact.h"
+
 @interface MXKSectionedContacts : NSObject {
     int contactsCount;
-    NSArray *sectionTitles;
-    NSArray *sectionedContacts;
+    NSArray<NSString*> *sectionTitles;
+    NSArray<NSArray<MXKContact*>*> *sectionedContacts;
 }
 
 @property (nonatomic, readonly) int contactsCount;
-@property (nonatomic, readonly) NSArray *sectionTitles;
-@property (nonatomic, readonly) NSArray *sectionedContacts;
+@property (nonatomic, readonly) NSArray<NSString*> *sectionTitles;
+@property (nonatomic, readonly) NSArray<NSArray<MXKContact*>*> *sectionedContacts;
 
--(id)initWithContacts:(NSArray *)inSectionedContacts andTitles:(NSArray *)titles andCount:(int)count;
+- (instancetype)initWithContacts:(NSArray<NSArray<MXKContact*>*> *)inSectionedContacts andTitles:(NSArray<NSString*> *)titles andCount:(int)count;
 
 @end
