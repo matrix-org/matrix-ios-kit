@@ -151,3 +151,5 @@
 #import "MXKSessionGroupsDataSource.h"
 #import "MXKGroupListViewController.h"
 #import "MXKGroupTableViewCell.h"
+
+#import "MXKSlashCommands.h"
