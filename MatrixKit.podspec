@@ -20,6 +20,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/matrix-org/matrix-ios-kit.git", :tag => "v#{s.version}" }
 
   s.requires_arc  = true
+  
+  s.deprecated = true
 
   s.swift_version = '5.0'
 
