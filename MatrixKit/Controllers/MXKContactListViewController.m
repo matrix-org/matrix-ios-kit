@@ -284,7 +284,7 @@
     
     if (section < sectionedContacts.sectionedContacts.count)
     {
-        return [[sectionedContacts.sectionedContacts objectAtIndex:section] count];
+        return [sectionedContacts.sectionedContacts[section] count];
     }
     return 0;
 }

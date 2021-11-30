@@ -15,7 +15,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <MatrixSDK/MatrixSDK.h>
 
 #import "MXKRecentCellDataStoring.h"
 

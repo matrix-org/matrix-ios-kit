@@ -20,7 +20,7 @@
 
 @synthesize contactsCount, sectionTitles, sectionedContacts;
 
--(id)initWithContacts:(NSArray *)inSectionedContacts andTitles:(NSArray *)titles andCount:(int)count {
+-(id)initWithContacts:(NSArray<NSArray<MXKContact*> *> *)inSectionedContacts andTitles:(NSArray<NSString *> *)titles andCount:(int)count {
     if (self = [super init]) {
         contactsCount = count;
         sectionedContacts = inSectionedContacts;

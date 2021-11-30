@@ -933,7 +933,9 @@
                             {
                                 if ([controlView isKindOfClass:[UIView class]] && ((UIView*)controlView).tag == 1004)
                                 {
-                                    controlsVisible = ([controlView alpha] <= 0.0) ? NO : YES;
+                                    UIView *subView = (UIView*)controlView;
+                                    
+                                    controlsVisible = (subView.alpha <= 0.0) ? NO : YES;
                                 }
                             }
                         }

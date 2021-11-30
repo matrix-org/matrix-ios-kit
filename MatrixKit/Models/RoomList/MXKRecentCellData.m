@@ -17,9 +17,12 @@
 
 #import "MXKRecentCellData.h"
 
+@import MatrixSDK;
+
 #import "MXKDataSource.h"
 #import "MXEvent+MatrixKit.h"
-#import <MatrixSDK/MatrixSDK-Swift.h>
+
+#import "MXKSwiftHeader.h"
 
 @implementation MXKRecentCellData
 @synthesize roomSummary, dataSource, lastEventDate;

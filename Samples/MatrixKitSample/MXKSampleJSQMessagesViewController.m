@@ -22,6 +22,8 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#import "MXKSwiftHeader.h"
+
 @interface MXKSampleJSQMessagesViewController ()
 {
     /**
