@@ -329,7 +329,7 @@ static NSString *const kHTMLATagRegexPattern = @"<a href=\"(.*?)\">([^<]*)</a>";
     
     // Check first whether the event has been redacted
     NSString *redactedInfo = nil;
-    BOOL isRedacted = (event.redactedBecause != nil);
+    BOOL isRedacted = event.isRedactedEvent;
     if (isRedacted)
     {
         // Check whether the event is a thread root or redacted information is required
