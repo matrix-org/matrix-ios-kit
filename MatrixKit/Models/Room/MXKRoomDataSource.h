@@ -693,7 +693,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 + (dispatch_queue_t)processingQueue;
 
 /**
- Decides an event should be considered for asynchronous event processing.
+ Decides whether an event should be considered for asynchronous event processing.
  Default implementation checks for `filterMessagesithURL` and undecryptable events sent before the user joined.
  Subclasses must call super at some point.
  
