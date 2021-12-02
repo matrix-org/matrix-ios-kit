@@ -694,7 +694,7 @@ extern NSString *const kMXKRoomDataSourceTimelineErrorErrorKey;
 
 /**
  Decides whether an event should be considered for asynchronous event processing.
- Default implementation checks for `filterMessagesithURL` and undecryptable events sent before the user joined.
+ Default implementation checks for `filterMessagesWithURL` and undecryptable events sent before the user joined.
  Subclasses must call super at some point.
  
  @param event event to be processed or not
