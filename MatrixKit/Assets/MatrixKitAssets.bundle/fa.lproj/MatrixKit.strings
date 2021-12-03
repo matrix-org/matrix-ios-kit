@@ -547,3 +547,4 @@
 "microphone_access_not_granted_for_voice_message" = "جهت ارسال پیام صوتی نیاز به دسترسی به میکروفون وجود دارد اما %@ دسترسی استفاده از آن را ندارد";
 "e2e_passphrase_too_short" = "کلمه عبور بیش از حد کوتاه است (حداقل می‌بایست %d کاراکتر باشد)";
 "message_reply_to_sender_sent_a_voice_message" = "یک پیام صوتی ارسال کنید.";
+"auth_username_in_use" = "این نام کاربری در حال حاضر موجود است";

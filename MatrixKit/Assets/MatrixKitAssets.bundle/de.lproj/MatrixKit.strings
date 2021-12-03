@@ -497,3 +497,8 @@
 "attachment_medium_with_resolution" = "Mittel %@ (~%@)";
 "attachment_small_with_resolution" = "Klein %@ (~%@)";
 "attachment_size_prompt_message" = "Du kannst dies in den Einstellungen ausschalten.";
+"auth_reset_password_error_not_found" = "Nicht gefunden";
+"auth_reset_password_error_unauthorized" = "Nicht authorisiert";
+"auth_username_in_use" = "Nutzername bereits verwendet";
+"auth_invalid_user_name" = "Ungültiger Nutzername";
+"rename" = "Umbenennen";

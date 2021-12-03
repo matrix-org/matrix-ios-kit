@@ -2,10 +2,10 @@
 // Login Screen
 "login_create_account" = "Tạo tài khoản:";
 "login_server_url_placeholder" = "URL (e.g. https://matrix.org)";
-"login_home_server_title" = "Máy chủ nhà:";
-"login_home_server_info" = "Máy chủ nhà của bạn lưu trữ tất cả dữ liệu cần giữ gìn và tài khoản";
-"login_identity_server_title" = "Máy chủ xác thực:";
-"login_identity_server_info" = "Matrix cung cấp máy chủ xác thực để theo dõi email nào thuộc về Matrix IDs nào. Chỉ https://matrix.org hiện đang tồn tại.";
+"login_home_server_title" = "Homeserver URL:";
+"login_home_server_info" = "Homeserver của bạn lưu trữ tất cả dữ liệu các cuộc trò chuyện và tài khoản";
+"login_identity_server_title" = "URL máy chủ xác thực:";
+"login_identity_server_info" = "Matrix cung cấp các máy chủ xác thực để theo dõi email nào thuộc về Matrix IDs nào. Chỉ https://matrix.org hiện đang tồn tại.";
 "login_user_id_placeholder" = "Matrix ID (ví dụ: @bob:matrix.org hoặc bob)";
 "login_password_placeholder" = "Mật khẩu";
 "login_optional_field" = "không bắt buộc";
@@ -70,7 +70,7 @@
 // Events formatter
 "notice_avatar_changed_too" = "(hình đại diện cũng đã được thay đổi)";
 "notice_room_name_removed" = "%@ bị gỡ bỏ khỏi tên của phòng";
-"notice_room_topic_removed" = "%@ bị gỡ bỏ khỏi chủ đề của phòng";
+"notice_room_topic_removed" = "%@ đã xóa chủ đề";
 "notice_event_redacted" = "<sửa lại%@>";
 "notice_event_redacted_by" = " bởi %@";
 "notice_event_redacted_reason" = " [lí do: %@]";
@@ -79,8 +79,8 @@
 "notice_room_join_rule" = "Quy tắc tham gia là: %@";
 "notice_room_power_level_intro" = "Công suất của thành viên trong phòng:";
 "notice_room_power_level_acting_requirement" = "Mức công suất tối thiểu mà người dùng phải có trước khi hoạt động là:";
-"notice_room_power_level_event_requirement" = "Mức công suất tối thiểu liên quan đến sự kiện là:";
-"notice_room_aliases" = "Các bí danh phòng là:% @";
+"notice_room_power_level_event_requirement" = "Cấp độ quyền tối thiểu liên quan đến sự kiện là:";
+"notice_room_aliases" = "Các bí danh phòng là: %@";
 "notice_encrypted_message" = "Tin nhắn đã được mã hoá";
 "notice_encryption_enabled" = "%@ đã bật mã hoá end-to-end (thuật toán %@)";
 "notice_image_attachment" = "hình ảnh đính kèm";
@@ -104,7 +104,7 @@
 // room display name
 "room_displayname_empty_room" = "Phòng trống";
 "room_displayname_two_members" = "%@ và %@";
-"room_displayname_more_than_two_members" = "%@ và %u người khác";
+"room_displayname_more_than_two_members" = "%@ và %@ người khác";
 // Settings
 "settings" = "Cài đặt";
 "settings_enable_inapp_notifications" = "Bật thông báo bên trong ứng dụng";
@@ -121,7 +121,7 @@
 "device_details_delete_prompt_title" = "Xác thực";
 "device_details_delete_prompt_message" = "Thao tác này yêu cầu xác thực bổ sung.\nĐể tiếp tục, vui lòng nhập mật khẩu của bạn.";
 // Encryption information
-"room_event_encryption_info_title" = "Thông tin mã hoá end-to-end\n\n";
+"room_event_encryption_info_title" = "Thông tin mã hoá đầu-cuối\n\n";
 "room_event_encryption_info_event" = "Thông tin sự kiện\n";
 "room_event_encryption_info_event_user_id" = "ID Người dùng\n";
 "room_event_encryption_info_event_identity_key" = "Khoá xác thực Curve25519\n";
@@ -357,3 +357,124 @@
 "ssl_unexpected_existing_expl" = "Chứng chỉ đã thay đổi từ chứng chỉ mà điện thoại của bạn tin cậy. Điều này là KHÔNG THƯỜNG XUYÊN. Chúng tôi khuyên bạn KHÔNG CHẤP NHẬN chứng chỉ mới này.";
 "ssl_expected_existing_expl" = "Chứng chỉ đã thay đổi từ một tài khoản đáng tin cậy trước đó sang chứng chỉ không đáng tin cậy. Máy chủ có thể đã gia hạn chứng chỉ của nó. Liên hệ với quản trị viên máy chủ để lấy dấu vân tay được mong đợi.";
 "ssl_only_accept" = "CHỈ chấp nhận chứng chỉ nếu quản trị viên máy chủ đã xuất bản một dấu vân tay phù hợp với bảng trên.";
+"auth_reset_password_error_not_found" = "Không tìm thấy";
+"auth_reset_password_error_unauthorized" = "Không được phép";
+"auth_username_in_use" = "Tên người dùng đang sử dụng";
+"auth_invalid_user_name" = "Tên người dùng không hợp lệ";
+"call_transfer_to_user" = "Chuyển máy đến %@";
+"call_consulting_with_user" = "Đang hỏi ý kiến với %@";
+"call_video_with_user" = "Cuộc gọi video với %@";
+"call_voice_with_user" = "Cuộc gọi thoại với %@";
+"call_more_actions_dialpad" = "Bàn phím số";
+"call_more_actions_transfer" = "Chuyển máy";
+"call_more_actions_audio_use_device" = "Loa thiết bị";
+"call_more_actions_change_audio_device" = "Thay đổi thiết bị âm thanh";
+"call_more_actions_unhold" = "Tiếp tục";
+"call_more_actions_hold" = "Giữ";
+"call_holded" = "Bạn đã tổ chức cuộc gọi";
+"call_remote_holded" = "%@ đã tổ chức cuộc gọi";
+"call_ringing" = "Đang đổ chuông…";
+"rename" = "Đổi tên";
+"notice_room_history_visible_to_members_from_joined_point_by_you_for_dm" = "Bạn đã làm cho mọi người thấy được các tin nhắn, từ lúc họ tham gia";
+"notice_room_history_visible_to_members_from_joined_point_by_you" = "Bạn đã làm cho tất cả thành viên trong phòng thấy được lịch sử của phòng, từ thời điểm họ tham gia";
+"notice_room_history_visible_to_members_from_invited_point_by_you_for_dm" = "Bạn đã làm cho mọi người thấy được các tin nhắn, từ lúc họ được mời";
+"notice_room_history_visible_to_members_from_invited_point_by_you" = "Bạn đã làm cho tất cả thành viên trong phòng thấy được lịch sử của phòng, từ thời điểm họ được mời";
+"notice_room_history_visible_to_members_by_you_for_dm" = "Bạn đã làm cho tất cả thành viên trong phòng thấy được các tin nhắn";
+"notice_room_history_visible_to_members_by_you" = "Bạn đã làm cho tất cả thành viên trong phòng thấy được lịch sử của phòng";
+"notice_room_history_visible_to_anyone_by_you" = "Bạn đã làm cho mọi người thấy được lịch sử của phòng";
+"notice_redaction_by_you" = "Bạn đã biên tập lại một sự kiện (id: %@)";
+"notice_encryption_enabled_unknown_algorithm_by_you" = "Bạn đã bật mã hóa đầu-cuối (thuật toán không xác định %@)";
+"notice_encryption_enabled_ok_by_you" = "Bạn đã bật mã hóa đầu-cuối";
+"notice_room_created_by_you_for_dm" = "Bạn đã tham gia";
+"notice_room_created_by_you" = "Bạn đã tạo và cấu hình phòng";
+"notice_profile_change_redacted_by_you" = "Bạn đã cập nhật hồ sơ %@";
+"notice_event_redacted_by_you" = " do bạn";
+"notice_room_topic_removed_by_you" = "Bạn đã xóa chủ đề";
+"notice_room_name_removed_by_you_for_dm" = "Bạn đã xóa tên";
+"notice_room_name_removed_by_you" = "Bạn đã xóa tên phòng";
+"notice_conference_call_request_by_you" = "Bạn đã yêu cầu cuộc gọi hội nghị VoIP";
+"notice_declined_video_call_by_you" = "Bạn đã từ chối cuộc gọi";
+"notice_ended_video_call_by_you" = "Bạn đã kết thúc cuộc gọi";
+"notice_answered_video_call_by_you" = "Bạn đã trả lời cuộc gọi";
+"notice_placed_video_call_by_you" = "Bạn đã thực hiện cuộc gọi video";
+"notice_placed_voice_call_by_you" = "Bạn đã thực hiện cuộc gọi thoại";
+"notice_room_name_changed_by_you_for_dm" = "Bạn đã thay đổi tên thành %@";
+"notice_room_name_changed_by_you" = "Bạn đã thay đổi tên phòng thành %@";
+"notice_topic_changed_by_you" = "Bạn đã thay đổi chủ đề thành \"%@\"";
+"notice_display_name_removed_by_you" = "Bạn đã xóa tên hiển thị";
+"notice_display_name_changed_from_by_you" = "Bạn đã thay đổi tên hiển thị từ %@ thành %@";
+"notice_display_name_set_by_you" = "Bạn đã đặt tên hiển thị thành %@";
+"notice_avatar_url_changed_by_you" = "Bạn đã thay đổi avatar";
+"notice_room_withdraw_by_you" = "Bạn đã thu hồi lời mời của %@";
+"notice_room_ban_by_you" = "Bạn đã cấm %@";
+"notice_room_unban_by_you" = "Bạn đã bỏ cấm %@";
+"notice_room_kick_by_you" = "Bạn đã đá %@";
+"notice_room_reject_by_you" = "Bạn đã từ chối lời mời";
+"notice_room_leave_by_you" = "Bạn đã rời khỏi";
+"notice_room_join_by_you" = "Bạn đã tham gia";
+"notice_room_third_party_revoked_invite_by_you_for_dm" = "Bạn đã thu hồi lời mời của %@";
+"notice_room_third_party_revoked_invite_by_you" = "Bạn đã thu hồi lời mời cho %@ tham gia vào phòng";
+"notice_room_third_party_registered_invite_by_you" = "Bạn đã chấp nhận lời mời cho %@";
+"notice_room_third_party_invite_by_you_for_dm" = "Bạn đã mời %@";
+"notice_room_third_party_invite_by_you" = "Bạn đã gửi lời mời %@ tham gia vào phòng";
+"notice_room_invite_you" = "%@ đã mời bạn";
+
+// Notice Events with "You"
+"notice_room_invite_by_you" = "Bạn đã mời %@";
+"notice_declined_video_call" = "%@ đã từ chối cuộc gọi";
+"notice_room_name_changed_for_dm" = "%@ đã đổi tên thành %@.";
+"notice_room_third_party_revoked_invite_for_dm" = "%@ đã thu hồi lời mời của %@";
+"notice_room_third_party_revoked_invite" = "%@ đã thu hồi lời mời %@ tham gia vào phòng";
+"notice_room_third_party_invite_for_dm" = "%@ đã mời %@";
+"microphone_access_not_granted_for_voice_message" = "Các tin nhắn thoại yêu cầu quyền truy cập vào Mi-crô nhưng %@ không có quyền để sử dụng nó";
+"error_common_message" = "Lỗi đã xuất hiện. Vui lòng thử lại sau.";
+"e2e_passphrase_create" = "Tạo cụm mật khẩu";
+"e2e_passphrase_too_short" = "Cụm mật khẩu quá ngắn (Nó phải chứa ít nhất %d ký tự)";
+"group_section" = "Nhóm";
+
+// Groups
+"group_invite_section" = "Lời mời";
+"attachment_large_with_resolution" = "Lớn %@ (~%@)";
+"attachment_medium_with_resolution" = "Trung bình %@ (~%@)";
+"attachment_small_with_resolution" = "Nhỏ %@ (~%@)";
+"attachment_size_prompt_message" = "Bạn có thể tắt nó trong cài đặt.";
+"attachment_size_prompt_title" = "Xác nhận kích thước để gửi";
+"message_reply_to_message_to_reply_to_prefix" = "Trả lời";
+"message_reply_to_sender_sent_a_file" = "đã gửi một tệp.";
+"message_reply_to_sender_sent_a_voice_message" = "đã gửi một tin nhắn thoại.";
+"message_reply_to_sender_sent_an_audio_file" = "đã gửi một tệp âm thanh.";
+"message_reply_to_sender_sent_a_video" = "đã gửi một video.";
+
+// Reply to message
+"message_reply_to_sender_sent_an_image" = "đã gửi một ảnh.";
+"room_left_for_dm" = "Bạn đã rời";
+"account_error_push_not_allowed" = "Thông báo không được phép";
+"device_details_rename_prompt_title" = "Tên thiết bị";
+"room_displayname_all_other_members_left" = "%@ (đã rời khỏi)";
+"notice_in_reply_to" = "Trả lời";
+"notice_sticker" = "sticker";
+"notice_room_history_visible_to_members_from_joined_point_for_dm" = "%@ làm cho mọi người có thể thấy các tin nhắn từ thời điểm họ tham gia.";
+"notice_room_history_visible_to_members_from_invited_point_for_dm" = "%@ làm cho mọi thành viên có thể thấy được các tin nhắn từ thời điểm được mời.";
+"notice_room_history_visible_to_members_for_dm" = "%@ làm cho thành viên trong phòng có thể thấy được các tin nhắn.";
+"notice_encryption_enabled_unknown_algorithm" = "%1$@ đã bật mã hóa đầu-cuối (thuật toán chưa được nhận dạng %2$@)";
+"notice_encryption_enabled_ok" = "%@ đã bật mã hóa đầu-cuối";
+"notice_room_related_groups" = "Các nhóm liên quan đến phòng này là: %@";
+"notice_room_aliases_for_dm" = "Các bí danh là: %@";
+"notice_room_power_level_intro_for_dm" = "Cấp độ quyền của các thành viên là:";
+"notice_room_join_rule_public_by_you_for_dm" = "Bạn đã chuyển quy tắc sang công cộng";
+"notice_room_join_rule_public_by_you" = "Bạn đã chuyển quy tắc phòng sang công cộng";
+"notice_room_join_rule_public_for_dm" = "%@ đã chuyển quy tắc sang công cộng";
+"notice_room_join_rule_public" = "%@ đã chuyển quy tắc phòng sang công cộng";
+"notice_room_join_rule_invite_by_you_for_dm" = "Bạn đã chuyển quy tắc sang chỉ mời";
+"notice_room_join_rule_invite_by_you" = "Bạn đã chuyển quy tắc phòng sang chỉ mời";
+"notice_room_join_rule_invite_for_dm" = "%@ đã chuyển quy tắc sang chỉ mời";
+//  New
+"notice_room_join_rule_invite" = "%@ đã chuyển quy tắc phòng sang chỉ mời";
+"notice_room_created_for_dm" = "%@ đã tham gia";
+"notice_room_name_removed_for_dm" = "%@ đã xóa tên";
+"resume_call" = "Trở về";
+"login_error_resource_limit_exceeded_contact_button" = "Liên hệ quản trị viên";
+"login_error_resource_limit_exceeded_message_contact" = "\n\nVui lòng liên hệ quản trị viên dịch vụ của bạn để tiếp tục sử dụng dịch vụ này.";
+"login_error_resource_limit_exceeded_message_monthly_active_user" = "Homeserver này vừa đạt đến giới hạn người dùng hoạt động hàng tháng của nó.";
+"login_error_resource_limit_exceeded_message_default" = "Homeserver này vừa vượt quá 1 trong các giới hạn tài nguyên của nó.";
+"login_error_resource_limit_exceeded_title" = "Vượt quá giới hạn tài nguyên";
