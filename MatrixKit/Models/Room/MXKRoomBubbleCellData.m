@@ -609,7 +609,8 @@
 
 - (BOOL)hasThreadRoot
 {
-    @synchronized (bubbleComponents) {
+    @synchronized (bubbleComponents)
+    {
         for (MXKRoomBubbleComponent *component in bubbleComponents)
         {
             if (component.thread)
