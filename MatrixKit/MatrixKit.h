@@ -17,8 +17,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <MatrixSDK/MatrixSDK.h>
-
 #import "MXKConstants.h"
 
 #import "MXKAppSettings.h"
@@ -153,4 +151,5 @@
 #import "MXKSessionGroupsDataSource.h"
 #import "MXKGroupListViewController.h"
 #import "MXKGroupTableViewCell.h"
-#import "MXKSwiftHeader.h"
+
+#import "MXKSlashCommands.h"

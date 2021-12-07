@@ -16,8 +16,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <MatrixSDK/MatrixSDK.h>
-
 /**
  Define a `NSBundle` category at MatrixKit level to retrieve images and sounds from MatrixKit Assets bundle.
  */

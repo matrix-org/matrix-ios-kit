@@ -365,22 +365,6 @@ manualChangeMessageForVideo:(NSString*)manualChangeMessageForVideo
 #pragma mark - HTML processing
 
 /**
- Sanitise an HTML string to keep permitted HTML tags defined by 'allowedHTMLTags'.
- 
- !!!!!! WARNING !!!!!!
- IT IS NOT REMOTELY A COMPREHENSIVE SANITIZER AND SHOULD NOT BE TRUSTED FOR SECURITY PURPOSES.
- WE ARE EFFECTIVELY RELYING ON THE LIMITED CAPABILITIES OF THE HTML RENDERER UI TO AVOID SECURITY ISSUES LEAKING UP.
- 
- @param htmlString the HTML code to sanitise.
- @param allowedHTMLTags the list of allowed HTML tags
- @param imageHandler the block called with the parameters of each image when 'img' tag is allowed. This handler must return a local path for this image. The image is removed from the html content if this handler is nil or the returned url is nil.
- @return a sanitised HTML string.
- */
-+ (NSString*)sanitiseHTML:(NSString*)htmlString
-      withAllowedHTMLTags:(NSArray<NSString*>*)allowedHTMLTags
-        imageHandler:(NSString* (^)(NSString *sourceURL, CGFloat width, CGFloat height))imageHandler;
-
-/**
  Removing DTCoreText artifacts:
  - Trim trailing whitespace and newlines in the string content.
  - Replace DTImageTextAttachments with a simple NSTextAttachment subclass.
