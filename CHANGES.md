@@ -1,3 +1,28 @@
+## Changes in 0.16.11 (2021-12-07)
+
+✨ Features
+
+- Moved from /space to /hierarchy API to support pagination ([#4893](https://github.com/vector-im/element-ios/issues/4893))
+
+🙌 Improvements
+
+- Upgrade MatrixSDK version ([v0.20.13](https://github.com/matrix-org/matrix-ios-sdk/releases/tag/v0.20.13)).
+- Use DTCoreText's callback option to sanitise formatted messages ([#5165](https://github.com/vector-im/element-ios/issues/5165))
+
+🐛 Bugfixes
+
+- Fix problem with "Jump to unread" button being unresponsive. ([#4701](https://github.com/vector-im/element-ios/issues/4701))
+- Fix crash that occurs when generating bubble text for some events. ([#5110](https://github.com/vector-im/element-ios/issues/5110))
+- Fix missing messages on rooms with paired virtual room. ([#5111](https://github.com/vector-im/element-ios/issues/5111))
+- Fix cycle in dependencies. ([#5174](https://github.com/vector-im/element-ios/issues/5174))
+- Improve generated Swift header imports. ([#5194](https://github.com/vector-im/element-ios/issues/5194))
+- Fix crash during late-decryption of timeline events with attachments. ([#5203](https://github.com/vector-im/element-ios/issues/5203))
+
+Others
+
+- Mark MatrixKit pod as deprecated. ([#5020](https://github.com/vector-im/element-ios/issues/5020))
+
+
 ## Changes in 0.16.10 (2021-11-17)
 
 🙌 Improvements
