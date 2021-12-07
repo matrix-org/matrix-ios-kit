@@ -296,6 +296,14 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSArray<NSString*> *allowedHTMLTags;
 
 /**
+ A block to run on HTML `img` tags when calling `renderHTMLString:forEvent:withRoomState:`.
+ 
+ This block provides the original URL for the image and can be used to download the image locally
+ and return a local file URL for the image to attach to the rendered attributed string.
+ */
+@property (nonatomic, copy) NSURL* (^htmlImageHandler)(NSString *sourceURL, CGFloat width, CGFloat height);
+
+/**
  The style sheet used by the 'renderHTMLString' method.
 */
 @property (nonatomic) NSString *defaultCSS;
