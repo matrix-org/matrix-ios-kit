@@ -17,6 +17,8 @@
  limitations under the License.
  */
 
+@import Intents;
+
 #import "MXKRoomDataSource.h"
 
 @import MatrixSDK;
@@ -1665,6 +1667,36 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 
 
 #pragma mark - Sending
+
+- (INPerson *)intentRecipient API_AVAILABLE(ios(15))
+{
+    
+    INPersonHandle *personHandle;
+    INPerson *person;
+    
+    if ([_room isDirect]) {
+        MXUser *user = [_room.mxSession userWithUserId:[_room directUserId]];
+        
+        personHandle = [[INPersonHandle alloc] initWithValue:user.userId type:INPersonHandleTypeUnknown];
+        // TODO: avata url to INImage
+        person = [[INPerson alloc] initWithPersonHandle:personHandle nameComponents:NULL displayName:user.displayname image:NULL contactIdentifier:NULL customIdentifier:user.userId isMe:NO suggestionType:INPersonSuggestionTypeInstantMessageAddress];
+    } else {
+        personHandle = [[INPersonHandle alloc] initWithValue:_room.roomId type:INPersonHandleTypeUnknown];
+        // TODO: root avatar url to INImage
+        person = [[INPerson alloc] initWithPersonHandle:personHandle nameComponents:NULL displayName:_room.summary.displayname image:NULL contactIdentifier:NULL customIdentifier:_room.roomId isMe:NO suggestionType:INPersonSuggestionTypeNone];
+    }
+    
+    return person;
+}
+
+- (nullable INSpeakableString *)intentGroupName API_AVAILABLE(ios(15))
+{
+    if (![_room isDirect]) {
+        return [[INSpeakableString alloc] initWithSpokenPhrase:_room.summary.displayname];
+    }
+    return NULL;
+}
+
 - (void)sendTextMessage:(NSString *)text success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
@@ -1672,6 +1704,15 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
     BOOL isEmote = [self isMessageAnEmote:text];
     NSString *sanitizedText = [self sanitizedMessageText:text];
     NSString *html = [self htmlMessageFromSanitizedText:sanitizedText];
+    
+    // Donate an intent
+    if (@available(iOS 15.0, *)) {
+        NSArray<INPerson *> *recipients = [[NSArray alloc] initWithObjects:[self intentRecipient], nil];
+        INSendMessageIntent *intent = [[INSendMessageIntent alloc] initWithRecipients:recipients outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText content:sanitizedText speakableGroupName:[self intentGroupName] conversationIdentifier:self->_roomId serviceName:@"matrix" sender:NULL];
+        
+        INInteraction *interaction = [[INInteraction alloc] initWithIntent:intent response:NULL];
+        [interaction donateInteractionWithCompletion:NULL];
+    }
     
     // Make the request to the homeserver
     if (isEmote)
@@ -1789,6 +1830,14 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
         }
     }
     
+    if (@available(ios 15, *)) {
+        NSArray<INPerson *> *recipients = [[NSArray alloc] initWithObjects:[self intentRecipient], nil];
+        INSendMessageIntent *intent = [[INSendMessageIntent alloc] initWithRecipients:recipients outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText content:NULL speakableGroupName:[self intentGroupName] conversationIdentifier:self->_roomId serviceName:@"matrix" sender:NULL];
+        
+        INInteraction *interaction = [[INInteraction alloc] initWithIntent:intent response:NULL];
+        [interaction donateInteractionWithCompletion:NULL];
+    }
+    
     [self sendImageData:imageData withImageSize:image.size mimeType:mimetype andThumbnail:thumbnail success:success failure:failure];
 }
 
@@ -1841,6 +1890,15 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 {
     __block MXEvent *localEchoEvent = nil;
     
+    // Donate an intent
+    if (@available(iOS 15.0, *)) {
+        NSArray<INPerson *> *recipients = [[NSArray alloc] initWithObjects:[self intentRecipient], nil];
+        INSendMessageIntent *intent = [[INSendMessageIntent alloc] initWithRecipients:recipients outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText content:NULL speakableGroupName:[self intentGroupName] conversationIdentifier:self->_roomId serviceName:@"matrix" sender:NULL];
+        
+        INInteraction *interaction = [[INInteraction alloc] initWithIntent:intent response:NULL];
+        [interaction donateInteractionWithCompletion:NULL];
+    }
+    
     [_room sendVideoAsset:videoAsset withThumbnail:videoThumbnail localEcho:&localEchoEvent success:success failure:failure];
     
     if (localEchoEvent)
@@ -1854,6 +1912,17 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (void)sendAudioFile:(NSURL *)audioFileLocalURL mimeType:mimeType success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
+    
+    // Donate an intent
+    if (@available(iOS 15.0, *)) {
+        NSArray<INPerson *> *recipients = [[NSArray alloc] initWithObjects:[self intentRecipient], nil];
+        INSendMessageAttachment *attachment = [INSendMessageAttachment attachmentWithAudioMessageFile:[INFile fileWithFileURL:audioFileLocalURL filename:NULL typeIdentifier:mimeType]];
+        
+        INSendMessageIntent *intent = [[INSendMessageIntent alloc] initWithRecipients:recipients outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText content:NULL speakableGroupName:[self intentGroupName] conversationIdentifier:self->_roomId serviceName:@"matrix" sender:NULL attachments:[[NSArray alloc] initWithObjects:attachment, nil]];
+        
+        INInteraction *interaction = [[INInteraction alloc] initWithIntent:intent response:NULL];
+        [interaction donateInteractionWithCompletion:NULL];
+    }
     
     [_room sendAudioFile:audioFileLocalURL mimeType:mimeType localEcho:&localEchoEvent success:success failure:failure keepActualFilename:YES];
     
@@ -1874,6 +1943,17 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 {
     __block MXEvent *localEchoEvent = nil;
     
+    // Donate an intent
+    if (@available(iOS 15.0, *)) {
+        NSArray<INPerson *> *recipients = [[NSArray alloc] initWithObjects:[self intentRecipient], nil];
+        INSendMessageAttachment *attachment = [INSendMessageAttachment attachmentWithAudioMessageFile:[INFile fileWithFileURL:audioFileLocalURL filename:NULL typeIdentifier:mimeType]];
+        
+        INSendMessageIntent *intent = [[INSendMessageIntent alloc] initWithRecipients:recipients outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText content:NULL speakableGroupName:[self intentGroupName] conversationIdentifier:self->_roomId serviceName:@"matrix" sender:NULL attachments:[[NSArray alloc] initWithObjects:attachment, nil]];
+        
+        INInteraction *interaction = [[INInteraction alloc] initWithIntent:intent response:NULL];
+        [interaction donateInteractionWithCompletion:NULL];
+    }
+    
     [_room sendVoiceMessage:audioFileLocalURL mimeType:mimeType duration:duration samples:samples localEcho:&localEchoEvent success:success failure:failure keepActualFilename:YES];
     
     if (localEchoEvent)
@@ -1888,6 +1968,15 @@ typedef NS_ENUM (NSUInteger, MXKRoomDataSourceError) {
 - (void)sendFile:(NSURL *)fileLocalURL mimeType:(NSString*)mimeType success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
     __block MXEvent *localEchoEvent = nil;
+    
+    // Donate an intent
+    if (@available(iOS 15.0, *)) {
+        NSArray<INPerson *> *recipients = [[NSArray alloc] initWithObjects:[self intentRecipient], nil];
+        INSendMessageIntent *intent = [[INSendMessageIntent alloc] initWithRecipients:recipients outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText content:NULL speakableGroupName:[self intentGroupName] conversationIdentifier:self->_roomId serviceName:@"matrix" sender:NULL];
+        
+        INInteraction *interaction = [[INInteraction alloc] initWithIntent:intent response:NULL];
+        [interaction donateInteractionWithCompletion:NULL];
+    }
     
     [_room sendFile:fileLocalURL mimeType:mimeType localEcho:&localEchoEvent success:success failure:failure];
     
